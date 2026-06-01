@@ -32,6 +32,6 @@ class OrderItem extends Model
     //Calcular el subtotal del item (precio × cantidad)
     public function getSubtotalAttribute()
     {
-        return $this->price_when_purchased * $this->quantity;
+        return $this->price_when_ordered * $this->quantity;
     }
 }
