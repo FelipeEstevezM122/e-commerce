@@ -34,13 +34,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Relación: Un usuario tiene un rango
+    // Relacion: Un usuario tiene un rango
     public function rank()
     {
         return $this->belongsTo(Rank::class);
     }
 
-    // Relación: un usuario tiene muchos roles (muchos a muchos)
+    // Relacion: un usuario tiene muchos roles (muchos a muchos)
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_role')
@@ -48,19 +48,19 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
-    // Relación: Un usuario tiene 1 carrito
+    // Relacion: Un usuario tiene 1 carrito
     public function cart()
     {
         return $this->hasOne(Cart::class);
     }
 
-    // Relación: Un usuario tiene muchos pedidos
+    // Relacion: Un usuario tiene muchos pedidos
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    // Relación: Un usuario tiene muchas compras acumuladas
+    // Relacion: Un usuario tiene muchas compras acumuladas
     public function accumulatedPurchases()
     {
         return $this->hasMany(AccumulatedPurchase::class);
