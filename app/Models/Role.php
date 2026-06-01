@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Role extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+    //Relacion n:m
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_role')->withPivot('assigned_at')->withTimestamps();
+    }
 }

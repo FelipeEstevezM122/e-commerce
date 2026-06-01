@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_accumulateds', function (Blueprint $table) {
+        Schema::create('accumulated_purchases', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_accumulateds');
+        Schema::dropIfExists('accumulated_purchases');
     }
 };
