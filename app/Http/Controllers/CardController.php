@@ -7,6 +7,7 @@ use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
@@ -20,7 +21,7 @@ class CartController extends Controller
     /**
      * Ver el carrito del usuario autenticado.
      */
-    public function index(Request $request)
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = $request->user();
         
@@ -34,8 +35,8 @@ class CartController extends Controller
             'datos' => [
                 'cart_id' => $cart->id,
                 'items' => $cart->items,
-                'total_items' => $cart->total_items, // Usando el accessor del modelo
-                'total_price' => $cart->total, // Usando el accessor del modelo
+                'total_items' => $cart->total_items,
+                'total_price' => $cart->total,
                 'is_empty' => $cart->isEmpty(),
             ],
             'message' => 'Carrito actual'
@@ -51,7 +52,7 @@ class CartController extends Controller
      *   "quantity": 2
      * }
      */
-    public function add(Request $request)
+    public function add(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -59,8 +60,8 @@ class CartController extends Controller
         ]);
         
         $user = $request->user();
-        $productId = $request->product_id;
-        $quantity = $request->quantity;
+        $productId = (int) $request->product_id;
+        $quantity = (int) $request->quantity;
         
         // Verificar stock disponible
         $product = Product::findOrFail($productId);
@@ -93,7 +94,7 @@ class CartController extends Controller
                 'cart_id' => $cart->id,
                 'product_id' => $productId,
                 'quantity' => $quantity,
-                'price_when_added' => $product->price, // Guardamos el precio actual
+                'price_when_added' => $product->price,
             ]);
         }
         
@@ -127,14 +128,14 @@ class CartController extends Controller
      *   "quantity": 5
      * }
      */
-    public function update(Request $request, $itemId)
+    public function update(Request $request, int $itemId): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
         
         $user = $request->user();
-        $quantity = $request->quantity;
+        $quantity = (int) $request->quantity;
         
         // Verificar que el item pertenezca al usuario
         $cart = $this->getOrCreateCart($user);
@@ -159,7 +160,7 @@ class CartController extends Controller
         return response()->json([
             'datos' => [
                 'cart_item' => $cartItem,
-                'item_total' => $cartItem->total, // Usando el accessor del modelo CartItem
+                'item_total' => $cartItem->total,
                 'cart_total' => $cart->total,
             ],
             'message' => 'Cantidad actualizada'
@@ -169,7 +170,7 @@ class CartController extends Controller
     /**
      * Quitar un producto específico del carrito.
      */
-    public function remove(Request $request, $itemId)
+    public function remove(Request $request, int $itemId): \Illuminate\Http\JsonResponse  // ← Corregido: añadido tipo "int"
     {
         $user = $request->user();
         
@@ -187,9 +188,9 @@ class CartController extends Controller
     }
     
     /**
-     * Vaciar completamente el carrito (usando el método clear del modelo Cart).
+     * Vaciar completamente el carrito.
      */
-    public function clear(Request $request)
+    public function clear(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = $request->user();
         $cart = $this->getOrCreateCart($user);
@@ -205,7 +206,7 @@ class CartController extends Controller
     /**
      * Obtener o crear el carrito del usuario.
      */
-    private function getOrCreateCart($user)
+    private function getOrCreateCart(User $user): Cart  // ← Se añadió "User" antes de $user
     {
         return Cart::firstOrCreate(
             ['user_id' => $user->id],
