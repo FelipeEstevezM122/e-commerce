@@ -22,9 +22,7 @@ class AdminController extends Controller
         $this->middleware('admin');
     }
 
-    /**
-     * Dashboard con estadísticas generales
-     */
+    //Dashboard con estadísticas generales
     public function dashboard()
     {
         $totalUsers = User::count();
@@ -391,13 +389,7 @@ class AdminController extends Controller
         ], 200);
     }
 
-    // ============================================================
-    // NUEVOS MÉTODOS AGREGADOS (PROCEDIMIENTOS ALMACENADOS)
-    // ============================================================
-
-    /**
-     * Reporte de ventas usando el procedimiento almacenado
-     */
+    //Reporte de ventas usando el procedimiento almacenado
     public function salesReportProcedure(Request $request)
     {
         $request->validate([
@@ -418,9 +410,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
     
-    /**
-     * Top productos usando el procedimiento almacenado
-     */
+    //Top productos usando el procedimiento almacenado
     public function topProductsProcedure(Request $request)
     {
         $request->validate([
@@ -445,9 +435,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
     
-    /**
-     * Estadísticas de clientes usando el procedimiento almacenado
-     */
+    //Estadísticas de clientes usando el procedimiento almacenado
     public function customerStatisticsProcedure(Request $request)
     {
         $request->validate([
@@ -469,9 +457,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
     
-    /**
-     * Alertas de inventario usando el procedimiento almacenado
-     */
+    //Alertas de inventario usando el procedimiento almacenado
     public function inventoryAlertsProcedure(Request $request)
     {
         $request->validate([
@@ -488,9 +474,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
     
-    /**
-     * Dashboard ejecutivo usando el procedimiento almacenado
-     */
+    //Dashboard ejecutivo usando el procedimiento almacenado
     public function executiveDashboardProcedure(Request $request)
     {
         $request->validate([
