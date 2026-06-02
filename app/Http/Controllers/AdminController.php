@@ -33,23 +33,19 @@ class AdminController extends Controller
         $pendingOrders = Order::where('status', 'pending')->count();
         $completedOrders = Order::where('status', 'completed')->count();
         
-        // Ventas totales
         $totalSales = Order::where('status', 'completed')->sum('total');
         
-        // Usuarios por tipo
         $wholesalers = User::where('user_type', 'mayorista')->count();
         $finalCustomers = User::where('user_type', 'final')->count();
         
-        // Top 5 productos más vendidos
-        $topProducts = DB::table('order_product')
-            ->join('products', 'order_product.product_id', '=', 'products.id')
-            ->select('products.id', 'products.name', DB::raw('SUM(order_product.quantity) as total_sold'))
+        $topProducts = DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->select('products.id', 'products.name', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sold', 'desc')
             ->limit(5)
             ->get();
         
-        // Ventas por mes (últimos 6 meses)
         $salesByMonth = Order::where('status', 'completed')
             ->where('created_at', '>=', now()->subMonths(6))
             ->select(DB::raw('MONTH(created_at) as month'), DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total) as total'))
@@ -82,10 +78,7 @@ class AdminController extends Controller
             'message' => 'Estadísticas del sistema'
         ], Response::HTTP_OK);
     }
-
-    /**
-     * Listar todos los usuarios con filtros opcionales
-     */
+    //Listar todos los usuarios con filtros opcionales
     public function users(Request $request)
     {
         $query = User::with('rank', 'roles');
@@ -117,12 +110,10 @@ class AdminController extends Controller
         return response()->json([
             'datos' => $users,
             'message' => 'Lista de usuarios'
-        ], Response::HTTP_OK);
+        ], 200);
     }
 
-    /**
-     * Ver detalles de un usuario específico
-     */
+    //Ver detalles de un usuario específico
     public function showUser(User $user)
     {
         $user->load('rank', 'roles', 'orders', 'accumulatedPurchases');
@@ -142,12 +133,10 @@ class AdminController extends Controller
                 ]
             ],
             'message' => 'Detalles del usuario'
-        ], Response::HTTP_OK);
+        ], 200);
     }
 
-    /**
-     * Crear un nuevo usuario (admin)
-     */
+    //Crear un nuevo usuario (admin)
     public function createUser(Request $request)
     {
         $request->validate([
@@ -200,9 +189,7 @@ class AdminController extends Controller
         }
     }
 
-    /**
-     * Actualizar un usuario
-     */
+    //Actualizar un usuario
     public function updateUser(Request $request, User $user)
     {
         $request->validate([
@@ -250,9 +237,7 @@ class AdminController extends Controller
         }
     }
 
-    /**
-     * Eliminar un usuario (soft delete o hard delete)
-     */
+    //Eliminar un usuario (soft delete o hard delete)
     public function deleteUser(User $user, Request $request)
     {
         $force = $request->input('force', false);
@@ -270,9 +255,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
 
-    /**
-     * Listar todos los productos (admin view)
-     */
+    //Listar todos los productos (admin view)
     public function products(Request $request)
     {
         $query = Product::with('user');
@@ -300,9 +283,7 @@ class AdminController extends Controller
         ], Response::HTTP_OK);
     }
 
-    /**
-     * Listar todos los pedidos (admin view)
-     */
+    //Listar todos los pedidos (admin view)
     public function orders(Request $request)
     {
         $query = Order::with('user', 'products');
@@ -331,12 +312,10 @@ class AdminController extends Controller
         return response()->json([
             'datos' => $orders,
             'message' => 'Lista de pedidos'
-        ], Response::HTTP_OK);
+        ], 200);
     }
 
-    /**
-     * Actualizar estado de un pedido
-     */
+    //Actualizar estado de un pedido
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
@@ -348,12 +327,10 @@ class AdminController extends Controller
         return response()->json([
             'datos' => $order,
             'message' => 'Estado del pedido actualizado'
-        ], Response::HTTP_OK);
+        ], 200);
     }
 
-    /**
-     * Estadísticas de ventas
-     */
+    //Estadísticas de ventas
     public function salesReport(Request $request)
     {
         $request->validate([
@@ -411,6 +388,127 @@ class AdminController extends Controller
                 ]
             ],
             'message' => 'Reporte de ventas'
+        ], 200);
+    }
+
+    // ============================================================
+    // NUEVOS MÉTODOS AGREGADOS (PROCEDIMIENTOS ALMACENADOS)
+    // ============================================================
+
+    /**
+     * Reporte de ventas usando el procedimiento almacenado
+     */
+    public function salesReportProcedure(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'status' => 'nullable|string|in:pending,processing,shipped,completed,cancelled'
+        ]);
+        
+        $results = DB::select('CALL sp_sales_report(?, ?, ?)', [
+            $request->start_date,
+            $request->end_date,
+            $request->status
+        ]);
+        
+        return response()->json([
+            'datos' => $results,
+            'message' => 'Reporte de ventas generado'
+        ], Response::HTTP_OK);
+    }
+    
+    /**
+     * Top productos usando el procedimiento almacenado
+     */
+    public function topProductsProcedure(Request $request)
+    {
+        $request->validate([
+            'limit' => 'nullable|integer|min:1|max:100',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
+        
+        $limit = $request->input('limit', 10);
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        
+        $results = DB::select('CALL sp_top_products(?, ?, ?)', [
+            $limit,
+            $startDate,
+            $endDate
+        ]);
+        
+        return response()->json([
+            'datos' => $results,
+            'message' => 'Top productos más vendidos'
+        ], Response::HTTP_OK);
+    }
+    
+    /**
+     * Estadísticas de clientes usando el procedimiento almacenado
+     */
+    public function customerStatisticsProcedure(Request $request)
+    {
+        $request->validate([
+            'min_orders' => 'nullable|integer|min:0',
+            'min_spent' => 'nullable|numeric|min:0'
+        ]);
+        
+        $minOrders = $request->input('min_orders', 0);
+        $minSpent = $request->input('min_spent', 0);
+        
+        $results = DB::select('CALL sp_customer_statistics(?, ?)', [
+            $minOrders,
+            $minSpent
+        ]);
+        
+        return response()->json([
+            'datos' => $results,
+            'message' => 'Estadísticas de clientes'
+        ], Response::HTTP_OK);
+    }
+    
+    /**
+     * Alertas de inventario usando el procedimiento almacenado
+     */
+    public function inventoryAlertsProcedure(Request $request)
+    {
+        $request->validate([
+            'threshold' => 'nullable|integer|min:0'
+        ]);
+        
+        $threshold = $request->input('threshold', 10);
+        
+        $results = DB::select('CALL sp_inventory_management(?)', [$threshold]);
+        
+        return response()->json([
+            'datos' => $results,
+            'message' => 'Alertas de inventario'
+        ], Response::HTTP_OK);
+    }
+    
+    /**
+     * Dashboard ejecutivo usando el procedimiento almacenado
+     */
+    public function executiveDashboardProcedure(Request $request)
+    {
+        $request->validate([
+            'days' => 'nullable|integer|min:1|max:365'
+        ]);
+        
+        $days = $request->input('days', 30);
+        
+        $results = DB::select('CALL sp_executive_dashboard(?)', [$days]);
+        
+        $dashboard = [
+            'summary' => isset($results[0]) ? $results[0] : null,
+            'top_products' => isset($results[1]) ? array_slice($results, 1, 5) : []
+        ];
+        
+        return response()->json([
+            'datos' => $dashboard,
+            'message' => 'Dashboard ejecutivo'
         ], Response::HTTP_OK);
     }
 }
