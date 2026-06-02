@@ -7,59 +7,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('ranks', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);              // Nombre del rango (Bronce, Plata, etc.)
-            $table->decimal('min_purchase', 10, 2);   // Monto mínimo para alcanzar el rango
-            $table->decimal('discount_percentage', 5, 2)->default(0); // Porcentaje de descuento
+            $table->string('name', 100);
+            $table->decimal('monthly_minimum_purchase', 10, 2);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
 
-        // Insertar los rangos por defecto
         DB::table('ranks')->insert([
-            [
-                'name' => 'Bronce',
-                'min_purchase' => 0,
-                'discount_percentage' => 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Plata',
-                'min_purchase' => 1000,
-                'discount_percentage' => 5,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Oro',
-                'min_purchase' => 5000,
-                'discount_percentage' => 10,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Platino',
-                'min_purchase' => 10000,
-                'discount_percentage' => 15,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
+            ['name' => 'Bronce', 'monthly_minimum_purchase' => 0, 'description' => 'Rango inicial', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Plata', 'monthly_minimum_purchase' => 1000, 'description' => 'Compras > Bs. 1000', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Oro', 'monthly_minimum_purchase' => 5000, 'description' => 'Compras > Bs. 5000', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Platino', 'monthly_minimum_purchase' => 10000, 'description' => 'Compras > Bs. 10000', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('ranks');
