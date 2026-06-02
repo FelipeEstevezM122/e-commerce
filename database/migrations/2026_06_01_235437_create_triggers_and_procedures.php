@@ -5,14 +5,11 @@ use Illuminate\Support\Facades\DB;
 
 class CreateTriggersAndProcedures extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
-        // ============ TRIGGERS ============
-        
-        // Trigger 1: Actualizar stock después de crear un pedido
+        //TRIGGERS
+        //1: Actualizar stock despues de crear un pedido
         DB::unprepared("
             DROP TRIGGER IF EXISTS after_order_item_insert;
             CREATE TRIGGER after_order_item_insert
@@ -26,7 +23,7 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // Trigger 2: Restaurar stock cuando se cancela un pedido
+        //2: Restaurar stock cuando se cancela un pedido
         DB::unprepared("
             DROP TRIGGER IF EXISTS after_order_status_update;
             CREATE TRIGGER after_order_status_update
@@ -43,7 +40,7 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // Trigger 3: Validar stock antes de insertar en carrito
+        //3: Validar stock antes de agregar al carrito
         DB::unprepared("
             DROP TRIGGER IF EXISTS before_cart_item_insert;
             CREATE TRIGGER before_cart_item_insert
@@ -63,7 +60,7 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // Trigger 4: Asignar código de acceso automático para mayoristas
+        //4: Asignar codigo de acceso automatico para mayoristas
         DB::unprepared("
             DROP TRIGGER IF EXISTS before_user_insert;
             CREATE TRIGGER before_user_insert
@@ -76,7 +73,7 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // Trigger 5: Actualizar rango del usuario según sus compras (NUEVO TRIGGER)
+        //5: Actualizar rango del usuario segun sus compras
         DB::unprepared("
             DROP TRIGGER IF EXISTS after_order_completed;
             CREATE TRIGGER after_order_completed
@@ -86,20 +83,16 @@ class CreateTriggersAndProcedures extends Migration
                 DECLARE total_compras DECIMAL(10,2);
                 DECLARE nuevo_rango INT;
                 
-                -- Solo ejecutar cuando el pedido cambia a 'completed'
-                IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-                    -- Calcular total de compras del usuario
+                IF NEW.status = 'delivered' AND OLD.status != 'delivered' THEN
                     SELECT COALESCE(SUM(total), 0) INTO total_compras
                     FROM orders
-                    WHERE user_id = NEW.user_id AND status = 'completed';
+                    WHERE user_id = NEW.user_id AND status = 'delivered';
                     
-                    -- Determinar el rango según el monto total
                     SELECT id INTO nuevo_rango FROM ranks
-                    WHERE min_purchase <= total_compras
-                    ORDER BY min_purchase DESC
+                    WHERE monthly_minimum_purchase <= total_compras
+                    ORDER BY monthly_minimum_purchase DESC
                     LIMIT 1;
                     
-                    -- Actualizar el rango del usuario si es necesario
                     IF nuevo_rango IS NOT NULL AND nuevo_rango != (SELECT rank_id FROM users WHERE id = NEW.user_id) THEN
                         UPDATE users 
                         SET rank_id = nuevo_rango,
@@ -110,9 +103,48 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // ============ PROCEDIMIENTOS ALMACENADOS ============
+        //PROCEDIMIENTOS ALMACENADOS
         
-        // Procedimiento 1: Reporte de ventas
+        //1: Filtrar productos por tipo de usuario (mayorista/final)
+        DB::unprepared("
+            DROP PROCEDURE IF EXISTS sp_filter_products_by_user;
+            CREATE PROCEDURE sp_filter_products_by_user(
+                IN p_user_id INT,
+                IN p_category_id INT,
+                IN p_brand_id INT,
+                IN p_search VARCHAR(100)
+            )
+            BEGIN
+                DECLARE v_user_type VARCHAR(20);
+                
+                SELECT user_type INTO v_user_type FROM users WHERE id = p_user_id;
+                
+                SELECT 
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.base_price,
+                    p.stock,
+                    p.image,
+                    p.sku,
+                    p.warranty_days,
+                    b.name as brand_name,
+                    c.name as category_name,
+                    CASE 
+                        WHEN v_user_type = 'mayorista' THEN p.base_price * 0.90
+                        ELSE p.base_price
+                    END as final_price
+                FROM products p
+                LEFT JOIN brands b ON p.brand_id = b.id
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE (p_category_id IS NULL OR p.category_id = p_category_id)
+                  AND (p_brand_id IS NULL OR p.brand_id = p_brand_id)
+                  AND (p_search IS NULL OR p.name LIKE CONCAT('%', p_search, '%') OR p.sku LIKE CONCAT('%', p_search, '%'))
+                ORDER BY p.id DESC;
+            END
+        ");
+        
+        //2: Reporte de ventas para admin
         DB::unprepared("
             DROP PROCEDURE IF EXISTS sp_sales_report;
             CREATE PROCEDURE sp_sales_report(
@@ -124,9 +156,10 @@ class CreateTriggersAndProcedures extends Migration
                 SELECT 
                     DATE(o.created_at) as sale_date,
                     COUNT(DISTINCT o.id) as total_orders,
-                    SUM(oi.quantity) as total_quantity,
+                    SUM(oi.quantity) as total_products_sold,
                     SUM(o.total) as total_sales,
-                    AVG(o.total) as average_order_value
+                    AVG(o.total) as average_order_value,
+                    COUNT(DISTINCT o.user_id) as unique_customers
                 FROM orders o
                 LEFT JOIN order_items oi ON o.id = oi.order_id
                 WHERE o.created_at BETWEEN p_start_date AND p_end_date
@@ -136,7 +169,7 @@ class CreateTriggersAndProcedures extends Migration
             END
         ");
         
-        // Procedimiento 2: Top productos más vendidos
+        //3: Productos mas vendidos
         DB::unprepared("
             DROP PROCEDURE IF EXISTS sp_top_products;
             CREATE PROCEDURE sp_top_products(
@@ -148,107 +181,103 @@ class CreateTriggersAndProcedures extends Migration
                 SELECT 
                     p.id,
                     p.name,
-                    p.price,
+                    p.base_price,
+                    b.name as brand_name,
+                    c.name as category_name,
                     SUM(oi.quantity) as total_sold,
                     SUM(oi.quantity * oi.price_when_ordered) as total_revenue
                 FROM products p
                 INNER JOIN order_items oi ON p.id = oi.product_id
                 INNER JOIN orders o ON oi.order_id = o.id
+                LEFT JOIN brands b ON p.brand_id = b.id
+                LEFT JOIN categories c ON p.category_id = c.id
                 WHERE (p_start_date IS NULL OR o.created_at >= p_start_date)
                     AND (p_end_date IS NULL OR o.created_at <= p_end_date)
-                    AND o.status = 'completed'
-                GROUP BY p.id, p.name, p.price
+                    AND o.status = 'delivered'
+                GROUP BY p.id, p.name, p.base_price, b.name, c.name
                 ORDER BY total_sold DESC
                 LIMIT p_limit;
             END
         ");
         
-        // Procedimiento 3: Estadísticas de clientes
+        //4: Filtrar compras de usuario para admin
         DB::unprepared("
-            DROP PROCEDURE IF EXISTS sp_customer_statistics;
-            CREATE PROCEDURE sp_customer_statistics(
-                IN p_min_orders INT,
-                IN p_min_spent DECIMAL(10,2)
+            DROP PROCEDURE IF EXISTS sp_user_purchases;
+            CREATE PROCEDURE sp_user_purchases(
+                IN p_user_id INT,
+                IN p_status VARCHAR(20),
+                IN p_start_date DATE,
+                IN p_end_date DATE
             )
             BEGIN
                 SELECT 
-                    u.id,
-                    u.name,
-                    u.email,
-                    u.user_type,
-                    COUNT(o.id) as total_orders,
-                    SUM(o.total) as total_spent,
-                    AVG(o.total) as average_order,
-                    MAX(o.created_at) as last_purchase_date
-                FROM users u
-                LEFT JOIN orders o ON u.id = o.user_id AND o.status = 'completed'
-                GROUP BY u.id, u.name, u.email, u.user_type
-                HAVING total_orders >= COALESCE(p_min_orders, 0)
-                    AND total_spent >= COALESCE(p_min_spent, 0)
-                ORDER BY total_spent DESC;
-            END
-        ");
-        
-        // Procedimiento 4: Gestión de inventario
-        DB::unprepared("
-            DROP PROCEDURE IF EXISTS sp_inventory_management;
-            CREATE PROCEDURE sp_inventory_management(
-                IN p_stock_threshold INT
-            )
-            BEGIN
-                SELECT 
-                    p.id,
-                    p.name,
-                    p.stock,
-                    p_stock_threshold as minimum_stock,
-                    CASE 
-                        WHEN p.stock = 0 THEN 'CRITICAL'
-                        WHEN p.stock <= p_stock_threshold/2 THEN 'URGENT'
-                        ELSE 'WARNING'
-                    END as alert_level
-                FROM products p
-                WHERE p.stock <= p_stock_threshold
-                ORDER BY p.stock ASC;
-            END
-        ");
-        
-        // Procedimiento 5: Dashboard ejecutivo
-        DB::unprepared("
-            DROP PROCEDURE IF EXISTS sp_executive_dashboard;
-            CREATE PROCEDURE sp_executive_dashboard(
-                IN p_days INT
-            )
-            BEGIN
-                SELECT 
-                    'Resumen del período' as section,
-                    COUNT(DISTINCT o.id) as total_orders,
-                    SUM(o.total) as total_sales,
-                    COUNT(DISTINCT o.user_id) as active_customers,
-                    AVG(o.total) as avg_order_value
+                    o.id,
+                    o.order_number,
+                    o.total,
+                    o.status,
+                    o.payment_method,
+                    o.created_at,
+                    COUNT(oi.id) as total_items,
+                    SUM(oi.quantity) as total_quantity
                 FROM orders o
-                WHERE o.created_at >= DATE_SUB(NOW(), INTERVAL p_days DAY)
-                    AND o.status = 'completed';
+                LEFT JOIN order_items oi ON o.id = oi.order_id
+                WHERE o.user_id = p_user_id
+                    AND (p_status IS NULL OR o.status = p_status)
+                    AND (p_start_date IS NULL OR DATE(o.created_at) >= p_start_date)
+                    AND (p_end_date IS NULL OR DATE(o.created_at) <= p_end_date)
+                GROUP BY o.id, o.order_number, o.total, o.status, o.payment_method, o.created_at
+                ORDER BY o.created_at DESC;
+            END
+        ");
+        
+        //5: Dashboard ejecutivo para admin
+        DB::unprepared("
+            DROP PROCEDURE IF EXISTS sp_admin_dashboard;
+            CREATE PROCEDURE sp_admin_dashboard()
+            BEGIN
+                SELECT 
+                    (SELECT COUNT(*) FROM users) as total_users,
+                    (SELECT COUNT(*) FROM users WHERE user_type = 'mayorista') as total_wholesalers,
+                    (SELECT COUNT(*) FROM users WHERE user_type = 'final') as total_final_customers,
+                    (SELECT COUNT(*) FROM products) as total_products,
+                    (SELECT SUM(stock) FROM products) as total_stock,
+                    (SELECT COUNT(*) FROM products WHERE stock <= 5) as low_stock_products;
                     
                 SELECT 
-                    'Top 5 Productos' as section,
-                    p.name,
-                    SUM(oi.quantity) as units_sold,
-                    SUM(oi.quantity * oi.price_when_ordered) as revenue
-                FROM products p
+                    COALESCE(SUM(total), 0) as monthly_sales,
+                    COUNT(*) as monthly_orders
+                FROM orders
+                WHERE MONTH(created_at) = MONTH(NOW())
+                    AND YEAR(created_at) = YEAR(NOW())
+                    AND status = 'delivered';
+                    
+                SELECT 
+                    o.id,
+                    o.order_number,
+                    u.name as customer_name,
+                    o.total,
+                    o.status,
+                    o.created_at
+                FROM orders o
+                INNER JOIN users u ON o.user_id = u.id
+                ORDER BY o.created_at DESC
+                LIMIT 5;
+                
+                SELECT 
+                    c.name as category_name,
+                    SUM(oi.quantity) as total_sold
+                FROM categories c
+                INNER JOIN products p ON c.id = p.category_id
                 INNER JOIN order_items oi ON p.id = oi.product_id
                 INNER JOIN orders o ON oi.order_id = o.id
-                WHERE o.created_at >= DATE_SUB(NOW(), INTERVAL p_days DAY)
-                    AND o.status = 'completed'
-                GROUP BY p.id, p.name
-                ORDER BY units_sold DESC
-                LIMIT 5;
+                WHERE o.status = 'delivered'
+                GROUP BY c.id, c.name
+                ORDER BY total_sold DESC
+                LIMIT 3;
             END
         ");
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         // Eliminar triggers
@@ -256,13 +285,13 @@ class CreateTriggersAndProcedures extends Migration
         DB::unprepared("DROP TRIGGER IF EXISTS after_order_status_update");
         DB::unprepared("DROP TRIGGER IF EXISTS before_cart_item_insert");
         DB::unprepared("DROP TRIGGER IF EXISTS before_user_insert");
-        DB::unprepared("DROP TRIGGER IF EXISTS after_order_completed"); // Nuevo trigger
+        DB::unprepared("DROP TRIGGER IF EXISTS after_order_completed");
         
-        // Eliminar procedimientos
+        // Eliminar procedimientos almacenados
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_filter_products_by_user");
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_sales_report");
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_top_products");
-        DB::unprepared("DROP PROCEDURE IF EXISTS sp_customer_statistics");
-        DB::unprepared("DROP PROCEDURE IF EXISTS sp_inventory_management");
-        DB::unprepared("DROP PROCEDURE IF EXISTS sp_executive_dashboard");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_user_purchases");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_admin_dashboard");
     }
 }
