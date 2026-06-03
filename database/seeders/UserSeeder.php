@@ -12,38 +12,48 @@ class UserSeeder extends Seeder
     public function run()
     {
         // 1. Usuario administrador específico
-        $admin = User::factory()->create([
-            'name' => 'Administrador',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-            'user_type' => 'final',
-        ]);
-        
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name'     => 'Administrador',
+                'password' => bcrypt('password'),
+                'user_type' => 'final',
+                'rank_id'  => Rank::inRandomOrder()->first()?->id,
+            ]
+        );
+
         // Asignar rol admin
         $adminRole = Role::where('name', 'admin')->first();
-        if ($adminRole) {
+        if ($adminRole && !$admin->roles->contains($adminRole->id)) {
             $admin->roles()->attach($adminRole, ['assigned_at' => now()]);
         }
-        
+
         // 2. Usuario mayorista específico
-        $wholesaler = User::factory()->create([
-            'name' => 'Mayorista Ejemplo',
-            'email' => 'mayorista@example.com',
-            'user_type' => 'mayorista',
-            'company_name' => 'Distribuidora Mayorista SRL',
-        ]);
-        
+        $wholesaler = User::firstOrCreate(
+            ['email' => 'mayorista@example.com'],
+            [
+                'name'         => 'Mayorista Ejemplo',
+                'password'     => bcrypt('password'),
+                'user_type'    => 'mayorista',
+                'company_name' => 'Distribuidora Mayorista SRL',
+                'rank_id'      => Rank::inRandomOrder()->first()?->id,
+            ]
+        );
+
         // 3. Crear 50 usuarios aleatorios con factories
+        $rankIds = Rank::pluck('id')->toArray();
+
         User::factory(50)
             ->create()
-            ->each(function ($user) {
+            ->each(function ($user) use ($rankIds) {
                 // Asignar rol aleatorio a cada usuario
                 $role = Role::inRandomOrder()->first();
-                $user->roles()->attach($role, ['assigned_at' => now()]);
-                
-                // Asignar rango según sus compras (simulado)
-                $rank = Rank::inRandomOrder()->first();
-                $user->rank_id = $rank->id;
+                if ($role) {
+                    $user->roles()->attach($role, ['assigned_at' => now()]);
+                }
+
+                // Asignar rango existente (sin crear nuevos via factory)
+                $user->rank_id = $rankIds[array_rand($rankIds)];
                 $user->save();
             });
     }
