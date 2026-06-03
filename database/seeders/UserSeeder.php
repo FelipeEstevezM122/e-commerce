@@ -22,6 +22,11 @@ class UserSeeder extends Seeder
             ]
         );
 
+/*
+php artisan db:seed
+php artisan migrate:fresh --seed
+*/
+
         // Asignar rol admin
         $adminRole = Role::where('name', 'admin')->first();
         if ($adminRole && !$admin->roles->contains($adminRole->id)) {
