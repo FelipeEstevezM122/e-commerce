@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone', 20)->nullable();
             $table->string('whatsapp', 20)->nullable();
-            $table->text('address')->nullable();
-            $table->string('company_name', 150)->nullable();
-            $table->enum('user_type', ['final', 'mayorista'])->default('final');
             $table->string('access_code', 10)->nullable();
             $table->foreignId('rank_id')->nullable()->constrained('ranks')->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
+            // ELIMINADO: user_type  → usar roles para determinar tipo de usuario
+            // ELIMINADO: address    → movido a billing_info
+            // ELIMINADO: company_name → movido a billing_info
         });
     }
 
