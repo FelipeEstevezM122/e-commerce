@@ -17,7 +17,7 @@ class RankFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->unique()->randomElement([
+            'name' => $this->faker->randomElement([
                 'Bronce', 'Plata', 'Oro', 'Platino', 'Diamante', 'Premium'
             ]),
             'monthly_minimum_purchase' => $this->faker->randomElement([0, 1000, 5000, 10000, 20000, 50000]),
