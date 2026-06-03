@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\Rank;
 use App\Models\Role;
+use App\Models\BillingInfo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -16,26 +17,23 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        // Solo usuarios autenticados pueden acceder
         $this->middleware('auth:sanctum');
-        // Verificar que sea administrador
         $this->middleware('admin');
     }
 
-    //Dashboard con estadísticas generales
     public function dashboard()
     {
-        $totalUsers = User::count();
-        $totalProducts = Product::count();
-        $totalOrders = Order::count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $completedOrders = Order::where('status', 'completed')->count();
-        
-        $totalSales = Order::where('status', 'completed')->sum('total');
-        
-        $wholesalers = User::where('user_type', 'mayorista')->count();
-        $finalCustomers = User::where('user_type', 'final')->count();
-        
+        $totalUsers     = User::count();
+        $totalProducts  = Product::count();
+        $totalOrders    = Order::count();
+        $pendingOrders  = Order::where('status', 'pending')->count();
+        $completedOrders= Order::where('status', 'delivered')->count(); // FIX: era 'completed', el enum usa 'delivered'
+        $totalSales     = Order::where('status', 'delivered')->sum('total');
+
+        // FIX: ya no existe user_type → contar por rol
+        $wholesalers     = User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count();
+        $finalCustomers  = User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count();
+
         $topProducts = DB::table('order_items')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->select('products.id', 'products.name', DB::raw('SUM(order_items.quantity) as total_sold'))
@@ -43,328 +41,277 @@ class AdminController extends Controller
             ->orderBy('total_sold', 'desc')
             ->limit(5)
             ->get();
-        
-        $salesByMonth = Order::where('status', 'completed')
+
+        $salesByMonth = Order::where('status', 'delivered')
             ->where('created_at', '>=', now()->subMonths(6))
-            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total) as total'))
+            ->select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('SUM(total) as total')
+            )
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->get();
-        
+
         return response()->json([
             'datos' => [
                 'users' => [
-                    'total' => $totalUsers,
-                    'wholesalers' => $wholesalers,
+                    'total'           => $totalUsers,
+                    'wholesalers'     => $wholesalers,
                     'final_customers' => $finalCustomers,
                 ],
-                'products' => [
-                    'total' => $totalProducts,
-                ],
-                'orders' => [
-                    'total' => $totalOrders,
-                    'pending' => $pendingOrders,
+                'products' => ['total' => $totalProducts],
+                'orders'   => [
+                    'total'     => $totalOrders,
+                    'pending'   => $pendingOrders,
                     'completed' => $completedOrders,
                 ],
-                'sales' => [
-                    'total' => $totalSales,
-                    'by_month' => $salesByMonth,
-                ],
+                'sales'    => ['total' => $totalSales, 'by_month' => $salesByMonth],
                 'top_products' => $topProducts,
             ],
             'message' => 'Estadísticas del sistema'
         ], Response::HTTP_OK);
     }
-    //Listar todos los usuarios con filtros opcionales
+
     public function users(Request $request)
     {
         $query = User::with('rank', 'roles');
-        
-        // Filtro por tipo de usuario
-        if ($request->has('user_type') && $request->user_type) {
-            $query->where('user_type', $request->user_type);
+
+        // FIX: ya no existe user_type → filtrar por rol
+        if ($request->filled('user_type')) {
+            $query->whereHas('roles', fn($q) => $q->where('name', $request->user_type));
         }
-        
-        // Filtro por rol
-        if ($request->has('role') && $request->role) {
-            $query->whereHas('roles', function ($q) use ($request) {
-                $q->where('name', $request->role);
-            });
+
+        if ($request->filled('role')) {
+            $query->whereHas('roles', fn($q) => $q->where('name', $request->role));
         }
-        
-        // Búsqueda por nombre o email
-        if ($request->has('search') && $request->search) {
+
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('email', 'LIKE', "%{$search}%")
-                  ->orWhere('phone', 'LIKE', "%{$search}%");
-            });
+            $query->where(fn($q) => $q
+                ->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('email', 'LIKE', "%{$search}%")
+                ->orWhere('phone', 'LIKE', "%{$search}%")
+            );
         }
-        
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         return response()->json([
-            'datos' => $users,
+            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
             'message' => 'Lista de usuarios'
-        ], 200);
-    }
-
-    //Ver detalles de un usuario específico
-    public function showUser(User $user)
-    {
-        $user->load('rank', 'roles', 'orders', 'accumulatedPurchases');
-        
-        // Estadísticas del usuario
-        $totalOrders = $user->orders()->count();
-        $totalSpent = $user->orders()->where('status', 'completed')->sum('total');
-        $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
-        
-        return response()->json([
-            'datos' => [
-                'user' => $user,
-                'statistics' => [
-                    'total_orders' => $totalOrders,
-                    'total_spent' => $totalSpent,
-                    'average_order' => $averageOrder,
-                ]
-            ],
-            'message' => 'Detalles del usuario'
-        ], 200);
-    }
-
-    //Crear un nuevo usuario (admin)
-    public function createUser(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'whatsapp' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'company_name' => 'nullable|string|max:255',
-            'user_type' => 'required|in:final,mayorista',
-            'access_code' => 'nullable|string|size:6',
-            'rank_id' => 'nullable|exists:ranks,id',
-            'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles,id'
-        ]);
-        
-        DB::beginTransaction();
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'phone' => $request->phone,
-                'whatsapp' => $request->whatsapp,
-                'address' => $request->address,
-                'company_name' => $request->company_name,
-                'user_type' => $request->user_type,
-                'access_code' => $request->access_code,
-                'rank_id' => $request->rank_id,
-            ]);
-            
-            // Asignar roles si se proporcionaron
-            if ($request->has('roles')) {
-                $user->roles()->attach($request->roles, ['assigned_at' => now()]);
-            }
-            
-            DB::commit();
-            
-            return response()->json([
-                'datos' => $user->load('roles', 'rank'),
-                'message' => 'Usuario creado exitosamente'
-            ], Response::HTTP_CREATED);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Error al crear usuario: ' . $e->getMessage()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-    //Actualizar un usuario
-    public function updateUser(Request $request, User $user)
-    {
-        $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'whatsapp' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'company_name' => 'nullable|string|max:255',
-            'user_type' => 'sometimes|in:final,mayorista',
-            'access_code' => 'nullable|string|size:6',
-            'rank_id' => 'nullable|exists:ranks,id',
-            'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles,id'
-        ]);
-        
-        DB::beginTransaction();
-        try {
-            $data = $request->except(['password', 'roles']);
-            
-            if ($request->has('password') && $request->password) {
-                $data['password'] = Hash::make($request->password);
-            }
-            
-            $user->update($data);
-            
-            // Actualizar roles si se proporcionaron
-            if ($request->has('roles')) {
-                $user->roles()->syncWithPivotValues($request->roles, ['assigned_at' => now()]);
-            }
-            
-            DB::commit();
-            
-            return response()->json([
-                'datos' => $user->load('roles', 'rank'),
-                'message' => 'Usuario actualizado exitosamente'
-            ], Response::HTTP_OK);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Error al actualizar usuario: ' . $e->getMessage()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-    //Eliminar un usuario (soft delete o hard delete)
-    public function deleteUser(User $user, Request $request)
-    {
-        $force = $request->input('force', false);
-        
-        if ($force) {
-            $user->forceDelete();
-            $message = 'Usuario eliminado permanentemente';
-        } else {
-            $user->delete();
-            $message = 'Usuario eliminado (puede restaurarse)';
-        }
-        
-        return response()->json([
-            'message' => $message
         ], Response::HTTP_OK);
     }
 
-    //Listar todos los productos (admin view)
+    public function showUser(User $user)
+    {
+        $user->load('rank', 'roles', 'orders', 'accumulatedPurchases', 'billingInfo');
+
+        $totalOrders = $user->orders()->count();
+        $totalSpent  = $user->orders()->where('status', 'delivered')->sum('total'); // FIX: 'completed' → 'delivered'
+        $averageOrder= $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
+
+        return response()->json([
+            'datos' => [
+                'user'       => $user,
+                'statistics' => [
+                    'total_orders' => $totalOrders,
+                    'total_spent'  => $totalSpent,
+                    'average_order'=> $averageOrder,
+                ],
+            ],
+            'message' => 'Detalles del usuario'
+        ], Response::HTTP_OK);
+    }
+
+    public function createUser(Request $request)
+    {
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:8',
+            'phone'         => 'nullable|string|max:20',
+            'whatsapp'      => 'nullable|string|max:20',
+            'access_code'   => 'nullable|string|size:6',
+            'rank_id'       => 'nullable|exists:ranks,id',
+            'roles'         => 'nullable|array',
+            'roles.*'       => 'exists:roles,id',
+            // FIX: billing_info como objeto separado
+            'billing.address'      => 'nullable|string',
+            'billing.company_name' => 'nullable|string|max:150',
+            'billing.nit'          => 'nullable|string|max:20',
+            'billing.business_name'=> 'nullable|string|max:150',
+            'billing.whatsapp'     => 'nullable|string|max:20',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name'        => $request->name,
+                'email'       => $request->email,
+                'password'    => Hash::make($request->password),
+                'phone'       => $request->phone,
+                'whatsapp'    => $request->whatsapp,
+                'access_code' => $request->access_code,
+                'rank_id'     => $request->rank_id,
+                // FIX: eliminados user_type, address, company_name
+            ]);
+
+            if ($request->has('roles')) {
+                $user->roles()->attach($request->roles, ['assigned_at' => now()]);
+            }
+
+            // FIX: crear billing_info si viene en el request
+            if ($request->has('billing')) {
+                BillingInfo::create(array_merge(
+                    ['user_id' => $user->id, 'is_default' => true],
+                    $request->billing
+                ));
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'datos'   => $user->load('roles', 'rank', 'billingInfo'),
+                'message' => 'Usuario creado exitosamente'
+            ], Response::HTTP_CREATED);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al crear usuario: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name'          => 'sometimes|string|max:255',
+            'email'         => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'password'      => 'nullable|string|min:8',
+            'phone'         => 'nullable|string|max:20',
+            'whatsapp'      => 'nullable|string|max:20',
+            'access_code'   => 'nullable|string|size:6',
+            'rank_id'       => 'nullable|exists:ranks,id',
+            'roles'         => 'nullable|array',
+            'roles.*'       => 'exists:roles,id',
+            'billing.address'      => 'nullable|string',
+            'billing.company_name' => 'nullable|string|max:150',
+            'billing.nit'          => 'nullable|string|max:20',
+            'billing.business_name'=> 'nullable|string|max:150',
+            'billing.whatsapp'     => 'nullable|string|max:20',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $data = $request->only(['name', 'email', 'phone', 'whatsapp', 'access_code', 'rank_id']);
+            // FIX: eliminados user_type, address, company_name
+
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user->update($data);
+
+            if ($request->has('roles')) {
+                $user->roles()->syncWithPivotValues($request->roles, ['assigned_at' => now()]);
+            }
+
+            // FIX: actualizar billing_info default si viene
+            if ($request->has('billing')) {
+                $billing = BillingInfo::where('user_id', $user->id)->where('is_default', true)->first();
+                if ($billing) {
+                    $billing->update($request->billing);
+                } else {
+                    BillingInfo::create(array_merge(
+                        ['user_id' => $user->id, 'is_default' => true],
+                        $request->billing
+                    ));
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'datos'   => $user->load('roles', 'rank', 'billingInfo'),
+                'message' => 'Usuario actualizado exitosamente'
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al actualizar usuario: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function deleteUser(User $user, Request $request)
+    {
+        $force = $request->boolean('force', false);
+        $user->delete();
+
+        return response()->json([
+            'message' => $force ? 'Usuario eliminado permanentemente' : 'Usuario eliminado'
+        ], Response::HTTP_OK);
+    }
+
     public function products(Request $request)
     {
-        $query = Product::with('user');
-        
-        // Filtro por stock bajo
+        $query = Product::with('brand', 'category'); // FIX: era 'user' → Product no tiene user
+
         if ($request->has('low_stock')) {
-            $threshold = $request->input('threshold', 10);
-            $query->where('stock', '<=', $threshold);
+            $query->where('stock', '<=', $request->input('threshold', 10));
         }
-        
-        // Búsqueda
-        if ($request->has('search') && $request->search) {
+
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('description', 'LIKE', "%{$search}%");
-            });
+            $query->where(fn($q) => $q
+                ->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%")
+            );
         }
-        
-        $products = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         return response()->json([
-            'datos' => $products,
+            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
             'message' => 'Lista de productos'
         ], Response::HTTP_OK);
     }
 
-    //Listar todos los pedidos (admin view)
     public function orders(Request $request)
     {
-        $query = Order::with('user', 'products');
-        
-        // Filtro por estado
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
-        }
-        
-        // Filtro por rango de fechas
-        if ($request->has('from_date') && $request->from_date) {
-            $query->whereDate('created_at', '>=', $request->from_date);
-        }
-        
-        if ($request->has('to_date') && $request->to_date) {
-            $query->whereDate('created_at', '<=', $request->to_date);
-        }
-        
-        // Filtro por usuario
-        if ($request->has('user_id') && $request->user_id) {
-            $query->where('user_id', $request->user_id);
-        }
-        
-        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+        $query = Order::with('user', 'items.product', 'billingInfo'); // FIX: era 'products' → es items.product + billingInfo
+
+        if ($request->filled('status'))    $query->where('status', $request->status);
+        if ($request->filled('from_date')) $query->whereDate('created_at', '>=', $request->from_date);
+        if ($request->filled('to_date'))   $query->whereDate('created_at', '<=', $request->to_date);
+        if ($request->filled('user_id'))   $query->where('user_id', $request->user_id);
+
         return response()->json([
-            'datos' => $orders,
+            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
             'message' => 'Lista de pedidos'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
-    //Actualizar estado de un pedido
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,shipped,completed,cancelled'
+            'status' => 'required|in:pending,paid,shipped,delivered,cancelled' // FIX: era 'processing,completed'
         ]);
-        
+
         $order->update(['status' => $request->status]);
-        
-        return response()->json([
-            'datos' => $order,
-            'message' => 'Estado del pedido actualizado'
-        ], 200);
+
+        return response()->json(['datos' => $order, 'message' => 'Estado del pedido actualizado'], Response::HTTP_OK);
     }
 
-    //Estadísticas de ventas
     public function salesReport(Request $request)
     {
-        $request->validate([
-            'period' => 'nullable|in:day,week,month,year'
-        ]);
-        
+        $request->validate(['period' => 'nullable|in:day,week,month,year']);
         $period = $request->input('period', 'month');
-        
-        switch ($period) {
-            case 'day':
-                $groupBy = 'HOUR';
-                $dateFormat = '%H:00';
-                $startDate = now()->startOfDay();
-                break;
-            case 'week':
-                $groupBy = 'DAY';
-                $dateFormat = '%W';
-                $startDate = now()->startOfWeek();
-                break;
-            case 'month':
-                $groupBy = 'DAY';
-                $dateFormat = '%d';
-                $startDate = now()->startOfMonth();
-                break;
-            case 'year':
-                $groupBy = 'MONTH';
-                $dateFormat = '%M';
-                $startDate = now()->startOfYear();
-                break;
-            default:
-                $groupBy = 'DAY';
-                $dateFormat = '%Y-%m-%d';
-                $startDate = now()->subDays(30);
-        }
-        
-        $sales = Order::where('status', 'completed')
+
+        [$groupBy, $dateFormat, $startDate] = match($period) {
+            'day'   => ['HOUR', '%H:00',      now()->startOfDay()],
+            'week'  => ['DAY',  '%W',          now()->startOfWeek()],
+            'year'  => ['MONTH','%M',          now()->startOfYear()],
+            default => ['DAY',  '%d',          now()->startOfMonth()],
+        };
+
+        $sales = Order::where('status', 'delivered') // FIX: 'completed' → 'delivered'
             ->where('created_at', '>=', $startDate)
             ->select(
                 DB::raw("DATE_FORMAT(created_at, '{$dateFormat}') as period_label"),
@@ -373,125 +320,54 @@ class AdminController extends Controller
                 DB::raw('SUM(total) as total_sales')
             )
             ->groupBy('period', 'period_label')
-            ->orderBy('period', 'asc')
+            ->orderBy('period')
             ->get();
-        
+
         return response()->json([
             'datos' => [
-                'period' => $period,
-                'data' => $sales,
-                'summary' => [
-                    'total_orders' => $sales->sum('total_orders'),
-                    'total_sales' => $sales->sum('total_sales'),
-                ]
+                'period'  => $period,
+                'data'    => $sales,
+                'summary' => ['total_orders' => $sales->sum('total_orders'), 'total_sales' => $sales->sum('total_sales')],
             ],
             'message' => 'Reporte de ventas'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
-    //Reporte de ventas usando el procedimiento almacenado
+    // Procedimientos almacenados (sin cambios, dependen del SP)
     public function salesReportProcedure(Request $request)
     {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'nullable|string|in:pending,processing,shipped,completed,cancelled'
-        ]);
-        
-        $results = DB::select('CALL sp_sales_report(?, ?, ?)', [
-            $request->start_date,
-            $request->end_date,
-            $request->status
-        ]);
-        
-        return response()->json([
-            'datos' => $results,
-            'message' => 'Reporte de ventas generado'
-        ], Response::HTTP_OK);
+        $request->validate(['start_date' => 'required|date', 'end_date' => 'required|date|after_or_equal:start_date', 'status' => 'nullable|string']);
+        $results = DB::select('CALL sp_sales_report(?, ?, ?)', [$request->start_date, $request->end_date, $request->status]);
+        return response()->json(['datos' => $results, 'message' => 'Reporte de ventas generado'], Response::HTTP_OK);
     }
-    
-    //Top productos usando el procedimiento almacenado
+
     public function topProductsProcedure(Request $request)
     {
-        $request->validate([
-            'limit' => 'nullable|integer|min:1|max:100',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date'
-        ]);
-        
-        $limit = $request->input('limit', 10);
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        
-        $results = DB::select('CALL sp_top_products(?, ?, ?)', [
-            $limit,
-            $startDate,
-            $endDate
-        ]);
-        
-        return response()->json([
-            'datos' => $results,
-            'message' => 'Top productos más vendidos'
-        ], Response::HTTP_OK);
+        $request->validate(['limit' => 'nullable|integer|min:1|max:100', 'start_date' => 'nullable|date', 'end_date' => 'nullable|date']);
+        $results = DB::select('CALL sp_top_products(?, ?, ?)', [$request->input('limit', 10), $request->start_date, $request->end_date]);
+        return response()->json(['datos' => $results, 'message' => 'Top productos más vendidos'], Response::HTTP_OK);
     }
-    
-    //Estadísticas de clientes usando el procedimiento almacenado
+
     public function customerStatisticsProcedure(Request $request)
     {
-        $request->validate([
-            'min_orders' => 'nullable|integer|min:0',
-            'min_spent' => 'nullable|numeric|min:0'
-        ]);
-        
-        $minOrders = $request->input('min_orders', 0);
-        $minSpent = $request->input('min_spent', 0);
-        
-        $results = DB::select('CALL sp_customer_statistics(?, ?)', [
-            $minOrders,
-            $minSpent
-        ]);
-        
-        return response()->json([
-            'datos' => $results,
-            'message' => 'Estadísticas de clientes'
-        ], Response::HTTP_OK);
+        $request->validate(['min_orders' => 'nullable|integer|min:0', 'min_spent' => 'nullable|numeric|min:0']);
+        $results = DB::select('CALL sp_customer_statistics(?, ?)', [$request->input('min_orders', 0), $request->input('min_spent', 0)]);
+        return response()->json(['datos' => $results, 'message' => 'Estadísticas de clientes'], Response::HTTP_OK);
     }
-    
-    //Alertas de inventario usando el procedimiento almacenado
+
     public function inventoryAlertsProcedure(Request $request)
     {
-        $request->validate([
-            'threshold' => 'nullable|integer|min:0'
-        ]);
-        
-        $threshold = $request->input('threshold', 10);
-        
-        $results = DB::select('CALL sp_inventory_management(?)', [$threshold]);
-        
-        return response()->json([
-            'datos' => $results,
-            'message' => 'Alertas de inventario'
-        ], Response::HTTP_OK);
+        $request->validate(['threshold' => 'nullable|integer|min:0']);
+        $results = DB::select('CALL sp_inventory_management(?)', [$request->input('threshold', 10)]);
+        return response()->json(['datos' => $results, 'message' => 'Alertas de inventario'], Response::HTTP_OK);
     }
-    
-    //Dashboard ejecutivo usando el procedimiento almacenado
+
     public function executiveDashboardProcedure(Request $request)
     {
-        $request->validate([
-            'days' => 'nullable|integer|min:1|max:365'
-        ]);
-        
-        $days = $request->input('days', 30);
-        
-        $results = DB::select('CALL sp_executive_dashboard(?)', [$days]);
-        
-        $dashboard = [
-            'summary' => isset($results[0]) ? $results[0] : null,
-            'top_products' => isset($results[1]) ? array_slice($results, 1, 5) : []
-        ];
-        
+        $request->validate(['days' => 'nullable|integer|min:1|max:365']);
+        $results = DB::select('CALL sp_executive_dashboard(?)', [$request->input('days', 30)]);
         return response()->json([
-            'datos' => $dashboard,
+            'datos'   => ['summary' => $results[0] ?? null, 'top_products' => array_slice($results, 1, 5)],
             'message' => 'Dashboard ejecutivo'
         ], Response::HTTP_OK);
     }
