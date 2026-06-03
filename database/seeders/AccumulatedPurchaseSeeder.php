@@ -20,36 +20,31 @@ class AccumulatedPurchaseSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            // Tomar órdenes pagadas o entregadas del usuario
             $orders = Order::where('user_id', $user->id)
                 ->whereIn('status', ['paid', 'delivered'])
                 ->get();
 
             if ($orders->isEmpty()) continue;
 
-            // Agrupar por mes y acumular totales
-            $grouped = $orders->groupBy(function ($order) {
-                return Carbon::parse($order->created_at)->startOfMonth()->toDateString();
-            });
+            // Agrupar por mes y acumular
+            $grouped = $orders->groupBy(fn($o) =>
+                Carbon::parse($o->created_at)->startOfMonth()->toDateString()
+            );
 
             foreach ($grouped as $monthDate => $monthOrders) {
-                $date    = Carbon::parse($monthDate);
-                $total   = $monthOrders->sum('total');
-
                 AccumulatedPurchase::updateOrCreate(
                     [
                         'user_id' => $user->id,
-                        'month'   => $date->startOfMonth()->toDateString(),
+                        'month'   => $monthDate,
+                        // ELIMINADO: quarter y year → son accessors calculados
                     ],
                     [
-                        'quarter'         => $date->startOfQuarter()->toDateString(),
-                        'year'            => $date->startOfYear()->toDateString(),
-                        'total_purchases' => $total,
+                        'total_purchases' => $monthOrders->sum('total'),
                     ]
                 );
             }
         }
 
-        $this->command->info('Compras acumuladas generadas correctamente.');
+        $this->command->info('Compras acumuladas generadas.');
     }
 }
