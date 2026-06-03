@@ -10,43 +10,35 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
 
-/*
-|--------------------------------------------------------------------------
-| 1. RUTAS PÚBLICAS (sin autenticación)
-|--------------------------------------------------------------------------
-*/
 
+//1. RUTAS PÚBLICAS (sin autenticación)
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
-// Productos (solo lectura pública)
+// Productos (solo lectura publica)
 Route::get('/products',        [ProductController::class, 'index']);
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 
-// Rangos (solo lectura pública)
+// Rangos (solo lectura publica)
 Route::get('/ranks',         [RankController::class, 'index']);
 Route::get('/ranks/{rank}',  [RankController::class, 'show']);
 
-/*
-|--------------------------------------------------------------------------
-| 2. RUTAS PROTEGIDAS (requieren auth:sanctum)
-|--------------------------------------------------------------------------
-*/
+//2. RUTAS PROTEGIDAS (requieren auth:sanctum)
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // ── Auth ──────────────────────────────────────────────────────
+    //Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'user']);
 
-    // ── Productos (crear, editar, eliminar → solo admin vía policy) 
+    //Productos (crear, editar, eliminar → solo admin via policy)
     Route::post('/products',              [ProductController::class, 'store']);
     Route::put('/products/{product}',     [ProductController::class, 'update']);
     Route::delete('/products/{product}',  [ProductController::class, 'destroy']);
 
-    // ── Carrito ───────────────────────────────────────────────────
+    //Carrito
     Route::prefix('cart')->group(function () {
         Route::get('/',              [CartController::class, 'index']);
         Route::post('/add',          [CartController::class, 'add']);
@@ -55,18 +47,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/clear',      [CartController::class, 'clear']);
     });
 
-    // ── Pedidos ───────────────────────────────────────────────────
+    //Pedidos 
     Route::prefix('orders')->group(function () {
         Route::get('/',              [OrderController::class, 'index']);
         Route::post('/',             [OrderController::class, 'store']);
         Route::get('/{order}',       [OrderController::class, 'show']);
         Route::patch('/{order}/cancel', [OrderController::class, 'cancel']);
 
-        // Ticket de un pedido específico
+        //Ticket de un pedido especifico
         Route::get('/{order}/ticket', [TicketController::class, 'showByOrder']);
     });
 
-    // ── Datos de facturación ──────────────────────────────────────
+    //Datos de facturacion
     Route::prefix('billing-info')->group(function () {
         Route::get('/',                      [BillingInfoController::class, 'index']);
         Route::post('/',                     [BillingInfoController::class, 'store']);
@@ -76,22 +68,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{billingInfo}',      [BillingInfoController::class, 'destroy']);
     });
 
-    // ── Tickets del usuario ───────────────────────────────────────
+    //Tickets del usuario 
     Route::prefix('tickets')->group(function () {
         Route::get('/',            [TicketController::class, 'index']);
         Route::get('/{ticket}',    [TicketController::class, 'show']);
     });
 
-    // ── Rangos (crear, editar, eliminar → solo admin vía policy) ─
+    //Rangos (crear, editar, eliminar → solo admin via policy)
     Route::post('/ranks',          [RankController::class, 'store']);
     Route::put('/ranks/{rank}',    [RankController::class, 'update']);
     Route::delete('/ranks/{rank}', [RankController::class, 'destroy']);
 
-    /*
-    |----------------------------------------------------------------------
-    | 3. RUTAS DE ADMINISTRADOR (auth:sanctum + middleware admin)
-    |----------------------------------------------------------------------
-    */
+    //3. RUTAS DE ADMINISTRADOR (auth:sanctum + middleware admin)
     Route::middleware('admin')->prefix('admin')->group(function () {
 
         // Dashboard y reportes
@@ -105,21 +93,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/inventory',     [AdminController::class, 'inventoryAlertsProcedure']);
         Route::get('/reports/executive',     [AdminController::class, 'executiveDashboardProcedure']);
 
-        // Gestión de usuarios
+        // Gestion de usuarios
         Route::get('/users',              [AdminController::class, 'users']);
         Route::post('/users',             [AdminController::class, 'createUser']);
         Route::get('/users/{user}',       [AdminController::class, 'showUser']);
         Route::put('/users/{user}',       [AdminController::class, 'updateUser']);
         Route::delete('/users/{user}',    [AdminController::class, 'deleteUser']);
 
-        // Gestión de productos (admin view)
+        // Gestion de productos (admin view)
         Route::get('/products',           [AdminController::class, 'products']);
 
-        // Gestión de pedidos (admin view)
+        // Gestion de pedidos (admin view)
         Route::get('/orders',                          [AdminController::class, 'orders']);
         Route::patch('/orders/{order}/status',         [AdminController::class, 'updateOrderStatus']);
 
-        // Gestión de tickets
+        // Gestion de tickets
         Route::get('/tickets',                         [TicketController::class, 'adminIndex']);
         Route::post('/orders/{order}/ticket',          [TicketController::class, 'generate']);
     });
