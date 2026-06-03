@@ -9,75 +9,54 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable =[
+    protected $fillable = [
         'user_id',
-        'order_number', //numero unico del pedido
-        'total', //total a pagar
-        'status', //pendiente, pagado, enviado, entregado, cancelado
-        'payment_method', 
-        'customer_whatsapp', //whatsapp del cliente
-        'nit',
-        'business_name', //razon social
-        'shipping_address', //dirección de envio
+        'billing_info_id', // NUEVO: FK a billing_info (reemplaza nit, business_name, shipping_address, customer_whatsapp)
+        'order_number',
+        'total',
+        'status',
+        'payment_method',
     ];
 
-    //Relacion: Un pedido pertenece a 1 usuario
-    public function user(){
+    // ─── Relaciones ───────────────────────────────────────────
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    //Relacion: Un pedido tiene N items
+    // NUEVO: acceso directo a datos de facturación
+    public function billingInfo()
+    {
+        return $this->belongsTo(BillingInfo::class);
+    }
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    //Relacion: Un pedido tiene 1 ticket
-    public function ticket(){
+    public function ticket()
+    {
         return $this->hasOne(Ticket::class);
     }
-    
-    //Verificar si el pedido está pendiente
-    public function isPending()
+
+    // ─── Helpers de estado ────────────────────────────────────
+
+    public function isPending(): bool   { return $this->status === 'pending'; }
+    public function isPaid(): bool      { return $this->status === 'paid'; }
+    public function isShipped(): bool   { return $this->status === 'shipped'; }
+    public function isDelivered(): bool { return $this->status === 'delivered'; }
+    public function isCancelled(): bool { return $this->status === 'cancelled'; }
+
+    public function changeStatus(string $newStatus): void
     {
-        return $this->status === 'pending';
+        $this->update(['status' => $newStatus]);
     }
 
-    //Verificar si el pedido esta pagado
-    public function isPaid()
+    public static function generateOrderNumber(): string
     {
-        return $this->status === 'paid';
-    }
-
-    //Verificar si el pedido esta enviado
-    public function isShipped()
-    {
-        return $this->status === 'shipped';
-    }
-
-    //Verificar si el pedido esta entregado
-    public function isDelivered()
-    {
-        return $this->status === 'delivered';
-    }
-
-    //Verificar si el pedido esta cancelado
-    public function isCancelled()
-    {
-        return $this->status === 'cancelled';
-    }
-
-    //Cambiar el estado del pedido
-    public function changeStatus($newStatus)
-    {
-        $this->status = $newStatus;
-        $this->save();
-    }
-
-    //Generar numero de pedido automáticamente
-    public static function generateOrderNumber()
-    {
-        $last = self::latest('id')->first();
+        $last   = self::latest('id')->first();
         $number = $last ? intval(substr($last->order_number, 4)) + 1 : 1;
         return 'ORD-' . str_pad($number, 8, '0', STR_PAD_LEFT);
     }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Rank;
 
 class User extends Authenticatable
 {
@@ -19,29 +18,26 @@ class User extends Authenticatable
         'password',
         'phone',
         'whatsapp',
-        'address',
-        'company_name',
-        'user_type', // tipo: final, mayorista
-        'access_code', // codigo de acceso (de 6 digitos)
-        'rank_id'
+        'access_code',
+        'rank_id',
+        // ELIMINADO: user_type    → usar hasRole('mayorista')
+        // ELIMINADO: address      → usar billingInfo()
+        // ELIMINADO: company_name → usar billingInfo()
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    // Relacion: Un usuario tiene un rango
+    // ─── Relaciones ───────────────────────────────────────────
+
     public function rank()
     {
         return $this->belongsTo(Rank::class);
     }
 
-    // Relacion: un usuario tiene muchos roles (muchos a muchos)
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_role')
@@ -49,52 +45,58 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
-    // Relacion: Un usuario tiene 1 carrito
     public function cart()
     {
         return $this->hasOne(Cart::class);
     }
 
-    // Relacion: Un usuario tiene muchos pedidos
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    // Relacion: Un usuario tiene muchas compras acumuladas
     public function accumulatedPurchases()
     {
         return $this->hasMany(AccumulatedPurchase::class);
     }
 
-    // Verificar si es administrador
-    public function isAdmin()
+    // NUEVO: datos de facturación separados del usuario
+    public function billingInfo()
     {
-        return $this->roles()->where('name', 'admin')->exists();
+        return $this->hasMany(BillingInfo::class);
     }
 
-    // Verificar si es mayorista
-    public function isWholesaler()
+    public function defaultBillingInfo()
     {
-        return $this->user_type === 'mayorista';
+        return $this->hasOne(BillingInfo::class)->where('is_default', true);
     }
 
-    // Verificar si es cliente final
-    public function isFinalCustomer()
+    // ─── Helpers de rol (reemplazan user_type) ────────────────
+
+    public function hasRole(string $role): bool
     {
-        return $this->user_type === 'final';
+        return $this->roles()->where('name', $role)->exists();
     }
 
-    /**
-     * Precio final según el tipo de usuario
-     * Mayorista: precio base × 0.90 (10% descuento)
-     * Cliente final: precio base
-     */
-    public function getFinalPrice($basePrice)
+    public function isAdmin(): bool
     {
-        if ($this->isWholesaler()) {
-            return $basePrice * 0.90; // 10% descuento
-        }
-        return $basePrice;
+        return $this->hasRole('admin');
+    }
+
+    // REEMPLAZA: $user->user_type === 'mayorista'
+    public function isWholesaler(): bool
+    {
+        return $this->hasRole('mayorista');
+    }
+
+    // REEMPLAZA: $user->user_type === 'final'
+    public function isFinalCustomer(): bool
+    {
+        return $this->hasRole('cliente');
+    }
+
+    public function getFinalPrice($basePrice): float
+    {
+        return $this->isWholesaler() ? $basePrice * 0.90 : $basePrice;
     }
 }
