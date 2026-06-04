@@ -14,47 +14,61 @@ class Product extends Model
         'description',
         'base_price',
         'stock',
-        'image', // ruta de la imagen
-        'sku', //codigo unico del producto
-        'warranty_days', //dias de garantia
-        'brand_id', //marca
-        'category_id'
+        'image1',
+        'image2',
+        'image3',
+        'image4',
+        'sku',
+        'warranty_days',
+        'brand_id',
+        'category_id',
     ];
 
-    //Relacion: Un producto tiene 1 marca
+    // Relaciones
     public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
-    
-    //Relacion: Un producto tiene 1 categoria
-    public function category(){
+
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    //Relacion: Un producto tiene n items en el carrito
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
     }
 
-    //Relacion: Un producto tienen n items en pedidos
-    public function orderItems(){
+    public function orderItems()
+    {
         return $this->hasMany(OrderItem::class);
     }
-    
-    //Stock
-    public function hasStock($quantity){
+
+    // Stock helpers
+    public function hasStock($quantity)
+    {
         return $this->stock >= $quantity;
     }
 
-    //Quitamos el stock
-    public function decrementStock($quantity){
+    public function decrementStock($quantity)
+    {
         $this->decrement('stock', $quantity);
     }
 
-    //Aumentar stock
-    public function incrementStock($quantity){
+    public function incrementStock($quantity)
+    {
         $this->increment('stock', $quantity);
+    }
+
+    // Devuelve solo las imagenes que tienen valor
+    public function getImagesAttribute(): array
+    {
+        return array_values(array_filter([
+            $this->image1,
+            $this->image2,
+            $this->image3,
+            $this->image4,
+        ]));
     }
 }
