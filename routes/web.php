@@ -35,6 +35,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('orders/{order}/generate-ticket', [TicketController::class, 'generate']);
     });
 });
+//Para View
 Route::get('/', function () {
     return view('index');
 });
+// NUEVA: Ruta del Catálogo (Muestra los productos cargados)
+Route::get('/productos', function () {
+    // Nota: Aquí tus compañeros luego cambiarán esto para pasarle la variable $images desde el controlador
+    return view('productos'); 
+});
+// NUEVA: Ruta para la sección de Nosotros
+Route::get('/nosotros', function () {
+    return view('nosotros');
+})->name('nosotros');
+Route::get('/contactanos', function () {
+    return view('contactanos');
+})->name('contactanos');
