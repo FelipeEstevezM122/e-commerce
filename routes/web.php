@@ -35,3 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('orders/{order}/generate-ticket', [TicketController_con_policy::class, 'generate']);
     });
 });
+Route::get('/', function () {
+    return view('index');
+});
