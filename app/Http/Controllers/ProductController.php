@@ -3,36 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
+    protected Cloudinary $cloudinary;
+
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except('index', 'show', 'search');
+
+        $this->cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => ['secure' => true],
+        ]);
     }
 
     public function index()
     {
-        // FIX: era with('user') → Product no tiene relación user; usa brand y category
         $products = Product::with('brand', 'category')->get();
-        return response()->json(['datos' => $products, 'message' => 'Lista de productos'], Response::HTTP_OK);
+        return response()->json([
+            'datos'   => $products,
+            'message' => 'Lista de productos'
+        ], Response::HTTP_OK);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'         => 'required|string|max:150',
-            'description'  => 'nullable|string',
-            'base_price'   => 'required|numeric|min:0', // FIX: era 'price' → es base_price
-            'stock'        => 'required|integer|min:0',
-            'sku'          => 'required|string|max:50|unique:products,sku',
-            'warranty_days'=> 'nullable|integer|min:0',
-            'brand_id'     => 'nullable|exists:brands,id',
-            'category_id'  => 'nullable|exists:categories,id',
-            'image'        => 'nullable|string',
+            'name'          => 'required|string|max:150',
+            'description'   => 'nullable|string',
+            'base_price'    => 'required|numeric|min:0',
+            'stock'         => 'required|integer|min:0',
+            'sku'           => 'required|string|max:50|unique:products,sku',
+            'warranty_days' => 'nullable|integer|min:0',
+            'brand_id'      => 'nullable|exists:brands,id',
+            'category_id'   => 'nullable|exists:categories,id',
+            'image1'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
+
+        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+            if ($request->hasFile($field)) {
+                $validated[$field] = $this->uploadToCloudinary(
+                    $request->file($field),
+                    $validated['sku']
+                );
+            }
+        }
 
         $product = Product::create($validated);
 
@@ -45,7 +71,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         return response()->json([
-            'datos'   => $product->load('brand', 'category'), // FIX: era 'user'
+            'datos'   => $product->load('brand', 'category'),
             'message' => 'Producto mostrado con éxito'
         ], Response::HTTP_OK);
     }
@@ -55,7 +81,10 @@ class ProductController extends Controller
         $query = $request->get('q', '');
 
         if (empty($query)) {
-            return response()->json(['datos' => [], 'message' => 'Debe proporcionar un término de búsqueda'], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                'datos'   => [],
+                'message' => 'Debe proporcionar un término de búsqueda'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $products = Product::with('brand', 'category')
@@ -63,22 +92,42 @@ class ProductController extends Controller
             ->orWhere('description', 'LIKE', "%{$query}%")
             ->get();
 
-        return response()->json(['datos' => $products, 'message' => "Resultados para: {$query}"], Response::HTTP_OK);
+        return response()->json([
+            'datos'   => $products,
+            'message' => "Resultados para: {$query}"
+        ], Response::HTTP_OK);
     }
 
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'name'         => 'sometimes|string|max:150',
-            'description'  => 'nullable|string',
-            'base_price'   => 'sometimes|numeric|min:0', // FIX: era 'price'
-            'stock'        => 'sometimes|integer|min:0',
-            'sku'          => 'sometimes|string|max:50|unique:products,sku,' . $product->id,
-            'warranty_days'=> 'nullable|integer|min:0',
-            'brand_id'     => 'nullable|exists:brands,id',
-            'category_id'  => 'nullable|exists:categories,id',
-            'image'        => 'nullable|string',
+            'name'          => 'sometimes|string|max:150',
+            'description'   => 'nullable|string',
+            'base_price'    => 'sometimes|numeric|min:0',
+            'stock'         => 'sometimes|integer|min:0',
+            'sku'           => 'sometimes|string|max:50|unique:products,sku,' . $product->id,
+            'warranty_days' => 'nullable|integer|min:0',
+            'brand_id'      => 'nullable|exists:brands,id',
+            'category_id'   => 'nullable|exists:categories,id',
+            'image1'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
+
+        $sku = $validated['sku'] ?? $product->sku;
+
+        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+            if ($request->hasFile($field)) {
+                if ($product->$field) {
+                    $this->deleteFromCloudinary($product->$field);
+                }
+                $validated[$field] = $this->uploadToCloudinary(
+                    $request->file($field),
+                    $sku
+                );
+            }
+        }
 
         $product->update($validated);
 
@@ -90,7 +139,39 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+            if ($product->$field) {
+                $this->deleteFromCloudinary($product->$field);
+            }
+        }
+
         $product->delete();
-        return response()->json(['message' => 'Producto eliminado con éxito'], Response::HTTP_OK);
+
+        return response()->json([
+            'message' => 'Producto eliminado con éxito'
+        ], Response::HTTP_OK);
+    }
+
+    // ─── Helpers privados ─────────────────────────────────────────
+
+    private function uploadToCloudinary($file, string $sku): string
+    {
+        $result = $this->cloudinary->uploadApi()->upload($file->getRealPath(), [
+            'folder'    => 'casatek/productos/' . $sku,
+            'public_id' => uniqid(),
+        ]);
+
+        return $result['secure_url'];
+    }
+
+    private function deleteFromCloudinary(string $url): void
+    {
+        try {
+            if (preg_match('/\/v\d+\/(.+)\.[a-z]+$/i', $url, $matches)) {
+                $this->cloudinary->uploadApi()->destroy($matches[1]);
+            }
+        } catch (\Exception $e) {
+            // No interrumpir el flujo si falla el borrado
+        }
     }
 }
