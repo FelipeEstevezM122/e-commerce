@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         $orders = $request->user()
             ->orders()
-            ->with('items.product', 'billingInfo') // FIX: agrega billingInfo
+            ->with('items.product', 'billingInfo')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -35,29 +35,11 @@ class OrderController extends Controller
         }
 
         return response()->json([
-            'datos'   => $order->load('items.product', 'billingInfo'), // FIX: agrega billingInfo
+            'datos'   => $order->load('items.product', 'billingInfo'),
             'message' => 'Detalle del pedido'
         ], Response::HTTP_OK);
     }
 
-    /**
-     * Crear un nuevo pedido.
-     *
-     * Espera JSON:
-     * {
-     *   "items": [
-     *     { "product_id": 1, "quantity": 2 }
-     *   ],
-     *   "payment_method": "transferencia",
-     *   "billing_info_id": 3          ← usar uno existente, O enviar datos nuevos:
-     *   "billing": {                  ← crear uno nuevo al momento
-     *     "address": "Calle 123",
-     *     "nit": "123456",
-     *     "business_name": "Mi SRL",
-     *     "whatsapp": "59171234567"
-     *   }
-     * }
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -65,7 +47,6 @@ class OrderController extends Controller
             'items.*.product_id'   => 'required|exists:products,id',
             'items.*.quantity'     => 'required|integer|min:1',
             'payment_method'       => 'required|string|in:transferencia,efectivo,qr,deposito',
-            // FIX: billing_info_id o datos nuevos de billing
             'billing_info_id'      => 'nullable|exists:billing_info,id',
             'billing.address'      => 'nullable|string|max:500',
             'billing.nit'          => 'nullable|string|max:20',
@@ -82,18 +63,30 @@ class OrderController extends Controller
         try {
             // Resolver billing_info
             if ($request->filled('billing_info_id')) {
+                // Usar uno existente (solo los propios del usuario)
                 $billing = BillingInfo::where('id', $request->billing_info_id)
-                    ->where('user_id', $user->id) // seguridad: solo las propias
+                    ->where('user_id', $user->id)
                     ->firstOrFail();
-            } else {
-                // Crear o usar el default
-                $billing = BillingInfo::where('user_id', $user->id)->where('is_default', true)->first();
 
-                if ($request->has('billing')) {
-                    $billing = BillingInfo::create(array_merge(
-                        ['user_id' => $user->id, 'is_default' => false],
-                        $request->billing
-                    ));
+            } elseif ($request->has('billing')) {
+                // Crear uno nuevo en este momento
+                $billing = BillingInfo::create(array_merge(
+                    ['user_id' => $user->id, 'is_default' => false],
+                    $request->billing
+                ));
+
+            } else {
+                // Intentar usar el default guardado
+                $billing = BillingInfo::where('user_id', $user->id)
+                    ->where('is_default', true)
+                    ->first();
+
+                // FIX: si no hay ninguno, error explicito
+                if (!$billing) {
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => 'Debes proporcionar datos de facturación (billing_info_id o billing)'
+                    ], Response::HTTP_UNPROCESSABLE_ENTITY);
                 }
             }
 
@@ -106,9 +99,8 @@ class OrderController extends Controller
                 if (!$product) throw new \Exception("Producto ID {$item['product_id']} no encontrado.");
                 if ($product->stock < $item['quantity']) throw new \Exception("Stock insuficiente para: {$product->name}. Disponible: {$product->stock}");
 
-                // FIX: precio correcto es base_price (no price)
-                $price    = $user->getFinalPrice($product->base_price);
-                $total   += $price * $item['quantity'];
+                $price   = $user->getFinalPrice($product->base_price);
+                $total  += $price * $item['quantity'];
 
                 $orderItemsData[] = [
                     'product_id'         => $product->id,
@@ -120,12 +112,11 @@ class OrderController extends Controller
             }
 
             $order = $user->orders()->create([
-                'billing_info_id' => $billing?->id, // FIX: FK a billing_info
+                'billing_info_id' => $billing->id,
                 'order_number'    => Order::generateOrderNumber(),
                 'total'           => $total,
                 'status'          => 'pending',
                 'payment_method'  => $request->payment_method,
-                // FIX: eliminados customer_whatsapp, nit, business_name, shipping_address
             ]);
 
             foreach ($orderItemsData as $item) {
