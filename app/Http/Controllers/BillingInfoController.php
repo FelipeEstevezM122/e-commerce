@@ -6,7 +6,7 @@ use App\Models\BillingInfo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class BillingInfoController_con_policy extends Controller
+class BillingInfoController extends Controller
 {
     public function __construct()
     {
