@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
-use App\Models\Image; // Crearás este modelo
+use App\Models\Image;
 
 class ImageController extends Controller
 {
