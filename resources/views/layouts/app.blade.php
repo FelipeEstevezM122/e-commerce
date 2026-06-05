@@ -25,13 +25,13 @@
 
 </head>
 
-<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300">
+<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
     <!-- Incluimos el header limpio que optimizamos -->
     @include('partials.header')
 
     <!-- Aquí se insertará mágicamente el contenido de cada página -->
-    <main class="w-full px-4 md:px-8 py-12">
+    <main class="pt-32">
         @yield('contenido')
     </main>
 
