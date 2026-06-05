@@ -48,12 +48,24 @@ Route::get('/productos', function () {
 Route::get('/nosotros', function () {
     return view('nosotros');
 })->name('nosotros');
+//contactanos
 Route::get('/contactanos', function () {
     return view('contactanos');
 })->name('contactanos');
+//iniciarsesion
 Route::get('/iniciarsesion', function () {
     return view('iniciarsesion');
 })->name('iniciarsesion');
+//carrito
 Route::get('/carrito', function () {
     return view('carrito');
 })->name('carrito');
+//registro
+Route::get('/registro', function () {
+    return view('registro');
+})->name('registro');
+//olvidarcontraseña
+// Mostrar el formulario
+Route::get('/recuperar_contraseña', function () {
+    return view('recuperar_contraseña');
+})->name('password.request');

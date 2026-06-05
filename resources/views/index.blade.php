@@ -92,9 +92,6 @@
                     class="slide-item transition-all duration-700 transform opacity-100 scale-100 flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full relative">
                     <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
                         <div class="relative inline-block">
-                            <span
-                                class="absolute -top-12 left-0 text-5xl md:text-7xl font-black text-gray-100/70 tracking-tighter select-none pointer-events-none">Invierte
-                                en</span>
                             <h1
                                 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
                                 Seguridad<br><span class="text-[#22C55E]">Siempre</span>
@@ -122,9 +119,6 @@
                     <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full h-full">
                         <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
                             <div class="relative inline-block">
-                                <span
-                                    class="absolute -top-12 left-0 text-5xl md:text-7xl font-black text-gray-100/70 tracking-tighter select-none pointer-events-none">Invierte
-                                    en</span>
                                 <h1
                                     class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
                                     Seguridad<br><span class="text-[#22C55E]">Siempre</span>
@@ -153,9 +147,6 @@
                     <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full h-full">
                         <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
                             <div class="relative inline-block">
-                                <span
-                                    class="absolute -top-12 left-0 text-5xl md:text-7xl font-black text-gray-100/70 tracking-tighter select-none pointer-events-none">Invierte
-                                    en</span>
                                 <h1
                                     class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
                                     Seguridad<br><span class="text-[#22C55E]">Siempre</span>
