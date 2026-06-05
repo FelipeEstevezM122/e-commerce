@@ -132,10 +132,9 @@
 
                             </label>
 
-                            <a href="#" class="text-[#22C55E] hover:underline font-semibold">
+                            <a href="/recuperar_contraseña" class="text-[#22C55E] hover:underline font-semibold">
                                 ¿Olvidaste tu contraseña?
                             </a>
-
                         </div>
 
                         <!-- BOTÓN -->
@@ -153,10 +152,9 @@
 
                                 ¿No tienes cuenta?
 
-                                <a href="#" class="text-[#22C55E] font-bold hover:underline">
+                                <a href="{{ route('registro') }}" class="text-[#22C55E] font-bold hover:underline">
                                     Regístrate aquí
                                 </a>
-
                             </p>
 
                         </div>
