@@ -51,3 +51,9 @@ Route::get('/nosotros', function () {
 Route::get('/contactanos', function () {
     return view('contactanos');
 })->name('contactanos');
+Route::get('/iniciarsesion', function () {
+    return view('iniciarsesion');
+})->name('iniciarsesion');
+Route::get('/carrito', function () {
+    return view('carrito');
+})->name('carrito');
