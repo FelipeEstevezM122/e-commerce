@@ -66,6 +66,6 @@ Route::get('/registro', function () {
 })->name('registro');
 //olvidarcontraseña
 // Mostrar el formulario
-Route::get('/recuperar_contraseña', function () {
-    return view('recuperar_contraseña');
-})->name('password.request');
+Route::get('/recuperar_contrasena', function () {
+    return view('recuperar_contrasena');
+})->name('recuperar_contrasena');

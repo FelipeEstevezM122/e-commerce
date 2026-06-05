@@ -1,4 +1,4 @@
-<header class="w-full font-['Poppins'] relative">
+<header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
 
     <p
         class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
