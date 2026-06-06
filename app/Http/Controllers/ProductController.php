@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
@@ -15,7 +16,18 @@ class ProductController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except('index', 'show', 'search');
+        /*
+         * FIX #1: Ya NO se aplica auth:sanctum globalmente en el constructor.
+         *
+         * Razón: el panel admin usa sesión Laravel (guard "web"), no tokens
+         * Sanctum. Si dejamos auth:sanctum aquí, los métodos store/update/destroy
+         * llamados desde el blade lanzan 401 porque no hay token Bearer.
+         *
+         * La protección ahora vive donde corresponde:
+         *   - Rutas API  (api.php)  → ya tienen middleware('auth:sanctum')
+         *   - Rutas web  (web.php)  → ya tienen middleware('auth','admin')
+         * Por eso no hace falta duplicar la protección aquí.
+         */
 
         $this->cloudinary = new Cloudinary([
             'cloud' => [
@@ -27,33 +39,59 @@ class ProductController extends Controller
         ]);
     }
 
-    // Vista blade del panel admin
-    public function index()
+    /**
+     * Vista blade del panel admin — lista paginada de productos.
+     * FIX #2: se añade $categories al compact para el filtro por categoría.
+     */
+    public function index(Request $request)
     {
-        $products      = Product::with('brand', 'category')->paginate(15);
+        $query = Product::with('brand', 'category');
+
+        // Buscador (compatible con la vista blade y con el AdminController@products)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(fn($q) => $q
+                ->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%")
+            );
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products      = $query->orderBy('created_at', 'desc')->paginate(15);
         $totalProducts = Product::count();
         $totalBrands   = Brand::count();
         $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
         $noStock       = Product::where('stock', 0)->count();
+        $categories    = Category::orderBy('name')->get(); // FIX #2
 
-        return view('admin.products.index', compact(
-            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock'
+        if ($request->wantsJson()) {
+            return response()->json([
+                'datos'   => $products,
+                'message' => 'Lista de productos'
+            ], Response::HTTP_OK);
+        }
+
+        return view('vista_admin', compact(
+            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories'
         ));
     }
 
-    // Vista para crear producto
+    /** Vista para crear producto */
     public function create()
     {
         $brands     = Brand::all();
-        $categories = \App\Models\Category::all();
-        return view('admin.products.create', compact('brands', 'categories'));
+        $categories = Category::orderBy('name')->get();
+        return view('create-product', compact('brands', 'categories'));
     }
 
-    // Vista para editar producto
+    /** Vista para editar producto */
     public function edit(Product $product)
     {
         $brands     = Brand::all();
-        $categories = \App\Models\Category::all();
+        $categories = Category::orderBy('name')->get();
         return view('admin.products.edit', compact('product', 'brands', 'categories'));
     }
 
@@ -85,7 +123,6 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        // Limpiar caché del catálogo
         Cache::flush();
 
         if ($request->wantsJson()) {
@@ -162,7 +199,6 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        // Limpiar caché del catálogo
         Cache::flush();
 
         if ($request->wantsJson()) {
@@ -186,7 +222,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-        // Limpiar caché del catálogo
         Cache::flush();
 
         if (request()->wantsJson()) {
