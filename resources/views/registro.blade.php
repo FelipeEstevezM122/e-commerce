@@ -6,7 +6,6 @@
 
     <div class="min-h-screen flex items-center justify-center p-6">
 
-        ```
         <div
             class="w-full max-w-[95vw] min-h-[90vh] grid md:grid-cols-2 overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
 
@@ -28,164 +27,110 @@
                     </h2>
 
                     <p class="text-white/90 leading-relaxed mb-8">
-                        Regístrate para acceder a nuestros servicios de seguridad,
-                        domótica, telecomunicaciones y gestión de compras.
+                        Únete a nuestra plataforma y accede a los mejores productos de seguridad electrónica,
+                        telecomunicaciones y automatización.
                     </p>
 
                     <div class="space-y-4">
-
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-user-plus text-2xl"></i>
-                            <span>Registro rápido y seguro</span>
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <span class="text-sm">Acceso a precios especiales</span>
                         </div>
-
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-shield-halved text-2xl"></i>
-                            <span>Protección de datos garantizada</span>
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-truck"></i>
+                            </div>
+                            <span class="text-sm">Seguimiento de pedidos en tiempo real</span>
                         </div>
-
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-mobile-screen text-2xl"></i>
-                            <span>Soporte por WhatsApp</span>
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <span class="text-sm">Programa de rangos y beneficios</span>
                         </div>
-
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-house-signal text-2xl"></i>
-                            <span>Acceso a tecnología inteligente</span>
-                        </div>
-
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- PANEL DERECHO -->
-            <div class="bg-white dark:bg-gray-800 p-8 md:p-12 overflow-y-auto">
+            <!-- PANEL DERECHO: FORMULARIO -->
+            <div class="flex flex-col justify-center bg-white dark:bg-gray-900 p-8 md:p-12">
 
-                <div class="max-w-md mx-auto">
+                <div class="max-w-md w-full mx-auto space-y-6">
 
-                    <div class="text-center mb-8">
-
-                        <div class="flex justify-center mb-4">
-                            <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                                <i class="fa-solid fa-user-plus text-4xl text-[#1b803a]"></i>
-                            </div>
-                        </div>
-
-                        <h2 class="text-3xl font-black text-gray-900 dark:text-white">
-                            Crear Cuenta
-                        </h2>
-
-                        <p class="text-gray-500 dark:text-gray-300 mt-2">
-                            Únete a la familia CASATEK
+                    <div>
+                        <h2 class="text-3xl font-black text-gray-900 dark:text-white">Crear Cuenta</h2>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+                            ¿Ya tienes cuenta?
+                            <a href="{{ route('iniciarsesion') }}" class="text-[#1b803a] font-semibold hover:underline">
+                                Inicia sesión
+                            </a>
                         </p>
-
                     </div>
 
-                    <form class="space-y-5">
+                    <!-- Mensajes de error -->
+                    <div id="errorMessages" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm"></div>
 
-                        <!-- NOMBRE -->
+                    <form id="registerForm" class="space-y-4">
+                        @csrf
+
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                                Nombre Completo
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                Nombre completo
                             </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="text" name="name" placeholder="Ingrese su nombre completo"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
+                            <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                placeholder="Ej. Juan Pérez"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
 
-                        <!-- CORREO -->
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                                Correo Electrónico
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                Correo electrónico
                             </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="email" name="email" placeholder="correo@ejemplo.com"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                placeholder="correo@ejemplo.com"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
 
-                        <!-- TELÉFONO -->
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                                Teléfono
-                            </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="text" name="phone" placeholder="Ingrese su teléfono"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
-                        </div>
-
-                        <!-- WHATSAPP -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                                WhatsApp
-                            </label>
-
-                            <div class="relative">
-                                <i
-                                    class="fa-brands fa-whatsapp absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="text" name="whatsapp" placeholder="Ingrese su número de WhatsApp"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
-                        </div>
-
-                        <!-- CONTRASEÑA -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                                 Contraseña
                             </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="password" name="password" placeholder="********"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Mínimo 8 caracteres"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
 
-                        <!-- CONFIRMAR CONTRASEÑA -->
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                                Confirmar Contraseña
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                Confirmar contraseña
                             </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-
-                                <input type="password" name="password_confirmation" placeholder="********"
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                            </div>
+                            <input
+                                type="password"
+                                name="password_confirmation"
+                                id="password_confirmation"
+                                placeholder="Repite tu contraseña"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
 
-                        <button type="submit"
-                            class="w-full bg-[#1b803a] hover:bg-[#22C55E] text-white py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                            CREAR CUENTA
+                        <button
+                            type="submit"
+                            id="submitBtn"
+                            class="w-full bg-[#22C55E] hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-md text-sm">
+                            Crear cuenta
                         </button>
-
-                        <div class="text-center">
-
-                            <p class="text-gray-600 dark:text-gray-300">
-                                ¿Ya tienes una cuenta?
-                                <a href="{{ route('iniciarsesion') }}" class="text-[#22C55E] font-bold hover:underline">
-                                    Inicia sesión
-                                </a>
-
-                            </p>
-
-                        </div>
 
                     </form>
 
@@ -194,8 +139,55 @@
             </div>
 
         </div>
-        ```
 
     </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn       = document.getElementById('submitBtn');
+            const errorDiv  = document.getElementById('errorMessages');
+            btn.textContent = 'Registrando...';
+            btn.disabled    = true;
+            errorDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    body: JSON.stringify({
+                        name:                  document.getElementById('name').value,
+                        email:                 document.getElementById('email').value,
+                        password:              document.getElementById('password').value,
+                        password_confirmation: document.getElementById('password_confirmation').value,
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.access_token);
+                    window.location.href = '/';
+                } else {
+                    const errors = data.errors
+                        ? Object.values(data.errors).flat().join('<br>')
+                        : data.message || 'Error al registrarse';
+                    errorDiv.innerHTML = errors;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.innerHTML = 'Error de conexión. Intenta de nuevo.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.textContent = 'Crear cuenta';
+                btn.disabled    = false;
+            }
+        });
+    </script>
 
 @endsection

@@ -15,7 +15,10 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        // FIX: las rutas del panel admin son blade (sesión), no API (token)
+        // auth:sanctum → solo para api.php
+        // auth         → para web.php (panel blade)
+        $this->middleware('auth');
         $this->middleware('admin');
     }
 
@@ -51,16 +54,25 @@ class AdminController extends Controller
             ->orderBy('month', 'desc')
             ->get();
 
-        return response()->json([
-            'datos' => [
-                'users'        => ['total' => $totalUsers, 'wholesalers' => $wholesalers, 'final_customers' => $finalCustomers],
-                'products'     => ['total' => $totalProducts],
-                'orders'       => ['total' => $totalOrders, 'pending' => $pendingOrders, 'completed' => $completedOrders],
-                'sales'        => ['total' => $totalSales, 'by_month' => $salesByMonth],
-                'top_products' => $topProducts,
-            ],
-            'message' => 'Estadísticas del sistema'
-        ], Response::HTTP_OK);
+        // FIX: si es petición JSON (API) retorna JSON, si es blade retorna vista
+        if (request()->wantsJson()) {
+            return response()->json([
+                'datos' => [
+                    'users'        => ['total' => $totalUsers, 'wholesalers' => $wholesalers, 'final_customers' => $finalCustomers],
+                    'products'     => ['total' => $totalProducts],
+                    'orders'       => ['total' => $totalOrders, 'pending' => $pendingOrders, 'completed' => $completedOrders],
+                    'sales'        => ['total' => $totalSales, 'by_month' => $salesByMonth],
+                    'top_products' => $topProducts,
+                ],
+                'message' => 'Estadísticas del sistema'
+            ], Response::HTTP_OK);
+        }
+
+        return view('admin.dashboard', compact(
+            'totalUsers', 'totalProducts', 'totalOrders',
+            'pendingOrders', 'completedOrders', 'totalSales',
+            'wholesalers', 'finalCustomers', 'topProducts', 'salesByMonth'
+        ));
     }
 
     public function users(Request $request)
@@ -70,11 +82,9 @@ class AdminController extends Controller
         if ($request->filled('user_type')) {
             $query->whereHas('roles', fn($q) => $q->where('name', $request->user_type));
         }
-
         if ($request->filled('role')) {
             $query->whereHas('roles', fn($q) => $q->where('name', $request->role));
         }
-
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(fn($q) => $q
@@ -84,10 +94,13 @@ class AdminController extends Controller
             );
         }
 
-        return response()->json([
-            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
-            'message' => 'Lista de usuarios'
-        ], Response::HTTP_OK);
+        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
+        }
+
+        return view('admin.users.index', compact('users'));
     }
 
     public function showUser(User $user)
@@ -98,17 +111,14 @@ class AdminController extends Controller
         $totalSpent   = $user->orders()->where('status', 'delivered')->sum('total');
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
-        return response()->json([
-            'datos' => [
-                'user'       => $user,
-                'statistics' => [
-                    'total_orders'  => $totalOrders,
-                    'total_spent'   => $totalSpent,
-                    'average_order' => $averageOrder,
-                ],
-            ],
-            'message' => 'Detalles del usuario'
-        ], Response::HTTP_OK);
+        if (request()->wantsJson()) {
+            return response()->json([
+                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder')],
+                'message' => 'Detalles del usuario'
+            ], Response::HTTP_OK);
+        }
+
+        return view('admin.users.show', compact('user', 'totalOrders', 'totalSpent', 'averageOrder'));
     }
 
     public function createUser(Request $request)
@@ -155,14 +165,18 @@ class AdminController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'datos'   => $user->load('roles', 'rank', 'billingInfo'),
-                'message' => 'Usuario creado exitosamente'
-            ], Response::HTTP_CREATED);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'datos'   => $user->load('roles', 'rank', 'billingInfo'),
+                    'message' => 'Usuario creado exitosamente'
+                ], Response::HTTP_CREATED);
+            }
+
+            return redirect()->route('admin.users.index')->with('success', 'Usuario creado exitosamente');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error al crear usuario: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -204,23 +218,24 @@ class AdminController extends Controller
                 if ($billing) {
                     $billing->update($request->billing);
                 } else {
-                    BillingInfo::create(array_merge(
-                        ['user_id' => $user->id, 'is_default' => true],
-                        $request->billing
-                    ));
+                    BillingInfo::create(array_merge(['user_id' => $user->id, 'is_default' => true], $request->billing));
                 }
             }
 
             DB::commit();
 
-            return response()->json([
-                'datos'   => $user->load('roles', 'rank', 'billingInfo'),
-                'message' => 'Usuario actualizado exitosamente'
-            ], Response::HTTP_OK);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'datos'   => $user->load('roles', 'rank', 'billingInfo'),
+                    'message' => 'Usuario actualizado exitosamente'
+                ], Response::HTTP_OK);
+            }
+
+            return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado exitosamente');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error al actualizar usuario: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -236,7 +251,11 @@ class AdminController extends Controller
             $message = 'Usuario eliminado';
         }
 
-        return response()->json(['message' => $message], Response::HTTP_OK);
+        if ($request->wantsJson()) {
+            return response()->json(['message' => $message], Response::HTTP_OK);
+        }
+
+        return redirect()->route('admin.users.index')->with('success', $message);
     }
 
     public function products(Request $request)
@@ -255,10 +274,13 @@ class AdminController extends Controller
             );
         }
 
-        return response()->json([
-            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
-            'message' => 'Lista de productos'
-        ], Response::HTTP_OK);
+        $products = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $products, 'message' => 'Lista de productos'], Response::HTTP_OK);
+        }
+
+        return view('admin.products.index', compact('products'));
     }
 
     public function orders(Request $request)
@@ -270,10 +292,13 @@ class AdminController extends Controller
         if ($request->filled('to_date'))   $query->whereDate('created_at', '<=', $request->to_date);
         if ($request->filled('user_id'))   $query->where('user_id', $request->user_id);
 
-        return response()->json([
-            'datos'   => $query->orderBy('created_at', 'desc')->paginate(15),
-            'message' => 'Lista de pedidos'
-        ], Response::HTTP_OK);
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $orders, 'message' => 'Lista de pedidos'], Response::HTTP_OK);
+        }
+
+        return view('admin.orders.index', compact('orders'));
     }
 
     public function updateOrderStatus(Request $request, Order $order)
@@ -284,7 +309,11 @@ class AdminController extends Controller
 
         $order->update(['status' => $request->status]);
 
-        return response()->json(['datos' => $order, 'message' => 'Estado del pedido actualizado'], Response::HTTP_OK);
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $order, 'message' => 'Estado actualizado'], Response::HTTP_OK);
+        }
+
+        return redirect()->back()->with('success', 'Estado del pedido actualizado');
     }
 
     public function salesReport(Request $request)
@@ -332,7 +361,7 @@ class AdminController extends Controller
     {
         $request->validate(['limit' => 'nullable|integer|min:1|max:100', 'start_date' => 'nullable|date', 'end_date' => 'nullable|date']);
         $results = DB::select('CALL sp_top_products(?, ?, ?)', [$request->input('limit', 10), $request->start_date, $request->end_date]);
-        return response()->json(['datos' => $results, 'message' => 'Top productos más vendidos'], Response::HTTP_OK);
+        return response()->json(['datos' => $results, 'message' => 'Top productos'], Response::HTTP_OK);
     }
 
     public function customerStatisticsProcedure(Request $request)

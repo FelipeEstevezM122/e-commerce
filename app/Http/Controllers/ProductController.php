@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class ProductController extends Controller
 
     public function __construct()
     {
+        // FIX: rutas web usan 'auth', rutas API usan 'auth:sanctum'
         $this->middleware('auth:sanctum')->except('index', 'show', 'search');
 
         $this->cloudinary = new Cloudinary([
@@ -25,13 +27,35 @@ class ProductController extends Controller
         ]);
     }
 
+    // Vista blade del panel admin
     public function index()
     {
-        $products = Product::with('brand', 'category')->get();
-        return response()->json([
-            'datos'   => $products,
-            'message' => 'Lista de productos'
-        ], Response::HTTP_OK);
+        $products = Product::with('brand', 'category')->paginate(15);
+
+        $totalProducts = Product::count();
+        $totalBrands   = Brand::count(); // FIX: faltaba el use App\Models\Brand
+        $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
+        $noStock       = Product::where('stock', 0)->count();
+
+        return view('admin.products.index', compact(
+            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock'
+        )); // FIX: view() no acepta código HTTP como tercer parámetro
+    }
+
+    // Vista para crear producto
+    public function create()
+    {
+        $brands     = Brand::all();
+        $categories = \App\Models\Category::all();
+        return view('admin.products.create', compact('brands', 'categories'));
+    }
+
+    // Vista para editar producto
+    public function edit(Product $product)
+    {
+        $brands     = Brand::all();
+        $categories = \App\Models\Category::all();
+        return view('admin.products.edit', compact('product', 'brands', 'categories'));
     }
 
     public function store(Request $request)
@@ -62,10 +86,16 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        return response()->json([
-            'datos'   => $product->load('brand', 'category'),
-            'message' => 'Producto creado con éxito'
-        ], Response::HTTP_CREATED);
+        // FIX: si viene de un form blade, redirigir; si es API, retornar JSON
+        if ($request->wantsJson()) {
+            return response()->json([
+                'datos'   => $product->load('brand', 'category'),
+                'message' => 'Producto creado con éxito'
+            ], Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('admin.products.index')
+                         ->with('success', 'Producto creado con éxito');
     }
 
     public function show(Product $product)
@@ -131,10 +161,16 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return response()->json([
-            'datos'   => $product->load('brand', 'category'),
-            'message' => 'Producto actualizado con éxito'
-        ], Response::HTTP_OK);
+        // FIX: responde según si es blade o API
+        if ($request->wantsJson()) {
+            return response()->json([
+                'datos'   => $product->load('brand', 'category'),
+                'message' => 'Producto actualizado con éxito'
+            ], Response::HTTP_OK);
+        }
+
+        return redirect()->route('admin.products.index')
+                         ->with('success', 'Producto actualizado con éxito');
     }
 
     public function destroy(Product $product)
@@ -147,9 +183,13 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return response()->json([
-            'message' => 'Producto eliminado con éxito'
-        ], Response::HTTP_OK);
+        // FIX: responde según si es blade o API
+        if (request()->wantsJson()) {
+            return response()->json(['message' => 'Producto eliminado con éxito'], Response::HTTP_OK);
+        }
+
+        return redirect()->route('admin.products.index')
+                         ->with('success', 'Producto eliminado con éxito');
     }
 
     // ─── Helpers privados ─────────────────────────────────────────
