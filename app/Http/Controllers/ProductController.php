@@ -7,6 +7,7 @@ use App\Models\Product;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -14,7 +15,6 @@ class ProductController extends Controller
 
     public function __construct()
     {
-        // FIX: rutas web usan 'auth', rutas API usan 'auth:sanctum'
         $this->middleware('auth:sanctum')->except('index', 'show', 'search');
 
         $this->cloudinary = new Cloudinary([
@@ -30,16 +30,15 @@ class ProductController extends Controller
     // Vista blade del panel admin
     public function index()
     {
-        $products = Product::with('brand', 'category')->paginate(15);
-
+        $products      = Product::with('brand', 'category')->paginate(15);
         $totalProducts = Product::count();
-        $totalBrands   = Brand::count(); // FIX: faltaba el use App\Models\Brand
+        $totalBrands   = Brand::count();
         $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
         $noStock       = Product::where('stock', 0)->count();
 
         return view('admin.products.index', compact(
             'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock'
-        )); // FIX: view() no acepta código HTTP como tercer parámetro
+        ));
     }
 
     // Vista para crear producto
@@ -86,7 +85,9 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        // FIX: si viene de un form blade, redirigir; si es API, retornar JSON
+        // Limpiar caché del catálogo
+        Cache::flush();
+
         if ($request->wantsJson()) {
             return response()->json([
                 'datos'   => $product->load('brand', 'category'),
@@ -161,7 +162,9 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        // FIX: responde según si es blade o API
+        // Limpiar caché del catálogo
+        Cache::flush();
+
         if ($request->wantsJson()) {
             return response()->json([
                 'datos'   => $product->load('brand', 'category'),
@@ -183,9 +186,13 @@ class ProductController extends Controller
 
         $product->delete();
 
-        // FIX: responde según si es blade o API
+        // Limpiar caché del catálogo
+        Cache::flush();
+
         if (request()->wantsJson()) {
-            return response()->json(['message' => 'Producto eliminado con éxito'], Response::HTTP_OK);
+            return response()->json([
+                'message' => 'Producto eliminado con éxito'
+            ], Response::HTTP_OK);
         }
 
         return redirect()->route('admin.products.index')
