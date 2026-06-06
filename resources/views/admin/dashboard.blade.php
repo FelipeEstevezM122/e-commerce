@@ -177,7 +177,104 @@
             <i class="fa-solid fa-ticket text-2xl text-purple-400 mb-2 block"></i>
             <p class="text-sm text-gray-300 group-hover:text-white transition">Ver Tickets</p>
         </a>
+        <button onclick="document.getElementById('modalCrearAdmin').classList.remove('hidden')"
+           class="bg-gray-900 border border-gray-800 hover:border-red-400 rounded-2xl p-4 text-center transition group">
+            <i class="fa-solid fa-user-shield text-2xl text-red-400 mb-2 block"></i>
+            <p class="text-sm text-gray-300 group-hover:text-white transition">Nuevo Admin</p>
+        </button>
     </div>
+
+    <!-- MODAL CREAR ADMINISTRADOR -->
+    <div id="modalCrearAdmin" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl">
+
+            <!-- Header modal -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+                <h3 class="font-bold text-white text-lg">
+                    <i class="fa-solid fa-user-shield text-red-400 mr-2"></i>Crear Administrador
+                </h3>
+                <button onclick="document.getElementById('modalCrearAdmin').classList.add('hidden')"
+                    class="text-gray-500 hover:text-white transition text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Mensajes de éxito / error -->
+            @if(session('admin_created'))
+            <div class="mx-6 mt-4 bg-green-500/20 border border-green-500/40 text-green-400 text-sm px-4 py-3 rounded-xl">
+                <i class="fa-solid fa-circle-check mr-2"></i>{{ session('admin_created') }}
+            </div>
+            @endif
+            @if(session('admin_error'))
+            <div class="mx-6 mt-4 bg-red-500/20 border border-red-500/40 text-red-400 text-sm px-4 py-3 rounded-xl">
+                <i class="fa-solid fa-circle-xmark mr-2"></i>{{ session('admin_error') }}
+            </div>
+            @endif
+            @if($errors->has('admin_name') || $errors->has('admin_email') || $errors->has('admin_password'))
+            <div class="mx-6 mt-4 bg-red-500/20 border border-red-500/40 text-red-400 text-sm px-4 py-3 rounded-xl space-y-1">
+                @foreach(['admin_name','admin_email','admin_password'] as $field)
+                    @error($field)<p><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ $message }}</p>@enderror
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Formulario -->
+            <form method="POST" action="{{ route('admin.users.store-admin') }}" class="px-6 py-5 space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Nombre</label>
+                    <input type="text" name="admin_name" value="{{ old('admin_name') }}"
+                        placeholder="Nombre completo"
+                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Correo</label>
+                    <input type="email" name="admin_email" value="{{ old('admin_email') }}"
+                        placeholder="correo@ejemplo.com"
+                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Contraseña</label>
+                    <input type="password" name="admin_password"
+                        placeholder="Mínimo 8 caracteres"
+                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Confirmar contraseña</label>
+                    <input type="password" name="admin_password_confirmation"
+                        placeholder="Repite la contraseña"
+                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
+                        required>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button"
+                        onclick="document.getElementById('modalCrearAdmin').classList.add('hidden')"
+                        class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="flex-1 bg-red-500/20 hover:bg-red-500/40 border border-red-500/40 text-red-400 font-bold py-2.5 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-user-shield mr-2"></i>Crear Admin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Reabre el modal si hubo errores de validación --}}
+    @if($errors->has('admin_name') || $errors->has('admin_email') || $errors->has('admin_password'))
+    <script>
+        document.getElementById('modalCrearAdmin').classList.remove('hidden');
+    </script>
+    @endif
 
     <!-- CERRAR SESIÓN -->
     <div class="mt-6 flex justify-end">
