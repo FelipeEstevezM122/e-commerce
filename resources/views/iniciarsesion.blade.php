@@ -43,6 +43,16 @@
                 <!-- ERROR -->
                 <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4"></div>
 
+                {{--
+                    FIX: Se agrega un form HTML oculto para el login por sesión (admin panel).
+                    El JS detecta si el usuario es admin y lo envía para crear la sesión Laravel.
+                --}}
+                <form id="sessionForm" method="POST" action="{{ route('login.admin') }}" class="hidden">
+                    @csrf
+                    <input type="hidden" name="email"    id="sessionEmail">
+                    <input type="hidden" name="password" id="sessionPassword">
+                </form>
+
                 <form id="loginForm" class="space-y-6">
 
                     <div>
@@ -113,22 +123,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     const btn      = document.getElementById('submitBtn');
     const errorDiv = document.getElementById('errorDiv');
+    const email    = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-    btn.innerHTML  = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando...';
-    btn.disabled   = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando...';
+    btn.disabled  = true;
     errorDiv.classList.add('hidden');
 
     try {
+        // 1. Login por API para obtener token y datos del usuario
         const res  = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({
-                email:    document.getElementById('email').value,
-                password: document.getElementById('password').value,
-            })
+            body: JSON.stringify({ email, password })
         });
 
         const data = await res.json();
@@ -137,21 +147,23 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             throw new Error(data.message || 'Credenciales incorrectas');
         }
 
-        // ── Guardar token y datos del usuario ──
-        localStorage.setItem('token',    data.access_token);
-        localStorage.setItem('user',     JSON.stringify(data.user));
-        localStorage.setItem('roles',    JSON.stringify(data.user.roles  ?? []));
-        localStorage.setItem('rank',     JSON.stringify(data.user.rank   ?? null));
+        // 2. Guardar token y datos (para el frontend SPA)
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('user',  JSON.stringify(data.user));
+        localStorage.setItem('roles', JSON.stringify(data.user.roles ?? []));
+        localStorage.setItem('rank',  JSON.stringify(data.user.rank  ?? null));
 
-        // ── Cargar carrito del usuario (si tiene items guardados localmente, conservarlos) ──
-        // El carrito local ya está en casatek_carrito — no se borra al login
-
-        // ── Redirigir según rol ──
-        const roles = data.user.roles ?? [];
+        // 3. Detectar si es admin
+        const roles   = data.user.roles ?? [];
         const esAdmin = roles.some(r => r.name === 'admin');
 
         if (esAdmin) {
-            window.location.href = '/admin/dashboard';
+            // FIX: los admins necesitan sesión Laravel para acceder al panel blade.
+            // Rellenamos el form oculto y lo enviamos → /login-admin crea la sesión
+            // y redirige a /admin/dashboard automáticamente.
+            document.getElementById('sessionEmail').value    = email;
+            document.getElementById('sessionPassword').value = password;
+            document.getElementById('sessionForm').submit();
         } else {
             window.location.href = '/';
         }
@@ -159,7 +171,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     } catch (err) {
         errorDiv.textContent = err.message;
         errorDiv.classList.remove('hidden');
-    } finally {
         btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> INICIAR SESIÓN';
         btn.disabled  = false;
     }
