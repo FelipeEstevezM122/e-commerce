@@ -1,291 +1,407 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('titulo', 'Dashboard Admin - Casatek')
 
 @section('contenido')
 
-<div class="min-h-screen bg-gray-950 text-white p-6">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap');
 
-    <!-- HEADER -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-            <h1 class="text-3xl font-black text-white tracking-tight">
-                Panel <span class="text-[#22C55E]">Administrativo</span>
+:root {
+    --green:      #22C55E;
+    --green-dark: #15803d;
+    --bg:         #060d0a;
+    --surface:    #0e1a12;
+    --card:       #111f16;
+    --border:     rgba(34,197,94,.12);
+    --border-h:   rgba(34,197,94,.35);
+    --text:       #f3f4f6;
+    --muted:      #6b7280;
+}
+
+#adminDash * { box-sizing: border-box; }
+#adminDash { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); }
+
+#adminMain {
+    padding: 32px 28px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 6px;
+}
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+}
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px 20px;
+    transition: border-color .2s, transform .2s;
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--green));
+    opacity: .7;
+}
+.stat-card:hover {
+    border-color: var(--border-h);
+    transform: translateY(-2px);
+}
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+.stat-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.stat-icon {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+}
+.stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+.stat-value.green { color: var(--green); }
+.stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.stat-sub b { font-weight: 700; }
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+}
+.panel-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.panel-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.panel-body { padding: 16px; }
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: background .15s;
+    margin-bottom: 4px;
+}
+.top-item:hover { background: rgba(255,255,255,.03); }
+.top-rank {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    flex-shrink: 0;
+}
+.top-name { flex: 1; font-size: 13px; font-weight: 600; color: #e5e7eb; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-badge {
+    background: rgba(34,197,94,.12);
+    border: 1px solid rgba(34,197,94,.25);
+    color: var(--green);
+    font-size: 10px; font-weight: 800;
+    padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.bar-month { font-size: 11px; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+.bar-track {
+    flex: 1;
+    height: 24px;
+    background: rgba(255,255,255,.04);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-dark), var(--green));
+    border-radius: 8px;
+    min-width: 4px;
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+}
+.bar-amount { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+.quick-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: border-color .18s, transform .18s;
+    cursor: pointer;
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    background: none;
+    width: 100%;
+}
+.quick-card:hover {
+    border-color: var(--qc-color, var(--border-h));
+    transform: translateY(-3px);
+}
+.quick-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+.quick-label { font-size: 11px; font-weight: 700; color: #9ca3af; }
+.quick-card:hover .quick-label { color: #fff; }
+
+.fade-up { animation: fadeUp .4s ease both; }
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+.delay-1 { animation-delay: .07s; }
+.delay-2 { animation-delay: .14s; }
+.delay-3 { animation-delay: .21s; }
+.delay-4 { animation-delay: .28s; }
+
+@media(max-width: 1100px) {
+    .stat-grid   { grid-template-columns: repeat(2,1fr); }
+    .quick-grid  { grid-template-columns: repeat(3,1fr); }
+}
+@media(max-width: 768px) {
+    #adminMain   { padding: 20px 16px 40px; }
+    .stat-grid   { grid-template-columns: 1fr 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .quick-grid  { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width: 480px) {
+    .stat-grid  { grid-template-columns: 1fr; }
+    .quick-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+<div id="adminDash">
+
+    @include('partials.header-admin')
+
+    <main id="adminMain">
+
+        <div class="fade-up">
+            <p class="section-label"><i class="fa-solid fa-gauge-high mr-1"></i> Vista general</p>
+            <h1 class="section-title">
+                Panel <span style="color:var(--green)">Administrativo</span>
             </h1>
-            <p class="text-gray-400 text-sm mt-1">Resumen general de Casatek</p>
-        </div>
-        <div class="flex gap-3">
-            <a href="{{ route('admin.products.index') }}"
-               class="bg-[#22C55E] hover:bg-green-400 text-black font-bold px-5 py-2 rounded-xl text-sm transition">
-                <i class="fa-solid fa-box mr-2"></i>Productos
-            </a>
-            <a href="{{ route('admin.orders.index') }}"
-               class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-5 py-2 rounded-xl text-sm transition">
-                <i class="fa-solid fa-clipboard-list mr-2"></i>Pedidos
-            </a>
-            <a href="{{ route('admin.users.index') }}"
-               class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-5 py-2 rounded-xl text-sm transition">
-                <i class="fa-solid fa-users mr-2"></i>Usuarios
-            </a>
-        </div>
-    </div>
-
-    <!-- TARJETAS PRINCIPALES -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-[#22C55E] transition">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-gray-400 text-sm font-semibold uppercase tracking-widest">Usuarios</span>
-                <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-users text-blue-400"></i>
-                </div>
-            </div>
-            <p class="text-4xl font-black text-white mb-1">{{ $totalUsers }}</p>
-            <div class="flex gap-3 text-xs text-gray-500 mt-2">
-                <span><span class="text-green-400 font-bold">{{ $finalCustomers }}</span> clientes</span>
-                <span><span class="text-yellow-400 font-bold">{{ $wholesalers }}</span> mayoristas</span>
-            </div>
         </div>
 
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-[#22C55E] transition">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-gray-400 text-sm font-semibold uppercase tracking-widest">Productos</span>
-                <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-box text-green-400"></i>
-                </div>
-            </div>
-            <p class="text-4xl font-black text-white mb-1">{{ $totalProducts }}</p>
-            <p class="text-xs text-gray-500">en catálogo</p>
-        </div>
+        <div class="stat-grid">
 
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-[#22C55E] transition">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-gray-400 text-sm font-semibold uppercase tracking-widest">Pedidos</span>
-                <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-clipboard-list text-purple-400"></i>
-                </div>
-            </div>
-            <p class="text-4xl font-black text-white mb-1">{{ $totalOrders }}</p>
-            <div class="flex gap-3 text-xs text-gray-500 mt-2">
-                <span><span class="text-yellow-400 font-bold">{{ $pendingOrders }}</span> pendientes</span>
-                <span><span class="text-green-400 font-bold">{{ $completedOrders }}</span> entregados</span>
-            </div>
-        </div>
-
-        <div class="bg-gray-900 border border-[#22C55E]/40 rounded-2xl p-5 hover:border-[#22C55E] transition">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-gray-400 text-sm font-semibold uppercase tracking-widest">Ventas</span>
-                <div class="w-10 h-10 bg-[#22C55E]/20 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-bolivar-sign text-[#22C55E]"></i>
-                </div>
-            </div>
-            <p class="text-4xl font-black text-[#22C55E] mb-1">
-                Bs. {{ number_format($totalSales, 0, '.', ',') }}
-            </p>
-            <p class="text-xs text-gray-500">pedidos entregados</p>
-        </div>
-
-    </div>
-
-    <!-- FILA INFERIOR: Top Productos + Ventas por Mes -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        <!-- TOP PRODUCTOS -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-                <h2 class="font-bold text-white">
-                    <i class="fa-solid fa-trophy text-yellow-400 mr-2"></i>Top Productos Vendidos
-                </h2>
-            </div>
-            <div class="p-4 space-y-3">
-                @forelse($topProducts as $i => $product)
-                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-800 transition">
-                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black
-                        {{ $i === 0 ? 'bg-yellow-400/20 text-yellow-400' : ($i === 1 ? 'bg-gray-400/20 text-gray-400' : ($i === 2 ? 'bg-orange-400/20 text-orange-400' : 'bg-gray-800 text-gray-500')) }}">
-                        {{ $i + 1 }}
-                    </span>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-white text-sm font-semibold truncate">{{ $product->name }}</p>
+            <div class="stat-card fade-up delay-1" style="--accent-color:#3b82f6">
+                <div class="stat-top">
+                    <span class="stat-label">Usuarios</span>
+                    <div class="stat-icon" style="background:rgba(59,130,246,.15)">
+                        <i class="fa-solid fa-users" style="color:#60a5fa"></i>
                     </div>
-                    <span class="bg-[#22C55E]/20 text-[#22C55E] text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                        {{ $product->total_sold }} vendidos
-                    </span>
                 </div>
-                @empty
-                <div class="text-center text-gray-500 py-8">
-                    <i class="fa-solid fa-box-open text-3xl mb-2"></i>
-                    <p class="text-sm">Sin ventas registradas</p>
+                <p class="stat-value">{{ $totalUsers }}</p>
+                <div class="stat-sub">
+                    <span><b style="color:#22C55E">{{ $finalCustomers }}</b> clientes</span>
+                    <span><b style="color:#facc15">{{ $wholesalers }}</b> mayoristas</span>
                 </div>
-                @endforelse
             </div>
+
+            <div class="stat-card fade-up delay-2" style="--accent-color:#22C55E">
+                <div class="stat-top">
+                    <span class="stat-label">Productos</span>
+                    <div class="stat-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-box" style="color:#22C55E"></i>
+                    </div>
+                </div>
+                <p class="stat-value">{{ $totalProducts }}</p>
+                <div class="stat-sub"><span>en catálogo activo</span></div>
+            </div>
+
+            <div class="stat-card fade-up delay-3" style="--accent-color:#a855f7">
+                <div class="stat-top">
+                    <span class="stat-label">Pedidos</span>
+                    <div class="stat-icon" style="background:rgba(168,85,247,.15)">
+                        <i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i>
+                    </div>
+                </div>
+                <p class="stat-value">{{ $totalOrders }}</p>
+                <div class="stat-sub">
+                    <span><b style="color:#facc15">{{ $pendingOrders }}</b> pendientes</span>
+                    <span><b style="color:#22C55E">{{ $completedOrders }}</b> entregados</span>
+                </div>
+            </div>
+
+            <div class="stat-card fade-up delay-4" style="--accent-color:#22C55E">
+                <div class="stat-top">
+                    <span class="stat-label">Ventas totales</span>
+                    <div class="stat-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-bolivar-sign" style="color:#22C55E"></i>
+                    </div>
+                </div>
+                <p class="stat-value green">Bs. {{ number_format($totalSales, 0, '.', ',') }}</p>
+                <div class="stat-sub"><span>de pedidos entregados</span></div>
+            </div>
+
         </div>
 
-        <!-- VENTAS POR MES -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-800">
-                <h2 class="font-bold text-white">
-                    <i class="fa-solid fa-chart-line text-[#22C55E] mr-2"></i>Ventas Últimos 6 Meses
-                </h2>
-            </div>
-            <div class="p-4">
-                @php
-                    $months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-                    $maxSale = $salesByMonth->max('total') ?: 1;
-                @endphp
-                @forelse($salesByMonth as $sale)
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-gray-400 text-xs w-8 text-right">{{ $months[$sale->month] ?? $sale->month }}</span>
-                    <div class="flex-1 bg-gray-800 rounded-full h-6 overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-[#1b803a] to-[#22C55E] rounded-full flex items-center justify-end pr-2 transition-all"
-                             style="width: {{ max(5, ($sale->total / $maxSale) * 100) }}%">
+        <div class="bottom-grid">
+
+            <div class="panel fade-up">
+                <div class="panel-head">
+                    <h2>
+                        <i class="fa-solid fa-trophy" style="color:#facc15"></i>
+                        Top Productos Vendidos
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    @forelse($topProducts as $i => $product)
+                    <div class="top-item">
+                        <div class="top-rank"
+                            style="background:{{ $i===0 ? 'rgba(250,204,21,.15)' : ($i===1 ? 'rgba(156,163,175,.12)' : ($i===2 ? 'rgba(251,146,60,.15)' : 'rgba(255,255,255,.04)')) }};
+                                   color:{{ $i===0 ? '#facc15' : ($i===1 ? '#9ca3af' : ($i===2 ? '#fb923c' : '#4b5563')) }}">
+                            {{ $i + 1 }}
                         </div>
+                        <span class="top-name">{{ $product->name }}</span>
+                        <span class="top-badge">{{ $product->total_sold }} vendidos</span>
                     </div>
-                    <span class="text-white text-xs font-bold w-24 text-right">
-                        Bs. {{ number_format($sale->total, 0, '.', ',') }}
-                    </span>
+                    @empty
+                    <div style="text-align:center;padding:36px 0;color:var(--muted)">
+                        <i class="fa-solid fa-box-open" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+                        <p style="font-size:13px">Sin ventas registradas</p>
+                    </div>
+                    @endforelse
                 </div>
-                @empty
-                <div class="text-center text-gray-500 py-8">
-                    <i class="fa-solid fa-chart-line text-3xl mb-2"></i>
-                    <p class="text-sm">Sin datos de ventas</p>
-                </div>
-                @endforelse
             </div>
+
+            <div class="panel fade-up delay-1">
+                <div class="panel-head">
+                    <h2>
+                        <i class="fa-solid fa-chart-line" style="color:var(--green)"></i>
+                        Ventas Últimos 6 Meses
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    @php
+                        $months = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                        $maxSale = $salesByMonth->max('total') ?: 1;
+                    @endphp
+                    @forelse($salesByMonth as $sale)
+                    <div class="bar-row">
+                        <span class="bar-month">{{ $months[$sale->month] ?? $sale->month }}</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:{{ max(6, ($sale->total / $maxSale) * 100) }}%"></div>
+                        </div>
+                        <span class="bar-amount">Bs. {{ number_format($sale->total, 0, '.', ',') }}</span>
+                    </div>
+                    @empty
+                    <div style="text-align:center;padding:36px 0;color:var(--muted)">
+                        <i class="fa-solid fa-chart-line" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+                        <p style="font-size:13px">Sin datos de ventas</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+
         </div>
 
-    </div>
+        <div class="quick-grid">
 
-    <!-- ACCESOS RÁPIDOS -->
-    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a href="{{ route('admin.products.create') }}"
-           class="bg-gray-900 border border-gray-800 hover:border-[#22C55E] rounded-2xl p-4 text-center transition group">
-            <i class="fa-solid fa-plus text-2xl text-[#22C55E] mb-2 block"></i>
-            <p class="text-sm text-gray-300 group-hover:text-white transition">Nuevo Producto</p>
-        </a>
-        <a href="{{ route('admin.orders.index') }}"
-           class="bg-gray-900 border border-gray-800 hover:border-yellow-400 rounded-2xl p-4 text-center transition group">
-            <i class="fa-solid fa-clock text-2xl text-yellow-400 mb-2 block"></i>
-            <p class="text-sm text-gray-300 group-hover:text-white transition">Pedidos Pendientes</p>
-        </a>
-        <a href="{{ route('admin.users.index') }}"
-           class="bg-gray-900 border border-gray-800 hover:border-blue-400 rounded-2xl p-4 text-center transition group">
-            <i class="fa-solid fa-user-plus text-2xl text-blue-400 mb-2 block"></i>
-            <p class="text-sm text-gray-300 group-hover:text-white transition">Gestionar Usuarios</p>
-        </a>
-        <a href="{{ route('admin.tickets.index') }}"
-           class="bg-gray-900 border border-gray-800 hover:border-purple-400 rounded-2xl p-4 text-center transition group">
-            <i class="fa-solid fa-ticket text-2xl text-purple-400 mb-2 block"></i>
-            <p class="text-sm text-gray-300 group-hover:text-white transition">Ver Tickets</p>
-        </a>
-        <button onclick="document.getElementById('modalCrearAdmin').classList.remove('hidden')"
-           class="bg-gray-900 border border-gray-800 hover:border-red-400 rounded-2xl p-4 text-center transition group">
-            <i class="fa-solid fa-user-shield text-2xl text-red-400 mb-2 block"></i>
-            <p class="text-sm text-gray-300 group-hover:text-white transition">Nuevo Admin</p>
-        </button>
-    </div>
+            <a href="{{ route('admin.products.create') }}" class="quick-card" style="--qc-color:rgba(34,197,94,.5)">
+                <i class="fa-solid fa-plus quick-icon" style="color:#22C55E"></i>
+                <span class="quick-label">Nuevo Producto</span>
+            </a>
 
-    <!-- MODAL CREAR ADMINISTRADOR -->
-    <div id="modalCrearAdmin" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl">
+            <a href="{{ route('admin.orders.index') }}" class="quick-card" style="--qc-color:rgba(250,204,21,.5)">
+                <i class="fa-solid fa-clock quick-icon" style="color:#facc15"></i>
+                <span class="quick-label">Pedidos Pendientes</span>
+            </a>
 
-            <!-- Header modal -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-                <h3 class="font-bold text-white text-lg">
-                    <i class="fa-solid fa-user-shield text-red-400 mr-2"></i>Crear Administrador
-                </h3>
-                <button onclick="document.getElementById('modalCrearAdmin').classList.add('hidden')"
-                    class="text-gray-500 hover:text-white transition text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+            <a href="{{ route('admin.users.index') }}" class="quick-card" style="--qc-color:rgba(96,165,250,.5)">
+                <i class="fa-solid fa-user-plus quick-icon" style="color:#60a5fa"></i>
+                <span class="quick-label">Gestionar Usuarios</span>
+            </a>
 
-            <!-- Mensajes de éxito / error -->
-            @if(session('admin_created'))
-            <div class="mx-6 mt-4 bg-green-500/20 border border-green-500/40 text-green-400 text-sm px-4 py-3 rounded-xl">
-                <i class="fa-solid fa-circle-check mr-2"></i>{{ session('admin_created') }}
-            </div>
-            @endif
-            @if(session('admin_error'))
-            <div class="mx-6 mt-4 bg-red-500/20 border border-red-500/40 text-red-400 text-sm px-4 py-3 rounded-xl">
-                <i class="fa-solid fa-circle-xmark mr-2"></i>{{ session('admin_error') }}
-            </div>
-            @endif
-            @if($errors->has('admin_name') || $errors->has('admin_email') || $errors->has('admin_password'))
-            <div class="mx-6 mt-4 bg-red-500/20 border border-red-500/40 text-red-400 text-sm px-4 py-3 rounded-xl space-y-1">
-                @foreach(['admin_name','admin_email','admin_password'] as $field)
-                    @error($field)<p><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ $message }}</p>@enderror
-                @endforeach
-            </div>
+            @if(Route::has('admin.tickets.index'))
+            <a href="{{ route('admin.tickets.index') }}" class="quick-card" style="--qc-color:rgba(192,132,252,.5)">
+                <i class="fa-solid fa-ticket quick-icon" style="color:#c084fc"></i>
+                <span class="quick-label">Ver Tickets</span>
+            </a>
             @endif
 
-            <!-- Formulario -->
-            <form method="POST" action="{{ route('admin.users.store-admin') }}" class="px-6 py-5 space-y-4">
-                @csrf
-
-                <div>
-                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Nombre</label>
-                    <input type="text" name="admin_name" value="{{ old('admin_name') }}"
-                        placeholder="Nombre completo"
-                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Correo</label>
-                    <input type="email" name="admin_email" value="{{ old('admin_email') }}"
-                        placeholder="correo@ejemplo.com"
-                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Contraseña</label>
-                    <input type="password" name="admin_password"
-                        placeholder="Mínimo 8 caracteres"
-                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Confirmar contraseña</label>
-                    <input type="password" name="admin_password_confirmation"
-                        placeholder="Repite la contraseña"
-                        class="w-full bg-gray-800 border border-gray-700 focus:border-red-400 text-white rounded-xl px-4 py-2.5 text-sm outline-none transition"
-                        required>
-                </div>
-
-                <div class="flex gap-3 pt-2">
-                    <button type="button"
-                        onclick="document.getElementById('modalCrearAdmin').classList.add('hidden')"
-                        class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">
-                        Cancelar
-                    </button>
-                    <button type="submit"
-                        class="flex-1 bg-red-500/20 hover:bg-red-500/40 border border-red-500/40 text-red-400 font-bold py-2.5 rounded-xl text-sm transition">
-                        <i class="fa-solid fa-user-shield mr-2"></i>Crear Admin
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Reabre el modal si hubo errores de validación --}}
-    @if($errors->has('admin_name') || $errors->has('admin_email') || $errors->has('admin_password'))
-    <script>
-        document.getElementById('modalCrearAdmin').classList.remove('hidden');
-    </script>
-    @endif
-
-    <!-- CERRAR SESIÓN -->
-    <div class="mt-6 flex justify-end">
-        <form method="POST" action="{{ route('logout.admin') }}">
-            @csrf
-            <button type="submit"
-                class="bg-red-500/20 hover:bg-red-500/40 text-red-400 font-bold px-5 py-2 rounded-xl text-sm transition">
-                <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar Sesión
+            <button onclick="abrirModal()" class="quick-card" style="--qc-color:rgba(239,68,68,.5)">
+                <i class="fa-solid fa-user-shield quick-icon" style="color:#f87171"></i>
+                <span class="quick-label">Nuevo Admin</span>
             </button>
-        </form>
-    </div>
+
+        </div>
+
+    </main>
 
 </div>
 
