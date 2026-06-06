@@ -1,21 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    ProductController,
-    OrderController,
-    BillingInfoController,
-    RankController,
-    TicketController,
-    AdminController,
-    CatalogoController
-};
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BillingInfoController;
+use App\Http\Controllers\RankController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CatalogoController;
 
-/*
-|--------------------------------------------------------------------------
-| 1. RUTAS PÚBLICAS (vistas blade, sin autenticación)
-|--------------------------------------------------------------------------
-*/
+//1. LOGIN / LOGOUT DE SESIÓN (para el panel admin blade)
+Route::post('/login-admin', function (Request $request) {
+    $credentials = $request->only('email', 'password');
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect()->intended('/admin/dashboard');
+    }
+
+    return back()->withErrors(['email' => 'Credenciales incorrectas']);
+})->name('login.admin');
+
+Route::post('/logout-admin', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    return redirect('/iniciarsesion');
+})->name('logout.admin');
+
+//2. RUTAS PÚBLICAS (vistas blade, sin autenticación)
 Route::get('/',                     fn() => view('index'));
 Route::get('/nosotros',             fn() => view('nosotros'))->name('nosotros');
 Route::get('/contactanos',          fn() => view('contactanos'))->name('contactanos');
@@ -31,40 +45,9 @@ Route::get('/productos', [CatalogoController::class, 'index'])->name('productos'
 Route::get('ranks',        [RankController::class, 'index']);
 Route::get('ranks/{rank}', [RankController::class, 'show']);
 
-/*
-|--------------------------------------------------------------------------
-| 2. RUTAS PROTEGIDAS (auth:sanctum → tickets, pedidos, facturación)
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth:sanctum')->group(function () {
-
-    // Facturación
-    Route::apiResource('billing-info', BillingInfoController::class);
-    Route::patch('billing-info/{billingInfo}/set-default', [BillingInfoController::class, 'setDefault']);
-
-    // Pedidos
-    Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'store']);
-    Route::post('orders/{order}/cancel', [OrderController::class, 'cancel']);
-
-    // Tickets del usuario
-    Route::get('tickets',                   [TicketController::class, 'index']);
-    Route::get('tickets/{ticket}',          [TicketController::class, 'show']);
-    Route::get('orders/{order}/ticket',     [TicketController::class, 'showByOrder']);
-
-    // Rangos (solo admin)
-    Route::middleware('admin')->group(function () {
-        Route::apiResource('ranks', RankController::class)->except(['index', 'show']);
-    });
-});
-
-/*
-|--------------------------------------------------------------------------
-| 3. RUTAS DEL PANEL ADMIN (vistas blade, auth + admin)
-|--------------------------------------------------------------------------
-*/
+//3. PANEL ADMIN (vistas blade, sesión Laravel)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // Productos CRUD
