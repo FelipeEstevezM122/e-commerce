@@ -12,7 +12,6 @@
             <h1 class="text-3xl font-bold text-gray-800">Panel de Productos</h1>
             <p class="text-gray-500">Administración general del catálogo Casatek</p>
         </div>
-        {{-- FIX: botón ahora enlaza a la ruta de crear producto --}}
         <a href="{{ route('admin.products.create') }}"
             class="bg-[#22C55E] hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition">
             <i class="fa-solid fa-plus mr-2"></i> Agregar Producto
@@ -23,9 +22,15 @@
     @if(session('success'))
         <div class="bg-green-100 text-green-700 px-4 py-3 rounded-xl mb-6">{{ session('success') }}</div>
     @endif
+    @if($errors->any())
+        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-6">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
 
     <!-- TARJETAS RESUMEN -->
-    {{-- FIX: variables del controller, no números hardcodeados --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-2xl shadow-md p-5 border-l-4 border-green-500">
             <h3 class="text-gray-500 text-sm">Productos</h3>
@@ -47,7 +52,6 @@
 
     <!-- BUSCADOR -->
     <div class="bg-white rounded-2xl shadow-md p-5 mb-6">
-        {{-- FIX: form con action, method GET y name en inputs --}}
         <form method="GET" action="{{ route('admin.products.index') }}">
             <div class="flex flex-col md:flex-row gap-4">
 
@@ -55,7 +59,6 @@
                     placeholder="Buscar producto..."
                     class="flex-1 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500">
 
-                {{-- FIX: categorías desde BD, no hardcodeadas --}}
                 <select name="category_id" class="border rounded-xl px-4 py-3">
                     <option value="">Todas las categorías</option>
                     @foreach($categories as $category)
@@ -103,12 +106,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- FIX: @forelse en lugar de @foreach, dentro de <tbody> --}}
                     @forelse($products as $product)
                     <tr class="border-b hover:bg-gray-50">
 
                         <td class="p-4">
-                            {{-- FIX: image1 (no image) --}}
                             <img src="{{ $product->image1 ?? 'https://via.placeholder.com/70' }}"
                                 class="w-16 h-16 rounded-lg object-cover">
                         </td>
@@ -148,10 +149,9 @@
                                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
-                                {{-- FIX: form con @csrf y @method DELETE --}}
                                 <form action="{{ route('admin.products.destroy', $product->id) }}"
                                       method="POST"
-                                      onsubmit="return confirm('¿Seguro que deseas eliminar {{ $product->name }}?')">
+                                      onsubmit="return confirm('¿Seguro que deseas eliminar {{ addslashes($product->name) }}?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
