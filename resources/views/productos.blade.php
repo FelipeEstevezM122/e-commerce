@@ -4,7 +4,6 @@
 
 @section('contenido')
 
-{{-- ===================== ESTILOS ===================== --}}
 <style>
     #filterDropdown { display: none; }
     #filterDropdown.open { display: block; }
@@ -39,7 +38,6 @@
 
     #cartBadge { min-width: 18px; }
 
-    /* Paginador */
     .pagination-btn {
         @apply px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all;
     }
@@ -56,7 +54,7 @@
 
 <section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
 
-    {{-- ===================== TOPBAR ===================== --}}
+    {{-- TOPBAR --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-5 border-gray-200 dark:border-gray-700">
 
         <div class="flex items-center gap-3 shrink-0">
@@ -66,11 +64,9 @@
             </h2>
         </div>
 
-        {{-- Buscador + Filtrar + Carrito --}}
         <form method="GET" action="{{ route('productos') }}" id="filtroForm"
               class="flex items-center gap-3 w-full md:w-auto flex-wrap md:flex-nowrap">
 
-            {{-- Buscador --}}
             <div class="relative flex-1 min-w-[200px]">
                 <input
                     id="searchInput"
@@ -84,7 +80,6 @@
                 </span>
             </div>
 
-            {{-- Filtrar --}}
             <div class="relative">
                 <button type="button" id="filterBtn"
                         class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
@@ -114,12 +109,9 @@
                 </div>
             </div>
 
-            {{-- Botón buscar oculto (submit al cambiar orden) --}}
             <button type="submit" class="hidden" id="submitBtn"></button>
-
         </form>
 
-        {{-- Carrito --}}
         <button id="cartViewBtn"
                 class="flex items-center gap-2 px-4 py-2.5 border-2 border-[#22C55E] rounded-xl text-sm font-bold text-[#16a34a] dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all shadow-sm whitespace-nowrap">
             <i class="fa-solid fa-cart-shopping text-sm"></i>
@@ -128,7 +120,7 @@
         </button>
     </div>
 
-    {{-- ===================== CONTADOR ===================== --}}
+    {{-- CONTADOR --}}
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <span>
             Mostrando <strong class="text-gray-800 dark:text-gray-100">{{ $productos->firstItem() ?? 0 }}</strong>
@@ -144,7 +136,7 @@
         @endif
     </div>
 
-    {{-- ===================== GRID ===================== --}}
+    {{-- GRID --}}
     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
         @forelse($productos as $producto)
@@ -170,18 +162,15 @@
                  data-stock="{{ $producto->stock }}"
                  onclick="abrirModal(this)">
 
-                {{-- Imagen --}}
                 <div class="w-full h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden relative border-b border-gray-100 dark:border-gray-700">
                     <img src="{{ $imagen }}" alt="{{ $producto->name }}"
                          class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                          onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
 
-                    {{-- Badge marca --}}
                     <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">
                         {{ $marca }}
                     </span>
 
-                    {{-- Badge stock --}}
                     @if($producto->stock <= 0)
                         <span class="absolute top-3 right-3 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">
                             Agotado
@@ -193,7 +182,6 @@
                     @endif
                 </div>
 
-                {{-- Info --}}
                 <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div class="space-y-1">
                         <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">{{ $categ }}</span>
@@ -240,11 +228,10 @@
 
     </div>
 
-    {{-- ===================== PAGINADOR ===================== --}}
+    {{-- PAGINADOR --}}
     @if($productos->hasPages())
         <div class="flex items-center justify-center gap-2 pt-4 flex-wrap">
 
-            {{-- Anterior --}}
             @if($productos->onFirstPage())
                 <span class="pagination-btn disabled">
                     <i class="fa-solid fa-chevron-left text-xs"></i>
@@ -255,7 +242,6 @@
                 </a>
             @endif
 
-            {{-- Números --}}
             @foreach($productos->getUrlRange(1, $productos->lastPage()) as $page => $url)
                 @if($page == $productos->currentPage())
                     <span class="pagination-btn active">{{ $page }}</span>
@@ -264,7 +250,6 @@
                 @endif
             @endforeach
 
-            {{-- Siguiente --}}
             @if($productos->hasMorePages())
                 <a href="{{ $productos->nextPageUrl() }}" class="pagination-btn">
                     <i class="fa-solid fa-chevron-right text-xs"></i>
@@ -284,7 +269,7 @@
 
 </section>
 
-{{-- ===================== MODAL ===================== --}}
+{{-- MODAL --}}
 <div id="productModal"
      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
      onclick="cerrarModal(event)">
@@ -322,130 +307,163 @@
     </div>
 </div>
 
-{{-- ===================== TOAST ===================== --}}
+{{-- TOAST --}}
 <div id="cartToast"
      class="fixed bottom-6 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
     <i class="fa-solid fa-circle-check text-[#22C55E]"></i>
     <span id="cartToastMsg">Producto agregado</span>
 </div>
 
-{{-- ===================== SCRIPTS ===================== --}}
+{{-- SCRIPTS --}}
 <script>
-    let carrito = [];
+const CART_KEY = 'casatek_carrito';
 
-    // ── Badge ──
-    function actualizarBadge() {
-        document.getElementById('cartBadge').textContent = carrito.length;
-    }
+function getToken() {
+    return localStorage.getItem('token') || null;
+}
+function getCarrito() {
+    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+}
+function saveCarrito(carrito) {
+    localStorage.setItem(CART_KEY, JSON.stringify(carrito));
+}
 
-    // ── Toast ──
-    function mostrarToast(nombre) {
-        document.getElementById('cartToastMsg').textContent = '"' + nombre + '" agregado al carrito';
-        const t = document.getElementById('cartToast');
-        t.classList.add('show');
-        clearTimeout(t._timer);
-        t._timer = setTimeout(() => t.classList.remove('show'), 2400);
-    }
+function actualizarBadge() {
+    const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
+    document.getElementById('cartBadge').textContent = total;
+}
 
-    // ── Agregar al carrito ──
-    function agregarAlCarrito(card) {
-        const item = {
-            id:          card.dataset.id,
-            nombre:      card.dataset.nombre,
+function mostrarToast(nombre) {
+    document.getElementById('cartToastMsg').textContent = '"' + nombre + '" agregado al carrito';
+    const t = document.getElementById('cartToast');
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+async function agregarAlCarrito(card) {
+    const id       = String(card.dataset.id);
+    const nombre   = card.dataset.nombre;
+    const precio   = parseFloat(card.dataset.precio);
+    const cantidad = 1;
+
+    // ── 1. Guardar en localStorage siempre ──
+    const carrito   = getCarrito();
+    const existente = carrito.find(i => i.id === id);
+    if (existente) {
+        existente.cantidad += cantidad;
+    } else {
+        carrito.push({
+            id,
+            nombre,
             marca:       card.dataset.marca,
-            precio:      card.dataset.precio,
+            precio,
             descripcion: card.dataset.descripcion,
             img:         card.dataset.img,
-        };
-        carrito.push(item);
-        actualizarBadge();
-        mostrarToast(item.nombre);
-    }
-
-    // ── Ver carrito ──
-    document.getElementById('cartViewBtn').addEventListener('click', () => {
-        if (carrito.length === 0) {
-            alert('🛒 Tu carrito está vacío.');
-            return;
-        }
-        const resumen = carrito.reduce((acc, p) => {
-            acc[p.nombre] = (acc[p.nombre] || 0) + 1;
-            return acc;
-        }, {});
-        const texto = Object.entries(resumen)
-            .map(([n, c]) => '• ' + n + (c > 1 ? ' x' + c : '') )
-            .join('\n');
-        alert('🛒 Carrito (' + carrito.length + ' item' + (carrito.length > 1 ? 's' : '') + '):\n\n' + texto);
-    });
-
-    // ── Modal ──
-    let productoModal = null;
-
-    function abrirModal(card) {
-        productoModal = {
-            id:          card.dataset.id,
-            nombre:      card.dataset.nombre,
-            marca:       card.dataset.marca,
-            categoria:   card.dataset.categoria,
-            precio:      card.dataset.precio,
-            descripcion: card.dataset.descripcion,
-            img:         card.dataset.img,
-        };
-        document.getElementById('modalImg').src            = productoModal.img;
-        document.getElementById('modalMarca').textContent  = productoModal.marca;
-        document.getElementById('modalCateg').textContent  = productoModal.categoria;
-        document.getElementById('modalNombre').textContent = productoModal.nombre;
-        document.getElementById('modalDesc').textContent   = productoModal.descripcion;
-        document.getElementById('modalPrecio').textContent = parseFloat(productoModal.precio).toFixed(2) + ' Bs.';
-        document.getElementById('modalWaBtn').href =
-            'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(productoModal.nombre);
-        document.getElementById('productModal').classList.add('open');
-    }
-
-    function cerrarModal(event) {
-        if (event === null || event.target === document.getElementById('productModal')) {
-            document.getElementById('productModal').classList.remove('open');
-        }
-    }
-
-    document.getElementById('modalCartBtn').addEventListener('click', () => {
-        if (productoModal) {
-            carrito.push({ ...productoModal });
-            actualizarBadge();
-            mostrarToast(productoModal.nombre);
-            document.getElementById('productModal').classList.remove('open');
-        }
-    });
-
-    // ── Filtros ──
-    document.getElementById('filterBtn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const dd = document.getElementById('filterDropdown');
-        dd.classList.toggle('open');
-        document.getElementById('filterChevron').style.transform =
-            dd.classList.contains('open') ? 'rotate(180deg)' : '';
-    });
-
-    document.addEventListener('click', () => {
-        document.getElementById('filterDropdown').classList.remove('open');
-        document.getElementById('filterChevron').style.transform = '';
-    });
-
-    document.querySelectorAll('.filter-opt').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('ordenInput').value = btn.dataset.orden;
-            document.getElementById('submitBtn').click();
+            cantidad,
         });
-    });
+    }
+    saveCarrito(carrito);
+    actualizarBadge();
+    mostrarToast(nombre);
 
-    // ── Búsqueda con Enter ──
-    document.getElementById('searchInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            document.getElementById('submitBtn').click();
-        }
+    // ── 2. Si está logueado, sincronizar con la BD ──
+    const token = getToken();
+    if (!token) return;
+
+    try {
+        await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept':       'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                product_id: parseInt(id),
+                quantity:   cantidad,
+            }),
+        });
+    } catch (e) {
+        console.warn('No se pudo sincronizar con la BD:', e);
+    }
+}
+
+document.getElementById('cartViewBtn').addEventListener('click', () => {
+    window.location.href = '/carrito';
+});
+
+// ── Modal ──
+let productoModal = null;
+
+function abrirModal(card) {
+    productoModal = {
+        id:          String(card.dataset.id),
+        nombre:      card.dataset.nombre,
+        marca:       card.dataset.marca,
+        categoria:   card.dataset.categoria,
+        precio:      parseFloat(card.dataset.precio),
+        descripcion: card.dataset.descripcion,
+        img:         card.dataset.img,
+    };
+    document.getElementById('modalImg').src            = productoModal.img;
+    document.getElementById('modalMarca').textContent  = productoModal.marca;
+    document.getElementById('modalCateg').textContent  = productoModal.categoria;
+    document.getElementById('modalNombre').textContent = productoModal.nombre;
+    document.getElementById('modalDesc').textContent   = productoModal.descripcion;
+    document.getElementById('modalPrecio').textContent = productoModal.precio.toFixed(2) + ' Bs.';
+    document.getElementById('modalWaBtn').href =
+        'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(productoModal.nombre);
+    document.getElementById('productModal').classList.add('open');
+}
+
+function cerrarModal(event) {
+    if (event === null || event.target === document.getElementById('productModal')) {
+        document.getElementById('productModal').classList.remove('open');
+    }
+}
+
+document.getElementById('modalCartBtn').addEventListener('click', async () => {
+    if (!productoModal) return;
+    const fakeCard = { dataset: {
+        id:          productoModal.id,
+        nombre:      productoModal.nombre,
+        marca:       productoModal.marca,
+        precio:      productoModal.precio,
+        descripcion: productoModal.descripcion,
+        img:         productoModal.img,
+    }};
+    await agregarAlCarrito(fakeCard);
+    document.getElementById('productModal').classList.remove('open');
+});
+
+// ── Filtros ──
+document.getElementById('filterBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById('filterDropdown');
+    dd.classList.toggle('open');
+    document.getElementById('filterChevron').style.transform =
+        dd.classList.contains('open') ? 'rotate(180deg)' : '';
+});
+document.addEventListener('click', () => {
+    document.getElementById('filterDropdown').classList.remove('open');
+    document.getElementById('filterChevron').style.transform = '';
+});
+document.querySelectorAll('.filter-opt').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('ordenInput').value = btn.dataset.orden;
+        document.getElementById('submitBtn').click();
     });
+});
+document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('submitBtn').click();
+    }
+});
+
+actualizarBadge();
 </script>
 
 @endsection
