@@ -84,7 +84,7 @@ class ProductController extends Controller
     {
         $brands     = Brand::all();
         $categories = Category::orderBy('name')->get();
-        return view('create-product', compact('brands', 'categories'));
+        return view('admin.create-product', compact('brands', 'categories'));
     }
 
     /** Vista para editar producto */

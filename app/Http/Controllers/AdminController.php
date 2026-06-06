@@ -134,7 +134,7 @@ class AdminController extends Controller
             return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
         }
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users', compact('users'));
     }
 
     public function showUser(User $user)
@@ -332,7 +332,7 @@ class AdminController extends Controller
             return response()->json(['datos' => $orders, 'message' => 'Lista de pedidos'], Response::HTTP_OK);
         }
 
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders', compact('orders'));
     }
 
     public function updateOrderStatus(Request $request, Order $order)

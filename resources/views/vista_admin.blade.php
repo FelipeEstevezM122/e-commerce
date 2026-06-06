@@ -102,7 +102,7 @@
             <i class="fa-solid fa-circle-user text-[#22C55E] text-sm"></i>
             <span class="text-sm font-bold text-green-300">{{ auth()->user()->name ?? 'Administrador' }}</span>
         </div>
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout.admin') }}">
             @csrf
             <button type="submit"
                 class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 bg-[#1f2937] border border-gray-700 hover:border-red-500 hover:text-red-400 transition-all">
