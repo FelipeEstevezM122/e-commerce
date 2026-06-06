@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\BillingInfo;
@@ -15,9 +16,6 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        // FIX: las rutas del panel admin son blade (sesión), no API (token)
-        // auth:sanctum → solo para api.php
-        // auth         → para web.php (panel blade)
         $this->middleware('auth');
         $this->middleware('admin');
     }
@@ -54,7 +52,6 @@ class AdminController extends Controller
             ->orderBy('month', 'desc')
             ->get();
 
-        // FIX: si es petición JSON (API) retorna JSON, si es blade retorna vista
         if (request()->wantsJson()) {
             return response()->json([
                 'datos' => [
@@ -74,6 +71,43 @@ class AdminController extends Controller
             'wholesalers', 'finalCustomers', 'topProducts', 'salesByMonth'
         ));
     }
+
+    // ─── NUEVO: Crear administrador desde el dashboard Blade ─────────────────
+
+    public function storeAdmin(Request $request)
+    {
+        $request->validate([
+            'admin_name'     => 'required|string|max:100',
+            'admin_email'    => 'required|string|email|max:100|unique:users,email',
+            'admin_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name'     => $request->admin_name,
+                'email'    => $request->admin_email,
+                'password' => Hash::make($request->admin_password),
+            ]);
+
+            $adminRole = Role::where('name', 'admin')->first();
+            if ($adminRole) {
+                $user->roles()->attach($adminRole, ['assigned_at' => now()]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.dashboard')
+                ->with('admin_created', "Administrador '{$user->name}' creado correctamente.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.dashboard')
+                ->with('admin_error', 'Error al crear el administrador: ' . $e->getMessage());
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
 
     public function users(Request $request)
     {
