@@ -330,7 +330,17 @@ function abrirQR(modo) {
         console.error('QR error:', e);
     }
 
-    document.getElementById('modalQR').classList.add('open');
+    // Mostrar modal y hacer scroll
+    const modal = document.getElementById('modalQR');
+    modal.classList.add('open');
+    
+    // Scroll suave hasta el modal
+    setTimeout(() => {
+        modal.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    }, 100);
 }
 
 function cerrarQR() {
