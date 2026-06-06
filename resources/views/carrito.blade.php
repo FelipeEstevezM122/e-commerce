@@ -42,7 +42,6 @@
     .dark .btn-checkout { background: #1b803a; }
     .dark .btn-checkout:hover { background: #15803d; }
 
-    /* Modal QR */
     #modalQR {
         opacity: 0;
         pointer-events: none;
@@ -66,7 +65,6 @@
 
 <main class="carrito-page max-w-6xl mx-auto px-4 py-10">
 
-    {{-- BREADCRUMB --}}
     <nav class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-8">
         <a href="{{ url('/') }}" class="hover:text-[#22C55E] transition-colors">Inicio</a>
         <span>›</span>
@@ -75,7 +73,6 @@
         <span class="text-[#22C55E] font-semibold">Mi Carrito</span>
     </nav>
 
-    {{-- ENCABEZADO --}}
     <header class="mb-10">
         <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase mb-1">Tu compra</p>
         <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight">
@@ -88,7 +85,6 @@
 
     <div class="grid lg:grid-cols-3 gap-8 items-start">
 
-        {{-- COLUMNA IZQUIERDA --}}
         <section class="lg:col-span-2">
 
             <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4 tracking-wide" id="items-counter">
@@ -97,7 +93,6 @@
 
             <ol class="space-y-4 list-none" id="cart-list"></ol>
 
-            {{-- Estado vacío --}}
             <article id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-12 text-center">
                 <p class="text-5xl mb-4">🛒</p>
                 <h2 class="text-lg font-black text-gray-700 dark:text-white mb-2">Tu carrito está vacío</h2>
@@ -108,9 +103,8 @@
                 </a>
             </article>
 
-            {{-- Botón pagar TODO (debajo de todos los productos) --}}
             <div id="btn-pagar-todo-wrap" class="hidden mt-6">
-                <button onclick="abrirQR('todo')"
+                <button id="btn-pagar-todo"
                         class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                     <i class="fa-solid fa-qrcode text-lg"></i>
                     <span>Pagar todo el carrito con QR BCP</span>
@@ -120,7 +114,6 @@
                 </button>
             </div>
 
-            {{-- Guardados --}}
             <aside class="mt-6 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-6">
                 <h2 class="text-sm font-black text-gray-700 dark:text-white mb-1 flex items-center gap-2">
                     <i class="fa-solid fa-bookmark text-[#22C55E] text-sm"></i>
@@ -133,7 +126,6 @@
 
         </section>
 
-        {{-- COLUMNA DERECHA --}}
         <aside class="sticky top-8">
             <section class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl p-7">
 
@@ -166,9 +158,7 @@
                     </div>
                 </div>
 
-                {{-- Pagar todo desde el resumen --}}
-                <button onclick="abrirQR('todo')"
-                        class="btn-checkout mb-3">
+                <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3">
                     <i class="fa-solid fa-qrcode text-sm"></i>
                     Pagar todo con QR BCP
                 </button>
@@ -201,35 +191,27 @@
     </div>
 </main>
 
-{{-- ══ MODAL QR ══ --}}
+{{-- MODAL QR --}}
 <div id="modalQR"
-     class="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4"
-     onclick="cerrarQR(event)">
+     class="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4">
     <div class="qr-box bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
 
-        {{-- Header BCP --}}
         <div class="bg-[#003087] px-6 py-4 flex items-center justify-between">
             <span class="text-white font-black text-xl tracking-tight">›BCP›</span>
-            <button onclick="cerrarQR(null)" class="text-white/70 hover:text-white transition-colors">
+            <button id="btn-cerrar-qr-header" class="text-white/70 hover:text-white transition-colors">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
 
-        {{-- Contenido --}}
         <div class="p-6 flex flex-col items-center gap-4">
 
-            {{-- Etiqueta de qué se está pagando --}}
             <div class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-2 text-center">
                 <p class="text-xs text-gray-400 font-semibold" id="qr-label">Producto</p>
                 <p class="text-sm font-black text-gray-800 dark:text-white truncate" id="qr-producto-nombre"></p>
             </div>
 
-            {{-- QR --}}
-            <div class="bg-white p-3 rounded-2xl shadow-inner border border-gray-100" id="qr-container">
-                {{-- QR se genera aquí --}}
-            </div>
+            <div class="bg-white p-3 rounded-2xl shadow-inner border border-gray-100" id="qr-container"></div>
 
-            {{-- Monto --}}
             <div class="text-center">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Monto a pagar</p>
                 <p class="text-4xl font-black text-[#003087]">
@@ -237,20 +219,18 @@
                 </p>
             </div>
 
-            {{-- Info cuenta --}}
             <div class="w-full border-t border-gray-100 dark:border-gray-700 pt-4 text-center space-y-1">
                 <p class="font-black text-gray-800 dark:text-white text-sm">Hugo Camilo Cussi Suxo</p>
                 <p class="text-xs text-gray-400">No. Cta: 201-52029768-3-02</p>
                 <p class="text-xs text-gray-400">Vencimiento: 06/06/2028</p>
             </div>
 
-            {{-- Instrucciones --}}
             <div class="w-full bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300 text-center">
                 <i class="fa-solid fa-circle-info mr-1"></i>
                 Escanea desde tu app bancaria. El monto ya está incluido.
             </div>
 
-            <button onclick="cerrarQR(null)"
+            <button id="btn-cerrar-qr-footer"
                     class="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold py-3 rounded-xl text-sm transition-colors">
                 Cerrar
             </button>
@@ -258,7 +238,6 @@
     </div>
 </div>
 
-{{-- QR Library --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
@@ -281,16 +260,12 @@ function recalcular() {
     document.getElementById('total-todos').textContent = fmt(subtotal);
     document.getElementById('items-counter').textContent =
         count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
-
-    // Mostrar/ocultar botón pagar todo
     const wrap = document.getElementById('btn-pagar-todo-wrap');
     if (count > 0) wrap.classList.remove('hidden');
     else           wrap.classList.add('hidden');
 }
 
-// ══════════════════════════════════════════
-// QR BCP — EMVCo con monto dinámico
-// ══════════════════════════════════════════
+// ── CRC16 + generador QR EMVCo ──
 function crc16(str) {
     let crc = 0xFFFF;
     for (let i = 0; i < str.length; i++) {
@@ -299,56 +274,46 @@ function crc16(str) {
             crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
         }
     }
-    return ((crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'));
+    return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
 }
 
 function generarStringQR(monto) {
     const montoStr   = parseFloat(monto).toFixed(2);
     const montoField = '54' + String(montoStr.length).padStart(2, '0') + montoStr;
-
     const base = '00020101021132580010bo.com.atc01120428511603030206122015202976830252045999' +
-                 '5303068' +
-                 montoField +
+                 '5303068' + montoField +
                  '5802BO5923Hugo Camilo Cussi Suxo6006La Paz6226072220280606193000000021303';
-
-    const crcInput = base + '6304';
-    const crc      = crc16(crcInput);
-    return base + '6304' + crc;
+    return base + '6304' + crc16(base + '6304');
 }
 
-// ── Abrir QR ──
-// modo: 'todo' → suma todo el carrito
-//       objeto { nombre, precio, cantidad } → producto individual
+// ── Modal QR ──
 function abrirQR(modo) {
     const carrito = getCarrito();
-    if (carrito.length === 0) {
-        alert('Tu carrito está vacío.');
-        return;
-    }
+    if (carrito.length === 0) { alert('Tu carrito está vacío.'); return; }
 
     let monto, label, nombre;
-
     if (modo === 'todo') {
         monto  = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-        label  = 'Pago total del carrito (' + carrito.length + ' producto' + (carrito.length !== 1 ? 's' : '') + ')';
+        label  = 'Pago total — ' + carrito.length + ' producto' + (carrito.length !== 1 ? 's' : '');
         nombre = 'Total carrito';
     } else {
-        // modo es { nombre, precio, cantidad }
         monto  = modo.precio * modo.cantidad;
         label  = 'Producto individual';
         nombre = modo.nombre;
     }
 
-    document.getElementById('qr-monto').textContent          = fmt(monto);
-    document.getElementById('qr-label').textContent          = label;
+    document.getElementById('qr-monto').textContent           = fmt(monto);
+    document.getElementById('qr-label').textContent           = label;
     document.getElementById('qr-producto-nombre').textContent = nombre;
 
-    const qrString    = generarStringQR(monto);
-    const container   = document.getElementById('qr-container');
+    // Recrear div para evitar bug de qrcodejs
+    const container  = document.getElementById('qr-container');
     container.innerHTML = '';
+    const qrDiv      = document.createElement('div');
+    container.appendChild(qrDiv);
 
-    new QRCode(container, {
-        text:         qrString,
+    new QRCode(qrDiv, {
+        text:         generarStringQR(monto),
         width:        220,
         height:       220,
         correctLevel: QRCode.CorrectLevel.M,
@@ -357,22 +322,17 @@ function abrirQR(modo) {
     document.getElementById('modalQR').classList.add('open');
 }
 
-function cerrarQR(event) {
-    if (event === null || event.target === document.getElementById('modalQR')) {
-        document.getElementById('modalQR').classList.remove('open');
-    }
+function cerrarQR() {
+    document.getElementById('modalQR').classList.remove('open');
 }
 
-// ══════════════════════════════════════════
-// Carrito
-// ══════════════════════════════════════════
+// ── Carrito ──
 async function cambiarQty(id, delta) {
     const carrito = getCarrito();
     const item    = carrito.find(i => i.id === id);
     if (!item) return;
     item.cantidad = Math.max(1, item.cantidad + delta);
     saveCarrito(carrito);
-
     document.getElementById('qty-'   + id).textContent = item.cantidad;
     document.getElementById('price-' + id).textContent = fmt(item.precio * item.cantidad);
     recalcular();
@@ -380,14 +340,12 @@ async function cambiarQty(id, delta) {
     const token = getToken();
     if (!token) return;
     try {
-        const res  = await fetch('/api/cart', {
-            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
-        });
+        const res  = await fetch('/api/cart', { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' } });
         const data = await res.json();
         const bdItem = data.datos?.items?.find(i => String(i.product_id) === String(id));
         if (bdItem) {
             await fetch('/api/cart/items/' + bdItem.id, {
-                method:  'PUT',
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ quantity: item.cantidad }),
             });
@@ -409,14 +367,12 @@ async function eliminar(id) {
         const token = getToken();
         if (!token) return;
         try {
-            const res  = await fetch('/api/cart', {
-                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
-            });
+            const res  = await fetch('/api/cart', { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' } });
             const data = await res.json();
             const bdItem = data.datos?.items?.find(i => String(i.product_id) === String(id));
             if (bdItem) {
                 await fetch('/api/cart/items/' + bdItem.id, {
-                    method:  'DELETE',
+                    method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
                 });
             }
@@ -434,18 +390,16 @@ function crearArticulo(item, index) {
     const li  = document.createElement('li');
     li.className = 'product-row bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 flex flex-col md:flex-row gap-5 transition-all duration-300';
     li.style.animationDelay = (index * 0.07) + 's';
-    li.dataset.id   = item.id;
-    li.dataset.unit = item.precio;
-
-    // Escapar para uso seguro en atributos onclick
-    const nombreEsc = item.nombre.replace(/'/g, "\\'");
+    li.dataset.id     = item.id;
+    li.dataset.unit   = item.precio;
+    li.dataset.nombre = item.nombre;
+    li.dataset.precio = item.precio;
 
     li.innerHTML = `
         <figure class="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 overflow-hidden flex items-center justify-center p-3 m-0">
-            <img src="${img}" alt="${item.nombre}" class="w-full h-full object-contain"
+            <img src="${img}" alt="" class="w-full h-full object-contain"
                  onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
         </figure>
-
         <article class="flex-1 flex flex-col justify-between">
             <div class="flex justify-between items-start gap-3">
                 <div class="flex-1 min-w-0">
@@ -453,31 +407,24 @@ function crearArticulo(item, index) {
                     <h2 class="text-base font-black text-gray-900 dark:text-white mt-0.5 leading-tight">${item.nombre}</h2>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${item.descripcion || ''}</p>
                 </div>
-
-                {{-- Botones pagar individual + eliminar --}}
                 <div class="flex flex-col gap-2 shrink-0">
-                    <button
-                        onclick="abrirQR({ nombre: '${nombreEsc}', precio: ${item.precio}, cantidad: document.getElementById('qty-${item.id}') ? parseInt(document.getElementById('qty-${item.id}').textContent) : ${item.cantidad} })"
-                        title="Pagar este producto con QR"
-                        class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                    >
-                        <i class="fa-solid fa-qrcode text-sm"></i>
+                    <button data-action="pagar-item" data-id="${item.id}"
+                            title="Pagar este producto con QR"
+                            class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                        <i class="fa-solid fa-qrcode text-sm pointer-events-none"></i>
                     </button>
-                    <button
-                        onclick="eliminar('${item.id}')"
-                        title="Eliminar producto"
-                        class="w-9 h-9 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all"
-                    >
-                        <i class="fa-solid fa-trash text-sm"></i>
+                    <button data-action="eliminar-item" data-id="${item.id}"
+                            title="Eliminar producto"
+                            class="w-9 h-9 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-trash text-sm pointer-events-none"></i>
                     </button>
                 </div>
             </div>
-
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4">
                 <div class="qty-wrap">
-                    <button onclick="cambiarQty('${item.id}', -1)">−</button>
+                    <button data-action="qty-menos" data-id="${item.id}">−</button>
                     <span class="qty-val text-gray-800 dark:text-white" id="qty-${item.id}">${item.cantidad}</span>
-                    <button onclick="cambiarQty('${item.id}', 1)">+</button>
+                    <button data-action="qty-mas" data-id="${item.id}">+</button>
                 </div>
                 <p class="flex items-baseline gap-1">
                     <span class="text-sm font-semibold text-gray-400">Bs.</span>
@@ -497,13 +444,11 @@ async function cargarCarrito() {
 
     if (token) {
         try {
-            const res  = await fetch('/api/cart', {
-                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
-            });
+            const res  = await fetch('/api/cart', { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' } });
             const data = await res.json();
             const bdItems = data.datos?.items ?? [];
             if (bdItems.length > 0) {
-                const carritoLocal = bdItems.map(i => ({
+                saveCarrito(bdItems.map(i => ({
                     id:          String(i.product_id),
                     nombre:      i.product?.name        ?? 'Producto',
                     marca:       i.product?.brand?.name ?? '',
@@ -511,12 +456,9 @@ async function cargarCarrito() {
                     descripcion: i.product?.description ?? '',
                     img:         i.product?.image1      ?? '',
                     cantidad:    i.quantity,
-                }));
-                saveCarrito(carritoLocal);
+                })));
             }
-        } catch(e) {
-            console.warn('No se pudo cargar carrito desde BD:', e);
-        }
+        } catch(e) { console.warn('No se pudo cargar carrito desde BD:', e); }
     }
 
     const carrito = getCarrito();
@@ -528,7 +470,42 @@ async function cargarCarrito() {
     recalcular();
 }
 
-document.addEventListener('DOMContentLoaded', cargarCarrito);
+document.addEventListener('DOMContentLoaded', function () {
+
+    cargarCarrito();
+
+    // ── Delegación de eventos: botones dentro de cada producto ──
+    document.getElementById('cart-list').addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        const action = btn.dataset.action;
+        const id     = btn.dataset.id;
+
+        if (action === 'qty-menos')     cambiarQty(id, -1);
+        if (action === 'qty-mas')       cambiarQty(id,  1);
+        if (action === 'eliminar-item') eliminar(id);
+
+        if (action === 'pagar-item') {
+            const row    = document.querySelector('.product-row[data-id="' + id + '"]');
+            const nombre = row.dataset.nombre;
+            const precio = parseFloat(row.dataset.precio);
+            const qty    = parseInt(document.getElementById('qty-' + id).textContent);
+            abrirQR({ nombre, precio, cantidad: qty });
+        }
+    });
+
+    // ── Botones pagar TODO ──
+    document.getElementById('btn-pagar-todo').addEventListener('click',        () => abrirQR('todo'));
+    document.getElementById('btn-pagar-todo-resumen').addEventListener('click', () => abrirQR('todo'));
+
+    // ── Cerrar modal QR ──
+    document.getElementById('btn-cerrar-qr-header').addEventListener('click', cerrarQR);
+    document.getElementById('btn-cerrar-qr-footer').addEventListener('click', cerrarQR);
+    document.getElementById('modalQR').addEventListener('click', function(e) {
+        if (e.target === this) cerrarQR();
+    });
+});
 </script>
 
 @endsection
