@@ -59,9 +59,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/products/{product}',   [ProductController::class, 'destroy'])->name('products.destroy');
 
     // Usuarios
-    Route::get('/users',           [AdminController::class, 'users'])      ->name('users.index');
-    Route::get('/users/{user}',    [AdminController::class, 'showUser'])   ->name('users.show');
-    Route::delete('/users/{user}', [AdminController::class, 'deleteUser']) ->name('users.destroy');
+    Route::get('/users',                   [AdminController::class, 'users'])       ->name('users.index');
+    Route::get('/users/{user}',            [AdminController::class, 'showUser'])    ->name('users.show');
+    Route::delete('/users/{user}',         [AdminController::class, 'deleteUser'])  ->name('users.destroy');
+    Route::post('/users/store-admin',      [AdminController::class, 'storeAdmin'])  ->name('users.store-admin'); // NUEVO
 
     // Pedidos
     Route::get('/orders',                  [AdminController::class, 'orders'])            ->name('orders.index');
