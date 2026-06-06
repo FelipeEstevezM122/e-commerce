@@ -310,7 +310,7 @@
 {{-- TOAST --}}
 <div id="cartToast"
      class="fixed bottom-6 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
-    <i class="fa-solid fa-circle-check text-[#22C55E]"></i>
+    <i id="cartToastIcon" class="fa-solid fa-circle-check text-[#22C55E]"></i>
     <span id="cartToastMsg">Producto agregado</span>
 </div>
 
@@ -318,38 +318,67 @@
 <script>
 const CART_KEY = 'casatek_carrito';
 
-function getToken() {
-    return localStorage.getItem('token') || null;
-}
-function getCarrito() {
-    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-}
-function saveCarrito(carrito) {
-    localStorage.setItem(CART_KEY, JSON.stringify(carrito));
-}
+function getToken()    { return localStorage.getItem('token') || null; }
+function getCarrito()  { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
 
 function actualizarBadge() {
     const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
     document.getElementById('cartBadge').textContent = total;
 }
 
+// ── Toast éxito ──
 function mostrarToast(nombre) {
+    const icon = document.getElementById('cartToastIcon');
+    const t    = document.getElementById('cartToast');
     document.getElementById('cartToastMsg').textContent = '"' + nombre + '" agregado al carrito';
-    const t = document.getElementById('cartToast');
+    icon.className      = 'fa-solid fa-circle-check text-[#22C55E]';
+    t.style.background  = '';
     t.classList.add('show');
     clearTimeout(t._timer);
     t._timer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
+// ── Toast error (stock) ──
+function mostrarToastError(mensaje) {
+    const icon = document.getElementById('cartToastIcon');
+    const t    = document.getElementById('cartToast');
+    document.getElementById('cartToastMsg').textContent = mensaje;
+    icon.className      = 'fa-solid fa-circle-xmark text-red-400';
+    t.style.background  = '#7f1d1d';
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => {
+        t.classList.remove('show');
+        t.style.background = '';
+    }, 2400);
+}
+
 async function agregarAlCarrito(card) {
+    const stock = parseInt(card.dataset.stock ?? '0');
+
+    // ── Capa 1: control de stock en JS ──
+    if (stock <= 0) {
+        mostrarToastError('Este producto no tiene stock disponible');
+        return;
+    }
+
     const id       = String(card.dataset.id);
     const nombre   = card.dataset.nombre;
     const precio   = parseFloat(card.dataset.precio);
     const cantidad = 1;
 
-    // ── 1. Guardar en localStorage siempre ──
+    // ── Capa 2: verificar que no supere el stock con lo que ya hay en carrito ──
     const carrito   = getCarrito();
     const existente = carrito.find(i => i.id === id);
+    const yaEnCarrito = existente ? existente.cantidad : 0;
+
+    if (yaEnCarrito >= stock) {
+        mostrarToastError('Ya tienes el máximo disponible en tu carrito (' + stock + ' unid.)');
+        return;
+    }
+
+    // ── Guardar en localStorage ──
     if (existente) {
         existente.cantidad += cantidad;
     } else {
@@ -367,16 +396,16 @@ async function agregarAlCarrito(card) {
     actualizarBadge();
     mostrarToast(nombre);
 
-    // ── 2. Si está logueado, sincronizar con la BD ──
+    // ── Capa 3: sincronizar con BD si está logueado ──
     const token = getToken();
     if (!token) return;
 
     try {
-        await fetch('/api/cart/add', {
+        const res  = await fetch('/api/cart/add', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Accept':       'application/json',
+                'Content-Type':  'application/json',
+                'Accept':        'application/json',
                 'Authorization': 'Bearer ' + token,
             },
             body: JSON.stringify({
@@ -384,6 +413,24 @@ async function agregarAlCarrito(card) {
                 quantity:   cantidad,
             }),
         });
+
+        // Si la BD rechaza por stock, revertir en localStorage y mostrar error
+        if (!res.ok) {
+            const data = await res.json();
+            // Revertir
+            const carritoActual = getCarrito();
+            const item = carritoActual.find(i => i.id === id);
+            if (item) {
+                item.cantidad -= cantidad;
+                if (item.cantidad <= 0) {
+                    const idx = carritoActual.indexOf(item);
+                    carritoActual.splice(idx, 1);
+                }
+                saveCarrito(carritoActual);
+                actualizarBadge();
+            }
+            mostrarToastError(data.message || 'Error al agregar al carrito');
+        }
     } catch (e) {
         console.warn('No se pudo sincronizar con la BD:', e);
     }
@@ -405,7 +452,9 @@ function abrirModal(card) {
         precio:      parseFloat(card.dataset.precio),
         descripcion: card.dataset.descripcion,
         img:         card.dataset.img,
+        stock:       parseInt(card.dataset.stock ?? '0'),
     };
+
     document.getElementById('modalImg').src            = productoModal.img;
     document.getElementById('modalMarca').textContent  = productoModal.marca;
     document.getElementById('modalCateg').textContent  = productoModal.categoria;
@@ -414,6 +463,19 @@ function abrirModal(card) {
     document.getElementById('modalPrecio').textContent = productoModal.precio.toFixed(2) + ' Bs.';
     document.getElementById('modalWaBtn').href =
         'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(productoModal.nombre);
+
+    // Deshabilitar botón del modal si no hay stock
+    const btnModal = document.getElementById('modalCartBtn');
+    if (productoModal.stock <= 0) {
+        btnModal.disabled = true;
+        btnModal.innerHTML = '<i class="fa-solid fa-ban"></i> Sin stock';
+        btnModal.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        btnModal.disabled = false;
+        btnModal.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Agregar al carrito';
+        btnModal.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
     document.getElementById('productModal').classList.add('open');
 }
 
@@ -432,9 +494,12 @@ document.getElementById('modalCartBtn').addEventListener('click', async () => {
         precio:      productoModal.precio,
         descripcion: productoModal.descripcion,
         img:         productoModal.img,
+        stock:       productoModal.stock,
     }};
     await agregarAlCarrito(fakeCard);
-    document.getElementById('productModal').classList.remove('open');
+    if (productoModal.stock > 0) {
+        document.getElementById('productModal').classList.remove('open');
+    }
 });
 
 // ── Filtros ──
