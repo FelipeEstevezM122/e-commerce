@@ -81,4 +81,33 @@ class AuthController extends Controller
     {
         return response()->json($request->user()->load('roles', 'rank'));
     }
+
+    public function updateProfile(Request $request)
+{
+    $user = $request->user();
+
+    $request->validate([
+        'name'     => 'required|string|max:100',
+        'email'    => 'required|string|email|max:100|unique:users,email,' . $user->id,
+        'phone'    => 'nullable|string|max:20',
+        'whatsapp' => 'nullable|string|max:20',
+        'password' => 'nullable|string|min:8|confirmed',
+    ]);
+
+    $user->name     = $request->name;
+    $user->email    = $request->email;
+    $user->phone    = $request->phone;
+    $user->whatsapp = $request->whatsapp;
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    $user->save();
+
+    return response()->json([
+        'message' => 'Perfil actualizado correctamente',
+        'user'    => $user->load('roles', 'rank'),
+    ]);
+}
 }
