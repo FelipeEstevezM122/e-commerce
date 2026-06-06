@@ -5,7 +5,8 @@ use App\Http\Controllers\{
     OrderController,
     BillingInfoController,
     RankController,
-    TicketController
+    TicketController,
+    CatalogoController
 };
 
 // 1. Rutas Públicas (Cualquiera puede ver rangos)
@@ -28,44 +29,42 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('tickets/{ticket}', [TicketController::class, 'show']);
     Route::get('orders/{order}/ticket', [TicketController::class, 'showByOrder']);
     
-    // Rutas Administrativas (Asumiendo que tienes un middleware 'admin')
+    // Rutas Administrativas
     Route::middleware('admin')->group(function () {
         Route::apiResource('ranks', RankController::class)->except(['index', 'show']);
         Route::get('admin/tickets', [TicketController::class, 'adminIndex']);
         Route::post('orders/{order}/generate-ticket', [TicketController::class, 'generate']);
     });
 });
-//Para View
+
+// ── Vistas ────────────────────────────────────────────────────
 Route::get('/', function () {
     return view('index');
 });
-// NUEVA: Ruta del Catálogo (Muestra los productos cargados)
-Route::get('/productos', function () {
-    // Nota: Aquí tus compañeros luego cambiarán esto para pasarle la variable $images desde el controlador
-    return view('productos'); 
-});
-// NUEVA: Ruta para la sección de Nosotros
+
+// FIX: ahora usa CatalogoController con datos reales de la BD
+Route::get('/productos', [CatalogoController::class, 'index'])->name('productos');
+
 Route::get('/nosotros', function () {
     return view('nosotros');
 })->name('nosotros');
-//contactanos
+
 Route::get('/contactanos', function () {
     return view('contactanos');
 })->name('contactanos');
-//iniciarsesion
+
 Route::get('/iniciarsesion', function () {
     return view('iniciarsesion');
 })->name('iniciarsesion');
-//carrito
+
 Route::get('/carrito', function () {
     return view('carrito');
 })->name('carrito');
-//registro
+
 Route::get('/registro', function () {
     return view('registro');
 })->name('registro');
-//olvidarcontraseña
-// Mostrar el formulario
+
 Route::get('/recuperar_contrasena', function () {
     return view('recuperar_contrasena');
 })->name('recuperar_contrasena');
