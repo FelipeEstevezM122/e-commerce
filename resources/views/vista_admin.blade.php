@@ -1,4 +1,3 @@
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 :root {
@@ -6,14 +5,27 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
+/* ↑ después del :root, agrega: */
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
 #productsPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
 #main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
 
-.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
-.stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
-.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--accent, var(--green)); opacity:.7; }
-.stat-label { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-.stat-value { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#fff; line-height:1; }
+.section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
+.section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
+
+.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:28px 0; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:22px 20px; transition:border-color .2s, transform .2s; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--accent-color, var(--green)); opacity:.7; }
+.stat-card:hover { border-color:var(--border-h); transform:translateY(-2px); }
+.stat-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.stat-label { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.stat-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.stat-value { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#fff; line-height:1; margin-bottom:8px; }
+.stat-sub { font-size:11px; color:var(--muted); }
 
 .search-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:20px; }
 .search-inner { display:flex; gap:12px; flex-wrap:wrap; }
@@ -40,9 +52,9 @@ tbody tr:hover { background:rgba(255,255,255,.025); }
 td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 
 .stock-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
-.stock-ok     { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
-.stock-low    { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
-.stock-none   { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.stock-ok   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.stock-low  { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.stock-none { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
 
 .act-btn { width:34px; height:34px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; text-decoration:none; }
 .act-edit { background:rgba(96,165,250,.12); color:#60a5fa; border:1px solid rgba(96,165,250,.25); }
@@ -62,8 +74,61 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 #adminToast { opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:none; }
 #adminToast.show { opacity:1; transform:translateY(0); }
 
+.fade-up { animation:fadeUp .4s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; }
+.delay-3 { animation-delay:.21s; } .delay-4 { animation-delay:.28s; }
+
+/* ══ MODAL EDITAR PRODUCTO ══ */
+#modalEditProduct {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.8); backdrop-filter:blur(8px);
+    z-index:300; align-items:center; justify-content:center; padding:20px;
+}
+#modalEditProduct.open { display:flex; }
+.modal-box {
+    background:#0e1a12; border:1px solid rgba(34,197,94,.2);
+    border-radius:22px; width:100%; max-width:640px;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 24px 80px rgba(0,0,0,.7);
+    animation:modal-in .22s ease;
+}
+@keyframes modal-in { from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+.modal-head {
+    padding:18px 22px; border-bottom:1px solid rgba(34,197,94,.12);
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; background:#0e1a12; z-index:1;
+}
+.modal-head h3 { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
+.modal-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#6b7280; cursor:pointer; font-size:15px; transition:all .15s; }
+.modal-close:hover { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); color:#f87171; }
+.modal-body { padding:22px; }
+.m-label { display:block; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.m-input {
+    width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; padding:10px 14px; font-size:13px; font-family:'DM Sans',sans-serif;
+    color:#fff; outline:none; transition:border-color .15s;
+}
+.m-input:focus { border-color:var(--green); }
+.m-input::placeholder { color:rgba(255,255,255,.2); }
+select.m-input option { background:#1f2937; }
+textarea.m-input { resize:vertical; }
+.m-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+.m-field { margin-bottom:16px; }
+.m-footer { display:flex; gap:10px; padding:18px 22px; border-top:1px solid rgba(34,197,94,.12); }
+.btn-save { flex:1; background:var(--green); color:#fff; border:none; border-radius:12px; padding:11px 20px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-save:hover { background:var(--green-dark); }
+.btn-cancel-m { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:11px 20px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all .15s; }
+.btn-cancel-m:hover { color:#fff; background:rgba(255,255,255,.08); }
+.img-preview-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px; }
+.img-preview-item { position:relative; }
+.img-preview-item img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,.08); }
+.img-preview-item p { font-size:10px; color:var(--muted); margin-top:4px; text-align:center; }
+.file-input { width:100%; background:rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.15); border-radius:10px; padding:8px 12px; font-size:12px; color:#9ca3af; cursor:pointer; }
+.file-input:hover { border-color:var(--green); }
+
 @media(max-width:1100px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:768px) { #main { padding:20px 16px 40px; } .stat-grid { grid-template-columns:1fr 1fr; } }
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .stat-grid { grid-template-columns:1fr 1fr; } .m-row { grid-template-columns:1fr; } }
 </style>
 
 <div id="productsPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
@@ -72,23 +137,19 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 
     <main id="main">
 
-        {{-- TÍTULO --}}
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;flex-wrap:wrap;gap:12px" class="fade-up">
             <div>
-                <p style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px">
-                    <i class="fa-solid fa-box mr-1"></i> Catálogo
-                </p>
-                <h1 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff">Panel de Productos</h1>
-                <p style="font-size:12px;color:var(--muted);margin-top:2px">Administración general del catálogo Casatek</p>
+                <p class="section-label"><i class="fa-solid fa-box mr-1"></i> Catálogo</p>
+                <h1 class="section-title">Panel de <span style="color:var(--green)">Productos</span></h1>
+                <p style="font-size:12px;color:var(--muted);margin-top:4px">Administración general del catálogo Casatek</p>
             </div>
             <a href="{{ route('admin.products.create') }}"
-               style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:11px 22px;border-radius:12px;text-decoration:none;transition:background .15s"
+               style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:11px 22px;border-radius:12px;text-decoration:none;transition:background .15s;margin-top:8px"
                onmouseover="this.style.background='var(--green-dark)'" onmouseout="this.style.background='var(--green)'">
                 <i class="fa-solid fa-plus"></i> Agregar Producto
             </a>
         </div>
 
-        {{-- MENSAJES --}}
         @if(session('success'))
         <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80;padding:12px 16px;border-radius:12px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px">
             <i class="fa-solid fa-circle-check"></i>{{ session('success') }}
@@ -102,27 +163,49 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
         </div>
         @endif
 
-        {{-- STATS --}}
         <div class="stat-grid">
-            <div class="stat-card" style="--accent:var(--green)">
-                <p class="stat-label">Productos</p>
+            <div class="stat-card fade-up delay-1" style="--accent-color:var(--green)">
+                <div class="stat-top">
+                    <span class="stat-label">Productos</span>
+                    <div class="stat-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-box" style="color:#22C55E"></i>
+                    </div>
+                </div>
                 <p class="stat-value">{{ $totalProducts }}</p>
+                <div class="stat-sub">en catálogo activo</div>
             </div>
-            <div class="stat-card" style="--accent:#3b82f6">
-                <p class="stat-label">Marcas</p>
+            <div class="stat-card fade-up delay-2" style="--accent-color:#3b82f6">
+                <div class="stat-top">
+                    <span class="stat-label">Marcas</span>
+                    <div class="stat-icon" style="background:rgba(59,130,246,.15)">
+                        <i class="fa-solid fa-tag" style="color:#60a5fa"></i>
+                    </div>
+                </div>
                 <p class="stat-value">{{ $totalBrands }}</p>
+                <div class="stat-sub">marcas registradas</div>
             </div>
-            <div class="stat-card" style="--accent:#facc15">
-                <p class="stat-label">Stock Bajo</p>
+            <div class="stat-card fade-up delay-3" style="--accent-color:#facc15">
+                <div class="stat-top">
+                    <span class="stat-label">Stock Bajo</span>
+                    <div class="stat-icon" style="background:rgba(250,204,21,.15)">
+                        <i class="fa-solid fa-triangle-exclamation" style="color:#facc15"></i>
+                    </div>
+                </div>
                 <p class="stat-value">{{ $lowStock }}</p>
+                <div class="stat-sub">productos con poco stock</div>
             </div>
-            <div class="stat-card" style="--accent:#ef4444">
-                <p class="stat-label">Sin Stock</p>
+            <div class="stat-card fade-up delay-4" style="--accent-color:#ef4444">
+                <div class="stat-top">
+                    <span class="stat-label">Sin Stock</span>
+                    <div class="stat-icon" style="background:rgba(239,68,68,.15)">
+                        <i class="fa-solid fa-ban" style="color:#f87171"></i>
+                    </div>
+                </div>
                 <p class="stat-value">{{ $noStock }}</p>
+                <div class="stat-sub">productos agotados</div>
             </div>
         </div>
 
-        {{-- BUSCADOR --}}
         <div class="search-wrap">
             <form method="GET" action="{{ route('admin.products.index') }}">
                 <div class="search-inner">
@@ -147,7 +230,6 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
             </form>
         </div>
 
-        {{-- TABLA --}}
         <div class="panel">
             <div class="panel-head">
                 <h2><i class="fa-solid fa-table-list" style="color:var(--green)"></i> Gestión de Productos</h2>
@@ -202,9 +284,27 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                             </td>
                             <td>
                                 <div style="display:flex;justify-content:center;gap:6px">
-                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="act-btn act-edit" title="Editar">
+                                    {{-- BOTÓN EDITAR → abre modal --}}
+                                    <button type="button"
+                                        class="act-btn act-edit"
+                                        title="Editar"
+                                        onclick='abrirModalEditar({
+                                            id:        {{ $product->id }},
+                                            name:      {{ json_encode($product->name) }},
+                                            sku:       {{ json_encode($product->sku) }},
+                                            base_price:{{ $product->base_price }},
+                                            stock:     {{ $product->stock }},
+                                            warranty_days: {{ $product->warranty_days ?? 0 }},
+                                            description:   {{ json_encode($product->description ?? "") }},
+                                            brand_id:      {{ $product->brand_id ?? "null" }},
+                                            category_id:   {{ $product->category_id ?? "null" }},
+                                            image1: {{ json_encode($product->image1 ?? "") }},
+                                            image2: {{ json_encode($product->image2 ?? "") }},
+                                            image3: {{ json_encode($product->image3 ?? "") }},
+                                            image4: {{ json_encode($product->image4 ?? "") }}
+                                        })'>
                                         <i class="fa-solid fa-pen"></i>
-                                    </a>
+                                    </button>
                                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
                                           onsubmit="return confirm('¿Eliminar {{ addslashes($product->name) }}?')">
                                         @csrf @method('DELETE')
@@ -261,6 +361,123 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
     </main>
 </div>
 
+{{-- ══════════════════════════════════════════
+     MODAL EDITAR PRODUCTO
+══════════════════════════════════════════ --}}
+<div id="modalEditProduct" onclick="cerrarModalEdit(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+
+        <div class="modal-head">
+            <h3>
+                <i class="fa-solid fa-pen-to-square" style="color:#60a5fa"></i>
+                Editar Producto
+            </h3>
+            <button class="modal-close" onclick="cerrarModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="formEditProduct" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="modal-body">
+
+                {{-- Nombre --}}
+                <div class="m-field">
+                    <label class="m-label">Nombre del Producto *</label>
+                    <input type="text" id="edit_name" name="name" class="m-input" placeholder="Nombre del producto" required>
+                </div>
+
+                {{-- Descripción --}}
+                <div class="m-field">
+                    <label class="m-label">Descripción</label>
+                    <textarea id="edit_description" name="description" rows="3" class="m-input" placeholder="Descripción del producto..."></textarea>
+                </div>
+
+                {{-- SKU + Precio --}}
+                <div class="m-row">
+                    <div>
+                        <label class="m-label">SKU *</label>
+                        <input type="text" id="edit_sku" name="sku" class="m-input" placeholder="SKU-001" required>
+                    </div>
+                    <div>
+                        <label class="m-label">Precio base (Bs.) *</label>
+                        <input type="number" id="edit_base_price" name="base_price" class="m-input" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                </div>
+
+                {{-- Stock + Garantía --}}
+                <div class="m-row">
+                    <div>
+                        <label class="m-label">Stock *</label>
+                        <input type="number" id="edit_stock" name="stock" class="m-input" min="0" required>
+                    </div>
+                    <div>
+                        <label class="m-label">Días de garantía</label>
+                        <input type="number" id="edit_warranty_days" name="warranty_days" class="m-input" min="0">
+                    </div>
+                </div>
+
+                {{-- Marca + Categoría --}}
+                <div class="m-row">
+                    <div>
+                        <label class="m-label">Marca</label>
+                        <select id="edit_brand_id" name="brand_id" class="m-input">
+                            <option value="">Sin marca</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="m-label">Categoría</label>
+                        <select id="edit_category_id" name="category_id" class="m-input">
+                            <option value="">Sin categoría</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Imágenes actuales + reemplazo --}}
+                <div class="m-field">
+                    <label class="m-label">Imágenes actuales</label>
+                    <div class="img-preview-grid">
+                        @foreach([1,2,3,4] as $i)
+                        <div class="img-preview-item">
+                            <img id="edit_img_preview_{{ $i }}"
+                                 src="https://via.placeholder.com/80?text=Sin+img"
+                                 onerror="this.src='https://via.placeholder.com/80?text=Sin+img'">
+                            <p>Imagen {{ $i }}</p>
+                            <input type="file" name="image{{ $i }}" accept="image/jpeg,image/png,image/webp"
+                                   class="file-input" style="margin-top:4px"
+                                   onchange="previewImg(this, 'edit_img_preview_{{ $i }}')">
+                        </div>
+                        @endforeach
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);margin-top:8px">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Deja un campo vacío para conservar la imagen actual.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="m-footer">
+                <button type="button" class="btn-cancel-m" onclick="cerrarModal()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 {{-- Toast --}}
 <div id="adminToast"
      class="fixed bottom-6 right-6 z-[200]"
@@ -270,6 +487,56 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 </div>
 
 <script>
+// ── Rutas base para el update ──
+const updateBaseUrl = "{{ url('admin/products') }}";
+
+function abrirModalEditar(p) {
+    // Rellenar campos
+    document.getElementById('edit_name').value          = p.name;
+    document.getElementById('edit_sku').value           = p.sku;
+    document.getElementById('edit_base_price').value    = p.base_price;
+    document.getElementById('edit_stock').value         = p.stock;
+    document.getElementById('edit_warranty_days').value = p.warranty_days;
+    document.getElementById('edit_description').value   = p.description;
+
+    // Marca y categoría
+    const brandSel = document.getElementById('edit_brand_id');
+    const catSel   = document.getElementById('edit_category_id');
+    brandSel.value = p.brand_id ?? '';
+    catSel.value   = p.category_id ?? '';
+
+    // Previews de imágenes
+    [1,2,3,4].forEach(i => {
+        const img = document.getElementById('edit_img_preview_' + i);
+        const src = p['image' + i];
+        img.src = src && src.length > 0 ? src : 'https://via.placeholder.com/80?text=Sin+img';
+    });
+
+    // Action del form → /admin/products/{id}
+    document.getElementById('formEditProduct').action = updateBaseUrl + '/' + p.id;
+
+    // Abrir modal
+    document.getElementById('modalEditProduct').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModal() {
+    document.getElementById('modalEditProduct').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function cerrarModalEdit(e) {
+    if (e.target === document.getElementById('modalEditProduct')) cerrarModal();
+}
+
+function previewImg(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => document.getElementById(previewId).src = e.target.result;
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 @if(session('success'))
     (function(){
         const t = document.getElementById('adminToast');
@@ -279,4 +546,3 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
     })();
 @endif
 </script>
-

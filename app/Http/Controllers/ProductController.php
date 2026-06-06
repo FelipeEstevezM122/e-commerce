@@ -65,7 +65,8 @@ class ProductController extends Controller
         $totalBrands   = Brand::count();
         $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
         $noStock       = Product::where('stock', 0)->count();
-        $categories    = Category::orderBy('name')->get(); // FIX #2
+        $categories    = Category::orderBy('name')->get();
+        $brands        = Brand::orderBy('name')->get();  // FIX #2
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -75,7 +76,7 @@ class ProductController extends Controller
         }
 
         return view('vista_admin', compact(
-            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories'
+            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories','brands'
         ));
     }
 

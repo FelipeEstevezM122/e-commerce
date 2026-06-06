@@ -1,8 +1,3 @@
-@extends('layouts.app')
-
-@section('titulo', 'Tickets - Admin Casatek')
-
-@section('contenido')
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -11,11 +6,18 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
 #ticketsPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
-
 #main { padding:32px 28px 48px; max-width:1200px; margin:0 auto; }
 
-.mini-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+.section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#c084fc; margin-bottom:6px; }
+.section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
+
+.mini-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
 .mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
 .mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
 .mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
@@ -52,24 +54,26 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .s-btn { background:var(--green-dark); color:#fff; border:none; border-radius:10px; padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:background .15s; }
 .s-btn:hover { background:var(--green); }
 
+.fade-up { animation:fadeUp .4s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; } .delay-3 { animation-delay:.21s; }
+
 @media(max-width:768px) { #main { padding:20px 16px 40px; } .mini-stats { grid-template-columns:1fr; } }
 </style>
 
-<div id="ticketsPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
+<div id="ticketsPage">
 
     @include('partials.header-admin')
 
     <main id="main">
 
-        <div style="margin-bottom:24px">
-            <p style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c084fc;margin-bottom:4px">
-                <i class="fa-solid fa-ticket mr-1"></i> Comprobantes
-            </p>
-            <h1 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff">Tickets Generados</h1>
+        <div class="fade-up">
+            <p class="section-label"><i class="fa-solid fa-ticket mr-1"></i> Comprobantes</p>
+            <h1 class="section-title">Tickets <span style="color:#c084fc">Generados</span></h1>
         </div>
 
         <div class="mini-stats">
-            <div class="mini-card">
+            <div class="mini-card fade-up delay-1">
                 <div class="mini-icon" style="background:rgba(168,85,247,.15)">
                     <i class="fa-solid fa-ticket" style="color:#c084fc"></i>
                 </div>
@@ -78,7 +82,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                     <p class="mini-val">{{ $tickets->total() }}</p>
                 </div>
             </div>
-            <div class="mini-card">
+            <div class="mini-card fade-up delay-2">
                 <div class="mini-icon" style="background:rgba(34,197,94,.15)">
                     <i class="fa-solid fa-calendar-day" style="color:var(--green)"></i>
                 </div>
@@ -87,7 +91,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                     <p class="mini-val">{{ $tickets->getCollection()->filter(fn($t) => $t->issued_at->isToday())->count() }}</p>
                 </div>
             </div>
-            <div class="mini-card">
+            <div class="mini-card fade-up delay-3">
                 <div class="mini-icon" style="background:rgba(96,165,250,.15)">
                     <i class="fa-solid fa-calendar-week" style="color:#60a5fa"></i>
                 </div>

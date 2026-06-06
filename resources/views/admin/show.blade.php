@@ -7,6 +7,11 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
 #showPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
 
 #main { padding:32px 28px 48px; max-width:1100px; margin:0 auto; }

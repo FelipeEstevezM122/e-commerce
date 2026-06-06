@@ -1,4 +1,3 @@
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 :root {
@@ -6,23 +5,35 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
 #ordersPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
-
-/* MAIN */
 #main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
+
+.section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
+.section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
+
+/* STAT MINI CARDS */
+.mini-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
+.mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
+.mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+.mini-val { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff; line-height:1.1; }
 
 /* STATUS FILTER TABS */
 .status-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 .s-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:var(--muted); background:rgba(255,255,255,.03); text-decoration:none; transition:all .15s; white-space:nowrap; }
 .s-tab:hover { color:#fff; border-color:rgba(255,255,255,.2); }
 .s-tab.active { color:#fff; }
-.s-tab.t-all      { border-color:rgba(255,255,255,.2); }
-.s-tab.t-all.active { background:rgba(255,255,255,.1); }
-.s-tab.t-pending.active   { background:rgba(250,204,21,.12); border-color:rgba(250,204,21,.3); color:#facc15; }
-.s-tab.t-paid.active      { background:rgba(96,165,250,.12); border-color:rgba(96,165,250,.3); color:#60a5fa; }
-.s-tab.t-shipped.active   { background:rgba(168,85,247,.12); border-color:rgba(168,85,247,.3); color:#c084fc; }
-.s-tab.t-delivered.active { background:rgba(34,197,94,.12);  border-color:rgba(34,197,94,.3);  color:#4ade80; }
-.s-tab.t-cancelled.active { background:rgba(239,68,68,.12);  border-color:rgba(239,68,68,.3);  color:#f87171; }
+.s-tab.t-all.active      { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
+.s-tab.t-pending.active  { background:rgba(250,204,21,.12); border-color:rgba(250,204,21,.3); color:#facc15; }
+.s-tab.t-paid.active     { background:rgba(96,165,250,.12); border-color:rgba(96,165,250,.3); color:#60a5fa; }
+.s-tab.t-shipped.active  { background:rgba(168,85,247,.12); border-color:rgba(168,85,247,.3); color:#c084fc; }
+.s-tab.t-delivered.active{ background:rgba(34,197,94,.12);  border-color:rgba(34,197,94,.3);  color:#4ade80; }
+.s-tab.t-cancelled.active{ background:rgba(239,68,68,.12);  border-color:rgba(239,68,68,.3);  color:#f87171; }
 
 /* TABLE */
 .panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
@@ -62,7 +73,13 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .empty-state { text-align:center; padding:56px 20px; color:var(--muted); }
 .empty-state i { font-size:40px; opacity:.3; display:block; margin-bottom:12px; }
 
-@media(max-width:768px) { #main { padding:20px 16px 40px; } }
+.fade-up { animation:fadeUp .4s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; }
+.delay-3 { animation-delay:.21s; } .delay-4 { animation-delay:.28s; }
+
+@media(max-width:1100px) { .mini-stats { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .mini-stats { grid-template-columns:1fr 1fr; } }
 </style>
 
 <div id="ordersPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
@@ -71,13 +88,52 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 
     <main id="main">
 
-        <div style="margin-bottom:24px">
-            <p style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px">
-                <i class="fa-solid fa-clipboard-list mr-1"></i> Gestión
-            </p>
-            <h1 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff">Pedidos</h1>
+        <div class="fade-up">
+            <p class="section-label"><i class="fa-solid fa-clipboard-list mr-1"></i> Gestión</p>
+            <h1 class="section-title">Panel de <span style="color:var(--green)">Pedidos</span></h1>
         </div>
 
+        {{-- MINI STATS --}}
+        <div class="mini-stats">
+            <div class="mini-card fade-up delay-1">
+                <div class="mini-icon" style="background:rgba(255,255,255,.06)">
+                    <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Total</p>
+                    <p class="mini-val">{{ $orders->total() }}</p>
+                </div>
+            </div>
+            <div class="mini-card fade-up delay-2">
+                <div class="mini-icon" style="background:rgba(250,204,21,.15)">
+                    <i class="fa-solid fa-clock" style="color:#facc15"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Pendientes</p>
+                    <p class="mini-val">{{ $pendingCount ?? '—' }}</p>
+                </div>
+            </div>
+            <div class="mini-card fade-up delay-3">
+                <div class="mini-icon" style="background:rgba(168,85,247,.15)">
+                    <i class="fa-solid fa-truck" style="color:#c084fc"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Enviados</p>
+                    <p class="mini-val">{{ $shippedCount ?? '—' }}</p>
+                </div>
+            </div>
+            <div class="mini-card fade-up delay-4">
+                <div class="mini-icon" style="background:rgba(34,197,94,.15)">
+                    <i class="fa-solid fa-circle-check" style="color:#22C55E"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Entregados</p>
+                    <p class="mini-val">{{ $deliveredCount ?? '—' }}</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- TABS --}}
         <div class="status-tabs">
             <a href="{{ route('admin.orders.index') }}"
                class="s-tab t-all {{ !request('status') ? 'active' : '' }}">
