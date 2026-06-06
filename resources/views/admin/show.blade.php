@@ -1,8 +1,4 @@
-@extends('layouts.app')
 
-@section('titulo', 'Detalle Usuario - Admin Casatek')
-
-@section('contenido')
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -13,31 +9,11 @@
 }
 #showPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
 
-/* HEADER */
-#adminHeader { background:rgba(6,13,10,.95); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; padding:0 28px; height:64px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-.ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
-@keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
-.ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
-.ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
-.ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
-.ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
-.ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
-.ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
-.ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
-.ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
-.ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; }
-.ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
-
-/* MAIN */
 #main { padding:32px 28px 48px; max-width:1100px; margin:0 auto; }
 
-/* BACK */
 .back-link { display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; font-weight:600; text-decoration:none; margin-bottom:24px; transition:color .15s; }
 .back-link:hover { color:var(--green); }
 
-/* USER HERO */
 .user-hero { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px; display:flex; align-items:center; gap:24px; margin-bottom:20px; position:relative; overflow:hidden; }
 .user-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); opacity:.6; }
 .hero-avatar { width:72px; height:72px; border-radius:50%; background:rgba(34,197,94,.15); border:2px solid var(--border-h); display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--green); flex-shrink:0; }
@@ -49,7 +25,6 @@
 .rank-default  { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
 .hero-actions { margin-left:auto; display:flex; gap:10px; flex-shrink:0; }
 
-/* INFO GRID */
 .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
 .info-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
 .info-card h3 { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
@@ -58,7 +33,6 @@
 .info-key { font-size:12px; color:var(--muted); }
 .info-val { font-size:13px; font-weight:600; color:#e5e7eb; text-align:right; }
 
-/* ORDERS TABLE */
 .panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
 .panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
 .panel-head h2 { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
@@ -82,40 +56,12 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
 .empty-state { text-align:center; padding:40px; color:var(--muted); }
 .empty-state i { font-size:36px; opacity:.3; display:block; margin-bottom:10px; }
 
-@media(max-width:768px) { #adminHeader { padding:0 16px; } .ah-nav { display:none; } #main { padding:20px 16px 40px; } .info-grid { grid-template-columns:1fr; } .user-hero { flex-direction:column; text-align:center; } .hero-actions { margin-left:0; } }
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .info-grid { grid-template-columns:1fr; } .user-hero { flex-direction:column; text-align:center; } .hero-actions { margin-left:0; } }
 </style>
 
 <div id="showPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
 
-    {{-- HEADER --}}
-    <header id="adminHeader">
-        <a href="{{ route('admin.dashboard') }}" class="ah-logo">
-            <span class="ah-logo-dot"></span>
-            <span class="ah-logo-name">Casatek</span>
-            <span class="ah-logo-badge">Admin</span>
-        </a>
-        <nav class="ah-nav">
-            <a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-            <a href="{{ route('admin.products.index') }}"><i class="fa-solid fa-box"></i> Productos</a>
-            <a href="{{ route('admin.orders.index') }}"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-            <a href="{{ route('admin.users.index') }}" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
-            @if(Route::has('admin.tickets.index'))
-            <a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket"></i> Tickets</a>
-            @endif
-        </nav>
-        <div class="ah-actions">
-            <div class="ah-user">
-                <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
-                <span class="ah-user-name">{{ auth()->user()->name ?? 'Admin' }}</span>
-            </div>
-            <form method="POST" action="{{ route('logout.admin') }}">
-                @csrf
-                <button type="submit" class="ah-btn-logout">
-                    <i class="fa-solid fa-right-from-bracket"></i> Salir
-                </button>
-            </form>
-        </div>
-    </header>
+    @include('partials.header-admin')
 
     <main id="main">
 
@@ -123,7 +69,6 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             <i class="fa-solid fa-arrow-left"></i> Volver a Usuarios
         </a>
 
-        {{-- HERO DEL USUARIO --}}
         <div class="user-hero">
             <div class="hero-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <div class="hero-info">
@@ -145,7 +90,6 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             </div>
         </div>
 
-        {{-- INFO --}}
         <div class="info-grid">
             <div class="info-card">
                 <h3><i class="fa-solid fa-address-card" style="color:var(--green)"></i> Información Personal</h3>
@@ -168,8 +112,7 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
                             <a href="https://wa.me/{{ $user->whatsapp }}" target="_blank" style="color:#4ade80">
                                 <i class="fa-brands fa-whatsapp mr-1"></i>{{ $user->whatsapp }}
                             </a>
-                        @else
-                            —
+                        @else —
                         @endif
                     </span>
                 </div>
@@ -186,8 +129,7 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
                     <span class="info-val">
                         @if($user->access_code)
                             <code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px">{{ $user->access_code }}</code>
-                        @else
-                            —
+                        @else —
                         @endif
                     </span>
                 </div>
@@ -208,7 +150,6 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             </div>
         </div>
 
-        {{-- PEDIDOS DEL USUARIO --}}
         <div class="panel">
             <div class="panel-head">
                 <h2><i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i> Pedidos del Usuario</h2>
@@ -281,5 +222,3 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
 
     </main>
 </div>
-
-@endsection

@@ -1,343 +1,244 @@
-@extends('layouts.app')
- 
-@section('titulo', 'Administración de Productos')
- 
-@section('contenido')
- 
+
 <style>
-    /* ── Reset header base del layout ── */
-    /* Asegúrate de que tu layouts/app.blade.php no renderice
-       el nav público cuando el usuario sea administrador.
-       Puedes condicionarlo con: @if(!auth()->user()?->is_admin) ... @endif
-       en tu layout. Este archivo solo maneja la vista. */
- 
-    #adminSidebar a { transition: background .15s, color .15s; }
-    #adminSidebar a.active,
-    #adminSidebar a:hover {
-        background: rgba(34,197,94,.12);
-        color: #22C55E;
-    }
- 
-    .product-row { transition: background .15s; }
-    .product-row:hover { background: rgba(255,255,255,.03); }
- 
-    /* Toast */
-    #adminToast {
-        opacity: 0;
-        transform: translateY(8px);
-        transition: opacity .2s, transform .2s;
-        pointer-events: none;
-    }
-    #adminToast.show { opacity: 1; transform: translateY(0); }
- 
-    /* Paginación */
-    .pag-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 36px;
-        height: 36px;
-        padding: 0 10px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 700;
-        border: 1px solid #374151;
-        color: #d1d5db;
-        background: #1f2937;
-        text-decoration: none;
-        transition: all .15s;
-    }
-    .pag-btn:hover { border-color: #22C55E; color: #22C55E; background: rgba(34,197,94,.08); }
-    .pag-btn.active { background: #22C55E; color: #fff; border-color: #22C55E; }
-    .pag-btn.disabled { opacity: .35; pointer-events: none; }
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+:root {
+    --green:#22C55E; --green-dark:#15803d;
+    --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
+    --text:#f3f4f6; --muted:#6b7280;
+}
+#productsPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
+#main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
+
+.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--accent, var(--green)); opacity:.7; }
+.stat-label { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.stat-value { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#fff; line-height:1; }
+
+.search-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:20px; }
+.search-inner { display:flex; gap:12px; flex-wrap:wrap; }
+.search-input-wrap { position:relative; flex:1; min-width:200px; }
+.search-input-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--green); font-size:13px; pointer-events:none; }
+.s-input { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:10px 14px 10px 40px; font-size:13px; font-family:'DM Sans',sans-serif; color:#fff; outline:none; transition:border-color .15s; }
+.s-input:focus { border-color:var(--green); }
+.s-input::placeholder { color:rgba(255,255,255,.2); }
+select.s-input { padding-left:14px; }
+.s-btn { background:var(--green-dark); color:#fff; border:none; border-radius:12px; padding:10px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; font-family:'DM Sans',sans-serif; }
+.s-btn:hover { background:var(--green); }
+.s-clear { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:10px 16px; font-size:13px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:6px; transition:all .15s; }
+.s-clear:hover { color:#fff; }
+
+.panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.panel-head h2 { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
+
+table { width:100%; border-collapse:collapse; }
+thead tr { background:rgba(0,0,0,.3); }
+th { padding:12px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; }
+tbody tr:hover { background:rgba(255,255,255,.025); }
+td { padding:14px 18px; font-size:13px; color:#d1d5db; }
+
+.stock-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+.stock-ok     { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.stock-low    { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.stock-none   { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+
+.act-btn { width:34px; height:34px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; text-decoration:none; }
+.act-edit { background:rgba(96,165,250,.12); color:#60a5fa; border:1px solid rgba(96,165,250,.25); }
+.act-edit:hover { background:rgba(96,165,250,.25); }
+.act-del  { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.25); }
+.act-del:hover  { background:rgba(239,68,68,.25); }
+
+.pag { display:flex; align-items:center; justify-content:center; gap:6px; padding:16px; flex-wrap:wrap; border-top:1px solid var(--border); }
+.pag-btn { display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px; border-radius:9px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:#9ca3af; background:rgba(255,255,255,.04); text-decoration:none; transition:all .15s; }
+.pag-btn:hover { border-color:var(--green); color:var(--green); }
+.pag-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
+.pag-btn.disabled { opacity:.3; pointer-events:none; }
+
+.empty-state { text-align:center; padding:56px 20px; color:var(--muted); }
+.empty-state i { font-size:40px; opacity:.3; display:block; margin-bottom:12px; }
+
+#adminToast { opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:none; }
+#adminToast.show { opacity:1; transform:translateY(0); }
+
+@media(max-width:1100px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .stat-grid { grid-template-columns:1fr 1fr; } }
 </style>
- 
-{{-- ═══════════════════════════════════════════════════
-     HEADER EXCLUSIVO DE ADMINISTRADOR
-     (reemplaza el nav público del layout)
-════════════════════════════════════════════════════ --}}
-<header class="bg-[#0f172a] border-b border-gray-800 px-6 py-0 flex items-center justify-between h-16 -mx-6 -mt-6 mb-8 sticky top-0 z-40">
- 
-    {{-- Logo --}}
-    <div class="flex items-center gap-3 shrink-0">
-        <span class="w-2.5 h-2.5 bg-[#22C55E] rounded-full"></span>
-        <span class="text-xl font-black text-white tracking-tight">Casatek</span>
-        <span class="bg-[#22C55E] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest ml-1">
-            Panel Admin
-        </span>
-    </div>
- 
-    {{-- Nav admin --}}
-    <nav class="flex items-center gap-1">
-        <a href="{{ route('admin.products.index') }}"
-           class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-[#22C55E]
-                  {{ request()->routeIs('admin.products.*') ? 'active bg-[#1f2937] !text-[#22C55E]' : '' }}"
-           id="adminSidebar">
-            <i class="fa-solid fa-box text-xs"></i> Productos
-        </a>
-        <a href="{{ route('admin.products.create') }}"
-           class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-[#22C55E]
-                  {{ request()->routeIs('admin.products.create') ? 'active bg-[#1f2937] !text-[#22C55E]' : '' }}">
-            <i class="fa-solid fa-plus text-xs"></i> Agregar Producto
-        </a>
-        {{-- Ajusta la ruta según tu sistema --}}
-        @if(Route::has('admin.admins.create'))
-        <a href="{{ route('admin.admins.create') }}"
-           class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-[#22C55E]
-                  {{ request()->routeIs('admin.admins.*') ? 'active bg-[#1f2937] !text-[#22C55E]' : '' }}">
-            <i class="fa-solid fa-user-plus text-xs"></i> Agregar Admin
-        </a>
-        @endif
-        @if(Route::has('admin.reportes'))
-        <a href="{{ route('admin.reportes') }}"
-           class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-[#22C55E]">
-            <i class="fa-solid fa-chart-bar text-xs"></i> Reportes
-        </a>
-        @endif
-    </nav>
- 
-    {{-- Usuario / Logout --}}
-    <div class="flex items-center gap-3 shrink-0">
-        <div class="flex items-center gap-2 bg-[#1f2937] border border-gray-700 rounded-xl px-4 py-2">
-            <i class="fa-solid fa-circle-user text-[#22C55E] text-sm"></i>
-            <span class="text-sm font-bold text-green-300">{{ auth()->user()->name ?? 'Administrador' }}</span>
-        </div>
-        <form method="POST" action="{{ route('logout.admin') }}">
-            @csrf
-            <button type="submit"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 bg-[#1f2937] border border-gray-700 hover:border-red-500 hover:text-red-400 transition-all">
-                <i class="fa-solid fa-right-from-bracket text-xs"></i> Salir
-            </button>
-        </form>
-    </div>
- 
-</header>
- 
-{{-- ═══════════════════════════════════════════════════
-     CONTENIDO PRINCIPAL
-════════════════════════════════════════════════════ --}}
-<div class="space-y-8">
- 
-    {{-- ENCABEZADO --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex items-center gap-3">
-            <span class="w-2 h-7 bg-[#22C55E] rounded-full"></span>
+
+<div id="productsPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
+
+    @include('partials.header-admin')
+
+    <main id="main">
+
+        {{-- TÍTULO --}}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
             <div>
-                <h1 class="text-2xl font-black text-white tracking-tight">Panel de Productos</h1>
-                <p class="text-gray-400 text-sm mt-0.5">Administración general del catálogo Casatek</p>
+                <p style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px">
+                    <i class="fa-solid fa-box mr-1"></i> Catálogo
+                </p>
+                <h1 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff">Panel de Productos</h1>
+                <p style="font-size:12px;color:var(--muted);margin-top:2px">Administración general del catálogo Casatek</p>
             </div>
+            <a href="{{ route('admin.products.create') }}"
+               style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:11px 22px;border-radius:12px;text-decoration:none;transition:background .15s"
+               onmouseover="this.style.background='var(--green-dark)'" onmouseout="this.style.background='var(--green)'">
+                <i class="fa-solid fa-plus"></i> Agregar Producto
+            </a>
         </div>
-        <a href="{{ route('admin.products.create') }}"
-            class="flex items-center gap-2 bg-[#22C55E] hover:bg-green-600 text-white font-bold px-6 py-3 rounded-xl shadow transition">
-            <i class="fa-solid fa-plus text-sm"></i> Agregar Producto
-        </a>
-    </div>
- 
-    {{-- MENSAJES --}}
-    @if(session('success'))
-        <div class="flex items-center gap-3 bg-green-900/40 border border-green-700 text-green-300 px-5 py-3 rounded-xl text-sm font-semibold">
-            <i class="fa-solid fa-circle-check text-[#22C55E]"></i>
-            {{ session('success') }}
+
+        {{-- MENSAJES --}}
+        @if(session('success'))
+        <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80;padding:12px 16px;border-radius:12px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-circle-check"></i>{{ session('success') }}
         </div>
-    @endif
-    @if($errors->any())
-        <div class="bg-red-900/30 border border-red-700 text-red-300 px-5 py-3 rounded-xl text-sm">
+        @endif
+        @if($errors->any())
+        <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;padding:12px 16px;border-radius:12px;margin-bottom:20px;font-size:13px">
             @foreach($errors->all() as $error)
-                <p class="flex items-center gap-2"><i class="fa-solid fa-circle-xmark text-red-400"></i> {{ $error }}</p>
+                <p><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ $error }}</p>
             @endforeach
         </div>
-    @endif
- 
-    {{-- TARJETAS RESUMEN --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
- 
-        <div class="bg-[#1f2937] rounded-2xl p-5 border-l-4 border-[#22C55E] shadow">
-            <p class="text-gray-400 text-xs font-bold uppercase tracking-wider">Productos</p>
-            <p class="text-3xl font-black text-white mt-1">{{ $totalProducts }}</p>
-        </div>
- 
-        <div class="bg-[#1f2937] rounded-2xl p-5 border-l-4 border-blue-500 shadow">
-            <p class="text-gray-400 text-xs font-bold uppercase tracking-wider">Marcas</p>
-            <p class="text-3xl font-black text-white mt-1">{{ $totalBrands }}</p>
-        </div>
- 
-        <div class="bg-[#1f2937] rounded-2xl p-5 border-l-4 border-yellow-500 shadow">
-            <p class="text-gray-400 text-xs font-bold uppercase tracking-wider">Stock Bajo</p>
-            <p class="text-3xl font-black text-white mt-1">{{ $lowStock }}</p>
-        </div>
- 
-        <div class="bg-[#1f2937] rounded-2xl p-5 border-l-4 border-red-500 shadow">
-            <p class="text-gray-400 text-xs font-bold uppercase tracking-wider">Sin Stock</p>
-            <p class="text-3xl font-black text-white mt-1">{{ $noStock }}</p>
-        </div>
- 
-    </div>
- 
-    {{-- BUSCADOR --}}
-    <div class="bg-[#1f2937] rounded-2xl shadow p-5 border border-gray-700">
-        <form method="GET" action="{{ route('admin.products.index') }}">
-            <div class="flex flex-col md:flex-row gap-3">
- 
-                <div class="relative flex-1">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Buscar producto..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-[#111827] border border-gray-700 rounded-xl text-sm text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none transition">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-500 text-sm"></i>
-                </div>
- 
-                <select name="category_id"
-                    class="bg-[#111827] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-300 focus:ring-2 focus:ring-[#22C55E] focus:outline-none md:w-52">
-                    <option value="">Todas las categorías</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
- 
-                <button type="submit"
-                    class="bg-[#22C55E] hover:bg-green-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition">
-                    <i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar
-                </button>
- 
-                @if(request('search') || request('category_id'))
-                    <a href="{{ route('admin.products.index') }}"
-                       class="bg-[#374151] hover:bg-gray-600 text-gray-300 font-semibold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2 transition">
-                        <i class="fa-solid fa-xmark"></i> Limpiar
-                    </a>
-                @endif
- 
+        @endif
+
+        {{-- STATS --}}
+        <div class="stat-grid">
+            <div class="stat-card" style="--accent:var(--green)">
+                <p class="stat-label">Productos</p>
+                <p class="stat-value">{{ $totalProducts }}</p>
             </div>
-        </form>
-    </div>
- 
-    {{-- TABLA --}}
-    <div class="bg-[#1f2937] rounded-2xl shadow-lg overflow-hidden border border-gray-700">
- 
-        <div class="bg-[#0f172a] px-6 py-4 flex items-center justify-between border-b border-gray-800">
-            <h2 class="font-bold text-white text-base flex items-center gap-2">
-                <i class="fa-solid fa-table-list text-[#22C55E] text-sm"></i>
-                Gestión de Productos
-            </h2>
-            <span class="text-xs text-gray-500 font-semibold">
-                {{ $products->total() }} productos en total
-            </span>
+            <div class="stat-card" style="--accent:#3b82f6">
+                <p class="stat-label">Marcas</p>
+                <p class="stat-value">{{ $totalBrands }}</p>
+            </div>
+            <div class="stat-card" style="--accent:#facc15">
+                <p class="stat-label">Stock Bajo</p>
+                <p class="stat-value">{{ $lowStock }}</p>
+            </div>
+            <div class="stat-card" style="--accent:#ef4444">
+                <p class="stat-label">Sin Stock</p>
+                <p class="stat-value">{{ $noStock }}</p>
+            </div>
         </div>
- 
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-[#111827] border-b border-gray-800">
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Imagen</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Nombre</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Marca</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Categoría</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Precio</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Stock</th>
-                        <th class="p-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Estado</th>
-                        <th class="p-4 text-center text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($products as $product)
-                    <tr class="product-row border-b border-gray-800">
- 
-                        <td class="p-4">
-                            <img src="{{ $product->image1 ?? 'https://via.placeholder.com/70' }}"
-                                class="w-14 h-14 rounded-xl object-cover border border-gray-700"
-                                onerror="this.src='https://via.placeholder.com/70'">
-                        </td>
- 
-                        <td class="p-4">
-                            <p class="font-bold text-white text-sm">{{ $product->name }}</p>
-                            <p class="text-[11px] text-gray-500 mt-0.5">SKU: {{ $product->sku }}</p>
-                        </td>
- 
-                        <td class="p-4 text-gray-300 text-sm font-medium">{{ $product->brand->name ?? '—' }}</td>
- 
-                        <td class="p-4">
-                            <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">
-                                {{ $product->category->name ?? '—' }}
-                            </span>
-                        </td>
- 
-                        <td class="p-4">
-                            <span class="text-[#22C55E] font-black text-sm">Bs. {{ number_format($product->base_price, 2) }}</span>
-                        </td>
- 
-                        <td class="p-4">
-                            <span class="font-black text-sm {{ $product->stock <= 10 ? 'text-red-400' : 'text-white' }}">
-                                {{ $product->stock }}
-                            </span>
-                        </td>
- 
-                        <td class="p-4">
-                            @if($product->stock === 0)
-                                <span class="bg-red-900/50 text-red-400 border border-red-700 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide">
-                                    Sin Stock
-                                </span>
-                            @elseif($product->stock <= 10)
-                                <span class="bg-yellow-900/40 text-yellow-400 border border-yellow-700 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide">
-                                    Stock Bajo
-                                </span>
-                            @else
-                                <span class="bg-green-900/40 text-green-400 border border-green-700 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide">
-                                    Activo
-                                </span>
-                            @endif
-                        </td>
- 
-                        <td class="p-4">
-                            <div class="flex justify-center gap-2">
-                                <a href="{{ route('admin.products.edit', $product->id) }}"
-                                   title="Editar"
-                                   class="w-9 h-9 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition">
-                                    <i class="fa-solid fa-pen text-xs"></i>
-                                </a>
-                                <form action="{{ route('admin.products.destroy', $product->id) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('¿Seguro que deseas eliminar {{ addslashes($product->name) }}?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" title="Eliminar"
-                                        class="w-9 h-9 flex items-center justify-center bg-red-700 hover:bg-red-600 text-white rounded-xl transition">
-                                        <i class="fa-solid fa-trash text-xs"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
- 
-                    </tr>
-                    @empty
+
+        {{-- BUSCADOR --}}
+        <div class="search-wrap">
+            <form method="GET" action="{{ route('admin.products.index') }}">
+                <div class="search-inner">
+                    <div class="search-input-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               placeholder="Buscar producto..." class="s-input">
+                    </div>
+                    <select name="category_id" class="s-input" style="width:200px;padding-left:14px">
+                        <option value="">Todas las categorías</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="s-btn"><i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar</button>
+                    @if(request('search') || request('category_id'))
+                    <a href="{{ route('admin.products.index') }}" class="s-clear"><i class="fa-solid fa-xmark"></i> Limpiar</a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        {{-- TABLA --}}
+        <div class="panel">
+            <div class="panel-head">
+                <h2><i class="fa-solid fa-table-list" style="color:var(--green)"></i> Gestión de Productos</h2>
+                <span style="font-size:11px;color:var(--muted)">{{ $products->total() }} productos en total</span>
+            </div>
+
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
                         <tr>
-                            <td colspan="8" class="py-20 text-center text-gray-500">
-                                <i class="fa-solid fa-box-open text-4xl mb-3 block text-gray-700"></i>
-                                <p class="font-semibold text-base">No se encontraron productos</p>
-                                <p class="text-sm mt-1">Intenta con otra búsqueda o filtro</p>
-                                <a href="{{ route('admin.products.index') }}"
-                                   class="mt-4 inline-block text-[#22C55E] hover:underline text-sm font-bold">
-                                    Ver todos los productos
-                                </a>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th style="text-align:center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($products as $product)
+                        <tr>
+                            <td>
+                                <img src="{{ $product->image1 ?? 'https://via.placeholder.com/56' }}"
+                                     class="w-14 h-14 rounded-xl object-cover"
+                                     style="border:1px solid rgba(255,255,255,.08)"
+                                     onerror="this.src='https://via.placeholder.com/56'">
+                            </td>
+                            <td>
+                                <p style="font-weight:700;color:#fff;font-size:13px">{{ $product->name }}</p>
+                                <p style="font-size:11px;color:var(--muted);margin-top:2px">SKU: {{ $product->sku }}</p>
+                            </td>
+                            <td style="font-weight:600;color:#e5e7eb">{{ $product->brand->name ?? '—' }}</td>
+                            <td>
+                                <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--green)">
+                                    {{ $product->category->name ?? '—' }}
+                                </span>
+                            </td>
+                            <td style="color:var(--green);font-weight:800">Bs. {{ number_format($product->base_price, 2) }}</td>
+                            <td style="font-weight:800;color:{{ $product->stock <= 10 ? '#f87171' : '#fff' }}">
+                                {{ $product->stock }}
+                            </td>
+                            <td>
+                                @if($product->stock === 0)
+                                    <span class="stock-badge stock-none">Sin Stock</span>
+                                @elseif($product->stock <= 10)
+                                    <span class="stock-badge stock-low">Stock Bajo</span>
+                                @else
+                                    <span class="stock-badge stock-ok">Activo</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div style="display:flex;justify-content:center;gap:6px">
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="act-btn act-edit" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
+                                          onsubmit="return confirm('¿Eliminar {{ addslashes($product->name) }}?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="act-btn act-del" title="Eliminar">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
- 
-        {{-- PAGINACIÓN --}}
-        @if($products->hasPages())
-            <div class="px-6 py-4 border-t border-gray-800 flex items-center justify-center gap-2 flex-wrap">
- 
+                        @empty
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-box-open"></i>
+                                    <p style="font-size:14px;font-weight:600">No se encontraron productos</p>
+                                    <a href="{{ route('admin.products.index') }}" style="color:var(--green);font-size:13px;font-weight:700;text-decoration:none;display:inline-block;margin-top:8px">
+                                        Ver todos los productos
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($products->hasPages())
+            <div class="pag">
                 @if($products->onFirstPage())
-                    <span class="pag-btn disabled"><i class="fa-solid fa-chevron-left text-xs"></i></span>
+                    <span class="pag-btn disabled"><i class="fa-solid fa-chevron-left"></i></span>
                 @else
-                    <a href="{{ $products->withQueryString()->previousPageUrl() }}" class="pag-btn">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </a>
+                    <a href="{{ $products->withQueryString()->previousPageUrl() }}" class="pag-btn"><i class="fa-solid fa-chevron-left"></i></a>
                 @endif
- 
                 @foreach($products->withQueryString()->getUrlRange(1, $products->lastPage()) as $page => $url)
                     @if($page == $products->currentPage())
                         <span class="pag-btn active">{{ $page }}</span>
@@ -345,34 +246,30 @@
                         <a href="{{ $url }}" class="pag-btn">{{ $page }}</a>
                     @endif
                 @endforeach
- 
                 @if($products->hasMorePages())
-                    <a href="{{ $products->withQueryString()->nextPageUrl() }}" class="pag-btn">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </a>
+                    <a href="{{ $products->withQueryString()->nextPageUrl() }}" class="pag-btn"><i class="fa-solid fa-chevron-right"></i></a>
                 @else
-                    <span class="pag-btn disabled"><i class="fa-solid fa-chevron-right text-xs"></i></span>
+                    <span class="pag-btn disabled"><i class="fa-solid fa-chevron-right"></i></span>
                 @endif
- 
             </div>
-            <p class="text-center text-xs text-gray-600 pb-4">
+            <p style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:14px">
                 Página {{ $products->currentPage() }} de {{ $products->lastPage() }}
             </p>
-        @endif
- 
-    </div>
- 
+            @endif
+        </div>
+
+    </main>
 </div>
- 
-{{-- Toast de confirmación (reutilizable desde este panel) --}}
+
+{{-- Toast --}}
 <div id="adminToast"
-     class="fixed bottom-6 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-gray-700">
-    <i class="fa-solid fa-circle-check text-[#22C55E]"></i>
+     class="fixed bottom-6 right-6 z-[200]"
+     style="background:#111f16;border:1px solid rgba(34,197,94,.3);color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px;">
+    <i class="fa-solid fa-circle-check" style="color:var(--green)"></i>
     <span id="adminToastMsg">Acción completada</span>
 </div>
- 
+
 <script>
-// Toast automático si hay mensaje de éxito
 @if(session('success'))
     (function(){
         const t = document.getElementById('adminToast');
@@ -382,4 +279,4 @@
     })();
 @endif
 </script>
-@endsection
+
