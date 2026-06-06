@@ -185,123 +185,180 @@
 
 {{-- ── SCRIPTS ── --}}
 <script>
-    // ── Carrito desde localStorage ──
-    function getCarrito() {
-        return JSON.parse(localStorage.getItem('casatek_carrito') || '[]');
-    }
-    function saveCarrito(carrito) {
-        localStorage.setItem('casatek_carrito', JSON.stringify(carrito));
-    }
+const CART_KEY = 'casatek_carrito';
 
-    function fmt(n) {
-        return parseFloat(n).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+function getToken()   { return localStorage.getItem('token') || null; }
+function getCarrito() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
 
-    function recalcular() {
-        const carrito = getCarrito();
-        const subtotal = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-        const count    = carrito.reduce((acc, i) => acc + i.cantidad, 0);
+function fmt(n) {
+    return parseFloat(n).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-        document.getElementById('subtotal').textContent = fmt(subtotal);
-        document.getElementById('total').textContent    = fmt(subtotal);
-        document.getElementById('items-counter').textContent =
-            count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
-    }
+function recalcular() {
+    const carrito  = getCarrito();
+    const subtotal = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+    const count    = carrito.reduce((acc, i) => acc + i.cantidad, 0);
+    document.getElementById('subtotal').textContent = fmt(subtotal);
+    document.getElementById('total').textContent    = fmt(subtotal);
+    document.getElementById('items-counter').textContent =
+        count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
+}
 
-    function cambiarQty(id, delta) {
-        const carrito = getCarrito();
-        const item = carrito.find(i => i.id === id);
-        if (!item) return;
-        item.cantidad = Math.max(1, item.cantidad + delta);
-        saveCarrito(carrito);
+async function cambiarQty(id, delta) {
+    const carrito = getCarrito();
+    const item    = carrito.find(i => i.id === id);
+    if (!item) return;
+    item.cantidad = Math.max(1, item.cantidad + delta);
+    saveCarrito(carrito);
 
-        const qtyEl = document.getElementById('qty-' + id);
-        if (qtyEl) qtyEl.textContent = item.cantidad;
+    document.getElementById('qty-'   + id).textContent = item.cantidad;
+    document.getElementById('price-' + id).textContent = fmt(item.precio * item.cantidad);
+    recalcular();
 
-        const priceEl = document.getElementById('price-' + id);
-        if (priceEl) priceEl.textContent = fmt(item.precio * item.cantidad);
-
-        recalcular();
-    }
-
-    function eliminar(id) {
-        const row = document.querySelector('.product-row[data-id="' + id + '"]');
-        if (!row) return;
-        row.classList.add('removing');
-        setTimeout(() => {
-            row.remove();
-            const carrito = getCarrito().filter(i => i.id !== id);
-            saveCarrito(carrito);
-            recalcular();
-            if (carrito.length === 0) mostrarVacio();
-        }, 280);
-    }
-
-    function mostrarVacio() {
-        document.getElementById('empty-state').classList.remove('hidden');
-    }
-
-    function crearArticulo(item, index) {
-        const img = item.img || 'https://via.placeholder.com/400x300?text=Sin+imagen';
-        const li  = document.createElement('li');
-        li.className = 'product-row bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 flex flex-col md:flex-row gap-5 transition-all duration-300';
-        li.style.animationDelay = (index * 0.07) + 's';
-        li.dataset.id    = item.id;
-        li.dataset.unit  = item.precio;
-
-        li.innerHTML = `
-            <figure class="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 overflow-hidden flex items-center justify-center p-3 m-0">
-                <img src="${img}" alt="${item.nombre}" class="w-full h-full object-contain"
-                     onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
-            </figure>
-
-            <article class="flex-1 flex flex-col justify-between">
-                <div class="flex justify-between items-start gap-3">
-                    <div>
-                        <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-widest">${item.marca || ''}</span>
-                        <h2 class="text-base font-black text-gray-900 dark:text-white mt-0.5 leading-tight">${item.nombre}</h2>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${item.descripcion || ''}</p>
-                    </div>
-                    <button
-                        onclick="eliminar('${item.id}')"
-                        aria-label="Eliminar ${item.nombre}"
-                        class="text-gray-300 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all shrink-0">
-                        <i class="fa-solid fa-trash text-sm" aria-hidden="true"></i>
-                    </button>
-                </div>
-
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4">
-                    <div class="qty-wrap" role="group" aria-label="Cantidad de ${item.nombre}">
-                        <button onclick="cambiarQty('${item.id}', -1)" aria-label="Reducir cantidad">−</button>
-                        <span class="qty-val text-gray-800 dark:text-white" id="qty-${item.id}" aria-live="polite">${item.cantidad}</span>
-                        <button onclick="cambiarQty('${item.id}', 1)" aria-label="Aumentar cantidad">+</button>
-                    </div>
-                    <p class="flex items-baseline gap-1">
-                        <span class="text-sm font-semibold text-gray-400">Bs.</span>
-                        <span class="text-2xl font-black text-gray-900 dark:text-white" id="price-${item.id}">
-                            ${fmt(item.precio * item.cantidad)}
-                        </span>
-                    </p>
-                </div>
-            </article>
-        `;
-
-        return li;
-    }
-
-    // ── Renderizar al cargar ──
-    document.addEventListener('DOMContentLoaded', () => {
-        const carrito = getCarrito();
-        const lista   = document.getElementById('cart-list');
-
-        if (carrito.length === 0) {
-            mostrarVacio();
-        } else {
-            carrito.forEach((item, i) => lista.appendChild(crearArticulo(item, i)));
+    // Sincronizar con BD si está logueado
+    const token = getToken();
+    if (!token) return;
+    try {
+        // Buscar el cart_item_id desde la BD
+        const res  = await fetch('/api/cart', {
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        const bdItem = data.datos?.items?.find(i => String(i.product_id) === String(id));
+        if (bdItem) {
+            await fetch('/api/cart/items/' + bdItem.id, {
+                method:  'PUT',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Accept':        'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: JSON.stringify({ quantity: item.cantidad }),
+            });
         }
+    } catch(e) { console.warn('Sync qty error:', e); }
+}
 
+async function eliminar(id) {
+    const row = document.querySelector('.product-row[data-id="' + id + '"]');
+    if (!row) return;
+    row.classList.add('removing');
+    setTimeout(async () => {
+        row.remove();
+        const carrito = getCarrito().filter(i => i.id !== id);
+        saveCarrito(carrito);
         recalcular();
-    });
+        if (carrito.length === 0) mostrarVacio();
+
+        // Sincronizar con BD
+        const token = getToken();
+        if (!token) return;
+        try {
+            const res  = await fetch('/api/cart', {
+                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            const bdItem = data.datos?.items?.find(i => String(i.product_id) === String(id));
+            if (bdItem) {
+                await fetch('/api/cart/items/' + bdItem.id, {
+                    method:  'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
+                });
+            }
+        } catch(e) { console.warn('Sync delete error:', e); }
+    }, 280);
+}
+
+function mostrarVacio() {
+    document.getElementById('empty-state').classList.remove('hidden');
+}
+
+function crearArticulo(item, index) {
+    const img = item.img || 'https://via.placeholder.com/400x300?text=Sin+imagen';
+    const li  = document.createElement('li');
+    li.className = 'product-row bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 flex flex-col md:flex-row gap-5 transition-all duration-300';
+    li.style.animationDelay = (index * 0.07) + 's';
+    li.dataset.id   = item.id;
+    li.dataset.unit = item.precio;
+    li.innerHTML = `
+        <figure class="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 overflow-hidden flex items-center justify-center p-3 m-0">
+            <img src="${img}" alt="${item.nombre}" class="w-full h-full object-contain"
+                 onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
+        </figure>
+        <article class="flex-1 flex flex-col justify-between">
+            <div class="flex justify-between items-start gap-3">
+                <div>
+                    <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-widest">${item.marca || ''}</span>
+                    <h2 class="text-base font-black text-gray-900 dark:text-white mt-0.5 leading-tight">${item.nombre}</h2>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${item.descripcion || ''}</p>
+                </div>
+                <button onclick="eliminar('${item.id}')"
+                        class="text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all shrink-0">
+                    <i class="fa-solid fa-trash text-sm"></i>
+                </button>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4">
+                <div class="qty-wrap">
+                    <button onclick="cambiarQty('${item.id}', -1)">−</button>
+                    <span class="qty-val text-gray-800 dark:text-white" id="qty-${item.id}">${item.cantidad}</span>
+                    <button onclick="cambiarQty('${item.id}', 1)">+</button>
+                </div>
+                <p class="flex items-baseline gap-1">
+                    <span class="text-sm font-semibold text-gray-400">Bs.</span>
+                    <span class="text-2xl font-black text-gray-900 dark:text-white" id="price-${item.id}">
+                        ${fmt(item.precio * item.cantidad)}
+                    </span>
+                </p>
+            </div>
+        </article>
+    `;
+    return li;
+}
+
+// ── Cargar carrito al iniciar ──
+async function cargarCarrito() {
+    const token = getToken();
+    const lista = document.getElementById('cart-list');
+
+    if (token) {
+        // Usuario logueado → cargar desde BD y sincronizar localStorage
+        try {
+            const res  = await fetch('/api/cart', {
+                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            const bdItems = data.datos?.items ?? [];
+
+            if (bdItems.length > 0) {
+                // Convertir items de BD al formato localStorage
+                const carritoLocal = bdItems.map(i => ({
+                    id:          String(i.product_id),
+                    nombre:      i.product?.name        ?? 'Producto',
+                    marca:       i.product?.brand?.name ?? '',
+                    precio:      parseFloat(i.price_when_added),
+                    descripcion: i.product?.description ?? '',
+                    img:         i.product?.image1      ?? '',
+                    cantidad:    i.quantity,
+                }));
+                saveCarrito(carritoLocal);
+            }
+        } catch(e) {
+            console.warn('No se pudo cargar carrito desde BD:', e);
+        }
+    }
+
+    // Renderizar desde localStorage (siempre)
+    const carrito = getCarrito();
+    if (carrito.length === 0) {
+        mostrarVacio();
+    } else {
+        carrito.forEach((item, i) => lista.appendChild(crearArticulo(item, i)));
+    }
+    recalcular();
+}
+
+document.addEventListener('DOMContentLoaded', cargarCarrito);
 </script>
 
 @endsection
