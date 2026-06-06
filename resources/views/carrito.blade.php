@@ -41,6 +41,24 @@
     .btn-checkout:hover { background: #1b803a; transform: translateY(-1px); }
     .dark .btn-checkout { background: #1b803a; }
     .dark .btn-checkout:hover { background: #15803d; }
+
+    /* Modal QR */
+    #modalQR {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+    #modalQR.open {
+        opacity: 1;
+        pointer-events: all;
+    }
+    #modalQR .qr-box {
+        transform: scale(0.93);
+        transition: transform 0.2s ease;
+    }
+    #modalQR.open .qr-box {
+        transform: scale(1);
+    }
 </style>
 @endpush
 
@@ -49,12 +67,12 @@
 <main class="carrito-page max-w-6xl mx-auto px-4 py-10">
 
     {{-- BREADCRUMB --}}
-    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-8">
+    <nav class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-8">
         <a href="{{ url('/') }}" class="hover:text-[#22C55E] transition-colors">Inicio</a>
-        <span aria-hidden="true">›</span>
+        <span>›</span>
         <a href="{{ url('/productos') }}" class="hover:text-[#22C55E] transition-colors">Productos</a>
-        <span aria-hidden="true">›</span>
-        <span class="text-[#22C55E] font-semibold" aria-current="page">Mi Carrito</span>
+        <span>›</span>
+        <span class="text-[#22C55E] font-semibold">Mi Carrito</span>
     </nav>
 
     {{-- ENCABEZADO --}}
@@ -70,34 +88,42 @@
 
     <div class="grid lg:grid-cols-3 gap-8 items-start">
 
-        {{-- ── COLUMNA IZQUIERDA: LISTA DE PRODUCTOS ── --}}
-        <section aria-label="Productos en el carrito" class="lg:col-span-2">
+        {{-- COLUMNA IZQUIERDA --}}
+        <section class="lg:col-span-2">
 
             <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4 tracking-wide" id="items-counter">
                 0 productos en tu carrito
             </p>
 
-            {{-- Lista de items --}}
-            <ol class="space-y-4 list-none" id="cart-list">
-                {{-- Renderizado por JS desde localStorage --}}
-            </ol>
+            <ol class="space-y-4 list-none" id="cart-list"></ol>
 
-            {{-- Estado vacío (oculto por defecto, JS lo muestra si aplica) --}}
-            <article id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-12 text-center" aria-label="Carrito vacío">
-                <p role="img" aria-label="Carrito" class="text-5xl mb-4">🛒</p>
+            {{-- Estado vacío --}}
+            <article id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-12 text-center">
+                <p class="text-5xl mb-4">🛒</p>
                 <h2 class="text-lg font-black text-gray-700 dark:text-white mb-2">Tu carrito está vacío</h2>
                 <p class="text-sm text-gray-400 mb-6">Agrega productos desde el catálogo para comenzar.</p>
                 <a href="{{ url('/productos') }}"
                    class="inline-flex items-center gap-2 bg-[#1b803a] hover:bg-green-700 text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors">
-                    <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>
-                    Ver Catálogo
+                    <i class="fa-solid fa-arrow-left text-xs"></i> Ver Catálogo
                 </a>
             </article>
 
+            {{-- Botón pagar TODO (debajo de todos los productos) --}}
+            <div id="btn-pagar-todo-wrap" class="hidden mt-6">
+                <button onclick="abrirQR('todo')"
+                        class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                    <i class="fa-solid fa-qrcode text-lg"></i>
+                    <span>Pagar todo el carrito con QR BCP</span>
+                    <span class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg ml-1">
+                        Bs. <span id="total-todos">0.00</span>
+                    </span>
+                </button>
+            </div>
+
             {{-- Guardados --}}
-            <aside aria-label="Guardados para después" class="mt-6 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-6">
+            <aside class="mt-6 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-6">
                 <h2 class="text-sm font-black text-gray-700 dark:text-white mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-bookmark text-[#22C55E] text-sm" aria-hidden="true"></i>
+                    <i class="fa-solid fa-bookmark text-[#22C55E] text-sm"></i>
                     Guardados para después
                 </h2>
                 <p class="text-xs text-gray-400 dark:text-gray-500">
@@ -107,10 +133,9 @@
 
         </section>
 
-        {{-- ── COLUMNA DERECHA: RESUMEN ── --}}
-        <aside aria-label="Resumen del pedido" class="sticky top-8">
-
-            <section class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl dark:shadow-gray-900/40 p-7">
+        {{-- COLUMNA DERECHA --}}
+        <aside class="sticky top-8">
+            <section class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl p-7">
 
                 <h2 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-6">
                     Resumen del pedido
@@ -119,15 +144,11 @@
                 <dl class="space-y-4 mb-6">
                     <div class="flex justify-between items-center text-sm">
                         <dt class="text-gray-500 dark:text-gray-400">Subtotal</dt>
-                        <dd class="font-bold text-gray-800 dark:text-white">
-                            Bs. <span id="subtotal">0.00</span>
-                        </dd>
+                        <dd class="font-bold text-gray-800 dark:text-white">Bs. <span id="subtotal">0.00</span></dd>
                     </div>
                     <div class="flex justify-between items-center text-sm">
                         <dt class="text-gray-500 dark:text-gray-400">Envío</dt>
-                        <dd class="bg-green-50 dark:bg-green-900/30 text-[#16a34a] dark:text-green-400 border border-[#bbf7d0] dark:border-green-700 text-[11px] font-bold px-2.5 py-0.5 rounded-lg">
-                            Gratis
-                        </dd>
+                        <dd class="bg-green-50 dark:bg-green-900/30 text-[#16a34a] dark:text-green-400 border border-[#bbf7d0] dark:border-green-700 text-[11px] font-bold px-2.5 py-0.5 rounded-lg">Gratis</dd>
                     </div>
                     <div class="flex justify-between items-center text-sm">
                         <dt class="text-gray-500 dark:text-gray-400">Impuestos</dt>
@@ -145,50 +166,106 @@
                     </div>
                 </div>
 
-                <button class="btn-checkout" aria-label="Finalizar compra">
-                    <i class="fa-solid fa-lock text-xs" aria-hidden="true"></i>
-                    Finalizar Compra
+                {{-- Pagar todo desde el resumen --}}
+                <button onclick="abrirQR('todo')"
+                        class="btn-checkout mb-3">
+                    <i class="fa-solid fa-qrcode text-sm"></i>
+                    Pagar todo con QR BCP
                 </button>
 
                 <a href="{{ url('/productos') }}"
-                   class="mt-3 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
-                    <i class="fa-solid fa-arrow-left text-xs mr-1" aria-hidden="true"></i>
+                   class="mt-1 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
+                    <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
                     Seguir Comprando
                 </a>
 
                 <p class="mt-5 flex items-center justify-center gap-2 text-[11px] text-gray-300 dark:text-gray-600">
-                    <i class="fa-solid fa-shield-halved text-[#22C55E]" aria-hidden="true"></i>
+                    <i class="fa-solid fa-shield-halved text-[#22C55E]"></i>
                     Pago 100% seguro y protegido
                 </p>
 
-                <ul class="mt-4 grid grid-cols-3 gap-2 text-center list-none" aria-label="Beneficios">
+                <ul class="mt-4 grid grid-cols-3 gap-2 text-center list-none">
                     <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                        <i class="fa-solid fa-truck text-[#22C55E] text-base" aria-hidden="true"></i>
-                        Envío gratis
+                        <i class="fa-solid fa-truck text-[#22C55E] text-base"></i>Envío gratis
                     </li>
                     <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                        <i class="fa-solid fa-rotate-left text-[#22C55E] text-base" aria-hidden="true"></i>
-                        Garantía
+                        <i class="fa-solid fa-rotate-left text-[#22C55E] text-base"></i>Garantía
                     </li>
                     <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                        <i class="fa-brands fa-whatsapp text-[#22C55E] text-base" aria-hidden="true"></i>
-                        Soporte
+                        <i class="fa-brands fa-whatsapp text-[#22C55E] text-base"></i>Soporte
                     </li>
                 </ul>
 
             </section>
         </aside>
-
     </div>
-
 </main>
 
-{{-- ── SCRIPTS ── --}}
+{{-- ══ MODAL QR ══ --}}
+<div id="modalQR"
+     class="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4"
+     onclick="cerrarQR(event)">
+    <div class="qr-box bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+
+        {{-- Header BCP --}}
+        <div class="bg-[#003087] px-6 py-4 flex items-center justify-between">
+            <span class="text-white font-black text-xl tracking-tight">›BCP›</span>
+            <button onclick="cerrarQR(null)" class="text-white/70 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        {{-- Contenido --}}
+        <div class="p-6 flex flex-col items-center gap-4">
+
+            {{-- Etiqueta de qué se está pagando --}}
+            <div class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-2 text-center">
+                <p class="text-xs text-gray-400 font-semibold" id="qr-label">Producto</p>
+                <p class="text-sm font-black text-gray-800 dark:text-white truncate" id="qr-producto-nombre"></p>
+            </div>
+
+            {{-- QR --}}
+            <div class="bg-white p-3 rounded-2xl shadow-inner border border-gray-100" id="qr-container">
+                {{-- QR se genera aquí --}}
+            </div>
+
+            {{-- Monto --}}
+            <div class="text-center">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Monto a pagar</p>
+                <p class="text-4xl font-black text-[#003087]">
+                    Bs. <span id="qr-monto">0.00</span>
+                </p>
+            </div>
+
+            {{-- Info cuenta --}}
+            <div class="w-full border-t border-gray-100 dark:border-gray-700 pt-4 text-center space-y-1">
+                <p class="font-black text-gray-800 dark:text-white text-sm">Hugo Camilo Cussi Suxo</p>
+                <p class="text-xs text-gray-400">No. Cta: 201-52029768-3-02</p>
+                <p class="text-xs text-gray-400">Vencimiento: 06/06/2028</p>
+            </div>
+
+            {{-- Instrucciones --}}
+            <div class="w-full bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300 text-center">
+                <i class="fa-solid fa-circle-info mr-1"></i>
+                Escanea desde tu app bancaria. El monto ya está incluido.
+            </div>
+
+            <button onclick="cerrarQR(null)"
+                    class="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold py-3 rounded-xl text-sm transition-colors">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- QR Library --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
 const CART_KEY = 'casatek_carrito';
 
-function getToken()   { return localStorage.getItem('token') || null; }
-function getCarrito() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+function getToken()    { return localStorage.getItem('token') || null; }
+function getCarrito()  { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
 function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
 
 function fmt(n) {
@@ -199,12 +276,96 @@ function recalcular() {
     const carrito  = getCarrito();
     const subtotal = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
     const count    = carrito.reduce((acc, i) => acc + i.cantidad, 0);
-    document.getElementById('subtotal').textContent = fmt(subtotal);
-    document.getElementById('total').textContent    = fmt(subtotal);
+    document.getElementById('subtotal').textContent    = fmt(subtotal);
+    document.getElementById('total').textContent       = fmt(subtotal);
+    document.getElementById('total-todos').textContent = fmt(subtotal);
     document.getElementById('items-counter').textContent =
         count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
+
+    // Mostrar/ocultar botón pagar todo
+    const wrap = document.getElementById('btn-pagar-todo-wrap');
+    if (count > 0) wrap.classList.remove('hidden');
+    else           wrap.classList.add('hidden');
 }
 
+// ══════════════════════════════════════════
+// QR BCP — EMVCo con monto dinámico
+// ══════════════════════════════════════════
+function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+            crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+        }
+    }
+    return ((crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'));
+}
+
+function generarStringQR(monto) {
+    const montoStr   = parseFloat(monto).toFixed(2);
+    const montoField = '54' + String(montoStr.length).padStart(2, '0') + montoStr;
+
+    const base = '00020101021132580010bo.com.atc01120428511603030206122015202976830252045999' +
+                 '5303068' +
+                 montoField +
+                 '5802BO5923Hugo Camilo Cussi Suxo6006La Paz6226072220280606193000000021303';
+
+    const crcInput = base + '6304';
+    const crc      = crc16(crcInput);
+    return base + '6304' + crc;
+}
+
+// ── Abrir QR ──
+// modo: 'todo' → suma todo el carrito
+//       objeto { nombre, precio, cantidad } → producto individual
+function abrirQR(modo) {
+    const carrito = getCarrito();
+    if (carrito.length === 0) {
+        alert('Tu carrito está vacío.');
+        return;
+    }
+
+    let monto, label, nombre;
+
+    if (modo === 'todo') {
+        monto  = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+        label  = 'Pago total del carrito (' + carrito.length + ' producto' + (carrito.length !== 1 ? 's' : '') + ')';
+        nombre = 'Total carrito';
+    } else {
+        // modo es { nombre, precio, cantidad }
+        monto  = modo.precio * modo.cantidad;
+        label  = 'Producto individual';
+        nombre = modo.nombre;
+    }
+
+    document.getElementById('qr-monto').textContent          = fmt(monto);
+    document.getElementById('qr-label').textContent          = label;
+    document.getElementById('qr-producto-nombre').textContent = nombre;
+
+    const qrString    = generarStringQR(monto);
+    const container   = document.getElementById('qr-container');
+    container.innerHTML = '';
+
+    new QRCode(container, {
+        text:         qrString,
+        width:        220,
+        height:       220,
+        correctLevel: QRCode.CorrectLevel.M,
+    });
+
+    document.getElementById('modalQR').classList.add('open');
+}
+
+function cerrarQR(event) {
+    if (event === null || event.target === document.getElementById('modalQR')) {
+        document.getElementById('modalQR').classList.remove('open');
+    }
+}
+
+// ══════════════════════════════════════════
+// Carrito
+// ══════════════════════════════════════════
 async function cambiarQty(id, delta) {
     const carrito = getCarrito();
     const item    = carrito.find(i => i.id === id);
@@ -216,11 +377,9 @@ async function cambiarQty(id, delta) {
     document.getElementById('price-' + id).textContent = fmt(item.precio * item.cantidad);
     recalcular();
 
-    // Sincronizar con BD si está logueado
     const token = getToken();
     if (!token) return;
     try {
-        // Buscar el cart_item_id desde la BD
         const res  = await fetch('/api/cart', {
             headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
         });
@@ -229,11 +388,7 @@ async function cambiarQty(id, delta) {
         if (bdItem) {
             await fetch('/api/cart/items/' + bdItem.id, {
                 method:  'PUT',
-                headers: {
-                    'Content-Type':  'application/json',
-                    'Accept':        'application/json',
-                    'Authorization': 'Bearer ' + token,
-                },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ quantity: item.cantidad }),
             });
         }
@@ -251,7 +406,6 @@ async function eliminar(id) {
         recalcular();
         if (carrito.length === 0) mostrarVacio();
 
-        // Sincronizar con BD
         const token = getToken();
         if (!token) return;
         try {
@@ -272,6 +426,7 @@ async function eliminar(id) {
 
 function mostrarVacio() {
     document.getElementById('empty-state').classList.remove('hidden');
+    document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
 }
 
 function crearArticulo(item, index) {
@@ -281,23 +436,43 @@ function crearArticulo(item, index) {
     li.style.animationDelay = (index * 0.07) + 's';
     li.dataset.id   = item.id;
     li.dataset.unit = item.precio;
+
+    // Escapar para uso seguro en atributos onclick
+    const nombreEsc = item.nombre.replace(/'/g, "\\'");
+
     li.innerHTML = `
         <figure class="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 overflow-hidden flex items-center justify-center p-3 m-0">
             <img src="${img}" alt="${item.nombre}" class="w-full h-full object-contain"
                  onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
         </figure>
+
         <article class="flex-1 flex flex-col justify-between">
             <div class="flex justify-between items-start gap-3">
-                <div>
+                <div class="flex-1 min-w-0">
                     <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-widest">${item.marca || ''}</span>
                     <h2 class="text-base font-black text-gray-900 dark:text-white mt-0.5 leading-tight">${item.nombre}</h2>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${item.descripcion || ''}</p>
                 </div>
-                <button onclick="eliminar('${item.id}')"
-                        class="text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all shrink-0">
-                    <i class="fa-solid fa-trash text-sm"></i>
-                </button>
+
+                {{-- Botones pagar individual + eliminar --}}
+                <div class="flex flex-col gap-2 shrink-0">
+                    <button
+                        onclick="abrirQR({ nombre: '${nombreEsc}', precio: ${item.precio}, cantidad: document.getElementById('qty-${item.id}') ? parseInt(document.getElementById('qty-${item.id}').textContent) : ${item.cantidad} })"
+                        title="Pagar este producto con QR"
+                        class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    >
+                        <i class="fa-solid fa-qrcode text-sm"></i>
+                    </button>
+                    <button
+                        onclick="eliminar('${item.id}')"
+                        title="Eliminar producto"
+                        class="w-9 h-9 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all"
+                    >
+                        <i class="fa-solid fa-trash text-sm"></i>
+                    </button>
+                </div>
             </div>
+
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4">
                 <div class="qty-wrap">
                     <button onclick="cambiarQty('${item.id}', -1)">−</button>
@@ -316,22 +491,18 @@ function crearArticulo(item, index) {
     return li;
 }
 
-// ── Cargar carrito al iniciar ──
 async function cargarCarrito() {
     const token = getToken();
     const lista = document.getElementById('cart-list');
 
     if (token) {
-        // Usuario logueado → cargar desde BD y sincronizar localStorage
         try {
             const res  = await fetch('/api/cart', {
                 headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
             });
             const data = await res.json();
             const bdItems = data.datos?.items ?? [];
-
             if (bdItems.length > 0) {
-                // Convertir items de BD al formato localStorage
                 const carritoLocal = bdItems.map(i => ({
                     id:          String(i.product_id),
                     nombre:      i.product?.name        ?? 'Producto',
@@ -348,7 +519,6 @@ async function cargarCarrito() {
         }
     }
 
-    // Renderizar desde localStorage (siempre)
     const carrito = getCarrito();
     if (carrito.length === 0) {
         mostrarVacio();
