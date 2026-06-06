@@ -42,7 +42,7 @@ Route::get('/', function () {
     return view('index');
 });
 
-// FIX: ahora usa CatalogoController con datos reales de la BD
+//se usa CatalogoController con datos reales de la BD
 Route::get('/productos', [CatalogoController::class, 'index'])->name('productos');
 
 Route::get('/nosotros', function () {
