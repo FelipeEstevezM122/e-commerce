@@ -42,21 +42,29 @@
     .dark .btn-checkout { background: #1b803a; }
     .dark .btn-checkout:hover { background: #15803d; }
 
-    #modalQR {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
+    .modal-qr-wrap {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
     }
-    #modalQR.open {
-        opacity: 1;
-        pointer-events: all;
+    .modal-qr-wrap.open {
+        display: flex;
     }
-    #modalQR .qr-box {
-        transform: scale(0.93);
-        transition: transform 0.2s ease;
+    .modal-qr-box {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        width: 100%;
+        max-width: 380px;
+        overflow: hidden;
     }
-    #modalQR.open .qr-box {
-        transform: scale(1);
+    .dark .modal-qr-box {
+        background: #111827;
     }
 </style>
 @endpush
@@ -105,10 +113,10 @@
 
             <div id="btn-pagar-todo-wrap" class="hidden mt-6">
                 <button id="btn-pagar-todo"
-                        class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                    <i class="fa-solid fa-qrcode text-lg"></i>
-                    <span>Pagar todo el carrito con QR BCP</span>
-                    <span class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg ml-1">
+                        class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg">
+                    <i class="fa-solid fa-qrcode text-lg pointer-events-none"></i>
+                    <span class="pointer-events-none">Pagar todo el carrito con QR BCP</span>
+                    <span class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg pointer-events-none">
                         Bs. <span id="total-todos">0.00</span>
                     </span>
                 </button>
@@ -159,8 +167,8 @@
                 </div>
 
                 <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3">
-                    <i class="fa-solid fa-qrcode text-sm"></i>
-                    Pagar todo con QR BCP
+                    <i class="fa-solid fa-qrcode text-sm pointer-events-none"></i>
+                    <span class="pointer-events-none">Pagar todo con QR BCP</span>
                 </button>
 
                 <a href="{{ url('/productos') }}"
@@ -191,47 +199,49 @@
     </div>
 </main>
 
-{{-- MODAL QR --}}
-<div id="modalQR"
-     class="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4">
-    <div class="qr-box bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+{{-- MODAL QR — usa display:none por defecto, NO opacity --}}
+<div id="modalQR" class="modal-qr-wrap">
+    <div class="modal-qr-box">
 
-        <div class="bg-[#003087] px-6 py-4 flex items-center justify-between">
-            <span class="text-white font-black text-xl tracking-tight">›BCP›</span>
-            <button id="btn-cerrar-qr-header" class="text-white/70 hover:text-white transition-colors">
-                <i class="fa-solid fa-xmark text-lg"></i>
+        <div style="background:#003087; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:white; font-weight:900; font-size:1.2rem; letter-spacing:.05em;">›BCP›</span>
+            <button id="btn-cerrar-qr-header"
+                    style="background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; padding:4px 8px;">
+                ✕
             </button>
         </div>
 
-        <div class="p-6 flex flex-col items-center gap-4">
+        <div style="padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem;">
 
-            <div class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-2 text-center">
-                <p class="text-xs text-gray-400 font-semibold" id="qr-label">Producto</p>
-                <p class="text-sm font-black text-gray-800 dark:text-white truncate" id="qr-producto-nombre"></p>
+            <div style="width:100%; background:#f9fafb; border-radius:12px; padding:.5rem 1rem; text-align:center;">
+                <p id="qr-label" style="font-size:11px; color:#9ca3af; font-weight:700; margin:0;"></p>
+                <p id="qr-producto-nombre" style="font-size:13px; font-weight:900; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></p>
             </div>
 
-            <div class="bg-white p-3 rounded-2xl shadow-inner border border-gray-100" id="qr-container"></div>
+            <div id="qr-container"
+                 style="background:white; padding:12px; border-radius:16px; border:1px solid #e5e7eb; min-width:220px; min-height:220px; display:flex; align-items:center; justify-content:center;">
+            </div>
 
-            <div class="text-center">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Monto a pagar</p>
-                <p class="text-4xl font-black text-[#003087]">
+            <div style="text-align:center;">
+                <p style="font-size:10px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.1em; margin:0 0 4px;">Monto a pagar</p>
+                <p style="font-size:2.2rem; font-weight:900; color:#003087; margin:0;">
                     Bs. <span id="qr-monto">0.00</span>
                 </p>
             </div>
 
-            <div class="w-full border-t border-gray-100 dark:border-gray-700 pt-4 text-center space-y-1">
-                <p class="font-black text-gray-800 dark:text-white text-sm">Hugo Camilo Cussi Suxo</p>
-                <p class="text-xs text-gray-400">No. Cta: 201-52029768-3-02</p>
-                <p class="text-xs text-gray-400">Vencimiento: 06/06/2028</p>
+            <div style="width:100%; border-top:1px solid #e5e7eb; padding-top:1rem; text-align:center;">
+                <p style="font-weight:900; font-size:14px; margin:0 0 2px; color:#111827;">Hugo Camilo Cussi Suxo</p>
+                <p style="font-size:12px; color:#9ca3af; margin:0;">No. Cta: 201-52029768-3-02</p>
+                <p style="font-size:12px; color:#9ca3af; margin:0;">Vencimiento: 06/06/2028</p>
             </div>
 
-            <div class="w-full bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300 text-center">
-                <i class="fa-solid fa-circle-info mr-1"></i>
+            <div style="width:100%; background:#eff6ff; border-radius:12px; padding:.75rem; text-align:center; font-size:12px; color:#1d4ed8;">
+                <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>
                 Escanea desde tu app bancaria. El monto ya está incluido.
             </div>
 
             <button id="btn-cerrar-qr-footer"
-                    class="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold py-3 rounded-xl text-sm transition-colors">
+                    style="width:100%; background:#f3f4f6; border:none; border-radius:12px; padding:12px; font-weight:700; font-size:14px; cursor:pointer; color:#374151;">
                 Cerrar
             </button>
         </div>
@@ -265,7 +275,6 @@ function recalcular() {
     else           wrap.classList.add('hidden');
 }
 
-// ── CRC16 + generador QR EMVCo ──
 function crc16(str) {
     let crc = 0xFFFF;
     for (let i = 0; i < str.length; i++) {
@@ -286,7 +295,6 @@ function generarStringQR(monto) {
     return base + '6304' + crc16(base + '6304');
 }
 
-// ── Modal QR ──
 function abrirQR(modo) {
     const carrito = getCarrito();
     if (carrito.length === 0) { alert('Tu carrito está vacío.'); return; }
@@ -306,18 +314,21 @@ function abrirQR(modo) {
     document.getElementById('qr-label').textContent           = label;
     document.getElementById('qr-producto-nombre').textContent = nombre;
 
-    // Recrear div para evitar bug de qrcodejs
-    const container  = document.getElementById('qr-container');
+    // Limpiar y generar QR
+    const container = document.getElementById('qr-container');
     container.innerHTML = '';
-    const qrDiv      = document.createElement('div');
-    container.appendChild(qrDiv);
 
-    new QRCode(qrDiv, {
-        text:         generarStringQR(monto),
-        width:        220,
-        height:       220,
-        correctLevel: QRCode.CorrectLevel.M,
-    });
+    try {
+        new QRCode(container, {
+            text:         generarStringQR(monto),
+            width:        220,
+            height:       220,
+            correctLevel: QRCode.CorrectLevel.M,
+        });
+    } catch(e) {
+        container.innerHTML = '<p style="color:red;font-size:12px;">Error generando QR</p>';
+        console.error('QR error:', e);
+    }
 
     document.getElementById('modalQR').classList.add('open');
 }
@@ -326,7 +337,6 @@ function cerrarQR() {
     document.getElementById('modalQR').classList.remove('open');
 }
 
-// ── Carrito ──
 async function cambiarQty(id, delta) {
     const carrito = getCarrito();
     const item    = carrito.find(i => i.id === id);
@@ -391,7 +401,6 @@ function crearArticulo(item, index) {
     li.className = 'product-row bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 flex flex-col md:flex-row gap-5 transition-all duration-300';
     li.style.animationDelay = (index * 0.07) + 's';
     li.dataset.id     = item.id;
-    li.dataset.unit   = item.precio;
     li.dataset.nombre = item.nombre;
     li.dataset.precio = item.precio;
 
@@ -410,21 +419,21 @@ function crearArticulo(item, index) {
                 <div class="flex flex-col gap-2 shrink-0">
                     <button data-action="pagar-item" data-id="${item.id}"
                             title="Pagar este producto con QR"
-                            class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <i class="fa-solid fa-qrcode text-sm pointer-events-none"></i>
+                            class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm">
+                        <i class="fa-solid fa-qrcode text-sm" style="pointer-events:none;"></i>
                     </button>
                     <button data-action="eliminar-item" data-id="${item.id}"
                             title="Eliminar producto"
-                            class="w-9 h-9 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all">
-                        <i class="fa-solid fa-trash text-sm pointer-events-none"></i>
+                            class="w-9 h-9 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-trash text-sm" style="pointer-events:none;"></i>
                     </button>
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4">
                 <div class="qty-wrap">
-                    <button data-action="qty-menos" data-id="${item.id}">−</button>
+                    <button data-action="qty-menos" data-id="${item.id}" style="pointer-events:all;">−</button>
                     <span class="qty-val text-gray-800 dark:text-white" id="qty-${item.id}">${item.cantidad}</span>
-                    <button data-action="qty-mas" data-id="${item.id}">+</button>
+                    <button data-action="qty-mas" data-id="${item.id}" style="pointer-events:all;">+</button>
                 </div>
                 <p class="flex items-baseline gap-1">
                     <span class="text-sm font-semibold text-gray-400">Bs.</span>
@@ -474,18 +483,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cargarCarrito();
 
-    // ── Delegación de eventos: botones dentro de cada producto ──
     document.getElementById('cart-list').addEventListener('click', function(e) {
         const btn = e.target.closest('[data-action]');
         if (!btn) return;
-
         const action = btn.dataset.action;
         const id     = btn.dataset.id;
-
         if (action === 'qty-menos')     cambiarQty(id, -1);
         if (action === 'qty-mas')       cambiarQty(id,  1);
         if (action === 'eliminar-item') eliminar(id);
-
         if (action === 'pagar-item') {
             const row    = document.querySelector('.product-row[data-id="' + id + '"]');
             const nombre = row.dataset.nombre;
@@ -495,13 +500,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ── Botones pagar TODO ──
-    document.getElementById('btn-pagar-todo').addEventListener('click',        () => abrirQR('todo'));
-    document.getElementById('btn-pagar-todo-resumen').addEventListener('click', () => abrirQR('todo'));
-
-    // ── Cerrar modal QR ──
-    document.getElementById('btn-cerrar-qr-header').addEventListener('click', cerrarQR);
-    document.getElementById('btn-cerrar-qr-footer').addEventListener('click', cerrarQR);
+    document.getElementById('btn-pagar-todo').addEventListener('click',         () => abrirQR('todo'));
+    document.getElementById('btn-pagar-todo-resumen').addEventListener('click',  () => abrirQR('todo'));
+    document.getElementById('btn-cerrar-qr-header').addEventListener('click',    cerrarQR);
+    document.getElementById('btn-cerrar-qr-footer').addEventListener('click',    cerrarQR);
     document.getElementById('modalQR').addEventListener('click', function(e) {
         if (e.target === this) cerrarQR();
     });
