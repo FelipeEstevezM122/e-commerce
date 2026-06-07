@@ -104,7 +104,7 @@ class ProductController extends Controller
     /** Vista para crear producto */
     public function create()
     {
-        $brands         = Brand::all();
+        $brands         = Brand::orderBy('name')->get();
         $categories     = Category::orderBy('name')->get();
         $totalProducts  = Product::count();
         $totalBrands    = Brand::count();
@@ -116,38 +116,64 @@ class ProductController extends Controller
     /** Vista para editar producto */
     public function edit(Product $product)
     {
-        $brands     = Brand::all();
+        $brands     = Brand::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
         return view('edit', compact('product', 'brands', 'categories'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name'          => 'required|string|max:150',
             'description'   => 'nullable|string',
             'base_price'    => 'required|numeric|min:0',
             'stock'         => 'required|integer|min:0',
             'sku'           => 'required|string|max:50|unique:products,sku',
             'warranty_days' => 'nullable|integer|min:0',
-            'brand_id'      => 'nullable|exists:brands,id',
-            'category_id'   => 'nullable|exists:categories,id',
+            'brand_name'    => 'nullable|string|max:100',
+            'category_name' => 'nullable|string|max:100',
             'image1'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
+        // Marca: busca por nombre o crea nueva automáticamente
+        $brandId = null;
+        if (!empty($request->brand_name)) {
+            $brand   = Brand::firstOrCreate(['name' => trim($request->brand_name)]);
+            $brandId = $brand->id;
+        }
+
+        // Categoría: busca por nombre o crea nueva automáticamente
+        $categoryId = null;
+        if (!empty($request->category_name)) {
+            $category   = Category::firstOrCreate(['name' => trim($request->category_name)]);
+            $categoryId = $category->id;
+        }
+
+        $data = [
+            'name'          => $request->name,
+            'description'   => $request->description,
+            'base_price'    => $request->base_price,
+            'stock'         => $request->stock,
+            'sku'           => $request->sku,
+            'warranty_days' => $request->warranty_days,
+            'brand_id'      => $brandId,
+            'category_id'   => $categoryId,
+        ];
+
+        // Subir imágenes a Cloudinary
         foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
             if ($request->hasFile($field)) {
-                $validated[$field] = $this->uploadToCloudinary(
+                $data[$field] = $this->uploadToCloudinary(
                     $request->file($field),
-                    $validated['sku']
+                    $request->sku
                 );
             }
         }
 
-        $product = Product::create($validated);
+        $product = Product::create($data);
 
         Cache::flush();
 

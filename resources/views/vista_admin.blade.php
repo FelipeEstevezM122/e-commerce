@@ -106,7 +106,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .m-input {
     width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
     border-radius:12px; padding:10px 14px; font-size:13px; font-family:'DM Sans',sans-serif;
-    color:#fff; outline:none; transition:border-color .15s;
+    color:#fff; outline:none; transition:border-color .15s; box-sizing:border-box;
 }
 .m-input:focus { border-color:var(--green); }
 .m-input::placeholder { color:rgba(255,255,255,.2); }
@@ -117,14 +117,18 @@ textarea.m-input { resize:vertical; }
 .m-footer { display:flex; gap:10px; padding:18px 22px; border-top:1px solid rgba(34,197,94,.12); }
 .btn-save { flex:1; background:var(--green); color:#fff; border:none; border-radius:12px; padding:11px 20px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
 .btn-save:hover { background:var(--green-dark); }
+.btn-save:disabled { opacity:.5; cursor:not-allowed; }
 .btn-cancel-m { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:11px 20px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all .15s; }
 .btn-cancel-m:hover { color:#fff; background:rgba(255,255,255,.08); }
 .img-preview-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px; }
 .img-preview-item { position:relative; }
 .img-preview-item img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,.08); }
 .img-preview-item p { font-size:10px; color:var(--muted); margin-top:4px; text-align:center; }
-.file-input { width:100%; background:rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.15); border-radius:10px; padding:8px 12px; font-size:12px; color:#9ca3af; cursor:pointer; }
+.file-input { width:100%; background:rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.15); border-radius:10px; padding:8px 12px; font-size:12px; color:#9ca3af; cursor:pointer; box-sizing:border-box; }
 .file-input:hover { border-color:var(--green); }
+
+/* Error en modal */
+#modalErrorMsg { display:none; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#f87171; padding:10px 14px; border-radius:10px; font-size:12px; margin-bottom:14px; }
 
 @media(max-width:1100px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:768px) { #main { padding:20px 16px 40px; } .stat-grid { grid-template-columns:1fr 1fr; } .m-row { grid-template-columns:1fr; } }
@@ -254,8 +258,7 @@ textarea.m-input { resize:vertical; }
                         <tr>
                             <td>
                                 <img src="{{ $product->image1 ?? 'https://via.placeholder.com/56' }}"
-                                     class="w-14 h-14 rounded-xl object-cover"
-                                     style="border:1px solid rgba(255,255,255,.08)"
+                                     style="width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,.08)"
                                      onerror="this.src='https://via.placeholder.com/56'">
                             </td>
                             <td>
@@ -283,20 +286,19 @@ textarea.m-input { resize:vertical; }
                             </td>
                             <td>
                                 <div style="display:flex;justify-content:center;gap:6px">
-                                    {{-- BOTÓN EDITAR → abre modal --}}
                                     <button type="button"
                                         class="act-btn act-edit"
                                         title="Editar"
                                         onclick='abrirModalEditar({
-                                            id:        {{ $product->id }},
-                                            name:      {{ json_encode($product->name) }},
-                                            sku:       {{ json_encode($product->sku) }},
-                                            base_price:{{ $product->base_price }},
-                                            stock:     {{ $product->stock }},
-                                            warranty_days: {{ $product->warranty_days ?? 0 }},
-                                            description:   {{ json_encode($product->description ?? "") }},
-                                            brand_id:      {{ $product->brand_id ?? "null" }},
-                                            category_id:   {{ $product->category_id ?? "null" }},
+                                            id:           {{ $product->id }},
+                                            name:         {{ json_encode($product->name) }},
+                                            sku:          {{ json_encode($product->sku) }},
+                                            base_price:   {{ $product->base_price }},
+                                            stock:        {{ $product->stock }},
+                                            warranty_days:{{ $product->warranty_days ?? 0 }},
+                                            description:  {{ json_encode($product->description ?? "") }},
+                                            brand_id:     {{ $product->brand_id ?? "null" }},
+                                            category_id:  {{ $product->category_id ?? "null" }},
                                             image1: {{ json_encode($product->image1 ?? "") }},
                                             image2: {{ json_encode($product->image2 ?? "") }},
                                             image3: {{ json_encode($product->image3 ?? "") }},
@@ -371,38 +373,40 @@ textarea.m-input { resize:vertical; }
                 <i class="fa-solid fa-pen-to-square" style="color:#60a5fa"></i>
                 Editar Producto
             </h3>
-            <button class="modal-close" onclick="cerrarModal()">
+            <button type="button" class="modal-close" onclick="cerrarModal()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
-        <form id="formEditProduct" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+        {{-- El form NO tiene action ni method PUT aquí; se maneja 100% por JS con fetch --}}
+        <div id="formEditWrapper">
 
             <div class="modal-body">
+
+                {{-- Error msg --}}
+                <div id="modalErrorMsg"></div>
 
                 {{-- Nombre --}}
                 <div class="m-field">
                     <label class="m-label">Nombre del Producto *</label>
-                    <input type="text" id="edit_name" name="name" class="m-input" placeholder="Nombre del producto" required>
+                    <input type="text" id="edit_name" class="m-input" placeholder="Nombre del producto">
                 </div>
 
                 {{-- Descripción --}}
                 <div class="m-field">
                     <label class="m-label">Descripción</label>
-                    <textarea id="edit_description" name="description" rows="3" class="m-input" placeholder="Descripción del producto..."></textarea>
+                    <textarea id="edit_description" rows="3" class="m-input" placeholder="Descripción del producto..."></textarea>
                 </div>
 
                 {{-- SKU + Precio --}}
                 <div class="m-row">
                     <div>
                         <label class="m-label">SKU *</label>
-                        <input type="text" id="edit_sku" name="sku" class="m-input" placeholder="SKU-001" required>
+                        <input type="text" id="edit_sku" class="m-input" placeholder="SKU-001">
                     </div>
                     <div>
                         <label class="m-label">Precio base (Bs.) *</label>
-                        <input type="number" id="edit_base_price" name="base_price" class="m-input" placeholder="0.00" step="0.01" min="0" required>
+                        <input type="number" id="edit_base_price" class="m-input" placeholder="0.00" step="0.01" min="0">
                     </div>
                 </div>
 
@@ -410,11 +414,11 @@ textarea.m-input { resize:vertical; }
                 <div class="m-row">
                     <div>
                         <label class="m-label">Stock *</label>
-                        <input type="number" id="edit_stock" name="stock" class="m-input" min="0" required>
+                        <input type="number" id="edit_stock" class="m-input" min="0">
                     </div>
                     <div>
                         <label class="m-label">Días de garantía</label>
-                        <input type="number" id="edit_warranty_days" name="warranty_days" class="m-input" min="0">
+                        <input type="number" id="edit_warranty_days" class="m-input" min="0">
                     </div>
                 </div>
 
@@ -422,7 +426,7 @@ textarea.m-input { resize:vertical; }
                 <div class="m-row">
                     <div>
                         <label class="m-label">Marca</label>
-                        <select id="edit_brand_id" name="brand_id" class="m-input">
+                        <select id="edit_brand_id" class="m-input">
                             <option value="">Sin marca</option>
                             @foreach($brands as $brand)
                                 <option value="{{ $brand->id }}">{{ $brand->name }}</option>
@@ -431,7 +435,7 @@ textarea.m-input { resize:vertical; }
                     </div>
                     <div>
                         <label class="m-label">Categoría</label>
-                        <select id="edit_category_id" name="category_id" class="m-input">
+                        <select id="edit_category_id" class="m-input">
                             <option value="">Sin categoría</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -440,7 +444,7 @@ textarea.m-input { resize:vertical; }
                     </div>
                 </div>
 
-                {{-- Imágenes actuales + reemplazo --}}
+                {{-- Imágenes --}}
                 <div class="m-field">
                     <label class="m-label">Imágenes actuales</label>
                     <div class="img-preview-grid">
@@ -450,9 +454,9 @@ textarea.m-input { resize:vertical; }
                                  src="https://via.placeholder.com/80?text=Sin+img"
                                  onerror="this.src='https://via.placeholder.com/80?text=Sin+img'">
                             <p>Imagen {{ $i }}</p>
-                            <input type="file" name="image{{ $i }}" accept="image/jpeg,image/png,image/webp"
+                            <input type="file" id="edit_file_{{ $i }}" accept="image/jpeg,image/png,image/webp"
                                    class="file-input" style="margin-top:4px"
-                                   onchange="previewImg(this, 'edit_img_preview_{{ $i }}')">
+                                   onchange="previewModalImg(this, 'edit_img_preview_{{ $i }}')">
                         </div>
                         @endforeach
                     </div>
@@ -465,15 +469,13 @@ textarea.m-input { resize:vertical; }
             </div>
 
             <div class="m-footer">
-                <button type="button" class="btn-cancel-m" onclick="cerrarModal()">
-                    Cancelar
-                </button>
-                <button type="submit" class="btn-save">
+                <button type="button" class="btn-cancel-m" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btnGuardarEdit" onclick="guardarCambios()">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
                 </button>
             </div>
-        </form>
 
+        </div>
     </div>
 </div>
 
@@ -486,35 +488,40 @@ textarea.m-input { resize:vertical; }
 </div>
 
 <script>
-// ── Rutas base para el update ──
 const updateBaseUrl = "{{ url('admin/products') }}";
+const csrfToken     = "{{ csrf_token() }}";
+
+let currentProductId = null;
 
 function abrirModalEditar(p) {
-    // Rellenar campos
-    document.getElementById('edit_name').value          = p.name;
-    document.getElementById('edit_sku').value           = p.sku;
-    document.getElementById('edit_base_price').value    = p.base_price;
-    document.getElementById('edit_stock').value         = p.stock;
-    document.getElementById('edit_warranty_days').value = p.warranty_days;
-    document.getElementById('edit_description').value   = p.description;
+    currentProductId = p.id;
 
-    // Marca y categoría
-    const brandSel = document.getElementById('edit_brand_id');
-    const catSel   = document.getElementById('edit_category_id');
-    brandSel.value = p.brand_id ?? '';
-    catSel.value   = p.category_id ?? '';
+    document.getElementById('edit_name').value          = p.name          ?? '';
+    document.getElementById('edit_sku').value           = p.sku           ?? '';
+    document.getElementById('edit_base_price').value    = p.base_price    ?? '';
+    document.getElementById('edit_stock').value         = p.stock         ?? 0;
+    document.getElementById('edit_warranty_days').value = p.warranty_days ?? 0;
+    document.getElementById('edit_description').value   = p.description   ?? '';
+    document.getElementById('edit_brand_id').value      = p.brand_id      ?? '';
+    document.getElementById('edit_category_id').value   = p.category_id   ?? '';
 
-    // Previews de imágenes
+    // Limpiar inputs de archivo anteriores
+    [1,2,3,4].forEach(i => {
+        document.getElementById('edit_file_' + i).value = '';
+    });
+
+    // Previews de imágenes actuales
     [1,2,3,4].forEach(i => {
         const img = document.getElementById('edit_img_preview_' + i);
         const src = p['image' + i];
-        img.src = src && src.length > 0 ? src : 'https://via.placeholder.com/80?text=Sin+img';
+        img.src = (src && src.length > 0) ? src : 'https://via.placeholder.com/80?text=Sin+img';
     });
 
-    // Action del form → /admin/products/{id}
-    document.getElementById('formEditProduct').action = updateBaseUrl + '/' + p.id;
+    // Limpiar error
+    const errDiv = document.getElementById('modalErrorMsg');
+    errDiv.style.display = 'none';
+    errDiv.textContent = '';
 
-    // Abrir modal
     document.getElementById('modalEditProduct').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -528,7 +535,7 @@ function cerrarModalEdit(e) {
     if (e.target === document.getElementById('modalEditProduct')) cerrarModal();
 }
 
-function previewImg(input, previewId) {
+function previewModalImg(input, previewId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => document.getElementById(previewId).src = e.target.result;
@@ -536,12 +543,95 @@ function previewImg(input, previewId) {
     }
 }
 
+async function guardarCambios() {
+    if (!currentProductId) return;
+
+    const btn = document.getElementById('btnGuardarEdit');
+    const errDiv = document.getElementById('modalErrorMsg');
+
+    // Validación básica
+    const name = document.getElementById('edit_name').value.trim();
+    const sku  = document.getElementById('edit_sku').value.trim();
+    if (!name || !sku) {
+        errDiv.textContent = 'El nombre y el SKU son obligatorios.';
+        errDiv.style.display = 'block';
+        return;
+    }
+
+    // Deshabilitar botón
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    errDiv.style.display = 'none';
+
+    // Construir FormData — Laravel necesita _method=PUT para que detecte la ruta correcta
+    const formData = new FormData();
+    formData.append('_method', 'PUT');
+    formData.append('_token',  csrfToken);
+    formData.append('name',          document.getElementById('edit_name').value);
+    formData.append('sku',           document.getElementById('edit_sku').value);
+    formData.append('base_price',    document.getElementById('edit_base_price').value);
+    formData.append('stock',         document.getElementById('edit_stock').value);
+    formData.append('warranty_days', document.getElementById('edit_warranty_days').value);
+    formData.append('description',   document.getElementById('edit_description').value);
+    formData.append('brand_id',      document.getElementById('edit_brand_id').value);
+    formData.append('category_id',   document.getElementById('edit_category_id').value);
+
+    // Adjuntar imágenes solo si el usuario eligió un archivo nuevo
+    [1,2,3,4].forEach(i => {
+        const fileInput = document.getElementById('edit_file_' + i);
+        if (fileInput.files && fileInput.files[0]) {
+            formData.append('image' + i, fileInput.files[0]);
+        }
+    });
+
+    try {
+        const response = await fetch(updateBaseUrl + '/' + currentProductId, {
+            method: 'POST',   // fetch usa POST; Laravel interpreta PUT gracias al campo _method
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok && (data.success || data.message)) {
+            // Éxito: cerrar modal y mostrar toast
+            cerrarModal();
+            mostrarToast(data.message ?? 'Producto actualizado correctamente');
+            // Recargar la tabla después de 800ms para reflejar los cambios
+            setTimeout(() => location.reload(), 800);
+        } else {
+            // Errores de validación Laravel (422) u otros
+            let msg = 'Error al guardar los cambios.';
+            if (data.errors) {
+                msg = Object.values(data.errors).flat().join(' ');
+            } else if (data.message) {
+                msg = data.message;
+            }
+            errDiv.textContent = msg;
+            errDiv.style.display = 'block';
+        }
+    } catch (err) {
+        errDiv.textContent = 'Error de conexión. Intenta nuevamente.';
+        errDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Cambios';
+    }
+}
+
+function mostrarToast(msg) {
+    const t = document.getElementById('adminToast');
+    document.getElementById('adminToastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
 @if(session('success'))
     (function(){
-        const t = document.getElementById('adminToast');
-        document.getElementById('adminToastMsg').textContent = '{{ session('success') }}';
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
+        mostrarToast('{{ session('success') }}');
     })();
 @endif
 </script>

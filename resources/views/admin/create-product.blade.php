@@ -26,7 +26,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 .panel-body { padding:28px 24px; }
 
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.form-grid.full { grid-template-columns:1fr; }
 .form-group { display:flex; flex-direction:column; gap:6px; }
 .form-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
 .form-label span { color:#f87171; margin-left:2px; }
@@ -37,43 +36,126 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
     font-family:'DM Sans',sans-serif; color:#fff; outline:none;
     transition:border-color .15s, background .15s; width:100%; box-sizing:border-box;
 }
-.f-input:focus, .f-select:focus, .f-textarea:focus {
-    border-color:var(--green); background:rgba(34,197,94,.04);
-}
+.f-input:focus, .f-select:focus, .f-textarea:focus { border-color:var(--green); background:rgba(34,197,94,.04); }
 .f-input::placeholder, .f-textarea::placeholder { color:rgba(255,255,255,.2); }
 .f-select option { background:#111f16; color:#fff; }
 .f-textarea { resize:vertical; min-height:100px; }
-
+.f-input[list] { cursor:text; }
+.f-input[list]::-webkit-calendar-picker-indicator { display:none !important; }
 .f-input.has-error { border-color:rgba(239,68,68,.5); }
-
 .err-msg { font-size:11px; color:#f87171; margin-top:2px; display:flex; align-items:center; gap:4px; }
 
-/* Sección de imágenes */
+/* ═══════════════════════════════════════
+   IMAGEN UPLOADER — solución definitiva
+   Usamos DIV en lugar de LABEL para evitar
+   que el navegador rompa el layout con
+   elementos block dentro de inline.
+═══════════════════════════════════════ */
 .img-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-.img-upload {
-    position:relative; border:2px dashed rgba(255,255,255,.1); border-radius:14px;
-    aspect-ratio:1; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; gap:8px; cursor:pointer; transition:all .2s;
-    overflow:hidden;
+
+.img-box {
+    /* Contenedor cuadrado fijo */
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* truco aspect-ratio 1:1 sin aspect-ratio */
+    border-radius: 14px;
+    border: 2px dashed rgba(255,255,255,.12);
+    background: rgba(255,255,255,.02);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    overflow: hidden; /* TODO lo que salga adentro se recorta aquí */
 }
-.img-upload:hover { border-color:var(--green); background:rgba(34,197,94,.04); }
-.img-upload input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
-.img-upload i { font-size:22px; color:rgba(255,255,255,.2); pointer-events:none; transition:color .2s; }
-.img-upload:hover i { color:var(--green); }
-.img-upload p { font-size:10px; font-weight:700; color:rgba(255,255,255,.25); text-transform:uppercase; letter-spacing:.06em; pointer-events:none; transition:color .2s; }
-.img-upload:hover p { color:var(--green); }
-.img-preview { position:absolute; inset:0; object-fit:cover; border-radius:12px; display:none; }
-.img-upload .img-label { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.15); position:absolute; bottom:8px; }
+.img-box:hover { border-color: var(--green); background: rgba(34,197,94,.04); }
+.img-box.has-img { border-style: solid; border-color: rgba(34,197,94,.3); }
 
+/* input invisible pero sobre todo el cuadro para capturar clicks */
+.img-box input[type=file] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+    font-size: 0; /* evita que algunos navegadores lo expandan */
+}
+
+/* placeholder (ícono + texto) centrado */
+.img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    pointer-events: none;
+    z-index: 1;
+}
+.img-placeholder i { font-size: 20px; color: rgba(255,255,255,.18); transition: color .2s; }
+.img-placeholder span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.2); transition: color .2s; }
+.img-box:hover .img-placeholder i,
+.img-box:hover .img-placeholder span { color: var(--green); }
+.img-box.has-img .img-placeholder { display: none; }
+
+/* preview — ocupa exactamente el cuadro, nada más */
+.img-thumb {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 11px;
+    pointer-events: none;
+    z-index: 2;
+}
+.img-box.has-img .img-thumb { display: block; }
+
+/* etiqueta inferior */
+.img-tag {
+    position: absolute;
+    bottom: 6px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+    color: rgba(255,255,255,.2);
+    pointer-events: none;
+    z-index: 3;
+    transition: color .2s;
+}
+.img-box.has-img .img-tag { color: var(--green); }
+
+/* botón quitar */
+.img-del {
+    display: none;
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(239,68,68,.9);
+    border: none;
+    color: #fff;
+    font-size: 9px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 6; /* encima del input para recibir clicks */
+    transition: background .15s;
+}
+.img-del:hover { background: #dc2626; }
+.img-box.has-img .img-del { display: flex; }
+
+/* ── resto ── */
+.hint { font-size:11px; color:var(--muted); margin-top:4px; display:flex; align-items:center; gap:4px; }
 .section-sep { border:none; border-top:1px solid var(--border); margin:28px 0; }
-
 .form-actions { display:flex; gap:12px; justify-content:flex-end; margin-top:32px; flex-wrap:wrap; }
 .btn-cancel {
     background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
     color:#9ca3af; border-radius:12px; padding:11px 24px; font-size:13px;
     font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
-    text-decoration:none; display:inline-flex; align-items:center; gap:8px;
-    transition:all .15s;
+    text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all .15s;
 }
 .btn-cancel:hover { color:#fff; background:rgba(255,255,255,.08); }
 .btn-submit {
@@ -84,24 +166,18 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 }
 .btn-submit:hover { background:var(--green-dark); }
 .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
-
 .spinner { display:none; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .6s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-
 .fade-up { animation:fadeUp .4s ease both; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 .delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; }
-
-/* Alerta de errores */
 .alert-err { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25); color:#f87171; padding:14px 18px; border-radius:12px; margin-bottom:20px; font-size:13px; }
-.alert-err ul { margin:8px 0 0 0; padding-left:18px; }
+.alert-err ul { margin:8px 0 0; padding-left:18px; }
 .alert-err li { margin-top:4px; }
-
-.hint { font-size:11px; color:var(--muted); margin-top:4px; }
 
 @media(max-width:700px) {
     .form-grid { grid-template-columns:1fr; }
-    .img-grid { grid-template-columns:repeat(2,1fr); }
+    .img-grid  { grid-template-columns:repeat(2,1fr); }
     #main { padding:20px 16px 40px; }
 }
 </style>
@@ -136,10 +212,10 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
         </div>
         @endif
 
-        <!-- FORMULARIO  -->
         <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
             @csrf
 
+            <!-- INFORMACIÓN BÁSICA -->
             <div class="panel fade-up delay-1">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -148,9 +224,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                     <h2>Información básica</h2>
                 </div>
                 <div class="panel-body">
-
                     <div class="form-grid" style="margin-bottom:20px">
-                     <!--    Nombre --> 
                         <div class="form-group" style="grid-column:1/-1">
                             <label class="form-label">Nombre del producto <span>*</span></label>
                             <input type="text" name="name" value="{{ old('name') }}"
@@ -158,8 +232,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                                    class="f-input {{ $errors->has('name') ? 'has-error' : '' }}">
                             @error('name')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
-
-                        {{-- SKU --}}
                         <div class="form-group">
                             <label class="form-label">SKU <span>*</span></label>
                             <input type="text" name="sku" value="{{ old('sku') }}"
@@ -169,8 +241,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             <p class="hint"><i class="fa-solid fa-circle-info" style="font-size:10px"></i> Código único del producto. No puede repetirse.</p>
                             @error('sku')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
-
-                        <!--  Días de garantía  -->
                         <div class="form-group">
                             <label class="form-label">Días de garantía</label>
                             <input type="number" name="warranty_days" value="{{ old('warranty_days', 365) }}"
@@ -179,19 +249,16 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             @error('warranty_days')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
                     </div>
-
-                     <!-- Descripción  -->
                     <div class="form-group">
                         <label class="form-label">Descripción</label>
                         <textarea name="description" placeholder="Describe las características del producto..."
                                   class="f-textarea {{ $errors->has('description') ? 'has-error' : '' }}">{{ old('description') }}</textarea>
                         @error('description')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                     </div>
-
                 </div>
             </div>
 
-           <!-- PRECIO, STOCK, MARCA Y CATEGORÍA  -->
+            <!-- PRECIO, STOCK, MARCA Y CATEGORÍA -->
             <div class="panel fade-up delay-2" style="margin-top:16px">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -200,9 +267,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                     <h2>Precio, stock y clasificación</h2>
                 </div>
                 <div class="panel-body">
-
                     <div class="form-grid">
-                        <!-- Precio base  -->
                         <div class="form-group">
                             <label class="form-label">Precio base (Bs.) <span>*</span></label>
                             <div style="position:relative">
@@ -214,8 +279,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             </div>
                             @error('base_price')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
-
-                        <!--  Stock  -->
                         <div class="form-group">
                             <label class="form-label">Stock <span>*</span></label>
                             <input type="number" name="stock" value="{{ old('stock', 0) }}"
@@ -223,40 +286,39 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                                    class="f-input {{ $errors->has('stock') ? 'has-error' : '' }}">
                             @error('stock')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
-
-                      <!--    Marca  -->
                         <div class="form-group">
                             <label class="form-label">Marca</label>
-                            <select name="brand_id" class="f-select {{ $errors->has('brand_id') ? 'has-error' : '' }}">
-                                <option value="">— Sin marca —</option>
+                            <input type="text" name="brand_name" value="{{ old('brand_name') }}"
+                                list="brands-list" placeholder="Selecciona o escribe una nueva..."
+                                class="f-input {{ $errors->has('brand_name') ? 'has-error' : '' }}"
+                                autocomplete="off">
+                            <datalist id="brands-list">
                                 @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
-                                        {{ $brand->name }}
-                                    </option>
+                                    <option value="{{ $brand->name }}">
                                 @endforeach
-                            </select>
-                            @error('brand_id')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
+                            </datalist>
+                            <p class="hint"><i class="fa-solid fa-circle-info" style="font-size:10px"></i> Elige una existente o escribe una nueva para crearla.</p>
+                            @error('brand_name')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
-
-                        <!--  Categoría  -->
                         <div class="form-group">
                             <label class="form-label">Categoría</label>
-                            <select name="category_id" class="f-select {{ $errors->has('category_id') ? 'has-error' : '' }}">
-                                <option value="">— Sin categoría —</option>
+                            <input type="text" name="category_name" value="{{ old('category_name') }}"
+                                list="categories-list" placeholder="Selecciona o escribe una nueva..."
+                                class="f-input {{ $errors->has('category_name') ? 'has-error' : '' }}"
+                                autocomplete="off">
+                            <datalist id="categories-list">
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
+                                    <option value="{{ $category->name }}">
                                 @endforeach
-                            </select>
-                            @error('category_id')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
+                            </datalist>
+                            <p class="hint"><i class="fa-solid fa-circle-info" style="font-size:10px"></i> Elige una existente o escribe una nueva para crearla.</p>
+                            @error('category_name')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
                     </div>
-
                 </div>
             </div>
 
-           <!-- IMÁGENES  -->
+            <!-- IMÁGENES -->
             <div class="panel" style="margin-top:16px">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -271,24 +333,46 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                     </p>
                     <div class="img-grid">
                         @foreach(['image1','image2','image3','image4'] as $i => $field)
-                        <div class="form-group">
-                            <label class="img-upload" id="label-{{ $field }}" for="{{ $field }}">
-                                <input type="file" name="{{ $field }}" id="{{ $field }}"
+                        <div>
+                            {{-- DIV en lugar de LABEL — evita bug de layout en navegadores --}}
+                            <div class="img-box" id="box-{{ $field }}">
+                                {{-- Input oculto — recibe el archivo --}}
+                                <input type="file"
+                                       name="{{ $field }}"
+                                       id="{{ $field }}"
                                        accept="image/jpeg,image/png,image/jpg,image/webp"
-                                       onchange="previewImg(this, '{{ $field }}')">
-                                <img class="img-preview" id="preview-{{ $field }}" alt="preview">
-                                <i class="fa-solid fa-cloud-arrow-up" id="icon-{{ $field }}"></i>
-                                <p id="text-{{ $field }}">{{ $i === 0 ? 'Principal' : 'Imagen '.($i+1) }}</p>
-                                <span class="img-label">{{ $i === 0 ? '★ Principal' : '#'.($i+1) }}</span>
-                            </label>
-                            @error($field)<p class="err-msg" style="font-size:10px"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
+                                       onchange="imgPicked(this,'{{ $field }}')">
+
+                                {{-- Preview de la imagen seleccionada --}}
+                                <img class="img-thumb" id="thumb-{{ $field }}" src="" alt="">
+
+                                {{-- Botón eliminar selección --}}
+                                <button type="button" class="img-del"
+                                        onclick="imgRemove(event,'{{ $field }}')">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                                {{-- Placeholder (ícono + texto) --}}
+                                <div class="img-placeholder">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>{{ $i === 0 ? 'Principal' : 'Imagen '.($i+1) }}</span>
+                                </div>
+
+                                {{-- Etiqueta de estado --}}
+                                <span class="img-tag">{{ $i === 0 ? '★ Principal' : '#'.($i+1) }}</span>
+                            </div>
+                            @error($field)
+                                <p class="err-msg" style="font-size:10px;margin-top:4px">
+                                    <i class="fa-solid fa-circle-exclamation"></i>{{ $message }}
+                                </p>
+                            @enderror
                         </div>
                         @endforeach
                     </div>
                 </div>
             </div>
 
-            <!-- ACCIONES  -->
+            <!-- ACCIONES -->
             <div class="form-actions">
                 <a href="{{ route('admin.products.index') }}" class="btn-cancel">
                     <i class="fa-solid fa-xmark"></i> Cancelar
@@ -301,37 +385,41 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
             </div>
 
         </form>
-
     </main>
 </div>
 
 <script>
-function previewImg(input, field) {
-    const preview = document.getElementById('preview-' + field);
-    const icon    = document.getElementById('icon-' + field);
-    const text    = document.getElementById('text-' + field);
-
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            icon.style.display    = 'none';
-            text.style.display    = 'none';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+/* Cuando el usuario elige un archivo */
+function imgPicked(input, field) {
+    if (!input.files || !input.files[0]) return;
+    const box   = document.getElementById('box-'   + field);
+    const thumb = document.getElementById('thumb-' + field);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        thumb.src = e.target.result;
+        box.classList.add('has-img');
+    };
+    reader.readAsDataURL(input.files[0]);
 }
 
-document.getElementById('productForm').addEventListener('submit', function() {
-    const btn    = document.getElementById('submitBtn');
-    const spinner = document.getElementById('spinner');
-    const icon   = document.getElementById('submitIcon');
-    const txt    = document.getElementById('submitText');
+/* Cuando el usuario quita la imagen */
+function imgRemove(e, field) {
+    e.preventDefault();
+    e.stopPropagation();
+    const box   = document.getElementById('box-'   + field);
+    const thumb = document.getElementById('thumb-' + field);
+    const input = document.getElementById(field);
+    input.value = '';
+    thumb.src   = '';
+    box.classList.remove('has-img');
+}
 
-    btn.disabled      = true;
-    spinner.style.display = 'block';
-    icon.style.display    = 'none';
-    txt.textContent       = 'Guardando...';
+/* Spinner al enviar */
+document.getElementById('productForm').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    document.getElementById('spinner').style.display  = 'block';
+    document.getElementById('submitIcon').style.display = 'none';
+    document.getElementById('submitText').textContent  = 'Guardando...';
+    btn.disabled = true;
 });
 </script>
