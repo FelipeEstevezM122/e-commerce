@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// representa un producto dentro de un pedido
+// guarda el precio al momento de la compra para que no cambie aunque el producto cambie despues
 class OrderItem extends Model
 {
     use HasFactory;
@@ -12,26 +14,22 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
-        'quantity', //cantidad del producto
-        'price_when_ordered' //precio del producto
+        'quantity',
+        'price_when_ordered'
     ];
 
-    //Relacion: Un item pertenece a un pedido
-    public function order()
-    {
+    // el item pertenece a un pedido
+    public function order(){
         return $this->belongsTo(Order::class);
     }
 
-    
-    //Relacion: Un item pertenece a un producto
-    public function product()
-    {
+    // el item pertenece a un producto
+    public function product(){
         return $this->belongsTo(Product::class);
     }
 
-    //Calcular el subtotal del item (precio × cantidad)
-    public function getSubtotalAttribute()
-    {
+    // devuelve el subtotal de este item (precio por cantidad)
+    public function getSubtotalAttribute(){
         return $this->price_when_ordered * $this->quantity;
     }
 }

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// representa un nivel de cliente: bronce, plata, oro, platino
+// el rango sube segun cuanto compra el usuario al mes
 class Rank extends Model
 {
     use HasFactory;
@@ -15,15 +17,13 @@ class Rank extends Model
         'description',
     ];
 
-    // Relacion: Un rango tiene muchos usuarios
-    public function users()
-    {
+    // un rango puede tener muchos usuarios
+    public function users(){
         return $this->hasMany(User::class);
     }
 
-    // Verificar si un usuario cumple con la compra minima
-    public function qualifies($totalPurchases)
-    {
+    // verifica si un monto de compras cumple el minimo para este rango
+    public function qualifies($totalPurchases){
         return $totalPurchases >= $this->monthly_minimum_purchase;
     }
 }

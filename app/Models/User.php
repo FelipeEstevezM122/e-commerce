@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+// representa a un usuario del sistema
+// puede ser cliente, mayorista o admin segun sus roles
+// los datos de direccion y empresa ya no estan aqui, estan en billing_info
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -20,9 +23,9 @@ class User extends Authenticatable
         'whatsapp',
         'access_code',
         'rank_id',
-        // ELIMINADO: user_type    → usar hasRole('mayorista')
-        // ELIMINADO: address      → usar billingInfo()
-        // ELIMINADO: company_name → usar billingInfo()
+        // se elimino user_type porque ahora se usan roles
+        // se elimino address porque se movio a billing_info
+        // se elimino company_name porque se movio a billing_info
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -31,72 +34,65 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // ─── Relaciones ───────────────────────────────────────────
-
-    public function rank()
-    {
+    // el usuario tiene un rango asignado (bronce, plata, oro, platino)
+    public function rank(){
         return $this->belongsTo(Rank::class);
     }
 
-    public function roles()
-    {
+    // el usuario puede tener varios roles (muchos a muchos con tabla user_role)
+    public function roles(){
         return $this->belongsToMany(Role::class, 'user_role')
                     ->withPivot('assigned_at')
                     ->withTimestamps();
     }
 
-    public function cart()
-    {
+    // el usuario tiene un solo carrito permanente
+    public function cart(){
         return $this->hasOne(Cart::class);
     }
 
-    public function orders()
-    {
+    // el usuario puede tener muchos pedidos
+    public function orders(){
         return $this->hasMany(Order::class);
     }
 
-    public function accumulatedPurchases()
-    {
+    // historial de compras acumuladas mes a mes
+    public function accumulatedPurchases(){
         return $this->hasMany(AccumulatedPurchase::class);
     }
 
-    // NUEVO: datos de facturación separados del usuario
-    public function billingInfo()
-    {
+    // el usuario puede tener varias direcciones de facturacion guardadas
+    public function billingInfo(){
         return $this->hasMany(BillingInfo::class);
     }
 
-    public function defaultBillingInfo()
-    {
+    // devuelve solo la direccion marcada como predeterminada
+    public function defaultBillingInfo(){
         return $this->hasOne(BillingInfo::class)->where('is_default', true);
     }
 
-    // ─── Helpers de rol (reemplazan user_type) ────────────────
-
-    public function hasRole(string $role): bool
-    {
+    // verifica si el usuario tiene un rol especifico
+    public function hasRole(string $role): bool{
         return $this->roles()->where('name', $role)->exists();
     }
 
-    public function isAdmin(): bool
-    {
+    // verifica si el usuario es administrador
+    public function isAdmin(): bool{
         return $this->hasRole('admin');
     }
 
-    // REEMPLAZA: $user->user_type === 'mayorista'
-    public function isWholesaler(): bool
-    {
+    // verifica si el usuario es mayorista
+    public function isWholesaler(): bool{
         return $this->hasRole('mayorista');
     }
 
-    // REEMPLAZA: $user->user_type === 'final'
-    public function isFinalCustomer(): bool
-    {
+    // verifica si el usuario es cliente final
+    public function isFinalCustomer(): bool{
         return $this->hasRole('cliente');
     }
 
-    public function getFinalPrice($basePrice): float
-    {
+    // los mayoristas tienen 10% de descuento sobre el precio base
+    public function getFinalPrice($basePrice): float{
         return $this->isWholesaler() ? $basePrice * 0.90 : $basePrice;
     }
 }
