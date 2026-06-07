@@ -64,10 +64,12 @@
             </h2>
         </div>
 
+        {{-- ── Formulario de filtros ── --}}
         <form method="GET" action="{{ route('productos') }}" id="filtroForm"
-              class="flex items-center gap-3 w-full md:w-auto flex-wrap md:flex-nowrap">
+              class="flex items-center gap-2 w-full md:w-auto flex-wrap">
 
-            <div class="relative flex-1 min-w-[200px]">
+            {{-- Buscador por nombre --}}
+            <div class="relative flex-1 min-w-[180px]">
                 <input
                     id="searchInput"
                     name="q"
@@ -80,25 +82,48 @@
                 </span>
             </div>
 
+            {{-- Selector de Categoría --}}
+            <select name="category_id" id="categorySelect" onchange="document.getElementById('filtroForm').submit()"
+                    class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none transition-all shadow-sm min-w-[150px]">
+                <option value="">Todas las categorías</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                        {{ $cat->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Selector de Marca --}}
+            <select name="brand_id" id="brandSelect" onchange="document.getElementById('filtroForm').submit()"
+                    class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none transition-all shadow-sm min-w-[130px]">
+                <option value="">Todas las marcas</option>
+                @foreach($brands as $brand)
+                    <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
+                        {{ $brand->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Menú desplegable de orden --}}
             <div class="relative">
                 <button type="button" id="filterBtn"
                         class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
-                    <i class="fa-solid fa-sliders text-sm"></i>
-                    Filtrar por
+                    <i class="fa-solid fa-arrow-up-wide-short text-sm"></i>
+                    Ordenar
                     <i class="fa-solid fa-chevron-down text-xs transition-transform" id="filterChevron"></i>
                 </button>
 
                 <input type="hidden" name="orden" id="ordenInput" value="{{ request('orden', 'default') }}">
 
-                <div id="filterDropdown" class="absolute right-0 top-[calc(100%+8px)] w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2">
+                <div id="filterDropdown" class="absolute right-0 top-[calc(100%+8px)] w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2">
                     <p class="px-4 pt-1 pb-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Ordenar por</p>
                     @foreach([
                         'default'     => ['fa-border-all',       'Por defecto'],
-                        'categoria'   => ['fa-folder',           'Categoría'],
-                        'marca'       => ['fa-tag',              'Marca'],
                         'nombre'      => ['fa-font',             'Nombre (A–Z)'],
                         'precio_asc'  => ['fa-arrow-up-1-9',     'Precio: menor a mayor'],
                         'precio_desc' => ['fa-arrow-down-9-1',   'Precio: mayor a menor'],
+                        'marca'       => ['fa-tag',              'Marca (A–Z)'],
+                        'categoria'   => ['fa-folder',           'Categoría (A–Z)'],
                     ] as $val => [$icon, $label])
                         <button type="button" data-orden="{{ $val }}"
                                 class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors text-left font-medium
@@ -108,6 +133,22 @@
                     @endforeach
                 </div>
             </div>
+
+            {{-- Botón buscar --}}
+            <button type="submit"
+                    class="flex items-center gap-2 px-4 py-2.5 bg-[#22C55E] hover:bg-green-600 text-white font-bold rounded-xl text-sm transition-all shadow-sm whitespace-nowrap">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                Buscar
+            </button>
+
+            {{-- Limpiar filtros --}}
+            @if(request('q') || request('category_id') || request('brand_id') || request('orden') !== null && request('orden') !== 'default')
+                <a href="{{ route('productos') }}"
+                   class="flex items-center gap-2 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-400 transition-all shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                    Limpiar
+                </a>
+            @endif
 
             <button type="submit" class="hidden" id="submitBtn"></button>
         </form>
@@ -129,10 +170,29 @@
             de
             <strong class="text-gray-800 dark:text-gray-100">{{ $productos->total() }}</strong> productos
         </span>
-        @if(request('q'))
-            <a href="{{ route('productos') }}" class="text-[#22C55E] hover:underline text-xs font-semibold">
-                <i class="fa-solid fa-xmark mr-1"></i>Limpiar búsqueda
-            </a>
+        @if(request('q') || request('category_id') || request('brand_id'))
+            <div class="flex items-center gap-2 flex-wrap">
+                @if(request('q'))
+                    <span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i> "{{ request('q') }}"
+                    </span>
+                @endif
+                @if(request('category_id'))
+                    <span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        <i class="fa-solid fa-folder text-[10px]"></i>
+                        {{ $categories->firstWhere('id', request('category_id'))->name ?? 'Categoría' }}
+                    </span>
+                @endif
+                @if(request('brand_id'))
+                    <span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        <i class="fa-solid fa-tag text-[10px]"></i>
+                        {{ $brands->firstWhere('id', request('brand_id'))->name ?? 'Marca' }}
+                    </span>
+                @endif
+                <a href="{{ route('productos') }}" class="text-red-400 hover:text-red-500 text-xs font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-xmark"></i> Limpiar filtros
+                </a>
+            </div>
         @endif
     </div>
 
