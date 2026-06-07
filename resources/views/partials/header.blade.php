@@ -46,15 +46,14 @@
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 {{ Request::is('contactanos') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                 </li>
 
-                {{-- INICIAR SESIÓN / PERFIL (se cambia con JS según localStorage) --}}
+                 <!-- INICIAR SESIÓN / PERFIL  -->
                 <li class="relative" id="nav-auth-desktop">
-                    {{-- Botón login (visible por defecto, JS lo oculta si hay token) --}}
                     <a id="btn-login-desktop" href="{{ url('/iniciarsesion') }}"
                        class="hover:text-[#22C55E] transition-colors {{ Request::is('iniciarsesion') ? 'text-[#22C55E]' : '' }}">
                         INICIAR SESIÓN
                     </a>
 
-                    {{-- Dropdown perfil (oculto por defecto, JS lo muestra si hay token) --}}
+                   <!--  Dropdown perfil  -->
                     <div id="btn-perfil-desktop" class="hidden relative group/perfil">
                         <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
                             <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
@@ -62,17 +61,17 @@
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
 
-                        {{-- Dropdown --}}
+                        
                         <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
 
-                            {{-- Info usuario --}}
+                          
                             <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                                 <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
                                 <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
                                 <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
                             </div>
 
-                            {{-- Opciones --}}
+                           
                             <button onclick="abrirModalPerfil()"
                                     class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
@@ -112,7 +111,7 @@
         </div>
     </nav>
 
-    {{-- SIDEBAR --}}
+
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
     <div id="sidebar-panel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
         <div>
@@ -134,7 +133,6 @@
                 <a href="{{ url('/contactanos') }}" class="block text-lg font-bold {{ Request::is('contactanos') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Contáctanos</a>
                 <a href="{{ url('/carrito') }}" class="block text-lg font-bold {{ Request::is('carrito') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Carrito</a>
 
-                {{-- Mobile: login o perfil --}}
                 <div id="mobile-login">
                     <a href="{{ url('/iniciarsesion') }}" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar Sesión</a>
                 </div>
@@ -198,9 +196,6 @@
     </div>
 </header>
 
-{{-- ══════════════════════════════════════════════════════
-     MODAL PERFIL
-══════════════════════════════════════════════════════ --}}
 <div id="modalPerfil"
      class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-200" id="modalPerfilBox">
@@ -301,9 +296,8 @@
     </div>
 </div>
 
-{{-- ══ SCRIPTS ══ --}}
 <script>
-    // ── Cerrar sidebar (función global para usarla en botones del mobile) ──
+    // ── Cerrar sidebar
     function closeSidebarFn() {
         const overlay = document.getElementById('sidebar-overlay');
         const panel   = document.getElementById('sidebar-panel');
@@ -378,7 +372,7 @@
         box.classList.add('scale-95');
     }
 
-    // ── Guardar perfil → llama a la API ──
+    //  Guardar perfil
     async function guardarPerfil() {
         const token = localStorage.getItem('token');
         if (!token) return;

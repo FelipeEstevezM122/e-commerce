@@ -7,7 +7,7 @@
 <div class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-[95vw] min-h-[90vh] grid md:grid-cols-2 overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
 
-        <!-- PANEL IZQUIERDO -->
+        <!-- PANEL DE REGISTRO -->
         <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#111111] via-[#1b803a] to-[#22C55E] p-12 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 left-0 w-72 h-72 bg-black/20 rounded-full blur-3xl"></div>
@@ -40,7 +40,6 @@
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
         <div class="flex flex-col justify-center bg-white dark:bg-gray-900 p-8 md:p-12 overflow-y-auto">
             <div class="max-w-md w-full mx-auto space-y-5">
 

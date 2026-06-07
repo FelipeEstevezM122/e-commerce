@@ -6,7 +6,6 @@
 
 <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-md border border-gray-100 my-6">
 
-    <!-- ENCABEZADO -->
     <div class="flex items-center gap-3 mb-6 border-b pb-4 border-gray-100">
         <span class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl">
             <i class="fa-solid fa-pen-to-square"></i>
@@ -17,7 +16,6 @@
         </div>
     </div>
 
-    <!-- MENSAJES -->
     @if(session('success'))
         <div class="bg-green-100 text-green-700 px-4 py-3 rounded-xl mb-4">{{ session('success') }}</div>
     @endif
@@ -29,11 +27,7 @@
         </div>
     @endif
 
-    <!-- FORMULARIO -->
-    {{--
-        PUT no existe en HTML, se simula con @method('PUT') + POST.
-        enctype="multipart/form-data" es obligatorio para subir imágenes.
-    --}}
+  
     <form action="{{ route('admin.products.update', $product->id) }}"
           method="POST"
           enctype="multipart/form-data"

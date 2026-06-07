@@ -4,8 +4,6 @@
 
 @section('contenido')
 <div class="space-y-20 font-['Poppins'] pb-12">
-
-    {{-- HERO --}}
     <section class="text-center max-w-2xl mx-auto space-y-3 pt-4">
         <span class="text-xs font-bold text-[#22C55E] tracking-widest uppercase">Conoce nuestro equipo</span>
         <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
@@ -75,7 +73,7 @@
         </div>
     </section>
 
-    {{-- VALORES --}}
+    <!-- VALORES  -->
     <section class="space-y-8">
         <div class="text-center space-y-1">
             <span class="text-xs font-bold text-gray-400 dark:text-gray-500 tracking-widest uppercase">Pilares de Trabajo</span>

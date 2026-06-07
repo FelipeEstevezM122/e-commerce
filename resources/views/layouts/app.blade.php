@@ -1,5 +1,3 @@
-<!-- resources/views/layouts/app.blade.php -->
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -27,10 +25,10 @@
 
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
-    <!-- Incluimos el header limpio que optimizamos -->
+    <!-- Incluimos el header -->
     @include('partials.header')
 
-    <!-- Aquí se insertará mágicamente el contenido de cada página -->
+    <!-- Aquí se insertará el contenido de cada vista -->
   <main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
     @yield('contenido')
 </main>

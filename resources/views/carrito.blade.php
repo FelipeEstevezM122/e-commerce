@@ -189,7 +189,7 @@
     </div>
 </main>
 
-{{-- MODAL QR — usa display:none por defecto, NO opacity --}}
+ <!-- MODAL QR  -->
 <div id="modalQR" class="modal-qr-wrap">
     <div class="modal-qr-box">
 

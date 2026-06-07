@@ -5,7 +5,6 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
-/* ↑ después del :root, agrega: */
 body, html {
     background: #060d0a !important;
     margin: 0;

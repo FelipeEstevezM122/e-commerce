@@ -286,7 +286,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
     </main>
 </div>
 
-{{-- MODAL DETALLE USUARIO --}}
+ <!-- USUARIO  -->
 <div id="userModal">
     <div class="modal-box">
 
@@ -377,7 +377,6 @@ function closeUserModal() {
     document.getElementById('userModal').classList.remove('open');
     document.body.style.overflow = '';
 }
-// Cerrar al hacer clic fuera del modal
 document.getElementById('userModal').addEventListener('click', function(e) {
     if (e.target === this) closeUserModal();
 });

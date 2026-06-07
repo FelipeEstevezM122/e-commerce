@@ -1,4 +1,3 @@
-<!-- resources/views/contactanos.blade.php -->
 @extends('layouts.app')
  
 @section('titulo', 'Contáctanos')
@@ -6,7 +5,6 @@
 @section('contenido')
 <div class="space-y-12 font-['Poppins'] pb-12">
  
-    <!-- ENCABEZADO -->
     <section class="text-center max-w-2xl mx-auto space-y-2 pt-4">
         <span class="text-xs font-bold text-[#1b803a] dark:text-[#22C55E] tracking-widest uppercase">Atención Inmediata</span>
         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
@@ -32,7 +30,6 @@
  
                 <hr class="border-gray-100 dark:border-gray-700 max-w-[80px] mx-auto">
  
-                <!-- Showroom -->
                 <div class="space-y-2">
                     <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 mb-1">
                         <i class="fa-solid fa-location-dot text-lg"></i>

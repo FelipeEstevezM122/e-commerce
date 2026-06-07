@@ -65,10 +65,8 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 .img-preview { position:absolute; inset:0; object-fit:cover; border-radius:12px; display:none; }
 .img-upload .img-label { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.15); position:absolute; bottom:8px; }
 
-/* Separador de sección */
 .section-sep { border:none; border-top:1px solid var(--border); margin:28px 0; }
 
-/* Botones de acción */
 .form-actions { display:flex; gap:12px; justify-content:flex-end; margin-top:32px; flex-wrap:wrap; }
 .btn-cancel {
     background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
@@ -87,7 +85,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 .btn-submit:hover { background:var(--green-dark); }
 .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
 
-/* Spinner */
 .spinner { display:none; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .6s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
@@ -100,7 +97,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 .alert-err ul { margin:8px 0 0 0; padding-left:18px; }
 .alert-err li { margin-top:4px; }
 
-/* Tooltip del SKU */
 .hint { font-size:11px; color:var(--muted); margin-top:4px; }
 
 @media(max-width:700px) {
@@ -116,7 +112,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 
     <main id="main">
 
-        {{-- ENCABEZADO --}}
         <div class="fade-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
             <div>
                 <p class="section-label"><i class="fa-solid fa-box mr-1"></i> Catálogo</p>
@@ -128,7 +123,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
             </a>
         </div>
 
-        {{-- ERRORES DE VALIDACIÓN --}}
         @if($errors->any())
         <div class="alert-err fade-up">
             <div style="display:flex;align-items:center;gap:8px;font-weight:700">
@@ -142,11 +136,10 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
         </div>
         @endif
 
-        {{-- FORMULARIO --}}
+        <!-- FORMULARIO  -->
         <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
             @csrf
 
-            {{-- BLOQUE 1: INFORMACIÓN BÁSICA --}}
             <div class="panel fade-up delay-1">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -157,7 +150,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                 <div class="panel-body">
 
                     <div class="form-grid" style="margin-bottom:20px">
-                        {{-- Nombre --}}
+                     <!--    Nombre --> 
                         <div class="form-group" style="grid-column:1/-1">
                             <label class="form-label">Nombre del producto <span>*</span></label>
                             <input type="text" name="name" value="{{ old('name') }}"
@@ -177,7 +170,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             @error('sku')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
 
-                        {{-- Días de garantía --}}
+                        <!--  Días de garantía  -->
                         <div class="form-group">
                             <label class="form-label">Días de garantía</label>
                             <input type="number" name="warranty_days" value="{{ old('warranty_days', 365) }}"
@@ -187,7 +180,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                         </div>
                     </div>
 
-                    {{-- Descripción --}}
+                     <!-- Descripción  -->
                     <div class="form-group">
                         <label class="form-label">Descripción</label>
                         <textarea name="description" placeholder="Describe las características del producto..."
@@ -198,7 +191,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                 </div>
             </div>
 
-            {{-- BLOQUE 2: PRECIO, STOCK, MARCA Y CATEGORÍA --}}
+           <!-- PRECIO, STOCK, MARCA Y CATEGORÍA  -->
             <div class="panel fade-up delay-2" style="margin-top:16px">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -209,7 +202,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                 <div class="panel-body">
 
                     <div class="form-grid">
-                        {{-- Precio base --}}
+                        <!-- Precio base  -->
                         <div class="form-group">
                             <label class="form-label">Precio base (Bs.) <span>*</span></label>
                             <div style="position:relative">
@@ -222,7 +215,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             @error('base_price')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
 
-                        {{-- Stock --}}
+                        <!--  Stock  -->
                         <div class="form-group">
                             <label class="form-label">Stock <span>*</span></label>
                             <input type="number" name="stock" value="{{ old('stock', 0) }}"
@@ -231,7 +224,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             @error('stock')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
 
-                        {{-- Marca --}}
+                      <!--    Marca  -->
                         <div class="form-group">
                             <label class="form-label">Marca</label>
                             <select name="brand_id" class="f-select {{ $errors->has('brand_id') ? 'has-error' : '' }}">
@@ -245,7 +238,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                             @error('brand_id')<p class="err-msg"><i class="fa-solid fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
 
-                        {{-- Categoría --}}
+                        <!--  Categoría  -->
                         <div class="form-group">
                             <label class="form-label">Categoría</label>
                             <select name="category_id" class="f-select {{ $errors->has('category_id') ? 'has-error' : '' }}">
@@ -263,7 +256,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                 </div>
             </div>
 
-            {{-- BLOQUE 3: IMÁGENES --}}
+           <!-- IMÁGENES  -->
             <div class="panel" style="margin-top:16px">
                 <div class="panel-head">
                     <div style="width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center">
@@ -295,7 +288,7 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
                 </div>
             </div>
 
-            {{-- ACCIONES --}}
+            <!-- ACCIONES  -->
             <div class="form-actions">
                 <a href="{{ route('admin.products.index') }}" class="btn-cancel">
                     <i class="fa-solid fa-xmark"></i> Cancelar
@@ -313,7 +306,6 @@ body, html { background:#060d0a !important; margin:0; padding:0; }
 </div>
 
 <script>
-// Preview de imágenes
 function previewImg(input, field) {
     const preview = document.getElementById('preview-' + field);
     const icon    = document.getElementById('icon-' + field);
@@ -331,7 +323,6 @@ function previewImg(input, field) {
     }
 }
 
-// Spinner al enviar
 document.getElementById('productForm').addEventListener('submit', function() {
     const btn    = document.getElementById('submitBtn');
     const spinner = document.getElementById('spinner');

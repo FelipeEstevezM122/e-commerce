@@ -213,7 +213,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                             <td style="font-size:12px;color:var(--muted)">{{ $user->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <div style="display:flex;justify-content:center;gap:6px">
-                                    {{-- Botón ver → abre modal --}}
+                                
                                     <button type="button" class="act-btn act-view" title="Ver detalle"
                                         onclick="openUserModal({
                                             id: '{{ $user->id }}',
@@ -280,7 +280,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
     </main>
 </div>
 
-{{-- MODAL DETALLE USUARIO --}}
+<!-- USUARIO  -->
 <div id="userModal">
     <div class="modal-box">
 
@@ -371,7 +371,6 @@ function closeUserModal() {
     document.getElementById('userModal').classList.remove('open');
     document.body.style.overflow = '';
 }
-// Cerrar al hacer clic fuera del modal
 document.getElementById('userModal').addEventListener('click', function(e) {
     if (e.target === this) closeUserModal();
 });

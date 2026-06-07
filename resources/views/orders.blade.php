@@ -22,14 +22,12 @@ body, html {
 .section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
 .section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
 
-/* STAT MINI CARDS */
 .mini-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
 .mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
 .mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
 .mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
 .mini-val { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff; line-height:1.1; }
 
-/* STATUS FILTER TABS */
 .status-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 .s-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:var(--muted); background:rgba(255,255,255,.03); text-decoration:none; transition:all .15s; white-space:nowrap; }
 .s-tab:hover { color:#fff; border-color:rgba(255,255,255,.2); }

@@ -8,7 +8,6 @@
     #filterDropdown { display: none; }
     #filterDropdown.open { display: block; }
 
-    /* ── MODAL ── */
     #productModal {
         opacity: 0;
         pointer-events: none;
@@ -49,7 +48,6 @@
     .dark .stock-low  { background:rgba(250,204,21,.15); color:#facc15; border-color:rgba(250,204,21,.3); }
     .dark .stock-none { background:rgba(239,68,68,.15);  color:#f87171; border-color:rgba(239,68,68,.3); }
 
-    /* Pill info */
     .info-pill {
         display:inline-flex; align-items:center; gap:5px;
         padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700;
@@ -58,7 +56,6 @@
     }
     .dark .info-pill { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1); color:#d1d5db; }
 
-    /* Toast */
     #cartToast {
         opacity: 0; transform: translateY(8px);
         transition: opacity 0.2s, transform 0.2s;
@@ -80,7 +77,7 @@
         @apply opacity-40 pointer-events-none;
     }
 
-    /* Scroll suave en modal */
+    /* Scroll  */
     .modal-scroll { overflow-y: auto; max-height: 85vh; }
     .modal-scroll::-webkit-scrollbar { width: 4px; }
     .modal-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -89,7 +86,6 @@
 
 <section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
 
-    {{-- TOPBAR --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-5 border-gray-200 dark:border-gray-700">
 
         <div class="flex items-center gap-3 shrink-0">
@@ -209,7 +205,6 @@
         @endif
     </div>
 
-    {{-- GRID DE PRODUCTOS --}}
     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
         @forelse($productos as $producto)
@@ -292,7 +287,7 @@
         @endforelse
     </div>
 
-    {{-- PAGINADOR --}}
+    <!-- PAGINADOR --> 
     @if($productos->hasPages())
         <div class="flex items-center justify-center gap-2 pt-4 flex-wrap">
             @if($productos->onFirstPage())
@@ -320,35 +315,29 @@
 
 </section>
 
-{{-- ══════════════ MODAL DETALLE COMPLETO ══════════════ --}}
 <div id="productModal"
      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
      onclick="cerrarModal(event)">
 
     <div class="modal-box modal-scroll bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg relative">
 
-        {{-- Botón cerrar --}}
         <button onclick="cerrarModal(null)"
                 class="absolute top-3 right-3 z-20 bg-black/30 hover:bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors">
             <i class="fa-solid fa-xmark text-sm"></i>
         </button>
 
-        {{-- ── IMAGEN PRINCIPAL ── --}}
+         <!-- IMAGEN PRINCIPAL  -->
         <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative rounded-t-2xl">
             <img id="modalImgMain" src="" alt=""
                  class="w-full h-full object-contain p-6 transition-opacity duration-200">
-            {{-- Badge stock sobre imagen --}}
             <span id="modalStockBadge"
                   class="absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
         </div>
 
-        {{-- ── GALERÍA MINIATURAS ── --}}
         <div id="modalThumbs" class="flex gap-2 px-5 pt-3 pb-1"></div>
 
-        {{-- ── CONTENIDO ── --}}
         <div class="px-5 pb-6 pt-3 space-y-4">
 
-            {{-- Marca + Categoría --}}
             <div class="flex items-center gap-2 flex-wrap">
                 <span id="modalMarca"
                       class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -360,13 +349,12 @@
                 </span>
             </div>
 
-            {{-- Nombre --}}
+            <!--  Nombre  -->
             <h3 id="modalNombre" class="text-xl font-black text-gray-900 dark:text-white leading-tight"></h3>
 
-            {{-- Precio --}}
+             <!-- Precio  -->
             <p id="modalPrecio" class="text-3xl font-black text-[#22C55E]"></p>
 
-            {{-- Pills: SKU + Garantía + Stock --}}
             <div class="flex flex-wrap gap-2">
                 <span class="info-pill">
                     <i class="fa-solid fa-barcode text-[10px] text-gray-400"></i>
@@ -386,16 +374,16 @@
             {{-- Separador --}}
             <hr class="border-gray-100 dark:border-gray-700">
 
-            {{-- Descripción --}}
+             <!-- Descripción  -->
             <div>
                 <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Descripción</p>
                 <p id="modalDesc" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
             </div>
 
-            {{-- Separador --}}
+             <!-- Separador --> 
             <hr class="border-gray-100 dark:border-gray-700">
 
-            {{-- Botones --}}
+             <!-- Botones  -->
             <div class="space-y-2 pt-1">
                 <button id="modalCartBtn"
                         class="w-full bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 border border-[#bbf7d0] dark:border-green-700 text-[#15803d] dark:text-green-400 text-sm font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
@@ -413,7 +401,6 @@
     </div>
 </div>
 
-{{-- TOAST --}}
 <div id="cartToast"
      class="fixed bottom-6 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
     <i id="cartToastIcon" class="fa-solid fa-circle-check text-[#22C55E]"></i>
@@ -505,7 +492,7 @@ async function agregarAlCarrito(card) {
 
 document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = '/carrito'; });
 
-// ── MODAL ──
+// MODAL
 let productoModal = null;
 
 function setMainImg(src) {
@@ -513,7 +500,6 @@ function setMainImg(src) {
     img.style.opacity = '0';
     setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 150);
 
-    // Marcar thumb activo
     document.querySelectorAll('.modal-thumb').forEach(t => {
         t.classList.toggle('active', t.dataset.src === src);
     });
@@ -575,7 +561,6 @@ function abrirModal(card) {
     }
     document.getElementById('modalGarantia').textContent = '🛡 ' + garantiaText;
 
-    // Stock badge + pill
     const s = productoModal.stock;
     const badge  = document.getElementById('modalStockBadge');
     const pill   = document.getElementById('modalStockPill');
@@ -598,11 +583,9 @@ function abrirModal(card) {
         sText.textContent = '📦 ' + s + ' disponibles';
     }
 
-    // WhatsApp
     document.getElementById('modalWaBtn').href =
         'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(productoModal.nombre);
 
-    // Botón carrito
     const btn = document.getElementById('modalCartBtn');
     if (s <= 0) {
         btn.disabled = true;
@@ -638,7 +621,6 @@ document.getElementById('modalCartBtn').addEventListener('click', async () => {
     if (productoModal.stock > 0) cerrarModal(null);
 });
 
-// ── Filtros ──
 document.getElementById('filterBtn').addEventListener('click', e => {
     e.stopPropagation();
     const dd = document.getElementById('filterDropdown');

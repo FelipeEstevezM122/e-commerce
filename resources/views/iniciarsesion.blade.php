@@ -7,7 +7,7 @@
 <div class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-[95vw] min-h-[90vh] grid md:grid-cols-2 overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
 
-        <!-- PANEL IZQUIERDO -->
+        <!-- Panel de Inicio de Sesion -->
         <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#111111] via-[#1b803a] to-[#22C55E] p-12 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 left-0 w-72 h-72 bg-black/20 rounded-full blur-3xl"></div>
@@ -25,8 +25,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- PANEL DERECHO -->
         <div class="bg-white dark:bg-gray-800 p-8 md:p-12">
             <div class="max-w-md mx-auto">
 
@@ -40,13 +38,9 @@
                     <p class="text-gray-500 dark:text-gray-300 mt-2">Bienvenido nuevamente a CASATEK</p>
                 </div>
 
-                <!-- ERROR -->
+                
                 <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4"></div>
 
-                {{--
-                    FIX: Se agrega un form HTML oculto para el login por sesión (admin panel).
-                    El JS detecta si el usuario es admin y lo envía para crear la sesión Laravel.
-                --}}
                 <form id="sessionForm" method="POST" action="{{ route('login.admin') }}" class="hidden">
                     @csrf
                     <input type="hidden" name="email"    id="sessionEmail">
@@ -158,9 +152,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const esAdmin = roles.some(r => r.name === 'admin');
 
         if (esAdmin) {
-            // FIX: los admins necesitan sesión Laravel para acceder al panel blade.
-            // Rellenamos el form oculto y lo enviamos → /login-admin crea la sesión
-            // y redirige a /admin/dashboard automáticamente.
             document.getElementById('sessionEmail').value    = email;
             document.getElementById('sessionPassword').value = password;
             document.getElementById('sessionForm').submit();

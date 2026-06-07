@@ -1,4 +1,3 @@
-<!-- resources/views/index.blade.php -->
 @extends('layouts.app')
 
 @section('titulo', 'Inicio')
@@ -6,9 +5,7 @@
 @section('contenido')
     <div class="space-y-16 font-['Poppins']">
 
-        <!-- SECCIÓN 1: BIENVENIDA A CASATEK Y PROPUESTA DE VALOR -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Texto Corporativo e Iconos Informativos -->
             <div class="space-y-6">
                 <div class="space-y-2">
                     <span class="text-xs font-bold text-gray-400 tracking-widest uppercase flex items-center gap-2">
@@ -31,7 +28,6 @@
                     </p>
                 </div>
 
-                <!-- Grilla de Beneficios / Iconos rápidos -->
                 <div class="grid grid-cols-2 gap-4 pt-2">
                     <div
                         class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -59,7 +55,7 @@
                 </div>
             </div>
 
-            <!-- Imagen Corporativa / Ilustrativa de Bienvenida -->
+            <!-- Imagen Corporativa -->
             <div class="relative flex justify-center">
                 <div class="absolute inset-0 bg-[#1b803a]/5 rounded-3xl transform rotate-3 scale-102 -z-10"></div>
                 <img src="{{ asset('images/corporativo-casatek.jpg') }}" alt="Soluciones Casatek"
@@ -68,11 +64,10 @@
         </section>
 
 
-        <!-- SECCIÓN 2: BANNER PRINCIPAL CON CARRUSEL INTERACTIVO -->
+        <!-- BANNER PRINCIPAL -->
         <section
             class="relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm min-h-[420px] flex items-center">
 
-            <!-- Indicadores Laterales Numéricos Interactivos (01 al 04) -->
             <div class="hidden lg:flex flex-col gap-4 absolute left-6 z-20 text-xs font-bold text-gray-400">
                 <button id="btn-slide-0"
                     class="text-gray-900 dark:text-white border-l-2 border-gray-900 dark:border-white pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">01</button>
@@ -84,7 +79,6 @@
                     class="text-gray-900 dark:text-white border-l-2 border-gray-900 dark:border-white pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">04</button>
             </div>
 
-            <!-- CONTENEDOR DE DIAPOSITIVAS -->
             <div class="relative w-full h-full">
 
                 <!-- Slide 01: Cámaras de Seguridad -->
@@ -121,7 +115,7 @@
                             <div class="relative inline-block">
                                 <h1
                                     class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
-                                    Seguridad<br><span class="text-[#22C55E]">Siempre</span>
+                                    Sistemas de<br><span class="text-[#22C55E]">Alarmas Inteligentes</span>
                                 </h1>
                             </div>
                             <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
@@ -149,7 +143,7 @@
                             <div class="relative inline-block">
                                 <h1
                                     class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
-                                    Seguridad<br><span class="text-[#22C55E]">Siempre</span>
+                                   Conectividad y<br><span class="text-[#22C55E]">Redes</span>
                                 </h1>
                             </div>
                             <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
@@ -179,7 +173,7 @@
                                     class="absolute -top-12 left-0 text-5xl md:text-7xl font-black text-gray-100/70 tracking-tighter select-none pointer-events-none"></span>
                                 <h1
                                     class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white relative z-10 leading-none tracking-tight">
-                                    Seguridad<br><span class="text-[#22C55E]">Siempre</span>
+                                    Automatización y<br><span class="text-[#22C55E]">Domótica</span>
                                 </h1>
                             </div>
                             <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
@@ -202,8 +196,6 @@
             </div>
         </section>
 
-
-        <!-- SECCIÓN 3: CATEGORÍAS EN TENDENCIA -->
         <section class="space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                 <div class="space-y-1">
@@ -282,7 +274,6 @@
 
     </div>
 
-    <!-- SCRIPT DEL CARRUSEL -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const slides = document.querySelectorAll('.slide-item');
