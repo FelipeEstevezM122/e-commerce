@@ -37,7 +37,7 @@
 
         <div class="relative flex justify-center order-1 lg:order-2">
             <div class="absolute inset-0 bg-[#1b803a]/5 dark:bg-[#22C55E]/10 rounded-3xl transform rotate-2 scale-102 -z-10"></div>
-            <img src="{{ asset('images/nuestra-historia.jpg') }}" alt="Historia de Casatek"
+            <img src="{{ asset('images/nosotrosimg.jpg') }}" alt="Historia de Casatek"
                  class="w-full max-w-md h-[300px] object-cover rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
         </div>
     </section>
@@ -46,7 +46,7 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div class="relative flex justify-center">
             <div class="absolute inset-0 bg-[#22C55E]/5 dark:bg-[#22C55E]/10 rounded-3xl transform -rotate-2 scale-102 -z-10"></div>
-            <img src="{{ asset('images/nuestra-mision.jpg') }}" alt="Misión Casatek"
+            <img src="{{ asset('images/nosotrosimg2.jpg') }}" alt="Misión Casatek"
                  class="w-full max-w-md h-[300px] object-cover rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
         </div>
 

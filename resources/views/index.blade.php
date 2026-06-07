@@ -58,7 +58,7 @@
             <!-- Imagen Corporativa -->
             <div class="relative flex justify-center">
                 <div class="absolute inset-0 bg-[#1b803a]/5 rounded-3xl transform rotate-3 scale-102 -z-10"></div>
-                <img src="{{ asset('images/corporativo-casatek.jpg') }}" alt="Soluciones Casatek"
+                <img src="{{ asset('images/imagen1.jpg') }}" alt="Soluciones Casatek"
                     class="w-full max-w-md h-[320px] object-cover rounded-3xl shadow-md border border-gray-100">
             </div>
         </section>
@@ -102,7 +102,7 @@
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
-                        <img src="{{ asset('images/banner-camaras.png') }}" alt="Cámaras de Seguridad"
+                        <img src="{{ asset('images/carrusel1.jpg') }}" alt="Cámaras de Seguridad"
                             class="max-w-full max-h-full object-contain drop-shadow-2xl">
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
-                            <img src="{{ asset('images/banner-alarmas.png') }}" alt="Alarmas inteligentes"
+                            <img src="{{ asset('images/carrusel2.jpg') }}" alt="Alarmas inteligentes"
                                 class="max-w-full max-h-full object-contain drop-shadow-2xl">
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
-                            <img src="{{ asset('images/banner-redes.png') }}" alt="Redes de comunicación"
+                            <img src="{{ asset('images/carrusel3.jpg') }}" alt="Redes de comunicación"
                                 class="max-w-full max-h-full object-contain drop-shadow-2xl">
                         </div>
                     </div>
@@ -187,7 +187,7 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
-                            <img src="{{ asset('images/banner-domotica.png') }}" alt="Automatización del hogar"
+                            <img src="{{ asset('images/carrusel4.jpg') }}" alt="Automatización del hogar"
                                 class="max-w-full max-h-full object-contain drop-shadow-2xl">
                         </div>
                     </div>
