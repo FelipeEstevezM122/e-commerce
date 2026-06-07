@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// agrega soporte para hasta 4 imagenes por producto
+// se hace en migracion separada porque el campo image original ya existia
 return new class extends Migration
 {
     public function up()
