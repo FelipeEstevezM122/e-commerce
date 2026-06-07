@@ -297,8 +297,8 @@ textarea.m-input { resize:vertical; }
                                             stock:        {{ $product->stock }},
                                             warranty_days:{{ $product->warranty_days ?? 0 }},
                                             description:  {{ json_encode($product->description ?? "") }},
-                                            brand_id:     {{ $product->brand_id ?? "null" }},
-                                            category_id:  {{ $product->category_id ?? "null" }},
+                                            brand_name:   {{ json_encode($product->brand->name ?? "") }},
+                                            category_name:{{ json_encode($product->category->name ?? "") }},
                                             image1: {{ json_encode($product->image1 ?? "") }},
                                             image2: {{ json_encode($product->image2 ?? "") }},
                                             image3: {{ json_encode($product->image3 ?? "") }},
@@ -426,21 +426,27 @@ textarea.m-input { resize:vertical; }
                 <div class="m-row">
                     <div>
                         <label class="m-label">Marca</label>
-                        <select id="edit_brand_id" class="m-input">
-                            <option value="">Sin marca</option>
+                        <input type="text" id="edit_brand_name" class="m-input"
+                               list="edit-brands-list"
+                               placeholder="Selecciona o escribe una nueva..."
+                               autocomplete="off">
+                        <datalist id="edit-brands-list">
                             @foreach($brands as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                <option value="{{ $brand->name }}">
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                     <div>
                         <label class="m-label">Categoría</label>
-                        <select id="edit_category_id" class="m-input">
-                            <option value="">Sin categoría</option>
+                        <input type="text" id="edit_category_name" class="m-input"
+                               list="edit-categories-list"
+                               placeholder="Selecciona o escribe una nueva..."
+                               autocomplete="off">
+                        <datalist id="edit-categories-list">
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                <option value="{{ $category->name }}">
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -502,8 +508,8 @@ function abrirModalEditar(p) {
     document.getElementById('edit_stock').value         = p.stock         ?? 0;
     document.getElementById('edit_warranty_days').value = p.warranty_days ?? 0;
     document.getElementById('edit_description').value   = p.description   ?? '';
-    document.getElementById('edit_brand_id').value      = p.brand_id      ?? '';
-    document.getElementById('edit_category_id').value   = p.category_id   ?? '';
+    document.getElementById('edit_brand_name').value    = p.brand_name    ?? '';
+    document.getElementById('edit_category_name').value = p.category_name ?? '';
 
     // Limpiar inputs de archivo anteriores
     [1,2,3,4].forEach(i => {
@@ -573,8 +579,8 @@ async function guardarCambios() {
     formData.append('stock',         document.getElementById('edit_stock').value);
     formData.append('warranty_days', document.getElementById('edit_warranty_days').value);
     formData.append('description',   document.getElementById('edit_description').value);
-    formData.append('brand_id',      document.getElementById('edit_brand_id').value);
-    formData.append('category_id',   document.getElementById('edit_category_id').value);
+    formData.append('brand_name',    document.getElementById('edit_brand_name').value);
+    formData.append('category_name', document.getElementById('edit_category_name').value);
 
     // Adjuntar imágenes solo si el usuario eligió un archivo nuevo
     [1,2,3,4].forEach(i => {
