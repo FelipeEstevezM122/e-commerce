@@ -38,7 +38,7 @@ Route::get('/carrito',              fn() => view('carrito'))->name('carrito');
 Route::get('/registro',             fn() => view('registro'))->name('registro');
 Route::get('/recuperar_contrasena', fn() => view('recuperar_contrasena'))->name('recuperar_contrasena');
 
-// Catálogo con datos reales de la BD
+// Catálogo con datos reales de la BD (filtros via SP sp_filtrar_productos)
 Route::get('/productos', [CatalogoController::class, 'index'])->name('productos');
 
 // Rangos públicos
@@ -50,7 +50,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // Productos CRUD
+    // Productos CRUD (index usa SP sp_admin_filtrar_productos)
     Route::get('/products',                [ProductController::class, 'index'])  ->name('products.index');
     Route::get('/products/create',         [ProductController::class, 'create']) ->name('products.create');
     Route::post('/products',               [ProductController::class, 'store'])  ->name('products.store');
@@ -58,17 +58,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/products/{product}',      [ProductController::class, 'update']) ->name('products.update');
     Route::delete('/products/{product}',   [ProductController::class, 'destroy'])->name('products.destroy');
 
-    // Usuarios
-    Route::get('/users',                   [AdminController::class, 'users'])       ->name('users.index');
-    Route::get('/users/{user}',            [AdminController::class, 'showUser'])    ->name('users.show');
-    Route::delete('/users/{user}',         [AdminController::class, 'deleteUser'])  ->name('users.destroy');
-    Route::post('/users/store-admin',      [AdminController::class, 'storeAdmin'])  ->name('users.store-admin'); // NUEVO
+    // Usuarios (index usa SP sp_admin_filtrar_usuarios)
+    Route::get('/users',              [AdminController::class, 'users'])      ->name('users.index');
+    Route::get('/users/{user}',       [AdminController::class, 'showUser'])   ->name('users.show');
+    Route::delete('/users/{user}',    [AdminController::class, 'deleteUser']) ->name('users.destroy');
+    Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']) ->name('users.store-admin');
 
-    // Pedidos
+    // Pedidos (index usa SP sp_admin_filtrar_pedidos)
     Route::get('/orders',                  [AdminController::class, 'orders'])            ->name('orders.index');
     Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus']) ->name('orders.status');
 
-    // Tickets
-    Route::get('/tickets',               [TicketController::class, 'adminIndex'])->name('tickets.index');
-    Route::post('/orders/{order}/ticket',[TicketController::class, 'generate'])  ->name('tickets.generate');
+    // Tickets (index usa SP sp_admin_filtrar_tickets)
+    Route::get('/tickets',               [AdminController::class, 'tickets'])            ->name('tickets.index');
+    Route::post('/orders/{order}/ticket',[TicketController::class, 'generate'])          ->name('tickets.generate');
 });
