@@ -31,9 +31,9 @@
     @include('partials.header')
 
     <!-- Aquí se insertará mágicamente el contenido de cada página -->
-    <main class="pt-32">
-        @yield('contenido')
-    </main>
+  <main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
+    @yield('contenido')
+</main>
 
     @include('partials.footer')
 
