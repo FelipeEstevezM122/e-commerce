@@ -47,12 +47,12 @@ class ProductController extends Controller
     {
         $query = Product::with('brand', 'category');
 
-        // Buscador (compatible con la vista blade y con el AdminController@products)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(fn($q) => $q
                 ->where('name', 'LIKE', "%{$search}%")
                 ->orWhere('description', 'LIKE', "%{$search}%")
+                ->orWhere('sku', 'LIKE', "%{$search}%")
             );
         }
 
@@ -60,13 +60,34 @@ class ProductController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        $products      = $query->orderBy('created_at', 'desc')->paginate(15);
+        if ($request->filled('brand_id')) {
+            $query->where('brand_id', $request->brand_id);
+        }
+
+        // Filtro de stock
+        $stockFilter = $request->get('stock_filter');
+        if ($stockFilter === 'low')       $query->whereBetween('stock', [1, 10]);
+        elseif ($stockFilter === 'out')   $query->where('stock', 0);
+        elseif ($stockFilter === 'ok')    $query->where('stock', '>', 10);
+        elseif ($request->has('low_stock')) $query->where('stock', '<=', $request->input('threshold', 10))->where('stock', '>', 0);
+
+        // Orden
+        match ($request->get('orden', 'reciente')) {
+            'nombre'      => $query->orderBy('name'),
+            'precio_asc'  => $query->orderBy('base_price'),
+            'precio_desc' => $query->orderByDesc('base_price'),
+            'stock_asc'   => $query->orderBy('stock'),
+            'stock_desc'  => $query->orderByDesc('stock'),
+            default       => $query->orderBy('created_at', 'desc'),
+        };
+
+        $products      = $query->paginate(15)->withQueryString();
         $totalProducts = Product::count();
         $totalBrands   = Brand::count();
         $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
         $noStock       = Product::where('stock', 0)->count();
         $categories    = Category::orderBy('name')->get();
-        $brands        = Brand::orderBy('name')->get();  // FIX #2
+        $brands        = Brand::orderBy('name')->get();
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -76,16 +97,20 @@ class ProductController extends Controller
         }
 
         return view('vista_admin', compact(
-            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories','brands'
+            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories', 'brands'
         ));
     }
 
     /** Vista para crear producto */
     public function create()
     {
-        $brands     = Brand::all();
-        $categories = Category::orderBy('name')->get();
-        return view('admin.create-product', compact('brands', 'categories'));
+        $brands         = Brand::all();
+        $categories     = Category::orderBy('name')->get();
+        $totalProducts  = Product::count();
+        $totalBrands    = Brand::count();
+        $lowStock       = Product::where('stock', '>', 0)->where('stock', '<=', 10)->count();
+        $noStock        = Product::where('stock', 0)->count();
+        return view('admin.create-product', compact('brands', 'categories', 'totalProducts', 'totalBrands', 'lowStock', 'noStock'));
     }
 
     /** Vista para editar producto */
@@ -93,7 +118,7 @@ class ProductController extends Controller
     {
         $brands     = Brand::all();
         $categories = Category::orderBy('name')->get();
-        return view('admin.products.edit', compact('product', 'brands', 'categories'));
+        return view('edit', compact('product', 'brands', 'categories'));
     }
 
     public function store(Request $request)

@@ -6,14 +6,18 @@ use App\Models\Order;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum')->except(['adminIndex', 'generate']);
     }
 
+    /**
+     * Tickets del usuario autenticado (API Sanctum)
+     */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Ticket::class);
@@ -28,7 +32,7 @@ class TicketController extends Controller
 
     public function show(Request $request, Ticket $ticket)
     {
-        $this->authorize('view', $ticket); // Policy: dueño del pedido o admin
+        $this->authorize('view', $ticket);
 
         return response()->json([
             'datos'   => $ticket->load('order.items.product', 'order.billingInfo'),
@@ -38,7 +42,7 @@ class TicketController extends Controller
 
     public function showByOrder(Request $request, Order $order)
     {
-        $this->authorize('view', $order); // reutiliza OrderPolicy
+        $this->authorize('view', $order);
 
         $ticket = $order->ticket;
         if (!$ticket) {
@@ -51,30 +55,23 @@ class TicketController extends Controller
         ], Response::HTTP_OK);
     }
 
+    /**
+     * Vista admin de tickets — usa SP sp_admin_filtrar_tickets.
+     * La lógica completa vive en AdminController@tickets para mantener
+     * consistencia con el resto del panel; este método lo delega.
+     */
     public function adminIndex(Request $request)
     {
-        $this->authorize('viewAll', Ticket::class); // Policy: solo admin
-
-        $query = Ticket::with('order.user', 'order.billingInfo');
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('ticket_number', 'LIKE', "%{$search}%")
-                  ->orWhereHas('order', fn($q) => $q->where('order_number', 'LIKE', "%{$search}%"));
-        }
-
-        if ($request->filled('from_date')) $query->whereDate('issued_at', '>=', $request->from_date);
-        if ($request->filled('to_date'))   $query->whereDate('issued_at', '<=', $request->to_date);
-
-        return response()->json([
-            'datos'   => $query->orderBy('issued_at', 'desc')->paginate(15),
-            'message' => 'Lista de todos los tickets'
-        ], Response::HTTP_OK);
+        // Delegar al método del AdminController que usa el SP
+        return app(AdminController::class)->tickets($request);
     }
 
+    /**
+     * Generar ticket manualmente (admin)
+     */
     public function generate(Request $request, Order $order)
     {
-        $this->authorize('generate', Ticket::class); // Policy: solo admin
+        $this->authorize('generate', Ticket::class);
 
         if (!in_array($order->status, ['paid', 'delivered'])) {
             return response()->json(['message' => 'Solo se puede generar ticket para pedidos pagados o entregados'], Response::HTTP_BAD_REQUEST);
