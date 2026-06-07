@@ -122,16 +122,6 @@
                 </button>
             </div>
 
-            <aside class="mt-6 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-6">
-                <h2 class="text-sm font-black text-gray-700 dark:text-white mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-bookmark text-[#22C55E] text-sm"></i>
-                    Guardados para después
-                </h2>
-                <p class="text-xs text-gray-400 dark:text-gray-500">
-                    Aquí aparecerán los productos que guardes para más adelante.
-                </p>
-            </aside>
-
         </section>
 
         <aside class="sticky top-8">
