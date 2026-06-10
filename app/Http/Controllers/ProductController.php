@@ -32,7 +32,7 @@ class ProductController extends Controller
         $this->cloudinary = new Cloudinary([
             'cloud' => [
                 'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_key' => env('CLOUDINARY_API_KEY'),
                 'api_secret' => env('CLOUDINARY_API_SECRET'),
             ],
             'url' => ['secure' => true],
@@ -49,10 +49,11 @@ class ProductController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(fn($q) => $q
-                ->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('description', 'LIKE', "%{$search}%")
-                ->orWhere('sku', 'LIKE', "%{$search}%")
+            $query->where(
+                fn($q) => $q
+                    ->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhere('sku', 'LIKE', "%{$search}%")
             );
         }
 
@@ -66,57 +67,67 @@ class ProductController extends Controller
 
         // Filtro de stock
         $stockFilter = $request->get('stock_filter');
-        if ($stockFilter === 'low')       $query->whereBetween('stock', [1, 10]);
-        elseif ($stockFilter === 'out')   $query->where('stock', 0);
-        elseif ($stockFilter === 'ok')    $query->where('stock', '>', 10);
-        elseif ($request->has('low_stock')) $query->where('stock', '<=', $request->input('threshold', 10))->where('stock', '>', 0);
+        if ($stockFilter === 'low')
+            $query->whereBetween('stock', [1, 10]);
+        elseif ($stockFilter === 'out')
+            $query->where('stock', 0);
+        elseif ($stockFilter === 'ok')
+            $query->where('stock', '>', 10);
+        elseif ($request->has('low_stock'))
+            $query->where('stock', '<=', $request->input('threshold', 10))->where('stock', '>', 0);
 
         // Orden
         match ($request->get('orden', 'reciente')) {
-            'nombre'      => $query->orderBy('name'),
-            'precio_asc'  => $query->orderBy('base_price'),
+            'nombre' => $query->orderBy('name'),
+            'precio_asc' => $query->orderBy('base_price'),
             'precio_desc' => $query->orderByDesc('base_price'),
-            'stock_asc'   => $query->orderBy('stock'),
-            'stock_desc'  => $query->orderByDesc('stock'),
-            default       => $query->orderBy('created_at', 'desc'),
+            'stock_asc' => $query->orderBy('stock'),
+            'stock_desc' => $query->orderByDesc('stock'),
+            default => $query->orderBy('created_at', 'desc'),
         };
 
-        $products      = $query->paginate(15)->withQueryString();
+        $products = $query->paginate(15)->withQueryString();
         $totalProducts = Product::count();
-        $totalBrands   = Brand::count();
-        $lowStock      = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
-        $noStock       = Product::where('stock', 0)->count();
-        $categories    = Category::orderBy('name')->get();
-        $brands        = Brand::orderBy('name')->get();
+        $totalBrands = Brand::count();
+        $lowStock = Product::where('stock', '<=', 10)->where('stock', '>', 0)->count();
+        $noStock = Product::where('stock', 0)->count();
+        $categories = Category::orderBy('name')->get();
+        $brands = Brand::orderBy('name')->get();
 
         if ($request->wantsJson()) {
             return response()->json([
-                'datos'   => $products,
+                'datos' => $products,
                 'message' => 'Lista de productos'
             ], Response::HTTP_OK);
         }
 
         return view('vista_admin', compact(
-            'products', 'totalProducts', 'totalBrands', 'lowStock', 'noStock', 'categories', 'brands'
+            'products',
+            'totalProducts',
+            'totalBrands',
+            'lowStock',
+            'noStock',
+            'categories',
+            'brands'
         ));
     }
 
     /** Vista para crear producto */
     public function create()
     {
-        $brands         = Brand::orderBy('name')->get();
-        $categories     = Category::orderBy('name')->get();
-        $totalProducts  = Product::count();
-        $totalBrands    = Brand::count();
-        $lowStock       = Product::where('stock', '>', 0)->where('stock', '<=', 10)->count();
-        $noStock        = Product::where('stock', 0)->count();
+        $brands = Brand::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+        $totalProducts = Product::count();
+        $totalBrands = Brand::count();
+        $lowStock = Product::where('stock', '>', 0)->where('stock', '<=', 10)->count();
+        $noStock = Product::where('stock', 0)->count();
         return view('admin.create-product', compact('brands', 'categories', 'totalProducts', 'totalBrands', 'lowStock', 'noStock'));
     }
 
     /** Vista para editar producto */
     public function edit(Product $product)
     {
-        $brands     = Brand::orderBy('name')->get();
+        $brands = Brand::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
         return view('edit', compact('product', 'brands', 'categories'));
     }
@@ -124,43 +135,43 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'          => 'required|string|max:150',
-            'description'   => 'nullable|string',
-            'base_price'    => 'required|numeric|min:0',
-            'stock'         => 'required|integer|min:0',
-            'sku'           => 'required|string|max:50|unique:products,sku',
+            'name' => 'required|string|max:150',
+            'description' => 'nullable|string',
+            'base_price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'sku' => 'required|string|max:50|unique:products,sku',
             'warranty_days' => 'nullable|integer|min:0',
-            'brand_name'    => 'nullable|string|max:100',
+            'brand_name' => 'nullable|string|max:100',
             'category_name' => 'nullable|string|max:100',
-            'image1'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image1' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image4' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
         // Marca: busca por nombre o crea nueva automáticamente
         $brandId = null;
         if (!empty($request->brand_name)) {
-            $brand   = Brand::firstOrCreate(['name' => trim($request->brand_name)]);
+            $brand = Brand::firstOrCreate(['name' => trim($request->brand_name)]);
             $brandId = $brand->id;
         }
 
         // Categoría: busca por nombre o crea nueva automáticamente
         $categoryId = null;
         if (!empty($request->category_name)) {
-            $category   = Category::firstOrCreate(['name' => trim($request->category_name)]);
+            $category = Category::firstOrCreate(['name' => trim($request->category_name)]);
             $categoryId = $category->id;
         }
 
         $data = [
-            'name'          => $request->name,
-            'description'   => $request->description,
-            'base_price'    => $request->base_price,
-            'stock'         => $request->stock,
-            'sku'           => $request->sku,
+            'name' => $request->name,
+            'description' => $request->description,
+            'base_price' => $request->base_price,
+            'stock' => $request->stock,
+            'sku' => $request->sku,
             'warranty_days' => $request->warranty_days,
-            'brand_id'      => $brandId,
-            'category_id'   => $categoryId,
+            'brand_id' => $brandId,
+            'category_id' => $categoryId,
         ];
 
         // Subir imágenes a Cloudinary
@@ -179,19 +190,19 @@ class ProductController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json([
-                'datos'   => $product->load('brand', 'category'),
+                'datos' => $product->load('brand', 'category'),
                 'message' => 'Producto creado con éxito'
             ], Response::HTTP_CREATED);
         }
 
         return redirect()->route('admin.products.index')
-                         ->with('success', 'Producto creado con éxito');
+            ->with('success', 'Producto creado con éxito');
     }
 
     public function show(Product $product)
     {
         return response()->json([
-            'datos'   => $product->load('brand', 'category'),
+            'datos' => $product->load('brand', 'category'),
             'message' => 'Producto mostrado con éxito'
         ], Response::HTTP_OK);
     }
@@ -202,7 +213,7 @@ class ProductController extends Controller
 
         if (empty($query)) {
             return response()->json([
-                'datos'   => [],
+                'datos' => [],
                 'message' => 'Debe proporcionar un término de búsqueda'
             ], Response::HTTP_BAD_REQUEST);
         }
@@ -213,7 +224,7 @@ class ProductController extends Controller
             ->get();
 
         return response()->json([
-            'datos'   => $products,
+            'datos' => $products,
             'message' => "Resultados para: {$query}"
         ], Response::HTTP_OK);
     }
@@ -221,18 +232,18 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'name'          => 'sometimes|string|max:150',
-            'description'   => 'nullable|string',
-            'base_price'    => 'sometimes|numeric|min:0',
-            'stock'         => 'sometimes|integer|min:0',
-            'sku'           => 'sometimes|string|max:50|unique:products,sku,' . $product->id,
+            'name' => 'sometimes|string|max:150',
+            'description' => 'sometimes|string',
+            'base_price' => 'sometimes|numeric|max:10000|min:0',
+            'stock' => 'required|integer|max:150|min:0|',
+            'sku' => 'required|string|max:50|unique:products,sku,' . $product->id,
             'warranty_days' => 'nullable|integer|min:0',
-            'brand_id'      => 'nullable|exists:brands,id',
-            'category_id'   => 'nullable|exists:categories,id',
-            'image1'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'brand_id' => 'sometimes|exists:brands,id',
+            'category_id' => 'sometimes|exists:categories,id',
+            'image1' => 'nullable|file|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image4' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
         $sku = $validated['sku'] ?? $product->sku;
@@ -255,13 +266,13 @@ class ProductController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json([
-                'datos'   => $product->load('brand', 'category'),
+                'datos' => $product->load('brand', 'category'),
                 'message' => 'Producto actualizado con éxito'
             ], Response::HTTP_OK);
         }
 
         return redirect()->route('admin.products.index')
-                         ->with('success', 'Producto actualizado con éxito');
+            ->with('success', 'Producto actualizado con éxito');
     }
 
     public function destroy(Product $product)
@@ -283,15 +294,15 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')
-                         ->with('success', 'Producto eliminado con éxito');
+            ->with('success', 'Producto eliminado con éxito');
     }
 
-    // ─── Helpers privados ─────────────────────────────────────────
+    // ─── Helpers privados
 
     private function uploadToCloudinary($file, string $sku): string
     {
         $result = $this->cloudinary->uploadApi()->upload($file->getRealPath(), [
-            'folder'    => 'casatek/productos/' . $sku,
+            'folder' => 'casatek/productos/' . $sku,
             'public_id' => uniqid(),
         ]);
 

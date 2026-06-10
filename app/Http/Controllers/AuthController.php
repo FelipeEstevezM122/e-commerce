@@ -14,9 +14,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:100',
-            'email'    => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'name'     => 'required|string|max:30|min:3',
+            'email'    => 'required|string|email|max:50|unique:users',
+            'password' => 'required|string|max:16|min:8|confirmed',
         ]);
 
         //Rango Bronce por defecto
