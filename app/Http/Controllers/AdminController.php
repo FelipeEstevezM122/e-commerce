@@ -72,7 +72,7 @@ class AdminController extends Controller
         ));
     }
 
-    // ─── NUEVO: Crear administrador desde el dashboard Blade ─────────────────
+    //NUEVO: Crear administrador desde el dashboard Blade
 
     public function storeAdmin(Request $request)
     {
@@ -214,23 +214,21 @@ class AdminController extends Controller
         }
     }
 
-    public function updateUser(Request $request, User $user)
+public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name'                 => 'sometimes|string|max:255',
-            'email'                => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'password'             => 'nullable|string|min:8',
-            'phone'                => 'nullable|string|max:20',
-            'whatsapp'             => 'nullable|string|max:20',
-            'access_code'          => 'nullable|string|size:6',
-            'rank_id'              => 'nullable|exists:ranks,id',
-            'roles'                => 'nullable|array',
-            'roles.*'              => 'exists:roles,id',
-            'billing.address'      => 'nullable|string',
-            'billing.company_name' => 'nullable|string|max:150',
-            'billing.nit'          => 'nullable|string|max:20',
-            'billing.business_name'=> 'nullable|string|max:150',
-            'billing.whatsapp'     => 'nullable|string|max:20',
+        $validated = $request->validate([
+            'name'          => 'required|string|max:150',
+            'description'   => 'required|string',
+            'base_price'    => 'required|numeric|max:10000|min:0',
+            'stock'         => 'required|integer|max:150|min:0|',
+            'sku'           => 'required|string|max:50|unique:products,sku,' . $product->id,
+            'warranty_days' => 'nullable|integer|min:0',
+            'brand_id'      => 'required|exists:brands,id',
+            'category_id'   => 'required|exists:categories,id',
+            'image1'        => 'required|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image2'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image3'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image4'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
         DB::beginTransaction();

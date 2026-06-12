@@ -46,6 +46,23 @@
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 {{ Request::is('contactanos') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                 </li>
 
+                <!-- MANUALES -->
+                <li class="relative group">
+                    <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
+                        MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                        <a href="{{ asset('manuales/Manual técnico.pdf') }}" download
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
+                        </a>
+                        <a href="{{ asset('manuales/Manual de usuario.pdf') }}" download
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
+                        </a>
+                    </div>
+                </li>
+
                  <!-- INICIAR SESIÓN / PERFIL  -->
                 <li class="relative" id="nav-auth-desktop">
                     <a id="btn-login-desktop" href="{{ url('/iniciarsesion') }}"
@@ -132,6 +149,19 @@
                 <a href="{{ url('/nosotros') }}" class="block text-lg font-bold {{ Request::is('nosotros') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Nosotros</a>
                 <a href="{{ url('/contactanos') }}" class="block text-lg font-bold {{ Request::is('contactanos') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Contáctanos</a>
                 <a href="{{ url('/carrito') }}" class="block text-lg font-bold {{ Request::is('carrito') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Carrito</a>
+
+                <!-- Manuales mobile -->
+                <div class="space-y-2 pt-1">
+                    <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Manuales</h3>
+                    <a href="{{ asset('manuales/Manual técnico.pdf') }}" download
+                       class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i> Manual Técnico
+                    </a>
+                    <a href="{{ asset('manuales/Manual de usuario.pdf') }}" download
+                       class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i> Manual de Usuario
+                    </a>
+                </div>
 
                 <div id="mobile-login">
                     <a href="{{ url('/iniciarsesion') }}" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar Sesión</a>
