@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casatek - Inicio</title>
+
+    <!-- Fuentes y Iconos Globales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (Vía CDN para GitHub Pages) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden font-['Poppins']">
+
+    <!-- NAVBAR NATIVO -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-100 dark:border-gray-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                Casa<span class="text-[#1b803a]">tek</span>
+            </a>
+            <!-- Menú de Navegación -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-gray-600 dark:text-gray-300">
+                <a href="index.html" class="text-[#1b803a] hover:text-green-700 transition-colors">Inicio</a>
+                <a href="productos.html" class="hover:text-[#1b803a] transition-colors">Productos</a>
+                <a href="contactanos.html" class="hover:text-[#1b803a] transition-colors">Contáctanos</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="pt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+        <!-- SECCIÓN: CONÓCENOS -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-gray-400 tracking-widest uppercase flex items-center gap-2">
+                        <span class="w-4 h-[1px] bg-gray-400"></span> Conócenos
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                        Bienvenido a <span class="text-[#1b803a]">Casatek</span>
+                    </h2>
+                </div>
+
+                <div class="text-sm text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed font-medium">
+                    <p>
+                        En Casatek nos dedicamos a ofrecer soluciones integrales en sistemas de seguridad electrónica,
+                        telecomunicaciones y automatización. Nos esmeramos por brindar tranquilidad a hogares y empresas a
+                        través de tecnología de vanguardia y un soporte técnico especializado y confiable.
+                    </p>
+                    <p>
+                        Trabajamos de la mano con marcas líderes a nivel mundial para garantizar instalaciones robustas,
+                        duraderas y adaptadas a las necesidades específicas de cada uno de nuestros clientes.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <div class="p-2 bg-green-50 text-[#1b803a] rounded-lg">
+                            <i class="fa-solid fa-shield-halved text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-900 dark:text-white">Garantía Real</h4>
+                            <p class="text-[10px] text-gray-400 dark:text-gray-300">Soporte post-venta</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <div class="p-2 bg-green-50 text-[#1b803a] rounded-lg">
+                            <i class="fa-solid fa-bolt text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-900 dark:text-white">Alta Tecnología</h4>
+                            <p class="text-[10px] text-gray-400 dark:text-gray-300">Marcas certificadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imagen Corporativa -->
+            <div class="relative flex justify-center">
+                <div class="absolute inset-0 bg-[#1b803a]/5 rounded-3xl transform rotate-3 scale-102 -z-10"></div>
+                <img src="images/imagen1.jpg" alt="Soluciones Casatek" class="w-full max-w-md h-[320px] object-cover rounded-3xl shadow-md border border-gray-100">
+            </div>
+        </section>
+
+        <!-- BANNER PRINCIPAL (CARRUSEL) -->
+        <section class="relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm min-h-[420px] flex items-center">
+
+            <!-- Indicadores Laterales -->
+            <div class="hidden lg:flex flex-col gap-4 absolute left-6 z-20 text-xs font-bold text-gray-400">
+                <button class="text-gray-900 dark:text-white border-l-2 border-gray-900 dark:border-white pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">01</button>
+                <button class="pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">02</button>
+                <button class="pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">03</button>
+                <button class="pl-2 focus:outline-none transition-all duration-300 dynamic-indicator">04</button>
+            </div>
+
+            <div class="relative w-full h-full">
+                <!-- Slide 01 -->
+                <div class="slide-item transition-all duration-700 transform opacity-100 scale-100 flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full relative">
+                    <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
+                        <h1 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                            Seguridad<br><span class="text-[#22C55E]">Siempre</span>
+                        </h1>
+                        <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
+                            La tecnología tu mejor aliada / Marcas líderes en telecomunicaciones
+                        </p>
+                        <div class="pt-2">
+                            <a href="productos.html" class="inline-block bg-[#1b803a] hover:bg-green-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md tracking-wider uppercase">
+                                Ver Cámaras
+                            </a>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
+                        <img src="images/carrusel1.jpg" alt="Cámaras de Seguridad" class="max-w-full max-h-full object-contain drop-shadow-2xl">
+                    </div>
+                </div>
+
+                <!-- Slide 02 -->
+                <div class="slide-item transition-all duration-700 transform opacity-0 scale-95 absolute inset-0 hidden w-full">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full h-full">
+                        <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
+                            <h1 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                                Sistemas de<br><span class="text-[#22C55E]">Alarmas Inteligentes</span>
+                            </h1>
+                            <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
+                                Protección total contra intrusos / Notificaciones directas a tu celular
+                            </p>
+                            <div class="pt-2">
+                                <a href="productos.html" class="inline-block bg-[#1b803a] hover:bg-green-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md tracking-wider uppercase">
+                                    Ver Alarmas
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
+                            <img src="images/carrusel2.jpg" alt="Alarmas inteligentes" class="max-w-full max-h-full object-contain drop-shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 03 -->
+                <div class="slide-item transition-all duration-700 transform opacity-0 scale-95 absolute inset-0 hidden w-full">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full h-full">
+                        <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
+                            <h1 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                               Conectividad y<br><span class="text-[#22C55E]">Redes</span>
+                            </h1>
+                            <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
+                                Routers Rompemuros y Switches / Equipamiento Mikrotik y TP-Link
+                            </p>
+                            <div class="pt-2">
+                                <a href="productos.html" class="inline-block bg-[#1b803a] hover:bg-green-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md tracking-wider uppercase">
+                                    Ver Redes
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
+                            <img src="images/carrusel3.jpg" alt="Redes de comunicación" class="max-w-full max-h-full object-contain drop-shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 04 -->
+                <div class="slide-item transition-all duration-700 transform opacity-0 scale-95 absolute inset-0 hidden w-full">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 w-full h-full">
+                        <div class="space-y-4 md:max-w-md z-10 lg:ml-12 text-center md:text-left">
+                            <h1 class="text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                                Automatización y<br><span class="text-[#22C55E]">Domótica</span>
+                            </h1>
+                            <p class="text-[11px] font-bold text-gray-400 tracking-widest uppercase pt-2">
+                                Controla luces, accesos y energía / Compatible con Alexa y Google Assistant
+                            </p>
+                            <div class="pt-2">
+                                <a href="productos.html" class="inline-block bg-[#1b803a] hover:bg-green-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md tracking-wider uppercase">
+                                    Ver Domótica
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0 h-72 z-10">
+                            <img src="images/carrusel4.jpg" alt="Automatización del hogar" class="max-w-full max-h-full object-contain drop-shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: CATEGORÍAS -->
+        <section class="space-y-6 pb-16">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                <div class="space-y-1">
+                    <span class="text-xs font-bold text-[#1b803a] tracking-widest uppercase">Explora</span>
+                    <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Categorías en Tendencia</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="productos.html" class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition-all flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                        <i class="fa-solid fa-video text-xl text-gray-600 group-hover:text-[#1b803a] transition-colors"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-800 dark:text-white group-hover:text-[#1b803a] transition-colors">Cámaras y CCTV</h3>
+                </a>
+
+                <a href="productos.html" class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition-all flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                        <i class="fa-solid fa-bell text-xl text-gray-600 group-hover:text-[#1b803a] transition-colors"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-800 dark:text-white group-hover:text-[#1b803a] transition-colors">Sistemas de Alarma</h3>
+                </a>
+
+                <a href="productos.html" class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition-all flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                        <i class="fa-solid fa-network-wired text-xl text-gray-600 group-hover:text-[#1b803a] transition-colors"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-800 dark:text-white group-hover:text-[#1b803a] transition-colors">Redes y Conectividad</h3>
+                </a>
+
+                <a href="productos.html" class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition-all flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                        <i class="fa-solid fa-house-laptop text-xl text-gray-600 group-hover:text-[#1b803a] transition-colors"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-800 dark:text-white group-hover:text-[#1b803a] transition-colors">Domótica / Smart Home</h3>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER NATIVO -->
+    <footer class="bg-gray-100 dark:bg-gray-800 text-center py-8 text-xs text-gray-500 border-t border-gray-100 dark:border-gray-800">
+        &copy; 2026 Casatek. Todos los derechos reservados.
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/carrusel.js"></script>
+</body>
+</html>
