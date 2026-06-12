@@ -14,12 +14,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:30|min:3',
-            'email'    => 'required|string|email|max:50|unique:users',
-            'password' => 'required|string|max:16|min:8|confirmed',
+            'name'     => 'required|string|max:100|min:3',
+            'email'    => 'required|string|email|max:100|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        //Rango Bronce por defecto
+        // Rango Bronce por defecto
         $bronceRank = Rank::where('name', 'Bronce')->first();
 
         $user = User::create([
@@ -29,7 +29,7 @@ class AuthController extends Controller
             'rank_id'  => $bronceRank?->id,
         ]);
 
-        //Rol cliente por defecto
+        // Rol cliente por defecto
         $clienteRole = Role::where('name', 'cliente')->first();
         if ($clienteRole) {
             $user->roles()->attach($clienteRole, ['assigned_at' => now()]);
@@ -83,31 +83,31 @@ class AuthController extends Controller
     }
 
     public function updateProfile(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $request->validate([
-        'name'     => 'required|string|max:100',
-        'email'    => 'required|string|email|max:100|unique:users,email,' . $user->id,
-        'phone'    => 'nullable|string|max:20',
-        'whatsapp' => 'nullable|string|max:20',
-        'password' => 'nullable|string|min:8|confirmed',
-    ]);
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|string|email|max:100|unique:users,email,' . $user->id,
+            'phone'    => 'nullable|string|max:20',
+            'whatsapp' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-    $user->name     = $request->name;
-    $user->email    = $request->email;
-    $user->phone    = $request->phone;
-    $user->whatsapp = $request->whatsapp;
+        $user->name     = $request->name;
+        $user->email    = $request->email;
+        $user->phone    = $request->phone;
+        $user->whatsapp = $request->whatsapp;
 
-    if ($request->filled('password')) {
-        $user->password = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Perfil actualizado correctamente',
+            'user'    => $user->load('roles', 'rank'),
+        ]);
     }
-
-    $user->save();
-
-    return response()->json([
-        'message' => 'Perfil actualizado correctamente',
-        'user'    => $user->load('roles', 'rank'),
-    ]);
-}
 }

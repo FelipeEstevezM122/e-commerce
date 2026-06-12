@@ -79,7 +79,7 @@ class AdminController extends Controller
         ));
     }
 
-    // ─── NUEVO: Crear administrador desde el dashboard Blade ─────────────────
+    // Crear administrador desde el dashboard Blade
 
     public function storeAdmin(Request $request)
     {
