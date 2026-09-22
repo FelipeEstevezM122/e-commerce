@@ -47,7 +47,7 @@
         <div class="relative flex justify-center">
             <div class="absolute inset-0 bg-[#22C55E]/5 dark:bg-[#22C55E]/10 rounded-3xl transform -rotate-2 scale-102 -z-10"></div>
             <img src="{{ asset('images/nosotrosimg2.jpg') }}" alt="Misión Casatek"
-                 class="w-full max-w-md h-[300px] object-cover rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+                 class="w-full max-w-md h-[340px] object-cover rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
         </div>
 
         <div class="space-y-8">

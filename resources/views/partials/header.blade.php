@@ -12,7 +12,7 @@
                 <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
             </span>
             <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
-                <span>ESP</span>
+                <span>esp</span>
                 <i class="fa-solid fa-chevron-down text-[10px]"></i>
             </span>
         </span>
@@ -20,7 +20,7 @@
 
     <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
         <a href="{{ url('/') }}" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
-            <img src="{{ asset('images/logoCasatek.jpg') }}" alt="Logo Casatek"
+            <img src="{{ asset('images/logoCasatek.png') }}" alt="Logo Casatek"
                 class="h-14 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
             <span class="font-['Poppins'] tracking-tight text-4xl font-black">
                 CASA<span class="text-[#22C55E]">TEK</span>

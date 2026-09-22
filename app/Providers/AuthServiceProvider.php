@@ -2,29 +2,27 @@
 
 namespace App\Providers;
 
+use App\Models\BillingInfo;
+use App\Models\Order;
+use App\Models\Rank;
+use App\Models\Ticket;
+use App\Policies\BillingInfoPolicy;
+use App\Policies\OrderPolicy;
+use App\Policies\RankPolicy;
+use App\Policies\TicketPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     *
-     * @var array<class-string, class-string>
-     */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Order::class       => OrderPolicy::class,
+        BillingInfo::class => BillingInfoPolicy::class,
+        Ticket::class      => TicketPolicy::class,
+        Rank::class        => RankPolicy::class,
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
-
-        //
     }
 }

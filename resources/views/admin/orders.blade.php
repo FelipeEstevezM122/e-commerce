@@ -5,11 +5,7 @@
     --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
     --text:#f3f4f6; --muted:#6b7280;
 }
-body, html {
-    background: #060d0a !important;
-    margin: 0;
-    padding: 0;
-}
+body, html { background:#060d0a !important; margin:0; padding:0; }
 #ordersPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
 #main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
 
@@ -26,20 +22,19 @@ body, html {
 .s-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:var(--muted); background:rgba(255,255,255,.03); text-decoration:none; transition:all .15s; white-space:nowrap; }
 .s-tab:hover { color:#fff; border-color:rgba(255,255,255,.2); }
 .s-tab.active { color:#fff; }
-.s-tab.t-all.active      { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
-.s-tab.t-pending.active  { background:rgba(250,204,21,.12); border-color:rgba(250,204,21,.3); color:#facc15; }
-.s-tab.t-paid.active     { background:rgba(96,165,250,.12); border-color:rgba(96,165,250,.3); color:#60a5fa; }
-.s-tab.t-shipped.active  { background:rgba(168,85,247,.12); border-color:rgba(168,85,247,.3); color:#c084fc; }
-.s-tab.t-delivered.active{ background:rgba(34,197,94,.12);  border-color:rgba(34,197,94,.3);  color:#4ade80; }
-.s-tab.t-cancelled.active{ background:rgba(239,68,68,.12);  border-color:rgba(239,68,68,.3);  color:#f87171; }
+.s-tab.t-all.active      { background:rgba(255,255,255,.1);  border-color:rgba(255,255,255,.2); }
+.s-tab.t-pending.active  { background:rgba(250,204,21,.12);  border-color:rgba(250,204,21,.3);  color:#facc15; }
+.s-tab.t-paid.active     { background:rgba(96,165,250,.12);  border-color:rgba(96,165,250,.3);  color:#60a5fa; }
+.s-tab.t-shipped.active  { background:rgba(168,85,247,.12);  border-color:rgba(168,85,247,.3);  color:#c084fc; }
+.s-tab.t-delivered.active{ background:rgba(34,197,94,.12);   border-color:rgba(34,197,94,.3);   color:#4ade80; }
+.s-tab.t-cancelled.active{ background:rgba(239,68,68,.12);   border-color:rgba(239,68,68,.3);   color:#f87171; }
 
-/* TABLE */
 .panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
 .panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
 .panel-head h2 { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
 table { width:100%; border-collapse:collapse; }
 thead tr { background:rgba(0,0,0,.3); }
-th { padding:12px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+th { padding:12px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
 tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; }
 tbody tr:hover { background:rgba(255,255,255,.025); }
 td { padding:14px 18px; font-size:13px; color:#d1d5db; }
@@ -58,9 +53,8 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .update-btn { background:var(--green-dark); border:none; border-radius:8px; padding:5px 10px; color:#fff; font-size:11px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
 .update-btn:hover { background:var(--green); }
 
-.ticket-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.25); color:#c084fc; font-size:11px; font-weight:700; border-radius:8px; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
-.ticket-btn:hover { background:rgba(168,85,247,.25); }
-.ticket-code { background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.2); padding:3px 8px; border-radius:6px; font-size:11px; color:#4ade80; font-family:monospace; }
+.locked-status { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); font-style:italic; }
+.locked-status i { font-size:10px; opacity:.6; }
 
 .pag { display:flex; align-items:center; justify-content:center; gap:6px; padding:16px; flex-wrap:wrap; border-top:1px solid var(--border); }
 .pag-btn { display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px; border-radius:9px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:#9ca3af; background:rgba(255,255,255,.04); text-decoration:none; transition:all .15s; }
@@ -71,13 +65,20 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .empty-state { text-align:center; padding:56px 20px; color:var(--muted); }
 .empty-state i { font-size:40px; opacity:.3; display:block; margin-bottom:12px; }
 
+.alert-success { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25); color:#4ade80; padding:12px 16px; border-radius:12px; margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:8px; }
+.alert-error   { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; padding:12px 16px; border-radius:12px; margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:8px; }
+
 .fade-up { animation:fadeUp .4s ease both; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-.delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; }
-.delay-3 { animation-delay:.21s; } .delay-4 { animation-delay:.28s; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.delay-1{animation-delay:.07s} .delay-2{animation-delay:.14s}
+.delay-3{animation-delay:.21s} .delay-4{animation-delay:.28s}
 
 @media(max-width:1100px) { .mini-stats { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:768px) { #main { padding:20px 16px 40px; } .mini-stats { grid-template-columns:1fr 1fr; } }
+@media(max-width:768px) {
+    #main { padding:20px 16px 40px; }
+    .mini-stats { grid-template-columns:1fr 1fr; }
+    th.hide-sm, td.hide-sm { display:none; }
+}
 </style>
 
 <div id="ordersPage" class="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6">
@@ -130,6 +131,18 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
             </div>
         </div>
 
+        @if(session('success'))
+        <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ session('error') }}
+        </div>
+        @endif
+
         <div class="status-tabs">
             <a href="{{ route('admin.orders.index') }}"
                class="s-tab t-all {{ !request('status') ? 'active' : '' }}">
@@ -137,11 +150,11 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                 <span style="background:rgba(255,255,255,.1);padding:1px 7px;border-radius:10px;font-size:10px">{{ $orders->total() }}</span>
             </a>
             @foreach([
-                'pending'   => ['fa-clock',        't-pending',   'Pendientes'],
-                'paid'      => ['fa-credit-card',   't-paid',      'Pagados'],
-                'shipped'   => ['fa-truck',         't-shipped',   'Enviados'],
-                'delivered' => ['fa-circle-check',  't-delivered', 'Entregados'],
-                'cancelled' => ['fa-ban',           't-cancelled', 'Cancelados'],
+                'pending'   => ['fa-clock',       't-pending',   'Pendientes'],
+                'paid'      => ['fa-credit-card',  't-paid',      'Pagados'],
+                'shipped'   => ['fa-truck',        't-shipped',   'Enviados'],
+                'delivered' => ['fa-circle-check', 't-delivered', 'Entregados'],
+                'cancelled' => ['fa-ban',          't-cancelled', 'Cancelados'],
             ] as $val => [$icon, $cls, $label])
             <a href="{{ route('admin.orders.index', ['status' => $val]) }}"
                class="s-tab {{ $cls }} {{ request('status') === $val ? 'active' : '' }}">
@@ -163,11 +176,10 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                             <th>Nº Pedido</th>
                             <th>Cliente</th>
                             <th>Total</th>
-                            <th>Pago</th>
+                            <th class="hide-sm">Pago</th>
                             <th>Estado</th>
                             <th>Cambiar Estado</th>
-                            <th>Ticket</th>
-                            <th>Fecha</th>
+                            <th class="hide-sm">Fecha</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -189,47 +201,53 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                                 'cancelled' => 'Cancelado',
                                 default     => $order->status,
                             };
+                            $locked = in_array($order->status, ['delivered', 'cancelled']);
                         @endphp
                         <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">{{ $order->order_number }}</td>
-                            <td>
-                                <p style="font-weight:600;color:#e5e7eb;font-size:13px">{{ $order->user->name ?? '—' }}</p>
-                                <p style="font-size:11px;color:var(--muted)">{{ $order->user->email ?? '' }}</p>
-                            </td>
-                            <td style="color:var(--green);font-weight:800">Bs. {{ number_format($order->total, 2) }}</td>
-                            <td style="font-size:12px;text-transform:capitalize;color:#d1d5db">{{ $order->payment_method ?? '—' }}</td>
-                            <td><span class="status-badge {{ $sClass }}">{{ $sLabel }}</span></td>
-                            <td>
-                                <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" class="status-form">
-                                    @csrf @method('PATCH')
-                                    <select name="status" class="status-select">
-                                        @foreach(['pending'=>'Pendiente','paid'=>'Pagado','shipped'=>'Enviado','delivered'=>'Entregado','cancelled'=>'Cancelado'] as $val => $lbl)
-                                            <option value="{{ $val }}" {{ $order->status === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit" class="update-btn"><i class="fa-solid fa-check"></i></button>
-                                </form>
+                            <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">
+                                {{ $order->order_number }}
                             </td>
                             <td>
-                                @if($order->ticket)
-                                    <span class="ticket-code">{{ $order->ticket->ticket_number }}</span>
-                                @elseif($order->status === 'delivered')
-                                    <form action="{{ route('admin.tickets.generate', $order->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="ticket-btn"><i class="fa-solid fa-ticket"></i> Generar</button>
-                                    </form>
+                                <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">{{ $order->user->name ?? '—' }}</p>
+                                <p style="font-size:11px;color:var(--muted);margin:2px 0 0">{{ $order->user->email ?? '' }}</p>
+                            </td>
+                            <td style="color:var(--green);font-weight:800;white-space:nowrap">
+                                Bs. {{ number_format($order->total, 2) }}
+                            </td>
+                            <td class="hide-sm" style="font-size:12px;text-transform:capitalize;color:#d1d5db">
+                                {{ $order->payment_method ?? '—' }}
+                            </td>
+                            <td>
+                                <span class="status-badge {{ $sClass }}">{{ $sLabel }}</span>
+                            </td>
+                            <td>
+                                @if($locked)
+                                    <span class="locked-status">
+                                        <i class="fa-solid fa-lock"></i>
+                                        {{ $order->status === 'delivered' ? 'Entregado' : 'Cancelado' }}
+                                    </span>
                                 @else
-                                    <span style="color:var(--muted);font-size:11px">—</span>
+                                    <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" class="status-form">
+                                        @csrf @method('PATCH')
+                                        <select name="status" class="status-select">
+                                            @foreach(['pending'=>'Pendiente','paid'=>'Pagado','shipped'=>'Enviado','delivered'=>'Entregado','cancelled'=>'Cancelado'] as $val => $lbl)
+                                                <option value="{{ $val }}" {{ $order->status === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="update-btn">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
-                            <td style="font-size:11px;color:var(--muted)">
+                            <td class="hide-sm" style="font-size:11px;color:var(--muted)">
                                 {{ $order->created_at->format('d/m/Y') }}<br>
                                 <span style="font-size:10px">{{ $order->created_at->format('H:i') }}</span>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8">
+                            <td colspan="7">
                                 <div class="empty-state">
                                     <i class="fa-solid fa-clipboard"></i>
                                     <p>No se encontraron pedidos</p>
