@@ -22,12 +22,14 @@ class AdminController extends Controller
  
     public function dashboard()
     {
-        $totalUsers = User::count();
-        $totalProducts = Product::count();
-        $totalOrders = Order::count();
-        $pendingOrders = Order::where('status', 'pending')->count();
+        $totalUsers      = User::count();
+        $totalProducts   = Product::count();
+        $totalOrders     = Order::count();
+        $pendingOrders   = Order::where('status', 'pending')->count();
         $completedOrders = Order::where('status', 'delivered')->count();
-
+        $totalSales      = Order::where('status', 'delivered')->sum('total');
+ 
+        $wholesalers    = User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count();
         $finalCustomers = User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count();
  
         $topProducts = DB::table('order_items')
@@ -53,10 +55,10 @@ class AdminController extends Controller
         if (request()->wantsJson()) {
             return response()->json([
                 'datos' => [
-                    'users' => ['total' => $totalUsers, 'wholesalers' => $wholesalers, 'final_customers' => $finalCustomers],
-                    'products' => ['total' => $totalProducts],
-                    'orders' => ['total' => $totalOrders, 'pending' => $pendingOrders, 'completed' => $completedOrders],
-                    'sales' => ['total' => $totalSales, 'by_month' => $salesByMonth],
+                    'users'        => ['total' => $totalUsers, 'wholesalers' => $wholesalers, 'final_customers' => $finalCustomers],
+                    'products'     => ['total' => $totalProducts],
+                    'orders'       => ['total' => $totalOrders, 'pending' => $pendingOrders, 'completed' => $completedOrders],
+                    'sales'        => ['total' => $totalSales, 'by_month' => $salesByMonth],
                     'top_products' => $topProducts,
                 ],
                 'message' => 'Estadísticas del sistema'
@@ -64,32 +66,27 @@ class AdminController extends Controller
         }
  
         return view('admin.dashboard', compact(
-            'totalUsers',
-            'totalProducts',
-            'totalOrders',
-            'pendingOrders',
-            'completedOrders',
-            'totalSales',
-            'wholesalers',
-            'finalCustomers',
-            'topProducts',
-            'salesByMonth'
+            'totalUsers', 'totalProducts', 'totalOrders',
+            'pendingOrders', 'completedOrders', 'totalSales',
+            'wholesalers', 'finalCustomers', 'topProducts', 'salesByMonth'
         ));
     }
-
+ 
+    //NUEVO: Crear administrador desde el dashboard Blade
+ 
     public function storeAdmin(Request $request)
     {
         $request->validate([
-            'admin_name' => 'required|string|max:100',
-            'admin_email' => 'required|string|email|max:100|unique:users,email',
+            'admin_name'     => 'required|string|max:100',
+            'admin_email'    => 'required|string|email|max:100|unique:users,email',
             'admin_password' => 'required|string|min:8|confirmed',
         ]);
  
         DB::beginTransaction();
         try {
             $user = User::create([
-                'name' => $request->admin_name,
-                'email' => $request->admin_email,
+                'name'     => $request->admin_name,
+                'email'    => $request->admin_email,
                 'password' => Hash::make($request->admin_password),
             ]);
  
@@ -124,11 +121,10 @@ class AdminController extends Controller
         }
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(
-                fn($q) => $q
-                    ->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('email', 'LIKE', "%{$search}%")
-                    ->orWhere('phone', 'LIKE', "%{$search}%")
+            $query->where(fn($q) => $q
+                ->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('email', 'LIKE', "%{$search}%")
+                ->orWhere('phone', 'LIKE', "%{$search}%")
             );
         }
  
@@ -144,7 +140,9 @@ class AdminController extends Controller
     public function showUser(User $user)
     {
         $user->load('rank', 'roles', 'orders', 'accumulatedPurchases', 'billingInfo');
-
+ 
+        $totalOrders  = $user->orders()->count();
+        $totalSpent   = $user->orders()->where('status', 'delivered')->sum('total');
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
  
         if (request()->wantsJson()) {
@@ -160,32 +158,32 @@ class AdminController extends Controller
     public function createUser(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'whatsapp' => 'nullable|string|max:20',
-            'access_code' => 'nullable|string|size:6',
-            'rank_id' => 'nullable|exists:ranks,id',
-            'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles,id',
-            'billing.address' => 'nullable|string',
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|string|email|max:255|unique:users',
+            'password'             => 'required|string|min:8',
+            'phone'                => 'nullable|string|max:20',
+            'whatsapp'             => 'nullable|string|max:20',
+            'access_code'          => 'nullable|string|size:6',
+            'rank_id'              => 'nullable|exists:ranks,id',
+            'roles'                => 'nullable|array',
+            'roles.*'              => 'exists:roles,id',
+            'billing.address'      => 'nullable|string',
             'billing.company_name' => 'nullable|string|max:150',
-            'billing.nit' => 'nullable|string|max:20',
-            'billing.business_name' => 'nullable|string|max:150',
-            'billing.whatsapp' => 'nullable|string|max:20',
+            'billing.nit'          => 'nullable|string|max:20',
+            'billing.business_name'=> 'nullable|string|max:150',
+            'billing.whatsapp'     => 'nullable|string|max:20',
         ]);
  
         DB::beginTransaction();
         try {
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'phone' => $request->phone,
-                'whatsapp' => $request->whatsapp,
+                'name'        => $request->name,
+                'email'       => $request->email,
+                'password'    => Hash::make($request->password),
+                'phone'       => $request->phone,
+                'whatsapp'    => $request->whatsapp,
                 'access_code' => $request->access_code,
-                'rank_id' => $request->rank_id,
+                'rank_id'     => $request->rank_id,
             ]);
  
             if ($request->has('roles')) {
@@ -203,7 +201,7 @@ class AdminController extends Controller
  
             if ($request->wantsJson()) {
                 return response()->json([
-                    'datos' => $user->load('roles', 'rank', 'billingInfo'),
+                    'datos'   => $user->load('roles', 'rank', 'billingInfo'),
                     'message' => 'Usuario creado exitosamente'
                 ], Response::HTTP_CREATED);
             }
@@ -215,8 +213,26 @@ class AdminController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
-        );
  
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name'                 => 'sometimes|string|max:255',
+            'email'                => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'password'             => 'nullable|string|min:8',
+            'phone'                => 'nullable|string|max:20',
+            'whatsapp'             => 'nullable|string|max:20',
+            'access_code'          => 'nullable|string|size:6',
+            'rank_id'              => 'nullable|exists:ranks,id',
+            'roles'                => 'nullable|array',
+            'roles.*'              => 'exists:roles,id',
+            'billing.address'      => 'nullable|string',
+            'billing.company_name' => 'nullable|string|max:150',
+            'billing.nit'          => 'nullable|string|max:20',
+            'billing.business_name'=> 'nullable|string|max:150',
+            'billing.whatsapp'     => 'nullable|string|max:20',
+        ]);
+    
         DB::beginTransaction();
         try {
             $data = $request->only(['name', 'email', 'phone', 'whatsapp', 'access_code', 'rank_id']);
@@ -244,7 +260,7 @@ class AdminController extends Controller
  
             if ($request->wantsJson()) {
                 return response()->json([
-                    'datos' => $user->load('roles', 'rank', 'billingInfo'),
+                    'datos'   => $user->load('roles', 'rank', 'billingInfo'),
                     'message' => 'Usuario actualizado exitosamente'
                 ], Response::HTTP_OK);
             }
@@ -286,10 +302,9 @@ class AdminController extends Controller
  
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(
-                fn($q) => $q
-                    ->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%")
+            $query->where(fn($q) => $q
+                ->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%")
             );
         }
  
@@ -305,7 +320,19 @@ class AdminController extends Controller
     public function orders(Request $request)
     {
         $query = Order::with('user', 'items.product', 'billingInfo');
-
+ 
+        if ($request->filled('status'))    $query->where('status', $request->status);
+        if ($request->filled('from_date')) $query->whereDate('created_at', '>=', $request->from_date);
+        if ($request->filled('to_date'))   $query->whereDate('created_at', '<=', $request->to_date);
+        if ($request->filled('user_id'))   $query->where('user_id', $request->user_id);
+ 
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+ 
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $orders, 'message' => 'Lista de pedidos'], Response::HTTP_OK);
+        }
+ 
+        return view('admin.orders', compact('orders'));
     }
  
     public function updateOrderStatus(Request $request, Order $order)
@@ -313,7 +340,7 @@ class AdminController extends Controller
         $request->validate([
             'status' => 'required|in:pending,paid,shipped,delivered,cancelled'
         ]);
-
+ 
         $order->update(['status' => $request->status]);
  
         if ($request->wantsJson()) {
@@ -327,7 +354,12 @@ class AdminController extends Controller
     {
         $request->validate(['period' => 'nullable|in:day,week,month,year']);
         $period = $request->input('period', 'month');
-
+ 
+        [$groupBy, $dateFormat, $startDate] = match($period) {
+            'day'   => ['HOUR', '%H:00', now()->startOfDay()],
+            'week'  => ['DAY',  '%W',    now()->startOfWeek()],
+            'year'  => ['MONTH','%M',    now()->startOfYear()],
+            default => ['DAY',  '%d',    now()->startOfMonth()],
         };
  
         $sales = Order::where('status', 'delivered')
@@ -344,8 +376,8 @@ class AdminController extends Controller
  
         return response()->json([
             'datos' => [
-                'period' => $period,
-                'data' => $sales,
+                'period'  => $period,
+                'data'    => $sales,
                 'summary' => ['total_orders' => $sales->sum('total_orders'), 'total_sales' => $sales->sum('total_sales')],
             ],
             'message' => 'Reporte de ventas'
@@ -385,7 +417,7 @@ class AdminController extends Controller
         $request->validate(['days' => 'nullable|integer|min:1|max:365']);
         $results = DB::select('CALL sp_executive_dashboard(?)', [$request->input('days', 30)]);
         return response()->json([
-            'datos' => ['summary' => $results[0] ?? null, 'top_products' => array_slice($results, 1, 5)],
+            'datos'   => ['summary' => $results[0] ?? null, 'top_products' => array_slice($results, 1, 5)],
             'message' => 'Dashboard ejecutivo'
         ], Response::HTTP_OK);
     }
