@@ -22,7 +22,7 @@ class CatalogoController extends Controller
 
         // Solo cachear cuando no hay ningún filtro activo
         $sinFiltros = empty($q) && $orden === 'default'
-                      && empty($categoryId) && empty($brandId);
+                    && empty($categoryId) && empty($brandId);
 
         if ($sinFiltros) {
             $productos = Cache::remember("catalogo_page_{$page}", 300, function () use ($perPage) {
