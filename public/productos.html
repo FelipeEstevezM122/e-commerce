@@ -40,7 +40,7 @@
     #cartToast.show { opacity: 1; transform: translateY(0); }
     #cartBadge { min-width: 18px; }
 
-    .pagination-btn { padding: .375rem .75rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; border-width: 1px; transition: all .15s; }
+    .pagination-btn { padding: .375rem .75rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; border-width: 1px; transition: all .15s; cursor: pointer; }
     .pagination-btn.active { background: #22C55E; color: #fff; border-color: #22C55E; }
     .pagination-btn:not(.active) { border-color: #d1d5db; color: #374151; background: #fff; }
     .dark .pagination-btn:not(.active) { border-color: #4b5563; color: #e5e7eb; background: #1f2937; }
@@ -58,7 +58,6 @@
 </head>
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
-<!-- ══════════════ HEADER ══════════════ -->
 <header class="w-full sticky top-0 z-[9999]">
     <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
         <span>Ordene antes de las 16:30 pm, reciba su pedido hoy -
@@ -77,26 +76,26 @@
     </p>
 
     <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-        <a href="#" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
+        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
             <span class="tracking-tight text-4xl font-black">CASA<span class="text-[#22C55E]">TEK</span></span>
         </a>
 
         <div class="flex items-center gap-4 md:gap-8">
             <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">INICIO</a>
+                    <a href="index.html" class="hover:text-[#22C55E] transition-colors">INICIO</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
+                    <a href="productos.html" class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
+                    <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
+                    <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
@@ -104,19 +103,19 @@
                         MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
                     <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                        <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
                             <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                        <a href="manuales/Manual%20de%20usuario.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
                             <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
                         </a>
                     </div>
                 </li>
                 <li class="relative">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">INICIAR SESIÓN</a>
+                    <a href="iniciarsesion.html" class="hover:text-[#22C55E] transition-colors">INICIAR SESIÓN</a>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="text-lg hover:text-[#22C55E] transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
+                    <a href="carrito.html" class="text-lg hover:text-[#22C55E] transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
                 </li>
                 <li class="relative group">
                     <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
@@ -124,6 +123,9 @@
                     </button>
                 </li>
             </ul>
+            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
+                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
+            </button>
             <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -141,11 +143,11 @@
             </div>
             <div class="mt-8 space-y-4 border-b border-gray-800/60 pb-6">
                 <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
-                <a href="#" class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
+                <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
+                <a href="productos.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
+                <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
+                <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
+                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
                 <div class="pt-3">
                     <button id="theme-toggle-mobile" class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
                         <i id="theme-icon-mobile" class="fa-solid fa-moon"></i><span>Modo Oscuro</span>
@@ -178,7 +180,6 @@
     </div>
 </header>
 
-<!-- ══════════════ CONTENIDO: PRODUCTOS ══════════════ -->
 <main class="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
 
@@ -252,7 +253,7 @@
             <i class="fa-solid fa-xmark text-sm"></i>
         </button>
         <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative rounded-t-2xl">
-            <img id="modalImgMain" src="" alt="" class="w-full h-full object-contain p-6 transition-opacity duration-200">
+            <img id="modalImgMain" src="" alt="" class="w-full h-full object-contain p-6 transition-opacity duration-200" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
             <span id="modalStockBadge" class="absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
         </div>
         <div id="modalThumbs" class="flex gap-2 px-5 pt-3 pb-1"></div>
@@ -291,20 +292,20 @@
     <span id="cartToastMsg">Producto agregado</span>
 </div>
 
-<!-- ══════════════ FOOTER ══════════════ -->
+
 <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <div class="space-y-4">
-            <a href="#" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span class="text-[#22C55E]">TEK</span></a>
+            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span class="text-[#22C55E]">TEK</span></a>
             <p class="text-xs text-gray-400 leading-relaxed">Expertos en soluciones de seguridad electrónica, automatización y redes. Comprometidos con la protección y eficiencia de tu hogar y empresa.</p>
         </div>
         <div class="space-y-4">
             <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
             <ul class="space-y-2 text-sm text-gray-400">
-                <li><a href="#" class="hover:text-white transition-colors">Inicio</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Contáctanos</a></li>
+                <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
+                <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
+                <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
             </ul>
         </div>
         <div class="space-y-4 text-sm">
@@ -330,29 +331,73 @@
     </div>
 </footer>
 
-<!-- ══════════════ SCRIPTS ══════════════ -->
+
 <script>
 document.getElementById('anioActual').textContent = new Date().getFullYear();
 
-// ── Datos de ejemplo (reemplazan a $productos de Laravel) ──
-const PRODUCTOS = [
-    { id:1, nombre:'Cámara IP 4MP Domo', marca:'Hikvision', categoria:'Cámaras de Seguridad', precio:450, descripcion:'Cámara domo IP 4MP con visión nocturna y detección de movimiento.', img:'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=400', stock:12, sku:'HK-DOME-4MP', garantia:365 },
-    { id:2, nombre:'DVR 8 Canales Turbo HD', marca:'Dahua', categoria:'Grabadores', precio:890, descripcion:'DVR de 8 canales compatible con cámaras HD, salida HDMI y VGA.', img:'https://images.unsplash.com/photo-1558002038-1055907df827?w=400', stock:5, sku:'DH-DVR-8CH', garantia:365 },
-    { id:3, nombre:'Sensor de Movimiento PIR', marca:'Ajax', categoria:'Alarmas', precio:180, descripcion:'Sensor inalámbrico de movimiento con inmunidad a mascotas.', img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', stock:20, sku:'AJX-PIR-01', garantia:180 },
-    { id:4, nombre:'Router WiFi 6 AX3000', marca:'TP-Link', categoria:'Redes', precio:520, descripcion:'Router de doble banda con tecnología WiFi 6 para mayor velocidad.', img:'https://images.unsplash.com/photo-1606904825846-647eb07f5be2?w=400', stock:8, sku:'TPL-AX3000', garantia:365 },
-    { id:5, nombre:'Cámara PTZ 5MP Exterior', marca:'Hikvision', categoria:'Cámaras de Seguridad', precio:1350, descripcion:'Cámara PTZ con zoom óptico 25x, ideal para grandes áreas.', img:'https://images.unsplash.com/photo-1615890472728-7f8b53b1bd10?w=400', stock:0, sku:'HK-PTZ-5MP', garantia:365 },
-    { id:6, nombre:'Kit Alarma Inalámbrica', marca:'Ajax', categoria:'Alarmas', precio:950, descripcion:'Kit completo con panel central, 2 sensores y sirena.', img:'https://images.unsplash.com/photo-1558002038-bb0237f4e204?w=400', stock:3, sku:'AJX-KIT-01', garantia:365 },
-    { id:7, nombre:'Switch PoE 8 Puertos', marca:'TP-Link', categoria:'Redes', precio:610, descripcion:'Switch administrable PoE+ de 8 puertos para cámaras IP.', img:'https://images.unsplash.com/photo-1591405351990-4726e331f141?w=400', stock:15, sku:'TPL-POE-8P', garantia:365 },
-    { id:8, nombre:'NVR 16 Canales 4K', marca:'Dahua', categoria:'Grabadores', precio:1650, descripcion:'Grabador de red 16 canales con soporte 4K y 2 bahías HDD.', img:'https://images.unsplash.com/photo-1580983559389-e3a2a36f7c4c?w=400', stock:4, sku:'DH-NVR-16CH', garantia:365 },
-];
+// API 
 
-const CATEGORIAS = [...new Set(PRODUCTOS.map(p => p.categoria))];
-const MARCAS     = [...new Set(PRODUCTOS.map(p => p.marca))];
+const API_URL = 'http://localhost:8000/api/products';
 
-const catSel = document.getElementById('categorySelect');
-CATEGORIAS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o); });
+let PRODUCTOS = [];
+
+const catSel   = document.getElementById('categorySelect');
 const brandSel = document.getElementById('brandSelect');
-MARCAS.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o); });
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function adaptarProducto(p) {
+    const imagenes = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
+    return {
+        id:          p.id,
+        nombre:      p.name ?? '',
+        marca:       p.brand?.name ?? 'Sin marca',
+        categoria:   p.category?.name ?? 'Sin categoría',
+        precio:      Number(p.base_price ?? 0),
+        descripcion: p.description ?? '',
+        img:         imagenes[0] ?? '',
+        imgs:        imagenes,
+        stock:       Number(p.stock ?? 0),
+        sku:         p.sku ?? '',
+        garantia:    Number(p.warranty_days ?? 0),
+    };
+}
+
+function llenarFiltros() {
+    catSel.length = 1; brandSel.length = 1;
+    [...new Set(PRODUCTOS.map(p => p.categoria))].sort().forEach(c => {
+        const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o);
+    });
+    [...new Set(PRODUCTOS.map(p => p.marca))].sort().forEach(m => {
+        const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o);
+    });
+}
+
+async function cargarProductos() {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '<p class="col-span-4 text-center py-20 text-gray-400">Cargando productos...</p>';
+    try {
+        let todos = [], url = API_URL;
+        // Laravel pagina de 15 en 15: recorremos todas las páginas
+        while (url) {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            const pag = json.datos;
+            todos = todos.concat(Array.isArray(pag) ? pag : (pag.data ?? []));
+            url = Array.isArray(pag) ? null : (pag.next_page_url ?? null);
+        }
+        PRODUCTOS = todos.map(adaptarProducto);
+        llenarFiltros();
+        renderProductos();
+    } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<p class="col-span-4 text-center py-20 text-red-400">No se pudieron cargar los productos.</p>';
+    }
+}
+
 
 let estado = { q:'', category:'', brand:'', orden:'default', page:1 };
 const POR_PAGINA = 8;
@@ -379,9 +424,9 @@ function renderActiveFilters() {
     cont.innerHTML = '';
     const btnLimpiar = document.getElementById('btnLimpiar');
     let hay = false;
-    if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${estado.q}"</span>`; }
-    if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${estado.category}</span>`; }
-    if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${estado.brand}</span>`; }
+    if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${escapeHtml(estado.q)}"</span>`; }
+    if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${escapeHtml(estado.category)}</span>`; }
+    if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${escapeHtml(estado.brand)}</span>`; }
     btnLimpiar.classList.toggle('hidden', !hay);
     btnLimpiar.classList.toggle('flex', hay);
 }
@@ -413,15 +458,15 @@ function renderProductos() {
         card.onclick = () => abrirModal(p);
         card.innerHTML = `
             <div class="w-full h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden relative border-b border-gray-100 dark:border-gray-700">
-                <img src="${p.img}" alt="${p.nombre}" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
-                <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">${p.marca}</span>
+                <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.nombre)}" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
+                <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">${escapeHtml(p.marca)}</span>
                 ${stockBadge}
             </div>
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div class="space-y-1">
-                    <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">${p.categoria}</span>
-                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm line-clamp-1 group-hover:text-[#22C55E] transition-colors">${p.nombre}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">${p.descripcion}</p>
+                    <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">${escapeHtml(p.categoria)}</span>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm line-clamp-1 group-hover:text-[#22C55E] transition-colors">${escapeHtml(p.nombre)}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">${escapeHtml(p.descripcion)}</p>
                     <div class="pt-1"><span class="text-lg font-black text-gray-900 dark:text-green-400">${p.precio.toFixed(2)} Bs.</span></div>
                 </div>
                 <div class="space-y-2" data-stop>
@@ -500,9 +545,9 @@ document.querySelectorAll('.filter-opt').forEach(btn => {
     });
 });
 
-// ── Carrito ──
+// ══════════ CARRITO (localStorage) ══════════
 const CART_KEY = 'casatek_carrito';
-function getCarrito()  { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
 function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
 function actualizarBadge() {
     const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
@@ -532,9 +577,9 @@ function agregarAlCarrito(p) {
     else carrito.push({ id:p.id, nombre:p.nombre, marca:p.marca, precio:p.precio, descripcion:p.descripcion, img:p.img, cantidad:1 });
     saveCarrito(carrito); actualizarBadge(); mostrarToast(p.nombre);
 }
-document.getElementById('cartViewBtn').addEventListener('click', () => alert('Aquí se redirigiría a la página del carrito.'));
+document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = 'carrito.html'; });
 
-// ── Modal de producto ──
+
 let productoModal = null;
 function setMainImg(src) {
     const img = document.getElementById('modalImgMain');
@@ -545,9 +590,21 @@ function setMainImg(src) {
 function abrirModal(p) {
     productoModal = p;
     setMainImg(p.img);
-    document.getElementById('modalThumbs').innerHTML = '';
-    document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${p.marca}`;
-    document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${p.categoria}`;
+
+    const thumbs = document.getElementById('modalThumbs');
+    thumbs.innerHTML = '';
+    if (p.imgs && p.imgs.length > 1) {
+        p.imgs.forEach(src => {
+            const t = document.createElement('img');
+            t.src = src; t.dataset.src = src;
+            t.className = 'modal-thumb' + (src === p.img ? ' active' : '');
+            t.onclick = () => setMainImg(src);
+            thumbs.appendChild(t);
+        });
+    }
+
+    document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${escapeHtml(p.marca)}`;
+    document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${escapeHtml(p.categoria)}`;
     document.getElementById('modalNombre').textContent = p.nombre;
     document.getElementById('modalPrecio').textContent = p.precio.toFixed(2) + ' Bs.';
     document.getElementById('modalDesc').textContent = p.descripcion || 'Sin descripción.';
@@ -587,8 +644,9 @@ document.getElementById('modalCartBtn').addEventListener('click', () => {
     if (productoModal.stock > 0) cerrarModal(null);
 });
 
-// ── Tema oscuro / sidebar (del header) ──
+// ══════════ TEMA OSCURO / SIDEBAR / INICIO ══════════
 document.addEventListener('DOMContentLoaded', function () {
+    const openSidebarBtn = document.getElementById('btn-open-sidebar');
     const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
     const closeBtn = document.getElementById('btn-close-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -622,12 +680,13 @@ document.addEventListener('DOMContentLoaded', function () {
         panel.classList.add('translate-x-full');
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
+    if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
     if (openMenuMobileBtn) openMenuMobileBtn.addEventListener('click', openSidebar);
     if (closeBtn) closeBtn.addEventListener('click', closeSidebarFn);
     if (overlay) overlay.addEventListener('click', closeSidebarFn);
 
     actualizarBadge();
-    renderProductos();
+    cargarProductos();   // desde la API
 });
 </script>
 </body>
