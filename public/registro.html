@@ -7,7 +7,7 @@
 
     <title>Casatek - Registro</title>
 
-    <!-- Enlaces globales del sitio -->
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -18,18 +18,18 @@
         }
     </script>
 
-    <!-- Configuración: cambia estas URLs según donde esté tu backend -->
+    
     <script>
-        const API_BASE        = '';                        // Ej: 'https://tudominio.com' (vacío = mismo dominio)
-        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; // Ruta del login de admin (sesión) en tu backend
+        const API_BASE        = 'http://localhost:8000';   
+        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; 
     </script>
 
-    <!-- CSS propio -->
+    
     <style>
         html { scroll-behavior: smooth; }
     </style>
 
-    <!-- Aplica el modo oscuro antes de pintar la página (evita parpadeo) -->
+    
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -405,7 +405,7 @@
         }
     }
 
-    // ── Abrir modal perfil ──
+   
     function abrirModalPerfil() {
         const user = JSON.parse(localStorage.getItem('user') || 'null');
         const rank = JSON.parse(localStorage.getItem('rank') || 'null');
@@ -500,7 +500,7 @@
                 return;
             }
 
-            // Actualizar localStorage con los nuevos datos
+           
             localStorage.setItem('user', JSON.stringify(data.user));
             inicializarNavAuth();
 
@@ -516,7 +516,7 @@
         }
     }
 
-    // ── Cerrar sesión ──
+   
     async function cerrarSesion() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -535,7 +535,7 @@
         window.location.href = 'index.html';
     }
 
-    // ── Cerrar modal al click fuera ──
+  
     document.getElementById('modalPerfil').addEventListener('click', function(e) {
         if (e.target === this) cerrarModalPerfil();
     });
@@ -634,7 +634,7 @@
                         <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                             <i class="fa-solid fa-star"></i>
                         </div>
-                        <span class="text-sm">Programa de rangos y beneficios — empiezas en Bronce</span>
+                        <span class="text-sm" id="rankBenefitText">Programa de rangos y beneficios — empiezas en Bronce</span>
                     </div>
                 </div>
             </div>
@@ -654,7 +654,7 @@
                 <!-- Rango inicial info -->
                 <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl px-4 py-3 flex items-center gap-3">
                     <i class="fa-solid fa-medal text-[#22C55E] text-xl"></i>
-                    <p class="text-sm text-green-700 dark:text-green-400">
+                    <p id="rankInfoText" class="text-sm text-green-700 dark:text-green-400">
                         Comenzarás con rango <strong>Bronce</strong> — escala comprando más cada mes.
                     </p>
                 </div>
@@ -706,6 +706,7 @@
                             <input type="tel" name="phone" id="phone" placeholder="591XXXXXXXX"
                                 class="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
+                        <p id="err_phone" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
 
                     <!-- WhatsApp -->
@@ -718,6 +719,7 @@
                             <input type="tel" name="whatsapp" id="whatsapp" placeholder="591XXXXXXXX"
                                 class="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:outline-none dark:bg-gray-800 dark:text-white text-sm">
                         </div>
+                        <p id="err_whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
 
                     <!-- Contraseña -->
@@ -764,6 +766,8 @@
 </div>
 
 <script>
+const CAMPOS = ['name', 'email', 'phone', 'whatsapp', 'password'];
+
 function togglePass(inputId, iconId) {
     const input = document.getElementById(inputId);
     const icon  = document.getElementById(iconId);
@@ -776,82 +780,157 @@ function togglePass(inputId, iconId) {
     }
 }
 
+// Muestra el error bajo el campo; si el campo no existe en el formulario, lo muestra arriba
 function mostrarError(campo, mensaje) {
     const el = document.getElementById('err_' + campo);
-    if (!el) return;
+    if (!el) { mostrarErrorGeneral(mensaje); return; }
     el.textContent = mensaje;
     el.classList.remove('hidden');
+    const input = document.getElementById(campo);
+    if (input) input.classList.add('border-red-500');
+}
+
+function mostrarErrorGeneral(mensaje) {
+    const errorDiv = document.getElementById('errorDiv');
+    errorDiv.textContent = mensaje;
+    errorDiv.classList.remove('hidden');
 }
 
 function limpiarErrores() {
-    ['name', 'email', 'password'].forEach(c => {
+    CAMPOS.forEach(c => {
         const el = document.getElementById('err_' + c);
         if (el) { el.textContent = ''; el.classList.add('hidden'); }
+        const input = document.getElementById(c);
+        if (input) input.classList.remove('border-red-500');
     });
+    document.getElementById('password_confirmation').classList.remove('border-red-500');
+    document.getElementById('errorDiv').classList.add('hidden');
 }
 
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
+// Validación en el navegador (las mismas reglas que AuthController@register)
+function validarFormulario(d) {
+    let ok = true;
+    if (d.name.length < 3 || d.name.length > 100) { mostrarError('name', 'El nombre debe tener entre 3 y 100 caracteres.'); ok = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email) || d.email.length > 100) { mostrarError('email', 'Ingresa un correo válido.'); ok = false; }
+    if (d.phone && d.phone.length > 20)       { mostrarError('phone', 'Máximo 20 caracteres.'); ok = false; }
+    if (d.whatsapp && d.whatsapp.length > 20) { mostrarError('whatsapp', 'Máximo 20 caracteres.'); ok = false; }
+    if (d.password.length < 8) { mostrarError('password', 'La contraseña debe tener al menos 8 caracteres.'); ok = false; }
+    else if (d.password !== d.password_confirmation) {
+        mostrarError('password', 'Las contraseñas no coinciden.');
+        document.getElementById('password_confirmation').classList.add('border-red-500');
+        ok = false;
+    }
+    return ok;
+}
+
+// ── Rango inicial real desde GET /api/ranks (público) ──
+async function cargarRangoInicial() {
+    try {
+        const res = await fetch(API_BASE + '/api/ranks', { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return;
+        const json  = await res.json();
+        const ranks = Array.isArray(json.datos) ? json.datos : [];
+        if (!ranks.length) return;
+
+        // El backend asigna "Bronce"; si no existiera, el de menor compra mensual (vienen ordenados)
+        const inicial   = ranks.find(r => r.name === 'Bronce') ?? ranks[0];
+        const siguiente = ranks.find(r => Number(r.monthly_minimum_purchase) > Number(inicial.monthly_minimum_purchase));
+
+        const p = document.getElementById('rankInfoText');
+        p.textContent = '';
+        p.append('Comenzarás con rango ');
+        const strong = document.createElement('strong');
+        strong.textContent = inicial.name;
+        p.append(strong);
+        if (siguiente) {
+            p.append(' — compra ' + Number(siguiente.monthly_minimum_purchase).toFixed(2) + ' Bs. al mes para llegar a ' + siguiente.name + '.');
+        } else {
+            p.append(' — escala comprando más cada mes.');
+        }
+        document.getElementById('rankBenefitText').textContent = 'Programa de rangos y beneficios — empiezas en ' + inicial.name;
+    } catch (e) { /* se mantiene el texto por defecto */ }
+}
+
+// ── Si ya hay sesión válida, no tiene sentido registrarse: ir al catálogo ──
+async function redirigirSiHaySesion() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+        const res = await fetch(API_BASE + '/api/me', {
+            headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) { window.location.href = 'productos.html'; return; }
+        if (res.status === 401) {
+            ['token', 'user', 'roles', 'rank'].forEach(k => localStorage.removeItem(k));
+            location.reload();
+        }
+    } catch (e) { /* sin conexión: se deja el formulario */ }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarRangoInicial();
+    redirigirSiHaySesion();
+});
+
+document.getElementById('registerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const btn        = document.getElementById('submitBtn');
-    const errorDiv   = document.getElementById('errorDiv');
     const successDiv = document.getElementById('successDiv');
+    successDiv.classList.add('hidden');
+    limpiarErrores();
+
+    const datos = {
+        name:                  document.getElementById('name').value.trim(),
+        email:                 document.getElementById('email').value.trim(),
+        phone:                 document.getElementById('phone').value.trim(),
+        whatsapp:              document.getElementById('whatsapp').value.trim(),
+        password:              document.getElementById('password').value,
+        password_confirmation: document.getElementById('password_confirmation').value,
+    };
+    if (!validarFormulario(datos)) return;
 
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registrando...';
     btn.disabled  = true;
-    errorDiv.classList.add('hidden');
-    successDiv.classList.add('hidden');
-    limpiarErrores();
 
     try {
         const res = await fetch(API_BASE + '/api/register', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                name:                  document.getElementById('name').value.trim(),
-                email:                 document.getElementById('email').value.trim(),
-                phone:                 document.getElementById('phone').value.trim() || null,
-                whatsapp:              document.getElementById('whatsapp').value.trim() || null,
-                password:              document.getElementById('password').value,
-                password_confirmation: document.getElementById('password_confirmation').value,
-            })
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ ...datos, phone: datos.phone || null, whatsapp: datos.whatsapp || null })
         });
 
-        const data = await res.json();
+        let data = {};
+        try { data = await res.json(); } catch (_) {}
 
         if (!res.ok) {
-            // Errores de validación campo por campo
-            if (data.errors) {
-                Object.entries(data.errors).forEach(([campo, msgs]) => {
-                    mostrarError(campo, msgs[0]);
-                });
+            if (res.status === 422 && data.errors) {
+                Object.entries(data.errors).forEach(([campo, msgs]) => mostrarError(campo, msgs[0]));
+            } else if (res.status === 429) {
+                mostrarErrorGeneral('Demasiados intentos. Espera un momento e inténtalo de nuevo.');
             } else {
-                errorDiv.textContent = data.message || 'Error al registrarse';
-                errorDiv.classList.remove('hidden');
+                mostrarErrorGeneral(data.message || 'Error al registrarse (código ' + res.status + ').');
             }
             return;
         }
 
-        // ── Guardar token y datos ──
+        if (!data.access_token || !data.user) {
+            mostrarErrorGeneral('Respuesta inesperada del servidor.');
+            return;
+        }
+
+        // ── Guardar token y datos (misma estructura que iniciarsesion.html) ──
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user',  JSON.stringify(data.user));
         localStorage.setItem('roles', JSON.stringify(data.user.roles ?? []));
         localStorage.setItem('rank',  JSON.stringify(data.user.rank  ?? null));
 
-        // ── Mostrar éxito y redirigir ──
         successDiv.classList.remove('hidden');
-
-        setTimeout(() => {
-            // Nuevo usuario siempre es cliente, va al catálogo
-            window.location.href = 'productos.html';
-        }, 1500);
+        // Nuevo usuario siempre es cliente, va al catálogo
+        setTimeout(() => { window.location.href = 'productos.html'; }, 1500);
 
     } catch (err) {
-        errorDiv.textContent = 'Error de conexión. Intenta de nuevo.';
-        errorDiv.classList.remove('hidden');
+        mostrarErrorGeneral('Error de conexión con el servidor. Intenta de nuevo.');
     } finally {
         btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Crear cuenta';
         btn.disabled  = false;
@@ -866,7 +945,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         
         <div class="space-y-4">
-            <a href="#" class="text-2xl font-black tracking-tight flex items-center gap-2">
+            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
                 CASA<span class="text-[#22C55E]">TEK</span>
             </a>
             <p class="text-xs text-gray-400 leading-relaxed">
