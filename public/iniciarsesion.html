@@ -7,7 +7,6 @@
 
     <title>Casatek - Iniciar Sesión</title>
 
-    <!-- Enlaces globales del sitio -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -18,18 +17,18 @@
         }
     </script>
 
-    <!-- Configuración: cambia estas URLs según donde esté tu backend -->
+    
     <script>
-        const API_BASE        = '';                        // Ej: 'https://tudominio.com' (vacío = mismo dominio)
-        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; // Ruta del login de admin (sesión) en tu backend
+        const API_BASE        = 'http://localhost:8000';   
+        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; 
     </script>
 
-    <!-- CSS propio -->
+  
     <style>
         html { scroll-behavior: smooth; }
     </style>
 
-    <!-- Aplica el modo oscuro antes de pintar la página (evita parpadeo) -->
+   
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -39,7 +38,7 @@
 
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
-<!-- ======================= HEADER ======================= -->
+
 <header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
 
     <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
@@ -655,6 +654,7 @@
                             <input type="email" id="email" name="email" placeholder="correo@ejemplo.com"
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
                         </div>
+                        <p id="err_email" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
 
                     <div>
@@ -667,6 +667,7 @@
                                 <i class="fa-solid fa-eye" id="eyeIcon"></i>
                             </button>
                         </div>
+                        <p id="err_password" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
 
                     <div class="flex items-center justify-between text-sm">
@@ -711,44 +712,133 @@ function togglePassword() {
     }
 }
 
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
+const CAMPOS = ['email', 'password'];
+const REMEMBER_KEY = 'remember_email';
+
+function mostrarErrorGeneral(mensaje) {
+    const errorDiv = document.getElementById('errorDiv');
+    errorDiv.textContent = mensaje;
+    errorDiv.classList.remove('hidden');
+}
+
+// Muestra el error bajo el campo; si no existe ese campo, lo muestra arriba
+function mostrarError(campo, mensaje) {
+    const el = document.getElementById('err_' + campo);
+    if (!el) { mostrarErrorGeneral(mensaje); return; }
+    el.textContent = mensaje;
+    el.classList.remove('hidden');
+    const input = document.getElementById(campo);
+    if (input) input.classList.add('border-red-500');
+}
+
+function limpiarErrores() {
+    CAMPOS.forEach(c => {
+        const el = document.getElementById('err_' + c);
+        if (el) { el.textContent = ''; el.classList.add('hidden'); }
+        const input = document.getElementById(c);
+        if (input) input.classList.remove('border-red-500');
+    });
+    document.getElementById('errorDiv').classList.add('hidden');
+}
+
+// Solo se permite volver a páginas propias (ej. carrito.html), nunca a URLs externas
+function destinoSeguro() {
+    const r = new URLSearchParams(location.search).get('redirect');
+    return (r && /^[a-z_]+\.html$/i.test(r) && r !== 'iniciarsesion.html' && r !== 'registro.html') ? r : 'index.html';
+}
+
+// ── Recordarme: precarga el correo guardado ──
+function cargarRecordado() {
+    try {
+        const guardado = localStorage.getItem(REMEMBER_KEY);
+        if (guardado) {
+            document.getElementById('email').value = guardado;
+            document.getElementById('remember').checked = true;
+        }
+    } catch (e) {}
+}
+
+// ── Si ya hay sesión válida, no hace falta iniciar sesión ──
+async function redirigirSiHaySesion() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+        const res = await fetch(API_BASE + '/api/me', {
+            headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) { window.location.href = destinoSeguro(); return; }
+        if (res.status === 401) {
+            ['token', 'user', 'roles', 'rank'].forEach(k => localStorage.removeItem(k));
+            location.reload();
+        }
+    } catch (e) { /* sin conexión: se deja el formulario */ }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarRecordado();
+    redirigirSiHaySesion();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const btn      = document.getElementById('submitBtn');
-    const errorDiv = document.getElementById('errorDiv');
-    const email    = document.getElementById('email').value;
+    const email    = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+    limpiarErrores();
+
+    // Validación previa en el navegador
+    let ok = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarError('email', 'Ingresa un correo válido.'); ok = false; }
+    if (!password) { mostrarError('password', 'Ingresa tu contraseña.'); ok = false; }
+    if (!ok) return;
 
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando...';
     btn.disabled  = true;
-    errorDiv.classList.add('hidden');
+    let redirigiendo = false;
 
     try {
-        // 1. Login por API para obtener token y datos del usuario
-        const res  = await fetch(API_BASE + '/api/login', {
+        // 1. Login por API: devuelve token y usuario (con roles y rango)
+        const res = await fetch(API_BASE + '/api/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({ email, password })
         });
 
-        const data = await res.json();
+        let data = {};
+        try { data = await res.json(); } catch (_) {}
 
         if (!res.ok) {
-            throw new Error(data.message || 'Credenciales incorrectas');
+            if (res.status === 422 && data.errors) {
+                Object.entries(data.errors).forEach(([campo, msgs]) => mostrarError(campo, msgs[0]));
+            } else if (res.status === 429) {
+                mostrarErrorGeneral('Demasiados intentos. Espera un momento e inténtalo de nuevo.');
+            } else {
+                mostrarErrorGeneral(data.message || 'Error al iniciar sesión (código ' + res.status + ').');
+            }
+            return;
         }
 
-        // 2. Guardar token y datos (para el frontend SPA)
+        if (!data.access_token || !data.user) {
+            mostrarErrorGeneral('Respuesta inesperada del servidor.');
+            return;
+        }
+
+        // 2. Guardar sesión
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user',  JSON.stringify(data.user));
         localStorage.setItem('roles', JSON.stringify(data.user.roles ?? []));
         localStorage.setItem('rank',  JSON.stringify(data.user.rank  ?? null));
 
-        // 3. Detectar si es admin
-        const roles   = data.user.roles ?? [];
-        const esAdmin = roles.some(r => r.name === 'admin');
+        // 3. Recordarme (solo guarda el correo, nunca la contraseña)
+        try {
+            if (document.getElementById('remember').checked) localStorage.setItem(REMEMBER_KEY, email);
+            else localStorage.removeItem(REMEMBER_KEY);
+        } catch (_) {}
+
+        // 4. Admin → login de sesión del panel; cliente → vuelve a donde estaba
+        const esAdmin = (data.user.roles ?? []).some(r => r.name === 'admin');
+        redirigiendo = true;
 
         if (esAdmin) {
             document.getElementById('sessionEmail').value    = email;
@@ -757,14 +847,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             f.action = ADMIN_LOGIN_URL;
             f.submit();
         } else {
-            window.location.href = 'index.html';
+            window.location.href = destinoSeguro();
         }
 
     } catch (err) {
-        errorDiv.textContent = err.message;
-        errorDiv.classList.remove('hidden');
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> INICIAR SESIÓN';
-        btn.disabled  = false;
+        mostrarErrorGeneral('Error de conexión con el servidor. Intenta de nuevo.');
+    } finally {
+        if (!redirigiendo) {
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> INICIAR SESIÓN';
+            btn.disabled  = false;
+        }
     }
 });
 </script>
@@ -776,7 +868,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         
         <div class="space-y-4">
-            <a href="#" class="text-2xl font-black tracking-tight flex items-center gap-2">
+            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
                 CASA<span class="text-[#22C55E]">TEK</span>
             </a>
             <p class="text-xs text-gray-400 leading-relaxed">
