@@ -184,6 +184,10 @@
                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
                                 </a>
+                                <a href="MisTickets.html"
+                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-ticket w-4"></i> Mis tickets
+                                </a>
                                 <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                                     <button onclick="cerrarSesion()"
                                             class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
@@ -197,6 +201,11 @@
                     <li class="relative group">
                         <a href="carrito.html" class="text-lg text-[#22C55E] transition-colors">
                             <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </li>
+                    <li class="relative group">
+                        <a href="MisTickets.html" class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
+                            <i class="fa-solid fa-ticket text-lg"></i> MIS TICKETS
                         </a>
                     </li>
                     <li class="relative group">
@@ -236,6 +245,7 @@
                     <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
                     <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
                     <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
+                    <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
 
                     <!-- Manuales mobile -->
                     <div class="space-y-2 pt-1">
@@ -500,7 +510,12 @@
                             </div>
                         </div>
 
-                        <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3">
+                        <button id="btn-comprar" class="btn-checkout mb-3">
+                            <i class="fa-solid fa-bag-shopping text-sm pointer-events-none"></i>
+                            <span class="pointer-events-none">Comprar</span>
+                        </button>
+
+                        <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3" style="background:#003087;">
                             <i class="fa-solid fa-qrcode text-sm pointer-events-none"></i>
                             <span class="pointer-events-none">Pagar todo con QR BCP</span>
                         </button>
@@ -582,6 +597,54 @@
             </div>
         </div>
     </main>
+
+<!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
+<div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
+    <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
+        <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <p class="text-sm font-black leading-tight">Asistente Casatek</p>
+                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                </div>
+            </div>
+            <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+            <div class="flex">
+                <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
+                    ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
+                </p>
+            </div>
+        </div>
+        <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
+                   class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+            <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </form>
+    </div>
+    <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+</div>
+<script>
+(function () {
+    var panel = document.getElementById('chat-panel');
+    function toggle() {
+        panel.classList.toggle('hidden');
+        panel.classList.toggle('flex');
+        if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
+    }
+    document.getElementById('chat-toggle').addEventListener('click', toggle);
+    document.getElementById('chat-close').addEventListener('click', toggle);
+    // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
+})();
+</script>
 
     <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
         <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -1053,6 +1116,47 @@ async function eliminar(id) {
     }, 280);
 }
 
+// COMPRAR: genera un ticket del usuario conectado y redirige a MisTickets.html
+async function comprar() {
+    const carrito = getCarrito();
+    const user    = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!getToken() || !user) { window.location.href = 'iniciarsesion.html?redirect=carrito.html'; return; }
+    if (carrito.length === 0) { alert('Tu carrito está vacío.'); return; }
+
+    const btn = document.getElementById('btn-comprar');
+    btn.disabled = true;
+
+    const ticket = {
+        id:     Date.now().toString(36).toUpperCase(),
+        fecha:  new Date().toISOString(),
+        userId: user.id,
+        nombre: user.name,
+        items:  carrito.map(i => ({ nombre: i.nombre, marca: i.marca, cantidad: i.cantidad, precio: i.precio })),
+        total:  carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0),
+    };
+
+    // Los tickets se guardan por usuario: cada cliente ve solo los suyos
+    const key  = 'casatek_tickets_' + user.id;
+    let   prev = [];
+    try { prev = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+    prev.push(ticket);
+    localStorage.setItem(key, JSON.stringify(prev));
+
+    // Vaciar el carrito (local y en el servidor)
+    try {
+        const res = await fetch('/api/cart', { headers: authHeaders() });
+        if (res.ok) {
+            const data = await res.json();
+            const items = data.datos?.items ?? [];
+            await Promise.all(items.map(i =>
+                fetch('/api/cart/items/' + i.id, { method: 'DELETE', headers: authHeaders() })));
+        }
+    } catch(e) { console.warn('No se pudo vaciar el carrito en el servidor:', e); }
+    saveCarrito([]);
+
+    window.location.href = 'MisTickets.html';
+}
+
 function mostrarVacio() {
     document.getElementById('empty-state').classList.remove('hidden');
     document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
@@ -1163,6 +1267,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    document.getElementById('btn-comprar').addEventListener('click', comprar);
     document.getElementById('btn-pagar-todo').addEventListener('click',         () => abrirQR('todo'));
     document.getElementById('btn-pagar-todo-resumen').addEventListener('click',  () => abrirQR('todo'));
     document.getElementById('btn-cerrar-qr-header').addEventListener('click',    cerrarQR);
