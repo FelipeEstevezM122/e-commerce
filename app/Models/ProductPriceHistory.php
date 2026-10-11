@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 //cambios de precio guardados en el historial de un producto x
 class ProductPriceHistory extends Model
 {
+    protected $table = 'product_price_history';
     protected $fillable = [
         'product_id',
         'old_price',
         'new_price',
         'changed_by',
         'changed_at',
+        
     ];
+    
 
     protected $casts = [
         'changed_at' => 'datetime',
