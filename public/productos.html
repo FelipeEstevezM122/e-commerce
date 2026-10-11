@@ -871,15 +871,15 @@ function abrirModal(p) {
 
     const g = p.garantia; let garantiaText = 'Sin garantía';
     if (g > 0) { if (g % 365 === 0) garantiaText = (g/365) + ' año' + (g/365>1?'s':''); else if (g % 30 === 0) garantiaText = (g/30) + ' mes' + (g/30>1?'es':''); else garantiaText = g + ' días'; }
-    document.getElementById('modalGarantia').textContent = '🛡 ' + garantiaText;
+    document.getElementById('modalGarantia').textContent = garantiaText;
 
     const s = p.stock;
     const badge = document.getElementById('modalStockBadge');
     const pill  = document.getElementById('modalStockPill');
     const sText = document.getElementById('modalStockText');
-    if (s <= 0) { badge.textContent='Sin stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-none'; pill.className='info-pill stock-none'; sText.textContent='📦 Sin stock'; }
-    else if (s <= 5) { badge.textContent='Últimas ' + s + ' unidades'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-low'; pill.className='info-pill stock-low'; sText.textContent='📦 ' + s + ' en stock'; }
-    else { badge.textContent = s + ' en stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-ok'; pill.className='info-pill stock-ok'; sText.textContent='📦 ' + s + ' disponibles'; }
+    if (s <= 0) { badge.textContent='Sin stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-none'; pill.className='info-pill stock-none'; sText.textContent='Sin stock'; }
+    else if (s <= 5) { badge.textContent='Últimas ' + s + ' unidades'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-low'; pill.className='info-pill stock-low'; sText.textContent= s + ' en stock'; }
+    else { badge.textContent = s + ' en stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-ok'; pill.className='info-pill stock-ok'; sText.textContent= s + ' disponibles'; }
 
     document.getElementById('modalWaBtn').href = 'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(p.nombre);
 
