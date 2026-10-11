@@ -80,6 +80,7 @@ class OrderController extends Controller
             $total = 0;
             $orderItemsData = [];
 
+            //no se descuenta aqui ya que el trigger lo hace
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
                 if (!$product) throw new \Exception("Producto ID {$item['product_id']} no encontrado.");
@@ -93,8 +94,6 @@ class OrderController extends Controller
                     'quantity'           => $item['quantity'],
                     'price_when_ordered' => $price,
                 ];
-
-                $product->decrement('stock', $item['quantity']);
             }
 
             $order = $user->orders()->create([
@@ -128,9 +127,6 @@ class OrderController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($order->items as $item) {
-                Product::find($item->product_id)?->increment('stock', $item->quantity);
-            }
             $order->changeStatus('cancelled');
             DB::commit();
 
