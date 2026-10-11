@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Http;
 use Exception;
@@ -14,7 +14,7 @@ class GeminiService
         if (!$apiKey) {
             throw new Exception("La API Key de Gemini no está definida en el archivo .env");
         }
-        
+
         // Usamos el nombre base limpio de la versión flash
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$apiKey}";
 

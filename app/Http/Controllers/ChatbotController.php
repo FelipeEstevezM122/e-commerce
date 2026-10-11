@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\GeminiService;
+use App\Http\Services\GeminiService;
 use Exception;
 
 class ChatbotController extends Controller
