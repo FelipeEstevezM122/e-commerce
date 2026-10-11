@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Ticket;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\BillingInfo;
@@ -377,6 +378,30 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', 'Estado del pedido actualizado');
+    }
+
+    //lista de tickets para el panel admin con busqueda
+    public function tickets(Request $request)
+    {
+        $query = Ticket::with('order.user', 'order.items.product');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('ticket_number', 'like', "%{$search}%")
+                  ->orWhereHas('order', function ($q) use ($search) {
+                      $q->where('order_number', 'like', "%{$search}%");
+                  });
+        }
+        if ($request->filled('from_date')) $query->whereDate('issued_at', '>=', $request->from_date);
+        if ($request->filled('to_date'))   $query->whereDate('issued_at', '<=', $request->to_date);
+
+        $tickets = $query->orderBy('issued_at', 'desc')->paginate(15);
+
+        if ($request->wantsJson()) {
+            return response()->json(['datos' => $tickets, 'message' => 'Lista de tickets'], Response::HTTP_OK);
+        }
+
+        return view('admin.tickets', compact('tickets'));
     }
 
     public function salesReport(Request $request)
