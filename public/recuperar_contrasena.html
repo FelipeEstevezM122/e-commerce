@@ -7,7 +7,7 @@
 
     <title>Casatek - Recuperar Contraseña</title>
 
-    <!-- Enlaces globales del sitio -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -18,18 +18,17 @@
         }
     </script>
 
-    <!-- Configuración: cambia estas URLs según donde esté tu backend -->
+    
     <script>
-        const API_BASE        = '';                        // Ej: 'https://tudominio.com' (vacío = mismo dominio)
-        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; // Ruta del login de admin (sesión) en tu backend
+        const API_BASE        = 'http://localhost:8000';   
+        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; 
     </script>
 
-    <!-- CSS propio -->
     <style>
         html { scroll-behavior: smooth; }
     </style>
 
-    <!-- Aplica el modo oscuro antes de pintar la página (evita parpadeo) -->
+   
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -601,7 +600,6 @@
     });
 </script>
 
-<!-- ======================= CONTENIDO ======================= -->
 <main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
 
 <div class="min-h-screen flex items-center justify-center p-6">
@@ -652,7 +650,7 @@
                     <span>¡Listo! Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en unos minutos. Revisa también la carpeta de spam.</span>
                 </div>
 
-                <form id="recuperarForm" class="space-y-6">
+                <form id="recuperarForm" class="space-y-6" novalidate>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
@@ -660,13 +658,14 @@
                         </label>
                         <div class="relative">
                             <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-                            <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required
+                            <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" autocomplete="email"
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
                         </div>
+                        <p id="err_email" class="text-red-500 text-xs mt-1 hidden"></p>
                     </div>
 
                     <button type="submit" id="submitBtn"
-                        class="w-full bg-[#1b803a] hover:bg-[#22C55E] text-white py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+                        class="w-full bg-[#1b803a] hover:bg-[#22C55E] text-white py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
                         <i class="fa-solid fa-paper-plane"></i>
                         ENVIAR INSTRUCCIONES
                     </button>
@@ -685,49 +684,113 @@
 </div>
 
 <script>
+const BTN_TEXTO = '<i class="fa-solid fa-paper-plane"></i> ENVIAR INSTRUCCIONES';
+const ESPERA_SEGUNDOS = 60;   // evita reenviar correos en ráfaga
+let cuentaAtras = null;
+
+function setVisible(el, visible) {
+    el.classList.toggle('hidden', !visible);
+    el.classList.toggle('flex', visible);
+}
+
+function limpiar() {
+    setVisible(document.getElementById('errorDiv'), false);
+    setVisible(document.getElementById('successDiv'), false);
+    const err = document.getElementById('err_email');
+    err.textContent = ''; err.classList.add('hidden');
+    document.getElementById('email').classList.remove('border-red-500');
+}
+
+function errorCampo(msg) {
+    const err = document.getElementById('err_email');
+    err.textContent = msg; err.classList.remove('hidden');
+    document.getElementById('email').classList.add('border-red-500');
+}
+
+function errorGeneral(msg) {
+    document.getElementById('errorText').textContent = msg;
+    setVisible(document.getElementById('errorDiv'), true);
+}
+
+// Bloquea el botón unos segundos tras un envío correcto
+function iniciarEspera(btn) {
+    let restante = ESPERA_SEGUNDOS;
+    btn.disabled = true;
+    const pintar = () => { btn.innerHTML = '<i class="fa-solid fa-clock"></i> Reenviar en ' + restante + 's'; };
+    pintar();
+    clearInterval(cuentaAtras);
+    cuentaAtras = setInterval(() => {
+        restante--;
+        if (restante <= 0) {
+            clearInterval(cuentaAtras);
+            btn.innerHTML = BTN_TEXTO;
+            btn.disabled = false;
+        } else pintar();
+    }, 1000);
+}
+
+// Precarga el correo: ?email=... o el que se recordó en iniciarsesion.html
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const q = new URLSearchParams(location.search).get('email');
+        const guardado = localStorage.getItem('remember_email');
+        const inicial = q || guardado;
+        if (inicial) document.getElementById('email').value = inicial;
+    } catch (e) {}
+});
+
 document.getElementById('recuperarForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const btn        = document.getElementById('submitBtn');
-    const errorDiv    = document.getElementById('errorDiv');
-    const errorText   = document.getElementById('errorText');
-    const successDiv  = document.getElementById('successDiv');
-    const email       = document.getElementById('email').value;
+    const btn   = document.getElementById('submitBtn');
+    const email = document.getElementById('email').value.trim();
+    limpiar();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorCampo('Ingresa un correo válido.');
+        return;
+    }
 
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
     btn.disabled  = true;
-    errorDiv.classList.add('hidden');
-    errorDiv.classList.remove('flex');
-    successDiv.classList.add('hidden');
-    successDiv.classList.remove('flex');
+    let enviado = false;
 
     try {
-        const res  = await fetch(API_BASE + '/api/forgot-password', {
+        const res = await fetch(API_BASE + '/api/forgot-password', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({ email })
         });
 
-        const data = await res.json().catch(() => ({}));
+        let data = {};
+        try { data = await res.json(); } catch (_) {}
 
         if (!res.ok) {
-            throw new Error(data.message || 'No se pudo procesar la solicitud. Intenta nuevamente.');
+            if (res.status === 422 && data.errors) {
+                const primero = Object.entries(data.errors)[0];
+                if (primero[0] === 'email') errorCampo(primero[1][0]);
+                else errorGeneral(primero[1][0]);
+            } else if (res.status === 429) {
+                errorGeneral('Demasiados intentos. Espera un minuto e inténtalo de nuevo.');
+            } else if (res.status === 404) {
+                errorGeneral('El servicio de recuperación no está disponible todavía (ruta no encontrada).');
+            } else {
+                errorGeneral(data.message || 'No se pudo procesar la solicitud. Intenta nuevamente.');
+            }
+            return;
         }
 
-        successDiv.classList.remove('hidden');
-        successDiv.classList.add('flex');
-        document.getElementById('recuperarForm').reset();
+        setVisible(document.getElementById('successDiv'), true);
+        enviado = true;
+        iniciarEspera(btn);
 
     } catch (err) {
-        errorText.textContent = err.message;
-        errorDiv.classList.remove('hidden');
-        errorDiv.classList.add('flex');
+        errorGeneral('Error de conexión con el servidor. Intenta de nuevo.');
     } finally {
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ENVIAR INSTRUCCIONES';
-        btn.disabled  = false;
+        if (!enviado) {
+            btn.innerHTML = BTN_TEXTO;
+            btn.disabled  = false;
+        }
     }
 });
 </script>
@@ -739,7 +802,7 @@ document.getElementById('recuperarForm').addEventListener('submit', async functi
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         
         <div class="space-y-4">
-            <a href="#" class="text-2xl font-black tracking-tight flex items-center gap-2">
+            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
                 CASA<span class="text-[#22C55E]">TEK</span>
             </a>
             <p class="text-xs text-gray-400 leading-relaxed">

@@ -13,8 +13,8 @@
 <style>
     body { font-family: 'Poppins', sans-serif; }
 
-    #filterDropdown { display: none; }
-    #filterDropdown.open { display: block; }
+    #filterDropdown, #recoDropdown { display: none; }
+    #filterDropdown.open, #recoDropdown.open { display: block; }
 
     #productModal { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
     #productModal.open { opacity: 1; pointer-events: all; }
@@ -40,7 +40,7 @@
     #cartToast.show { opacity: 1; transform: translateY(0); }
     #cartBadge { min-width: 18px; }
 
-    .pagination-btn { padding: .375rem .75rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; border-width: 1px; transition: all .15s; }
+    .pagination-btn { padding: .375rem .75rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; border-width: 1px; transition: all .15s; cursor: pointer; }
     .pagination-btn.active { background: #22C55E; color: #fff; border-color: #22C55E; }
     .pagination-btn:not(.active) { border-color: #d1d5db; color: #374151; background: #fff; }
     .dark .pagination-btn:not(.active) { border-color: #4b5563; color: #e5e7eb; background: #1f2937; }
@@ -58,7 +58,6 @@
 </head>
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
-<!-- ══════════════ HEADER ══════════════ -->
 <header class="w-full sticky top-0 z-[9999]">
     <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
         <span>Ordene antes de las 16:30 pm, reciba su pedido hoy -
@@ -77,26 +76,26 @@
     </p>
 
     <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-        <a href="#" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
+        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
             <span class="tracking-tight text-4xl font-black">CASA<span class="text-[#22C55E]">TEK</span></span>
         </a>
 
         <div class="flex items-center gap-4 md:gap-8">
             <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">INICIO</a>
+                    <a href="index.html" class="hover:text-[#22C55E] transition-colors">INICIO</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
+                    <a href="productos.html" class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
+                    <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
+                    <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                 </li>
                 <li class="relative group">
@@ -104,26 +103,80 @@
                         MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
                     <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                        <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
                             <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                        <a href="manuales/Manual%20de%20usuario.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
                             <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
                         </a>
                     </div>
                 </li>
-                <li class="relative">
-                    <a href="#" class="hover:text-[#22C55E] transition-colors">INICIAR SESIÓN</a>
-                </li>
-                <li class="relative group">
-                    <a href="#" class="text-lg hover:text-[#22C55E] transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </li>
+                <li class="relative" id="nav-auth-desktop">
+                        <a id="btn-login-desktop" href="iniciarsesion.html"
+                           class="hover:text-[#22C55E] transition-colors ">
+                            INICIAR SESIÓN
+                        </a>
+
+                       
+                        <div id="btn-perfil-desktop" class="hidden relative group/perfil">
+                            <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
+                                <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
+                                <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </button>
+
+                        
+                            <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
+
+                          
+                                <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                    <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
+                                    <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
+                                    <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
+                                </div>
+
+                           
+                                <button onclick="abrirModalPerfil()"
+                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
+                                </button>
+                                <a href="carrito.html"
+                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
+                                </a>
+                                <a href="MisTickets.html"
+                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-ticket w-4"></i> Mis tickets
+                                </a>
+                                <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
+                                    <button onclick="cerrarSesion()"
+                                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
+                                        <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="relative group">
+                        <a href="carrito.html" class="text-lg hover:text-[#22C55E] transition-colors">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </li>
+                    <li class="relative group">
+                        <a href="MisTickets.html" class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
+                            <i class="fa-solid fa-ticket text-lg"></i> MIS TICKETS
+                        </a>
+                    </li>
                 <li class="relative group">
                     <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
                         <i id="theme-icon" class="fa-solid fa-moon"></i>
                     </button>
                 </li>
             </ul>
+            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
+                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
+            </button>
             <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -141,12 +194,28 @@
             </div>
             <div class="mt-8 space-y-4 border-b border-gray-800/60 pb-6">
                 <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
-                <a href="#" class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
-                <a href="#" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
-                <div class="pt-3">
+                <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
+                <a href="productos.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
+                <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
+                <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
+                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
+                <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
+                <div id="mobile-login">
+                        <a href="iniciarsesion.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar Sesión</a>
+                    </div>
+                    <div id="mobile-perfil" class="hidden space-y-3">
+                        <div class="flex items-center gap-3 py-2">
+                            <div class="w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-white" id="mobile-avatar">U</div>
+                            <div>
+                                <p class="font-bold text-white text-sm" id="mobile-nombre">-</p>
+                                <p class="text-xs text-gray-400" id="mobile-email">-</p>
+                            </div>
+                        </div>
+                        <button onclick="abrirModalPerfil(); closeSidebarFn();" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Editar perfil</button>
+                        <button onclick="cerrarSesion()" class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors">Cerrar sesión</button>
+                    </div>
+
+                    <div class="pt-3">
                     <button id="theme-toggle-mobile" class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
                         <i id="theme-icon-mobile" class="fa-solid fa-moon"></i><span>Modo Oscuro</span>
                     </button>
@@ -178,7 +247,106 @@
     </div>
 </header>
 
-<!-- ══════════════ CONTENIDO: PRODUCTOS ══════════════ -->
+<div id="modalPerfil"
+         class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-200" id="modalPerfilBox">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] p-6 text-white relative">
+                <button onclick="cerrarModalPerfil()" class="absolute top-4 right-4 bg-black/30 hover:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-black" id="perfil-avatar-grande">U</div>
+                    <div>
+                        <p class="font-black text-xl" id="perfil-nombre-header">-</p>
+                        <p class="text-white/70 text-sm" id="perfil-email-header">-</p>
+                        <span id="perfil-rango-header" class="mt-1 inline-block text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full"></span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
+
+                <div id="perfil-error"  class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl"></div>
+                <div id="perfil-exito"  class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> <span>Datos actualizados correctamente</span>
+                </div>
+
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Nombre completo</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <input type="text" id="perfil-input-nombre" placeholder="Tu nombre"
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                    </div>
+                </div>
+
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Correo electrónico</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <input type="email" id="perfil-input-email" placeholder="correo@ejemplo.com"
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                    </div>
+                </div>
+
+              
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Teléfono <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <input type="tel" id="perfil-input-phone" placeholder="591XXXXXXXX"
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                    </div>
+                </div>
+
+              
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">WhatsApp <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
+                    <div class="relative">
+                        <i class="fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <input type="tel" id="perfil-input-whatsapp" placeholder="591XXXXXXXX"
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                    </div>
+                </div>
+
+              
+                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cambiar contraseña <span class="font-normal normal-case">(dejar vacío para no cambiar)</span></p>
+
+                    <div class="space-y-3">
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                            <input type="password" id="perfil-input-password" placeholder="Nueva contraseña"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                            <input type="password" id="perfil-input-password-confirm" placeholder="Confirmar nueva contraseña"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+           
+            <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex gap-3">
+                <button onclick="cerrarModalPerfil()" class="flex-1 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="guardarPerfil()" id="btn-guardar-perfil"
+                        class="flex-1 bg-[#22C55E] hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
 <main class="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
 
@@ -219,6 +387,19 @@
                 </div>
             </div>
 
+            <div class="relative">
+                <button type="button" id="recoBtn" class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-thumbs-up text-sm"></i> Recomendación
+                    <i class="fa-solid fa-chevron-down text-xs" id="recoChevron"></i>
+                </button>
+                <div id="recoDropdown" class="absolute right-0 top-[calc(100%+8px)] w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2">
+                    <p class="px-4 pt-1 pb-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Recomendados por precio</p>
+                    <button type="button" data-reco="" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-border-all w-4"></i> Todos</button>
+                    <button type="button" data-reco="bajo" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-down w-4"></i> Precio bajo</button>
+                    <button type="button" data-reco="alto" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-up w-4"></i> Precio alto</button>
+                </div>
+            </div>
+
             <button id="btnBuscar" class="flex items-center gap-2 px-4 py-2.5 bg-[#22C55E] hover:bg-green-600 text-white font-bold rounded-xl text-sm transition-all shadow-sm whitespace-nowrap">
                 <i class="fa-solid fa-magnifying-glass text-sm"></i> Buscar
             </button>
@@ -252,7 +433,7 @@
             <i class="fa-solid fa-xmark text-sm"></i>
         </button>
         <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative rounded-t-2xl">
-            <img id="modalImgMain" src="" alt="" class="w-full h-full object-contain p-6 transition-opacity duration-200">
+            <img id="modalImgMain" src="" alt="" class="w-full h-full object-contain p-6 transition-opacity duration-200" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
             <span id="modalStockBadge" class="absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
         </div>
         <div id="modalThumbs" class="flex gap-2 px-5 pt-3 pb-1"></div>
@@ -286,25 +467,73 @@
     </div>
 </div>
 
-<div id="cartToast" class="fixed bottom-6 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
+<div id="cartToast" class="fixed bottom-24 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
     <i id="cartToastIcon" class="fa-solid fa-circle-check text-[#22C55E]"></i>
     <span id="cartToastMsg">Producto agregado</span>
 </div>
 
-<!-- ══════════════ FOOTER ══════════════ -->
+
+<!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
+<div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
+    <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
+        <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <p class="text-sm font-black leading-tight">Asistente Casatek</p>
+                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                </div>
+            </div>
+            <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+            <div class="flex">
+                <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
+                    ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
+                </p>
+            </div>
+        </div>
+        <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
+                   class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+            <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </form>
+    </div>
+    <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+</div>
+<script>
+(function () {
+    var panel = document.getElementById('chat-panel');
+    function toggle() {
+        panel.classList.toggle('hidden');
+        panel.classList.toggle('flex');
+        if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
+    }
+    document.getElementById('chat-toggle').addEventListener('click', toggle);
+    document.getElementById('chat-close').addEventListener('click', toggle);
+    // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
+})();
+</script>
+
 <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <div class="space-y-4">
-            <a href="#" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span class="text-[#22C55E]">TEK</span></a>
+            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span class="text-[#22C55E]">TEK</span></a>
             <p class="text-xs text-gray-400 leading-relaxed">Expertos en soluciones de seguridad electrónica, automatización y redes. Comprometidos con la protección y eficiencia de tu hogar y empresa.</p>
         </div>
         <div class="space-y-4">
             <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
             <ul class="space-y-2 text-sm text-gray-400">
-                <li><a href="#" class="hover:text-white transition-colors">Inicio</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Contáctanos</a></li>
+                <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
+                <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
+                <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
             </ul>
         </div>
         <div class="space-y-4 text-sm">
@@ -330,31 +559,75 @@
     </div>
 </footer>
 
-<!-- ══════════════ SCRIPTS ══════════════ -->
+
 <script>
 document.getElementById('anioActual').textContent = new Date().getFullYear();
 
-// ── Datos de ejemplo (reemplazan a $productos de Laravel) ──
-const PRODUCTOS = [
-    { id:1, nombre:'Cámara IP 4MP Domo', marca:'Hikvision', categoria:'Cámaras de Seguridad', precio:450, descripcion:'Cámara domo IP 4MP con visión nocturna y detección de movimiento.', img:'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=400', stock:12, sku:'HK-DOME-4MP', garantia:365 },
-    { id:2, nombre:'DVR 8 Canales Turbo HD', marca:'Dahua', categoria:'Grabadores', precio:890, descripcion:'DVR de 8 canales compatible con cámaras HD, salida HDMI y VGA.', img:'https://images.unsplash.com/photo-1558002038-1055907df827?w=400', stock:5, sku:'DH-DVR-8CH', garantia:365 },
-    { id:3, nombre:'Sensor de Movimiento PIR', marca:'Ajax', categoria:'Alarmas', precio:180, descripcion:'Sensor inalámbrico de movimiento con inmunidad a mascotas.', img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', stock:20, sku:'AJX-PIR-01', garantia:180 },
-    { id:4, nombre:'Router WiFi 6 AX3000', marca:'TP-Link', categoria:'Redes', precio:520, descripcion:'Router de doble banda con tecnología WiFi 6 para mayor velocidad.', img:'https://images.unsplash.com/photo-1606904825846-647eb07f5be2?w=400', stock:8, sku:'TPL-AX3000', garantia:365 },
-    { id:5, nombre:'Cámara PTZ 5MP Exterior', marca:'Hikvision', categoria:'Cámaras de Seguridad', precio:1350, descripcion:'Cámara PTZ con zoom óptico 25x, ideal para grandes áreas.', img:'https://images.unsplash.com/photo-1615890472728-7f8b53b1bd10?w=400', stock:0, sku:'HK-PTZ-5MP', garantia:365 },
-    { id:6, nombre:'Kit Alarma Inalámbrica', marca:'Ajax', categoria:'Alarmas', precio:950, descripcion:'Kit completo con panel central, 2 sensores y sirena.', img:'https://images.unsplash.com/photo-1558002038-bb0237f4e204?w=400', stock:3, sku:'AJX-KIT-01', garantia:365 },
-    { id:7, nombre:'Switch PoE 8 Puertos', marca:'TP-Link', categoria:'Redes', precio:610, descripcion:'Switch administrable PoE+ de 8 puertos para cámaras IP.', img:'https://images.unsplash.com/photo-1591405351990-4726e331f141?w=400', stock:15, sku:'TPL-POE-8P', garantia:365 },
-    { id:8, nombre:'NVR 16 Canales 4K', marca:'Dahua', categoria:'Grabadores', precio:1650, descripcion:'Grabador de red 16 canales con soporte 4K y 2 bahías HDD.', img:'https://images.unsplash.com/photo-1580983559389-e3a2a36f7c4c?w=400', stock:4, sku:'DH-NVR-16CH', garantia:365 },
-];
+// API 
 
-const CATEGORIAS = [...new Set(PRODUCTOS.map(p => p.categoria))];
-const MARCAS     = [...new Set(PRODUCTOS.map(p => p.marca))];
+const API_URL = 'http://localhost:8000/api/products';
 
-const catSel = document.getElementById('categorySelect');
-CATEGORIAS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o); });
+let PRODUCTOS = [];
+
+const catSel   = document.getElementById('categorySelect');
 const brandSel = document.getElementById('brandSelect');
-MARCAS.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o); });
 
-let estado = { q:'', category:'', brand:'', orden:'default', page:1 };
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function adaptarProducto(p) {
+    const imagenes = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
+    return {
+        id:          p.id,
+        nombre:      p.name ?? '',
+        marca:       p.brand?.name ?? 'Sin marca',
+        categoria:   p.category?.name ?? 'Sin categoría',
+        precio:      Number(p.base_price ?? 0),
+        descripcion: p.description ?? '',
+        img:         imagenes[0] ?? '',
+        imgs:        imagenes,
+        stock:       Number(p.stock ?? 0),
+        sku:         p.sku ?? '',
+        garantia:    Number(p.warranty_days ?? 0),
+    };
+}
+
+function llenarFiltros() {
+    catSel.length = 1; brandSel.length = 1;
+    [...new Set(PRODUCTOS.map(p => p.categoria))].sort().forEach(c => {
+        const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o);
+    });
+    [...new Set(PRODUCTOS.map(p => p.marca))].sort().forEach(m => {
+        const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o);
+    });
+}
+
+async function cargarProductos() {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '<p class="col-span-4 text-center py-20 text-gray-400">Cargando productos...</p>';
+    try {
+        let todos = [], url = API_URL;
+        // Laravel pagina de 15 en 15: recorremos todas las páginas
+        while (url) {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            const pag = json.datos;
+            todos = todos.concat(Array.isArray(pag) ? pag : (pag.data ?? []));
+            url = Array.isArray(pag) ? null : (pag.next_page_url ?? null);
+        }
+        PRODUCTOS = todos.map(adaptarProducto);
+        llenarFiltros();
+        renderProductos();
+    } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<p class="col-span-4 text-center py-20 text-red-400">No se pudieron cargar los productos.</p>';
+    }
+}
+
+
+let estado = { q:'', category:'', brand:'', orden:'default', reco:'', page:1 };
 const POR_PAGINA = 8;
 
 function filtrarProductos() {
@@ -364,7 +637,14 @@ function filtrarProductos() {
         const matchB = !estado.brand || p.marca === estado.brand;
         return matchQ && matchC && matchB;
     });
-    switch (estado.orden) {
+    if (estado.reco && list.length) {
+        const precios = list.map(x => x.precio).sort((a,b) => a - b);
+        const n = Math.max(1, Math.ceil(precios.length / 3));
+        if (estado.reco === 'bajo') { const lim = precios[n - 1];                  list = list.filter(x => x.precio <= lim); }
+        else                        { const lim = precios[precios.length - n];     list = list.filter(x => x.precio >= lim); }
+    }
+    const ord = (estado.orden === 'default' && estado.reco) ? (estado.reco === 'bajo' ? 'precio_asc' : 'precio_desc') : estado.orden;
+    switch (ord) {
         case 'nombre':      list.sort((a,b)=>a.nombre.localeCompare(b.nombre)); break;
         case 'precio_asc':  list.sort((a,b)=>a.precio-b.precio); break;
         case 'precio_desc': list.sort((a,b)=>b.precio-a.precio); break;
@@ -379,9 +659,10 @@ function renderActiveFilters() {
     cont.innerHTML = '';
     const btnLimpiar = document.getElementById('btnLimpiar');
     let hay = false;
-    if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${estado.q}"</span>`; }
-    if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${estado.category}</span>`; }
-    if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${estado.brand}</span>`; }
+    if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${escapeHtml(estado.q)}"</span>`; }
+    if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${escapeHtml(estado.category)}</span>`; }
+    if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${escapeHtml(estado.brand)}</span>`; }
+    if (estado.reco) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-thumbs-up text-[10px]"></i> Recomendación: ${estado.reco === 'bajo' ? 'precio bajo' : 'precio alto'}</span>`; }
     btnLimpiar.classList.toggle('hidden', !hay);
     btnLimpiar.classList.toggle('flex', hay);
 }
@@ -413,15 +694,15 @@ function renderProductos() {
         card.onclick = () => abrirModal(p);
         card.innerHTML = `
             <div class="w-full h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden relative border-b border-gray-100 dark:border-gray-700">
-                <img src="${p.img}" alt="${p.nombre}" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
-                <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">${p.marca}</span>
+                <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.nombre)}" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
+                <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">${escapeHtml(p.marca)}</span>
                 ${stockBadge}
             </div>
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div class="space-y-1">
-                    <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">${p.categoria}</span>
-                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm line-clamp-1 group-hover:text-[#22C55E] transition-colors">${p.nombre}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">${p.descripcion}</p>
+                    <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-wider">${escapeHtml(p.categoria)}</span>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm line-clamp-1 group-hover:text-[#22C55E] transition-colors">${escapeHtml(p.nombre)}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">${escapeHtml(p.descripcion)}</p>
                     <div class="pt-1"><span class="text-lg font-black text-gray-900 dark:text-green-400">${p.precio.toFixed(2)} Bs.</span></div>
                 </div>
                 <div class="space-y-2" data-stop>
@@ -475,7 +756,7 @@ document.getElementById('searchInput').addEventListener('keydown', e => { if (e.
 catSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
 brandSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
 document.getElementById('btnLimpiar').addEventListener('click', () => {
-    estado = { q:'', category:'', brand:'', orden:'default', page:1 };
+    estado = { q:'', category:'', brand:'', orden:'default', reco:'', page:1 };
     document.getElementById('searchInput').value = '';
     catSel.value = ''; brandSel.value = '';
     renderProductos();
@@ -500,9 +781,32 @@ document.querySelectorAll('.filter-opt').forEach(btn => {
     });
 });
 
-// ── Carrito ──
+document.getElementById('recoBtn').addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('filterDropdown').classList.remove('open');
+    document.getElementById('filterChevron').style.transform = '';
+    const dd = document.getElementById('recoDropdown');
+    dd.classList.toggle('open');
+    document.getElementById('recoChevron').style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+});
+document.addEventListener('click', () => {
+    document.getElementById('recoDropdown').classList.remove('open');
+    document.getElementById('recoChevron').style.transform = '';
+});
+document.querySelectorAll('.reco-opt').forEach(btn => {
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        estado.reco = btn.dataset.reco;
+        estado.page = 1;
+        document.getElementById('recoDropdown').classList.remove('open');
+        document.getElementById('recoChevron').style.transform = '';
+        renderProductos();
+    });
+});
+
+// ══════════ CARRITO (localStorage) ══════════
 const CART_KEY = 'casatek_carrito';
-function getCarrito()  { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
 function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
 function actualizarBadge() {
     const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
@@ -532,9 +836,9 @@ function agregarAlCarrito(p) {
     else carrito.push({ id:p.id, nombre:p.nombre, marca:p.marca, precio:p.precio, descripcion:p.descripcion, img:p.img, cantidad:1 });
     saveCarrito(carrito); actualizarBadge(); mostrarToast(p.nombre);
 }
-document.getElementById('cartViewBtn').addEventListener('click', () => alert('Aquí se redirigiría a la página del carrito.'));
+document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = 'carrito.html'; });
 
-// ── Modal de producto ──
+
 let productoModal = null;
 function setMainImg(src) {
     const img = document.getElementById('modalImgMain');
@@ -545,9 +849,21 @@ function setMainImg(src) {
 function abrirModal(p) {
     productoModal = p;
     setMainImg(p.img);
-    document.getElementById('modalThumbs').innerHTML = '';
-    document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${p.marca}`;
-    document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${p.categoria}`;
+
+    const thumbs = document.getElementById('modalThumbs');
+    thumbs.innerHTML = '';
+    if (p.imgs && p.imgs.length > 1) {
+        p.imgs.forEach(src => {
+            const t = document.createElement('img');
+            t.src = src; t.dataset.src = src;
+            t.className = 'modal-thumb' + (src === p.img ? ' active' : '');
+            t.onclick = () => setMainImg(src);
+            thumbs.appendChild(t);
+        });
+    }
+
+    document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${escapeHtml(p.marca)}`;
+    document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${escapeHtml(p.categoria)}`;
     document.getElementById('modalNombre').textContent = p.nombre;
     document.getElementById('modalPrecio').textContent = p.precio.toFixed(2) + ' Bs.';
     document.getElementById('modalDesc').textContent = p.descripcion || 'Sin descripción.';
@@ -587,8 +903,9 @@ document.getElementById('modalCartBtn').addEventListener('click', () => {
     if (productoModal.stock > 0) cerrarModal(null);
 });
 
-// ── Tema oscuro / sidebar (del header) ──
+// ══════════ TEMA OSCURO / SIDEBAR / INICIO ══════════
 document.addEventListener('DOMContentLoaded', function () {
+    const openSidebarBtn = document.getElementById('btn-open-sidebar');
     const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
     const closeBtn = document.getElementById('btn-close-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -622,13 +939,185 @@ document.addEventListener('DOMContentLoaded', function () {
         panel.classList.add('translate-x-full');
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
+    if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
     if (openMenuMobileBtn) openMenuMobileBtn.addEventListener('click', openSidebar);
     if (closeBtn) closeBtn.addEventListener('click', closeSidebarFn);
     if (overlay) overlay.addEventListener('click', closeSidebarFn);
 
     actualizarBadge();
-    renderProductos();
+    cargarProductos();   // desde la API
 });
 </script>
+<script>
+if (!window.closeSidebarFn) {
+    window.closeSidebarFn = function () {
+        const overlay = document.getElementById('sidebar-overlay');
+        const panel   = document.getElementById('sidebar-panel');
+        overlay.classList.remove('opacity-100');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    };
+}
+function inicializarNavAuth() {
+        const token = localStorage.getItem('token');
+        const user  = JSON.parse(localStorage.getItem('user') || 'null');
+        const rank  = JSON.parse(localStorage.getItem('rank') || 'null');
+
+        if (token && user) {
+            // Desktop
+            document.getElementById('btn-login-desktop').classList.add('hidden');
+            document.getElementById('btn-perfil-desktop').classList.remove('hidden');
+
+            const inicial = (user.name || 'U')[0].toUpperCase();
+            document.getElementById('avatar-inicial').textContent    = inicial;
+            document.getElementById('nav-username').textContent      = user.name?.split(' ')[0] ?? 'Usuario';
+            document.getElementById('dd-nombre').textContent         = user.name  ?? '-';
+            document.getElementById('dd-email').textContent          = user.email ?? '-';
+            document.getElementById('dd-rango').textContent          = rank?.name ? '🏅 ' + rank.name : '';
+
+            // Mobile
+            document.getElementById('mobile-login').classList.add('hidden');
+            document.getElementById('mobile-perfil').classList.remove('hidden');
+            document.getElementById('mobile-avatar').textContent = inicial;
+            document.getElementById('mobile-nombre').textContent = user.name  ?? '-';
+            document.getElementById('mobile-email').textContent  = user.email ?? '-';
+        }
+    }
+
+   
+    function abrirModalPerfil() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const rank = JSON.parse(localStorage.getItem('rank') || 'null');
+        if (!user) return;
+
+        const inicial = (user.name || 'U')[0].toUpperCase();
+        document.getElementById('perfil-avatar-grande').textContent  = inicial;
+        document.getElementById('perfil-nombre-header').textContent  = user.name  ?? '-';
+        document.getElementById('perfil-email-header').textContent   = user.email ?? '-';
+        document.getElementById('perfil-rango-header').textContent   = rank?.name ? '🏅 ' + rank.name : '';
+
+        document.getElementById('perfil-input-nombre').value    = user.name     ?? '';
+        document.getElementById('perfil-input-email').value     = user.email    ?? '';
+        document.getElementById('perfil-input-phone').value     = user.phone    ?? '';
+        document.getElementById('perfil-input-whatsapp').value  = user.whatsapp ?? '';
+        document.getElementById('perfil-input-password').value         = '';
+        document.getElementById('perfil-input-password-confirm').value = '';
+
+        document.getElementById('perfil-error').classList.add('hidden');
+        document.getElementById('perfil-exito').classList.add('hidden');
+
+        const modal = document.getElementById('modalPerfil');
+        const box   = document.getElementById('modalPerfilBox');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        box.classList.remove('scale-95');
+        box.classList.add('scale-100');
+    }
+
+    function cerrarModalPerfil() {
+        const modal = document.getElementById('modalPerfil');
+        const box   = document.getElementById('modalPerfilBox');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        box.classList.remove('scale-100');
+        box.classList.add('scale-95');
+    }
+
+    //  Guardar perfil
+    async function guardarPerfil() {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const btn       = document.getElementById('btn-guardar-perfil');
+        const errorDiv  = document.getElementById('perfil-error');
+        const exitoDiv  = document.getElementById('perfil-exito');
+        const password  = document.getElementById('perfil-input-password').value;
+        const passConf  = document.getElementById('perfil-input-password-confirm').value;
+
+        errorDiv.classList.add('hidden');
+        exitoDiv.classList.add('hidden');
+
+        if (password && password !== passConf) {
+            errorDiv.textContent = 'Las contraseñas no coinciden.';
+            errorDiv.classList.remove('hidden');
+            return;
+        }
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+        btn.disabled  = true;
+
+        const body = {
+            name:     document.getElementById('perfil-input-nombre').value.trim(),
+            email:    document.getElementById('perfil-input-email').value.trim(),
+            phone:    document.getElementById('perfil-input-phone').value.trim()    || null,
+            whatsapp: document.getElementById('perfil-input-whatsapp').value.trim() || null,
+        };
+        if (password) {
+            body.password              = password;
+            body.password_confirmation = passConf;
+        }
+
+        try {
+            const res  = await fetch('/api/me/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Accept':        'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                const msgs = data.errors
+                    ? Object.values(data.errors).flat().join(' ')
+                    : (data.message || 'Error al actualizar.');
+                errorDiv.textContent = msgs;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            localStorage.setItem('user', JSON.stringify(data.user));
+            inicializarNavAuth();
+
+            exitoDiv.classList.remove('hidden');
+            setTimeout(cerrarModalPerfil, 1500);
+
+        } catch(e) {
+            errorDiv.textContent = 'Error de conexión.';
+            errorDiv.classList.remove('hidden');
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';
+            btn.disabled  = false;
+        }
+    }
+
+    // ── Cerrar sesión ──
+    async function cerrarSesion() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                await fetch('/api/logout', {
+                    method:  'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
+                });
+            } catch(e) {}
+        }
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('roles');
+        localStorage.removeItem('rank');
+        localStorage.removeItem('casatek_carrito');
+        window.location.href = 'index.html';
+    }
+
+    // ── Cerrar modal al click fuera ──
+    document.getElementById('modalPerfil').addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalPerfil();
+    });
+document.addEventListener('DOMContentLoaded', inicializarNavAuth);
+</script>
+
 </body>
 </html>
