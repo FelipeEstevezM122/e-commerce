@@ -10,6 +10,8 @@ use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Models\ProductPriceHistory;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -261,7 +263,20 @@ class ProductController extends Controller
             }
         }
 
-        $product->update($validated);
+                DB::transaction(function () use ($product, $validated, $request) {
+            //si el precio cambio, guarda el precio anterior y el nuevo en el historial
+            if (isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
+                ProductPriceHistory::create([
+                    'product_id' => $product->id,
+                    'old_price'  => $product->base_price,
+                    'new_price'  => $validated['base_price'],
+                    'changed_by' => $request->user()?->id,
+                    'changed_at' => now(),
+                ]);
+            }
+
+            $product->update($validated);
+        });
 
         Cache::flush();
 
