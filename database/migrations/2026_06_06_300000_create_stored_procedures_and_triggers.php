@@ -385,7 +385,7 @@ return new class extends Migration
             END
         ");
 
-        // trigger 5: cuando un pedido pasa a delivered suma el total a las compras acumuladas del usuario en ese mes
+                // trigger 5: cuando un pedido pasa a delivered suma el total a las compras acumuladas del usuario en ese mes
         DB::unprepared('DROP TRIGGER IF EXISTS trg_update_accumulated_purchases');
         DB::unprepared("
             CREATE TRIGGER trg_update_accumulated_purchases
@@ -393,11 +393,11 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 IF NEW.status = 'delivered' AND OLD.status <> 'delivered' THEN
-                    INSERT INTO accumulated_purchases (user_id, total_amount, created_at, updated_at)
-                    VALUES (NEW.user_id, NEW.total, NOW(), NOW())
+                    INSERT INTO accumulated_purchases (user_id, month, total_purchases, created_at, updated_at)
+                    VALUES (NEW.user_id, DATE_FORMAT(NOW(), '%Y-%m-01'), NEW.total, NOW(), NOW())
                     ON DUPLICATE KEY UPDATE
-                        total_amount = total_amount + NEW.total,
-                        updated_at   = NOW();
+                        total_purchases = total_purchases + NEW.total,
+                        updated_at      = NOW();
                 END IF;
             END
         ");
