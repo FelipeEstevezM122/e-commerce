@@ -385,7 +385,7 @@ return new class extends Migration
             END
         ");
 
-                // trigger 5: cuando un pedido pasa a delivered suma el total a las compras acumuladas del usuario en ese mes
+        // trigger 5: cuando un pedido pasa a delivered suma el total a las compras acumuladas del usuario en ese mes
         DB::unprepared('DROP TRIGGER IF EXISTS trg_update_accumulated_purchases');
         DB::unprepared("
             CREATE TRIGGER trg_update_accumulated_purchases
