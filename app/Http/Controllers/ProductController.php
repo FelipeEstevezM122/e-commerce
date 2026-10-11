@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use Illuminate\Database\QueryException;
 use App\Models\Category;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
@@ -275,17 +276,29 @@ class ProductController extends Controller
             ->with('success', 'Producto actualizado con éxito');
     }
 
+    //El trigger bloquea el borrado a nivel de bd si tiene productos activos
     public function destroy(Product $product)
     {
-        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
-            if ($product->$field) {
-                $this->deleteFromCloudinary($product->$field);
+        try {
+            foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+                if ($product->$field) {
+                    $this->deleteFromCloudinary($product->$field);
+                }
             }
+
+            $product->delete();
+
+            Cache::flush();
+
+        } catch (QueryException $e) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'message' => 'No se puede eliminar: el producto tiene pedidos activos en curso.'
+                ], Response::HTTP_CONFLICT);
+            }
+            return redirect()->route('admin.products.index')
+                ->with('error', 'No se puede eliminar: el producto tiene pedidos activos en curso.');
         }
-
-        $product->delete();
-
-        Cache::flush();
 
         if (request()->wantsJson()) {
             return response()->json([
