@@ -9,7 +9,8 @@ use App\Http\Controllers\BillingInfoController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
-
+//para chatbot
+use App\Http\Controllers\ChatbotController;
 
 //1. RUTAS PÚBLICAS (sin autenticación)
 // Auth
@@ -24,6 +25,9 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 // Rangos (solo lectura publica)
 Route::get('/ranks',         [RankController::class, 'index']);
 Route::get('/ranks/{rank}',  [RankController::class, 'show']);
+
+// Chatbot
+Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
 
 //2. RUTAS PROTEGIDAS (requieren auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
