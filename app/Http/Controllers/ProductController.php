@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use Illuminate\Database\QueryException;
 use App\Models\Category;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Models\ProductPriceHistory;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -260,7 +263,20 @@ class ProductController extends Controller
             }
         }
 
-        $product->update($validated);
+                DB::transaction(function () use ($product, $validated, $request) {
+            //si el precio cambio, guarda el precio anterior y el nuevo en el historial
+            if (isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
+                ProductPriceHistory::create([
+                    'product_id' => $product->id,
+                    'old_price'  => $product->base_price,
+                    'new_price'  => $validated['base_price'],
+                    'changed_by' => $request->user()?->id,
+                    'changed_at' => now(),
+                ]);
+            }
+
+            $product->update($validated);
+        });
 
         Cache::flush();
 
@@ -272,20 +288,32 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')
-                        ->with('success', 'Producto actualizado con éxito');
+            ->with('success', 'Producto actualizado con éxito');
     }
 
+    //El trigger bloquea el borrado a nivel de bd si tiene productos activos
     public function destroy(Product $product)
     {
-        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
-            if ($product->$field) {
-                $this->deleteFromCloudinary($product->$field);
+        try {
+            foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+                if ($product->$field) {
+                    $this->deleteFromCloudinary($product->$field);
+                }
             }
+
+            $product->delete();
+
+            Cache::flush();
+
+        } catch (QueryException $e) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'message' => 'No se puede eliminar: el producto tiene pedidos activos en curso.'
+                ], Response::HTTP_CONFLICT);
+            }
+            return redirect()->route('admin.products.index')
+                ->with('error', 'No se puede eliminar: el producto tiene pedidos activos en curso.');
         }
-
-        $product->delete();
-
-        Cache::flush();
 
         if (request()->wantsJson()) {
             return response()->json([

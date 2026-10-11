@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casatek - Mis Tickets</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+
+    <style>
+        .tickets-page { font-family: 'DM Sans', sans-serif; }
+        .tickets-page h1, .total-price { font-family: 'DM Serif Display', serif; }
+
+        body { background: #f0fdf4; }
+        .dark body { background: #111827; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .ticket-card { animation: slideIn .35s ease both; position: relative; }
+
+        /* Borde perforado tipo ticket */
+        .ticket-card::before, .ticket-card::after {
+            content: ''; position: absolute; top: 118px; width: 22px; height: 22px;
+            border-radius: 50%; background: #f0fdf4; border: 1px solid #e5e7eb; z-index: 2;
+        }
+        .ticket-card::before { left: -11px; clip-path: inset(0 0 0 50%); }
+        .ticket-card::after  { right: -11px; clip-path: inset(0 50% 0 0); }
+        .dark .ticket-card::before, .dark .ticket-card::after { background: #111827; border-color: #374151; }
+
+        .ticket-divider { border-top: 2px dashed #bbf7d0; }
+        .dark .ticket-divider { border-color: #166534; }
+    </style>
+</head>
+<body class="dark:text-white transition-all duration-300 overflow-x-hidden">
+
+<header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
+    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
+        <span>Ordene antes de las 16:30 pm, reciba su pedido hoy -
+            <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong></span>
+        <span class="flex items-center gap-4 text-sm">
+            <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+        </span>
+    </p>
+
+    <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
+            <img src="images/logoCasatek.png" alt="Logo Casatek" class="h-14 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
+            <span class="font-['Poppins'] tracking-tight text-4xl font-black">CASA<span class="text-[#22C55E]">TEK</span></span>
+        </a>
+
+        <ul class="flex items-center gap-4 md:gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
+            <li class="hidden md:block"><a href="index.html" class="hover:text-[#22C55E] transition-colors">INICIO</a></li>
+            <li class="hidden md:block"><a href="productos.html" class="hover:text-[#22C55E] transition-colors">PRODUCTOS</a></li>
+            <li class="hidden md:block"><a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a></li>
+            <li class="hidden md:block"><a href="contactanos.html" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a></li>
+            <li class="flex items-center gap-2" id="nav-user">
+                <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
+                <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
+            </li>
+            <li><a href="carrito.html" class="text-lg hover:text-[#22C55E] transition-colors"><i class="fa-solid fa-cart-shopping"></i></a></li>
+            <li><button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors"><i id="theme-icon" class="fa-solid fa-moon"></i></button></li>
+            <li><button onclick="cerrarSesion()" title="Cerrar sesión" class="text-lg text-red-500 hover:text-red-400 transition-colors"><i class="fa-solid fa-right-from-bracket"></i></button></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="pt-16 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="tickets-page max-w-4xl mx-auto px-4 py-10">
+
+        <nav class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-8">
+            <a href="index.html" class="hover:text-[#22C55E] transition-colors">Inicio</a><span>›</span>
+            <a href="carrito.html" class="hover:text-[#22C55E] transition-colors">Mi Carrito</a><span>›</span>
+            <span class="text-[#22C55E] font-semibold">Mis Tickets</span>
+        </nav>
+
+        <!-- Datos del usuario conectado -->
+        <section class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] rounded-2xl p-6 text-white shadow-xl mb-10">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-black" id="hd-avatar">U</div>
+                <div class="min-w-0">
+                    <p class="font-black text-xl truncate" id="hd-nombre">-</p>
+                    <p class="text-white/70 text-sm truncate" id="hd-email">-</p>
+                    <div class="mt-1 flex flex-wrap gap-2 text-[10px] font-bold">
+                        <span id="hd-id" class="bg-white/20 border border-white/30 px-2 py-0.5 rounded-full"></span>
+                        <span id="hd-rango" class="hidden bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <header class="mb-8">
+            <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase mb-1">Historial de compras</p>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight">Mis <span class="text-[#22C55E]">Tickets</span></h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Aquí aparecen únicamente las compras realizadas con tu cuenta.</p>
+        </header>
+
+        <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4 tracking-wide" id="tickets-counter">0 tickets</p>
+
+        <ol class="space-y-6 list-none" id="tickets-list"></ol>
+
+        <article id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-12 text-center">
+            <p class="text-5xl mb-4">🎫</p>
+            <h2 class="text-lg font-black text-gray-700 dark:text-white mb-2">Aún no tienes tickets</h2>
+            <p class="text-sm text-gray-400 mb-6">Cuando realices una compra desde el carrito, tu ticket aparecerá aquí.</p>
+            <a href="productos.html" class="inline-flex items-center gap-2 bg-[#1b803a] hover:bg-green-700 text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Ver Catálogo
+            </a>
+        </article>
+    </div>
+</main>
+
+<!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
+<div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
+    <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
+        <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <p class="text-sm font-black leading-tight">Asistente Casatek</p>
+                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                </div>
+            </div>
+            <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+            <div class="flex">
+                <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
+                    ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
+                </p>
+            </div>
+        </div>
+        <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
+                   class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+            <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </form>
+    </div>
+    <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+</div>
+<script>
+(function () {
+    var panel = document.getElementById('chat-panel');
+    function toggle() {
+        panel.classList.toggle('hidden');
+        panel.classList.toggle('flex');
+        if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
+    }
+    document.getElementById('chat-toggle').addEventListener('click', toggle);
+    document.getElementById('chat-close').addEventListener('click', toggle);
+    // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
+})();
+</script>
+
+<footer class="bg-[#111111] text-white pt-10 pb-8 border-t-4 border-[#22C55E] mt-10">
+    <div class="max-w-7xl mx-auto px-4 md:px-12 text-center space-y-2">
+        <a href="index.html" class="text-2xl font-black tracking-tight">CASA<span class="text-[#22C55E]">TEK</span></a>
+        <p class="text-xs text-gray-400">Calle Colombia Nro. 218, Zona San Pedro, La Paz - Bolivia · 76216837 - 77297541 · casatekbolivia@gmail.com</p>
+        <p class="text-xs text-gray-500">&copy; <span id="footer-year"></span> Casatek Bolivia. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script>
+const CART_KEY = 'casatek_carrito';
+
+function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmt(n) {
+    return parseFloat(n || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function leer(k, def) { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? def; } catch { return def; } }
+
+const token = localStorage.getItem('token');
+const user  = leer('user', null);
+const rank  = leer('rank', null);
+
+// Sin sesión: volver al login y regresar luego aquí
+if (!token || !user) window.location.href = 'iniciarsesion.html?redirect=MisTickets.html';
+
+// Los tickets se guardan por ID de usuario: cada persona ve solo los suyos
+const TICKETS_KEY = 'casatek_tickets_' + (user ? user.id : 'anon');
+
+function getTickets() { return leer(TICKETS_KEY, []); }
+
+function cerrarSesion() {
+    fetch('/api/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' } })
+        .catch(() => {})
+        .finally(() => {
+            ['token','user','roles','rank',CART_KEY].forEach(k => localStorage.removeItem(k));
+            window.location.href = 'index.html';
+        });
+}
+
+function pintarUsuario() {
+    const inicial = (user.name || 'U')[0].toUpperCase();
+    document.getElementById('avatar-inicial').textContent = inicial;
+    document.getElementById('nav-username').textContent   = user.name?.split(' ')[0] ?? 'Usuario';
+    document.getElementById('hd-avatar').textContent      = inicial;
+    document.getElementById('hd-nombre').textContent      = user.name  ?? '-';
+    document.getElementById('hd-email').textContent       = user.email ?? '-';
+    document.getElementById('hd-id').textContent          = 'ID Usuario: ' + user.id;
+    if (rank?.name) {
+        const r = document.getElementById('hd-rango');
+        r.textContent = '🏅 ' + rank.name;
+        r.classList.remove('hidden');
+    }
+}
+
+function formatoFecha(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' }) + ' · ' +
+           d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+}
+
+function crearTicket(t, index) {
+    const li = document.createElement('li');
+    li.className = 'ticket-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden';
+    li.style.animationDelay = (index * 0.07) + 's';
+
+    const filas = t.items.map(i => `
+        <tr class="border-b border-gray-50 dark:border-gray-700 last:border-0">
+            <td class="py-3 pr-2">
+                <p class="font-black text-gray-900 dark:text-white leading-tight">${escapeHtml(i.nombre)}</p>
+                ${i.marca ? `<p class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-widest">${escapeHtml(i.marca)}</p>` : ''}
+            </td>
+            <td class="py-3 text-center font-bold text-gray-700 dark:text-gray-200">${i.cantidad}</td>
+            <td class="py-3 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">Bs. ${fmt(i.precio)}</td>
+            <td class="py-3 text-right font-black text-gray-900 dark:text-white whitespace-nowrap">Bs. ${fmt(i.precio * i.cantidad)}</td>
+        </tr>`).join('');
+
+    li.innerHTML = `
+        <div class="bg-[#111827] text-white px-6 py-4 flex flex-wrap justify-between items-center gap-2">
+            <div>
+                <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase">Ticket</p>
+                <p class="font-black text-lg">#${escapeHtml(t.id)}</p>
+            </div>
+            <p class="text-xs text-gray-300"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(formatoFecha(t.fecha))}</p>
+        </div>
+
+        <div class="px-6 py-5">
+            <h2 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-3">Datos del cliente</h2>
+            <dl class="grid sm:grid-cols-2 gap-3 text-sm">
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">ID Usuario</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.userId)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Nombre</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.nombre)}</dd></div>
+            </dl>
+        </div>
+
+        <div class="ticket-divider mx-6"></div>
+
+        <div class="px-6 py-5">
+            <h2 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-3">Detalle de productos</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-[10px] uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-gray-700">
+                            <th class="text-left pb-2 font-bold">Producto</th>
+                            <th class="text-center pb-2 font-bold">Cantidad</th>
+                            <th class="text-right pb-2 font-bold">Precio Unit.</th>
+                            <th class="text-right pb-2 font-bold">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>${filas}</tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="ticket-divider mx-6"></div>
+
+        <div class="px-6 py-5 flex justify-between items-end">
+            <p class="text-base font-black text-gray-800 dark:text-white">Precio Total</p>
+            <div class="total-price text-right">
+                <span class="text-sm font-semibold text-gray-400 mr-1">Bs.</span>
+                <span class="text-3xl font-black text-[#22C55E]">${fmt(t.total)}</span>
+            </div>
+        </div>`;
+    return li;
+}
+
+// Normaliza un ticket venido de la API (si existe) al formato local
+function normalizarApi(t) {
+    const items = (t.items || t.details || []).map(i => ({
+        nombre:   i.product?.name ?? i.nombre ?? i.name ?? 'Producto',
+        marca:    i.product?.brand?.name ?? i.marca ?? '',
+        cantidad: Number(i.quantity ?? i.cantidad ?? 1),
+        precio:   parseFloat(i.price ?? i.price_when_added ?? i.precio ?? 0),
+    }));
+    return {
+        id:     t.id,
+        fecha:  t.created_at ?? t.fecha,
+        userId: t.user_id ?? user.id,
+        nombre: t.user?.name ?? user.name,
+        items,
+        total:  parseFloat(t.total ?? items.reduce((a, i) => a + i.precio * i.cantidad, 0)),
+    };
+}
+
+async function cargarTickets() {
+    let tickets = getTickets();
+
+    // Si el backend ya expone /api/tickets (filtrado por usuario autenticado), se usa
+    try {
+        const res = await fetch('/api/tickets', { headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token } });
+        if (res.status === 401) {
+            ['token','user','roles','rank'].forEach(k => localStorage.removeItem(k));
+            window.location.href = 'iniciarsesion.html?redirect=MisTickets.html';
+            return;
+        }
+        if (res.ok) {
+            const data = await res.json();
+            const lista = data.datos ?? data.data ?? data;
+            if (Array.isArray(lista)) tickets = lista.map(normalizarApi);
+        }
+    } catch (e) { /* sin API: se usan los tickets locales */ }
+
+    // Seguridad extra: solo tickets de este usuario
+    tickets = tickets.filter(t => String(t.userId) === String(user.id))
+                     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    const lista = document.getElementById('tickets-list');
+    lista.innerHTML = '';
+    document.getElementById('tickets-counter').textContent =
+        tickets.length + ' ticket' + (tickets.length !== 1 ? 's' : '');
+
+    if (tickets.length === 0) document.getElementById('empty-state').classList.remove('hidden');
+    else tickets.forEach((t, i) => lista.appendChild(crearTicket(t, i)));
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (!user) return;
+    pintarUsuario();
+    cargarTickets();
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    const icon = document.getElementById('theme-icon');
+    if (document.documentElement.classList.contains('dark')) icon.classList.replace('fa-moon', 'fa-sun');
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+        icon.classList.replace(dark ? 'fa-moon' : 'fa-sun', dark ? 'fa-sun' : 'fa-moon');
+    });
+});
+</script>
+</body>
+</html>

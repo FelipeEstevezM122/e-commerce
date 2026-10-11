@@ -35,7 +35,6 @@ Route::get('/nosotros',             fn() => view('nosotros'))->name('nosotros');
 Route::get('/contactanos',          fn() => view('contactanos'))->name('contactanos');
 Route::get('/iniciarsesion',        fn() => view('iniciarsesion'))->name('iniciarsesion');
 Route::get('/carrito',              fn() => view('carrito'))->name('carrito');
-Route::get('/mis-pedidos',          fn() => view('mis-pedidos'))->name('mis_pedidos');
 Route::get('/registro',             fn() => view('registro'))->name('registro');
 Route::get('/recuperar_contrasena', fn() => view('recuperar_contrasena'))->name('recuperar_contrasena');
 

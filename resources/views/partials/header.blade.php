@@ -1,8 +1,21 @@
 <header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
 
-    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-center md:justify-between items-center gap-1 font-medium tracking-wide text-center md:text-left">
-        <span>Ordene antes de las 16:30 pm, reciba su pedido hoy</span>
-        <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
+    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
+        <span>
+            Ordene antes de las 16:30 pm, reciba su pedido hoy -
+            <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
+        </span>
+        <span class="flex items-center gap-6 text-white text-sm">
+            <span class="flex items-center gap-4">
+                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+            </span>
+            <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
+                <span>esp</span>
+                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </span>
+        </span>
     </p>
 
     <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
@@ -24,9 +37,7 @@
                     <a href="{{ url('/productos') }}" class="hover:text-[#22C55E] transition-colors {{ Request::is('productos') ? 'text-[#22C55E]' : '' }}">PRODUCTOS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 {{ Request::is('productos') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                 </li>
-
-
-                 <li class="relative group">
+                <li class="relative group">
                     <a href="{{ url('/nosotros') }}" class="hover:text-[#22C55E] transition-colors {{ Request::is('nosotros') ? 'text-[#22C55E]' : '' }}">NOSOTROS</a>
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 {{ Request::is('nosotros') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                 </li>
@@ -35,7 +46,24 @@
                     <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 {{ Request::is('contactanos') ? 'w-full' : 'w-0 group-hover:w-full' }}"></span>
                 </li>
 
-                <!-- INICIAR SESIÓN / PERFIL  -->
+                <!-- MANUALES -->
+                <li class="relative group">
+                    <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
+                        MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                        <a href="{{ asset('manuales/Manual técnico.pdf') }}" download
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
+                        </a>
+                        <a href="{{ asset('manuales/Manual de usuario.pdf') }}" download
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
+                        </a>
+                    </div>
+                </li>
+
+                 <!-- INICIAR SESIÓN / PERFIL  -->
                 <li class="relative" id="nav-auth-desktop">
                     <a id="btn-login-desktop" href="{{ url('/iniciarsesion') }}"
                        class="hover:text-[#22C55E] transition-colors {{ Request::is('iniciarsesion') ? 'text-[#22C55E]' : '' }}">
@@ -60,6 +88,7 @@
                                 <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
                             </div>
 
+                           
                             <button onclick="abrirModalPerfil()"
                                     class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
@@ -67,10 +96,6 @@
                             <a href="{{ url('/carrito') }}"
                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
-                            </a>
-                            <a href="{{ url('/mis-pedidos') }}"
-                               class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-receipt w-4"></i> Mis pedidos
                             </a>
                             <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                                 <button onclick="cerrarSesion()"
@@ -81,7 +106,22 @@
                         </div>
                     </div>
                 </li>
+
+                <li class="relative group">
+                    <a href="{{ url('/carrito') }}" class="text-lg hover:text-[#22C55E] transition-colors">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </a>
+                </li>
+                <li class="relative group">
+                    <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    </button>
+                </li>
             </ul>
+
+            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
+                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
+            </button>
             <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -109,7 +149,6 @@
                 <a href="{{ url('/nosotros') }}" class="block text-lg font-bold {{ Request::is('nosotros') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Nosotros</a>
                 <a href="{{ url('/contactanos') }}" class="block text-lg font-bold {{ Request::is('contactanos') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Contáctanos</a>
                 <a href="{{ url('/carrito') }}" class="block text-lg font-bold {{ Request::is('carrito') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Carrito</a>
-                <a href="{{ url('/mis-pedidos') }}" class="block text-lg font-bold {{ Request::is('mis-pedidos') ? 'text-[#22C55E]' : 'text-white' }} hover:text-[#22C55E] transition-colors">Mis pedidos</a>
 
                 <!-- Manuales mobile -->
                 <div class="space-y-2 pt-1">
@@ -139,12 +178,50 @@
                     <button onclick="cerrarSesion()" class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors">Cerrar sesión</button>
                 </div>
 
+                <div class="pt-3">
+                    <button id="theme-toggle-mobile" class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
+                        <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
+                        <span>Modo Oscuro</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-[#22C55E] text-2xl animate-pulse"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <h3 class="text-xl font-extrabold tracking-tight">Horarios de trabajo</h3>
+                </div>
+                <div class="space-y-1 font-medium pl-9">
+                    <p class="text-xs text-gray-400">Lunes a Viernes</p>
+                    <p class="text-sm text-gray-200">9:00 - 13:00 y de 14:30 - 19:00</p>
+                </div>
+                <div class="space-y-1 font-medium pt-2 pl-9">
+                    <p class="text-xs text-gray-400">Sábados</p>
+                    <p class="text-sm text-gray-200">9:00 - 13:00</p>
+                </div>
+            </div>
+            <div class="mt-8 space-y-4">
+                <h3 class="text-xl font-extrabold tracking-tight pl-9 md:pl-0">Contactos</h3>
+                <div class="space-y-1 font-medium pl-9">
+                    <p class="text-xs text-gray-400">Linea de Soporte:</p>
+                    <p class="text-sm text-gray-200">76572358</p>
+                </div>
+                <div class="space-y-1 font-medium pt-2 pl-9">
+                    <p class="text-xs text-gray-400">Dirección:</p>
+                    <p class="text-sm text-gray-200 leading-relaxed">Calle Colombia Nro. 218<br>Zona San Pedro, La Paz - Bolivia</p>
+                </div>
             </div>
         </div>
-
-        <div class="border-t border-gray-800/60 pt-6 mt-8 text-center space-y-2">
-            <p class="text-xs text-gray-500 tracking-widest uppercase">Pedidos</p>
-            <p class="text-sm font-bold text-[#22C55E]">76216837 - 77297541</p>
+        <div class="mt-8 pt-6 border-t border-gray-800/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-[1px] bg-gray-500"></span>
+                <span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Siguenos</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
         </div>
     </div>
 </header>
@@ -421,14 +498,51 @@
         if (e.target === this) cerrarModalPerfil();
     });
 
-
     document.addEventListener('DOMContentLoaded', function () {
+
         inicializarNavAuth();
 
+        const openSidebarBtn    = document.getElementById('btn-open-sidebar');
         const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
         const closeBtn          = document.getElementById('btn-close-sidebar');
         const overlay           = document.getElementById('sidebar-overlay');
         const panel             = document.getElementById('sidebar-panel');
+        const themeToggle       = document.getElementById('theme-toggle');
+        const themeIcon         = document.getElementById('theme-icon');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        const themeIconMobile   = document.getElementById('theme-icon-mobile');
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            if (themeIcon)       themeIcon.classList.replace('fa-moon', 'fa-sun');
+            if (themeIconMobile) themeIconMobile.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+
+        if (themeToggleMobile) {
+            themeToggleMobile.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    if (themeIcon)       themeIcon.classList.replace('fa-moon', 'fa-sun');
+                    if (themeIconMobile) themeIconMobile.classList.replace('fa-moon', 'fa-sun');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    if (themeIcon)       themeIcon.classList.replace('fa-sun', 'fa-moon');
+                    if (themeIconMobile) themeIconMobile.classList.replace('fa-sun', 'fa-moon');
+                }
+            });
+        }
 
         function openSidebar() {
             overlay.classList.remove('hidden');
@@ -438,6 +552,7 @@
             }, 20);
         }
 
+        if (openSidebarBtn)    openSidebarBtn.addEventListener('click', openSidebar);
         if (openMenuMobileBtn) openMenuMobileBtn.addEventListener('click', openSidebar);
         if (closeBtn)          closeBtn.addEventListener('click', closeSidebarFn);
         if (overlay)           overlay.addEventListener('click', closeSidebarFn);
