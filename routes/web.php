@@ -10,6 +10,8 @@ use App\Http\Controllers\RankController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CatalogoController;
+//para chatbot
+use App\Http\Controllers\ChatbotController;
 
 //1. LOGIN / LOGOUT DE SESIÓN (para el panel admin blade)
 Route::post('/login-admin', function (Request $request) {
@@ -72,3 +74,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/tickets',               [AdminController::class, 'tickets'])            ->name('tickets.index');
     Route::post('/orders/{order}/ticket',[TicketController::class, 'generate'])          ->name('tickets.generate');
 });
+
+//4. RUTAS PARA EL CHATBOT (vistas blade, sin autenticación)
+Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
