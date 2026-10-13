@@ -367,13 +367,12 @@
                 <option value="">Todas las categorías</option>
             </select>
 
-            <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
                 <div class="flex items-center gap-1.5">
                     <input id="precioMin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. mín" aria-label="Precio mínimo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
                     <span class="text-gray-400 text-sm">–</span>
                     <input id="precioMax" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. máx" aria-label="Precio máximo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
                 </div>
-                <p id="precioError" class="hidden text-red-500 text-[11px] mt-1 font-semibold"></p>
             </div>
 
             <select id="brandSelect" class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[130px]">
@@ -421,6 +420,13 @@
             <i class="fa-solid fa-cart-shopping text-sm"></i> Carrito
             <span id="cartBadge" class="bg-[#22C55E] text-white text-[10px] font-extrabold rounded-full flex items-center justify-center h-5 px-1.5">0</span>
         </button>
+    </div>
+
+    <div>
+        <div id="precioAlert" role="alert" aria-live="assertive" class="hidden items-center gap-3 bg-red-50 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 rounded-xl px-4 py-3 text-sm font-bold shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation text-base"></i>
+            <span id="precioError"></span>
+        </div>
     </div>
 
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-2">
@@ -482,7 +488,7 @@
 </div>
 
 
-<!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
+<!--BURBUJA DE CHAT (estática; luego se conectará el agente de IA) -->
 <div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
     <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
         <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
@@ -617,7 +623,6 @@ async function cargarProductos() {
     grid.innerHTML = '<p class="col-span-4 text-center py-20 text-gray-400">Cargando productos...</p>';
     try {
         let todos = [], url = API_URL;
-        // Laravel pagina de 15 en 15: recorremos todas las páginas
         while (url) {
             const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -764,14 +769,15 @@ function renderPaginador(totalPages) {
 const minInp = document.getElementById('precioMin');
 const maxInp = document.getElementById('precioMax');
 const precioErr = document.getElementById('precioError');
+const precioAlert = document.getElementById('precioAlert');
+const setAlerta = msg => { precioErr.textContent = msg; precioAlert.classList.toggle('hidden', !msg); precioAlert.classList.toggle('flex', !!msg); };
 
-// Devuelve {min,max} o null si hay error (y lo muestra)
 function leerRangoPrecio() {
     const rawMin = minInp.value.trim(), rawMax = maxInp.value.trim();
     [minInp, maxInp].forEach(i => i.classList.remove('border-red-500'));
-    precioErr.classList.add('hidden');
+    setAlerta('');
     const fallo = (msg, ...inps) => {
-        precioErr.textContent = msg; precioErr.classList.remove('hidden');
+        setAlerta(msg);
         inps.forEach(i => i.classList.add('border-red-500'));
         return null;
     };
@@ -780,7 +786,6 @@ function leerRangoPrecio() {
     if (rawMin !== '') { if (!valido(rawMin)) return fallo('El precio mínimo debe ser un número positivo de hasta 4 dígitos (0–9999).', minInp); min = parseInt(rawMin, 10); }
     if (rawMax !== '') { if (!valido(rawMax)) return fallo('El precio máximo debe ser un número positivo de hasta 4 dígitos (0–9999).', maxInp); max = parseInt(rawMax, 10); }
     if (min !== null && max !== null && min > max) return fallo('El precio mínimo no puede ser mayor al máximo.', minInp, maxInp);
-    // Solo máximo -> mínimo 0; solo mínimo -> sin tope superior
     if (min === null && max !== null) min = 0;
     return { min, max };
 }
@@ -799,18 +804,15 @@ document.getElementById('searchInput').addEventListener('keydown', e => { if (e.
 catSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
 brandSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
 [minInp, maxInp].forEach(i => {
-    // Bloquea -, +, ., ",", e y cualquier carácter que no sea dígito
     i.addEventListener('keydown', e => {
         if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
         if (!/^\d$/.test(e.key)) e.preventDefault();
     });
-    // Limpia pegados/autocompletado: solo dígitos, máximo 4
     i.addEventListener('input', () => {
         const limpio = i.value.replace(/\D/g, '').slice(0, 4);
         if (i.value !== limpio) i.value = limpio;
     });
-    i.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnBuscar').click(); });
-    i.addEventListener('change', () => document.getElementById('btnBuscar').click());
+    i.addEventListener('input', () => { setAlerta(''); i.classList.remove('border-red-500'); });
 });
 document.getElementById('btnLimpiar').addEventListener('click', () => {
     estado = { q:'', category:'', brand:'', min:null, max:null, orden:'default', reco:'', page:1 };
@@ -863,7 +865,7 @@ document.querySelectorAll('.reco-opt').forEach(btn => {
     });
 });
 
-// ══════════ CARRITO (localStorage) ══════════
+//CARRITO
 const CART_KEY = 'casatek_carrito';
 function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
 function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
@@ -962,7 +964,7 @@ document.getElementById('modalCartBtn').addEventListener('click', () => {
     if (productoModal.stock > 0) cerrarModal(null);
 });
 
-// ══════════ TEMA OSCURO / SIDEBAR / INICIO ══════════
+//TEMA OSCURO / SIDEBAR / INICIO
 document.addEventListener('DOMContentLoaded', function () {
     const openSidebarBtn = document.getElementById('btn-open-sidebar');
     const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
@@ -1023,7 +1025,7 @@ function inicializarNavAuth() {
         const rank  = JSON.parse(localStorage.getItem('rank') || 'null');
 
         if (token && user) {
-            // Desktop
+            //Desktop
             document.getElementById('btn-login-desktop').classList.add('hidden');
             document.getElementById('btn-perfil-desktop').classList.remove('hidden');
 
@@ -1034,7 +1036,7 @@ function inicializarNavAuth() {
             document.getElementById('dd-email').textContent          = user.email ?? '-';
             document.getElementById('dd-rango').textContent          = rank?.name ? '🏅 ' + rank.name : '';
 
-            // Mobile
+            //Mobile
             document.getElementById('mobile-login').classList.add('hidden');
             document.getElementById('mobile-perfil').classList.remove('hidden');
             document.getElementById('mobile-avatar').textContent = inicial;
@@ -1082,7 +1084,7 @@ function inicializarNavAuth() {
         box.classList.add('scale-95');
     }
 
-    //  Guardar perfil
+    //Guardar perfil
     async function guardarPerfil() {
         const token = localStorage.getItem('token');
         if (!token) return;
@@ -1152,7 +1154,7 @@ function inicializarNavAuth() {
         }
     }
 
-    // ── Cerrar sesión ──
+    //Cerrar sesión
     async function cerrarSesion() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -1171,7 +1173,7 @@ function inicializarNavAuth() {
         window.location.href = 'index.html';
     }
 
-    // ── Cerrar modal al click fuera ──
+    //Cerrar modal al click fuera
     document.getElementById('modalPerfil').addEventListener('click', function(e) {
         if (e.target === this) cerrarModalPerfil();
     });
