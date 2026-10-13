@@ -367,6 +367,15 @@
                 <option value="">Todas las categorías</option>
             </select>
 
+            <div class="flex flex-col">
+                <div class="flex items-center gap-1.5">
+                    <input id="precioMin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. mín" aria-label="Precio mínimo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
+                    <span class="text-gray-400 text-sm">–</span>
+                    <input id="precioMax" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. máx" aria-label="Precio máximo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
+                </div>
+                <p id="precioError" class="hidden text-red-500 text-[11px] mt-1 font-semibold"></p>
+            </div>
+
             <select id="brandSelect" class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[130px]">
                 <option value="">Todas las marcas</option>
             </select>
@@ -627,7 +636,7 @@ async function cargarProductos() {
 }
 
 
-let estado = { q:'', category:'', brand:'', orden:'default', reco:'', page:1 };
+let estado = { q:'', category:'', brand:'', min:null, max:null, orden:'default', reco:'', page:1 };
 const POR_PAGINA = 8;
 
 function filtrarProductos() {
@@ -635,7 +644,8 @@ function filtrarProductos() {
         const matchQ = !estado.q || p.nombre.toLowerCase().includes(estado.q.toLowerCase());
         const matchC = !estado.category || p.categoria === estado.category;
         const matchB = !estado.brand || p.marca === estado.brand;
-        return matchQ && matchC && matchB;
+        const matchP = (estado.min === null || p.precio >= estado.min) && (estado.max === null || p.precio <= estado.max);
+        return matchQ && matchC && matchB && matchP;
     });
     if (estado.reco && list.length) {
         const precios = list.map(x => x.precio).sort((a,b) => a - b);
@@ -662,6 +672,12 @@ function renderActiveFilters() {
     if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${escapeHtml(estado.q)}"</span>`; }
     if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${escapeHtml(estado.category)}</span>`; }
     if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${escapeHtml(estado.brand)}</span>`; }
+    if (estado.min !== null || estado.max !== null) {
+        hay = true;
+        const txt = estado.min !== null && estado.max !== null ? `Bs. ${estado.min} – ${estado.max}`
+                  : estado.min !== null ? `Desde Bs. ${estado.min}` : `Hasta Bs. ${estado.max}`;
+        cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-coins text-[10px]"></i> ${txt}</span>`;
+    }
     if (estado.reco) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-thumbs-up text-[10px]"></i> Recomendación: ${estado.reco === 'bajo' ? 'precio bajo' : 'precio alto'}</span>`; }
     btnLimpiar.classList.toggle('hidden', !hay);
     btnLimpiar.classList.toggle('flex', hay);
@@ -745,7 +761,34 @@ function renderPaginador(totalPages) {
     txt.textContent = `Página ${estado.page} de ${totalPages}`;
 }
 
+const minInp = document.getElementById('precioMin');
+const maxInp = document.getElementById('precioMax');
+const precioErr = document.getElementById('precioError');
+
+// Devuelve {min,max} o null si hay error (y lo muestra)
+function leerRangoPrecio() {
+    const rawMin = minInp.value.trim(), rawMax = maxInp.value.trim();
+    [minInp, maxInp].forEach(i => i.classList.remove('border-red-500'));
+    precioErr.classList.add('hidden');
+    const fallo = (msg, ...inps) => {
+        precioErr.textContent = msg; precioErr.classList.remove('hidden');
+        inps.forEach(i => i.classList.add('border-red-500'));
+        return null;
+    };
+    let min = null, max = null;
+    const valido = v => /^\d{1,4}$/.test(v);
+    if (rawMin !== '') { if (!valido(rawMin)) return fallo('El precio mínimo debe ser un número positivo de hasta 4 dígitos (0–9999).', minInp); min = parseInt(rawMin, 10); }
+    if (rawMax !== '') { if (!valido(rawMax)) return fallo('El precio máximo debe ser un número positivo de hasta 4 dígitos (0–9999).', maxInp); max = parseInt(rawMax, 10); }
+    if (min !== null && max !== null && min > max) return fallo('El precio mínimo no puede ser mayor al máximo.', minInp, maxInp);
+    // Solo máximo -> mínimo 0; solo mínimo -> sin tope superior
+    if (min === null && max !== null) min = 0;
+    return { min, max };
+}
+
 document.getElementById('btnBuscar').addEventListener('click', () => {
+    const rango = leerRangoPrecio();
+    if (!rango) return;
+    estado.min = rango.min; estado.max = rango.max;
     estado.q = document.getElementById('searchInput').value.trim();
     estado.category = catSel.value;
     estado.brand = brandSel.value;
@@ -755,10 +798,26 @@ document.getElementById('btnBuscar').addEventListener('click', () => {
 document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnBuscar').click(); });
 catSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
 brandSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
+[minInp, maxInp].forEach(i => {
+    // Bloquea -, +, ., ",", e y cualquier carácter que no sea dígito
+    i.addEventListener('keydown', e => {
+        if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
+        if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    // Limpia pegados/autocompletado: solo dígitos, máximo 4
+    i.addEventListener('input', () => {
+        const limpio = i.value.replace(/\D/g, '').slice(0, 4);
+        if (i.value !== limpio) i.value = limpio;
+    });
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnBuscar').click(); });
+    i.addEventListener('change', () => document.getElementById('btnBuscar').click());
+});
 document.getElementById('btnLimpiar').addEventListener('click', () => {
-    estado = { q:'', category:'', brand:'', orden:'default', reco:'', page:1 };
+    estado = { q:'', category:'', brand:'', min:null, max:null, orden:'default', reco:'', page:1 };
     document.getElementById('searchInput').value = '';
     catSel.value = ''; brandSel.value = '';
+    minInp.value = ''; maxInp.value = '';
+    leerRangoPrecio();
     renderProductos();
 });
 
