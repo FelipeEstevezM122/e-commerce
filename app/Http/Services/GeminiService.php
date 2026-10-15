@@ -16,8 +16,8 @@ class GeminiService
         }
 
         // Usamos el nombre base limpio de la versión flash
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$apiKey}";
-
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={$apiKey}";
+        //$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key={$apiKey}";
         $response = Http::post($url, [
             'contents' => [
                 [
