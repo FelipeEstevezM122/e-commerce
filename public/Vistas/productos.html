@@ -350,13 +350,17 @@
 <main class="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-5 border-gray-200 dark:border-gray-700">
+    <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-5 border-gray-200 dark:border-gray-700">
         <div class="flex items-center gap-3 shrink-0">
             <span class="w-2 h-6 bg-[#22C55E] rounded-full"></span>
             <h2 class="text-2xl font-bold tracking-tight">Nuestro Catálogo de Productos</h2>
+            <p class="absolute right-0 top-2 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">
+    HU-14
+</p>
         </div>
 
         <div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
+            <p class="w-full text-center text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">HU-02</p>
             <div class="relative flex-1 min-w-[180px]">
                 <input id="searchInput" type="text" placeholder="Buscar cámaras, sensores, alarmas..."
                        class="w-full pl-11 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none text-sm transition-all shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400">
@@ -367,7 +371,9 @@
                 <option value="">Todas las categorías</option>
             </select>
 
-            <div class="flex items-center gap-1.5">
+            
+            <div class="flex items-center gap-1.5 relative">
+                <p class="absolute -top-[30px] left-1/2 -translate-x-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide whitespace-nowrap">HU-08</p>
                 <div class="flex items-center gap-1.5">
                     <input id="precioMin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. mín" aria-label="Precio mínimo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
                     <span class="text-gray-400 text-sm">–</span>
@@ -375,9 +381,16 @@
                 </div>
             </div>
 
-            <select id="brandSelect" class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[130px]">
-                <option value="">Todas las marcas</option>
-            </select>
+            <div class="flex flex-col items-center">
+    <select id="brandSelect"
+        class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[130px]">
+        <option value="">Todas las marcas</option>
+    </select>
+
+    <p class="mt-1 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">
+        HU-12
+    </p>
+</div>
 
             <div class="relative">
                 <button type="button" id="filterBtn" class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
@@ -434,8 +447,11 @@
         <div id="activeFilters" class="flex items-center gap-2 flex-wrap"></div>
     </div>
 
-    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    <p class="w-full text-center text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide mb-4">
+    HU-20
+</p>
 
+<div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
     <div id="paginador" class="flex items-center justify-center gap-2 pt-4 flex-wrap"></div>
     <p id="paginaTexto" class="text-center text-xs text-gray-400 dark:text-gray-500"></p>
 
@@ -523,6 +539,7 @@
     </button>
 </div>
 <script>
+    
 (function () {
     var panel = document.getElementById('chat-panel');
     function toggle() {
@@ -535,6 +552,7 @@
     // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
 })();
 </script>
+<script src="/js/chat.js"></script>
 
 <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -887,15 +905,55 @@ function mostrarToastError(msg) {
     t.style.background = '#7f1d1d'; t.classList.add('show');
     clearTimeout(t._timer); t._timer = setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 2400);
 }
-function agregarAlCarrito(p) {
+async function agregarAlCarrito(p) {
     if (p.stock <= 0) { mostrarToastError('Este producto no tiene stock disponible'); return; }
+
+    const token = localStorage.getItem('token');
+    // Verificamos si el usuario inició sesión
+    if (!token) {
+        mostrarToastError('Debes iniciar sesión para agregar al carrito');
+        setTimeout(() => window.location.href = 'iniciarsesion.html', 1500);
+        return;
+    }
+
     const carrito = getCarrito();
     const existe = carrito.find(i => i.id === p.id);
     const yaEnCar = existe ? existe.cantidad : 0;
+
     if (yaEnCar >= p.stock) { mostrarToastError('Ya tienes el máximo disponible (' + p.stock + ' unid.)'); return; }
-    if (existe) existe.cantidad++;
-    else carrito.push({ id:p.id, nombre:p.nombre, marca:p.marca, precio:p.precio, descripcion:p.descripcion, img:p.img, cantidad:1 });
-    saveCarrito(carrito); actualizarBadge(); mostrarToast(p.nombre);
+
+    try {
+        // 1. Enviamos el producto a la API
+        const res = await fetch('http://localhost:8000/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ product_id: p.id, quantity: 1 })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        // Si el backend lo rechaza (ej. error de stock), detenemos el proceso
+        if (!res.ok) {
+            mostrarToastError(data.message || 'Error al guardar en el servidor');
+            return;
+        }
+
+        // 2. Si el servidor respondió OK, actualizamos la vista localmente
+        if (existe) existe.cantidad++;
+        else carrito.push({ id:p.id, nombre:p.nombre, marca:p.marca, precio:p.precio, descripcion:p.descripcion, img:p.img, cantidad:1 });
+
+        saveCarrito(carrito);
+        actualizarBadge();
+        mostrarToast(p.nombre);
+
+    } catch (error) {
+        console.error(error);
+        mostrarToastError('Error de conexión con el servidor');
+    }
 }
 document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = 'carrito.html'; });
 

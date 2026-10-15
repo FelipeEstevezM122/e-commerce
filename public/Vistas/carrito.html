@@ -5,22 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casatek - Mi Carrito</title>
 
-    <!-- Enlaces globales del sitio -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class'
         }
     </script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
     <style>
     .carrito-page { font-family: 'DM Sans', sans-serif; }
-    .carrito-page h1, .total-price { font-family: 'DM Serif Display', serif; }
+    .carrito-page h1, .total-price { font-family: 'Poppins', sans-serif; }
 
     @keyframes slideIn {
         from { opacity: 0; transform: translateY(14px); }
@@ -82,12 +79,10 @@
     }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
+<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden min-h-screen flex flex-col">
 
-    
     <header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
-
-        <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
+        <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
             <span>
                 Ordene antes de las 16:30 pm, reciba su pedido hoy -
                 <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
@@ -105,92 +100,74 @@
             </span>
         </p>
 
-        <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
-                <img src="images/logoCasatek.png" alt="Logo Casatek"
-                    class="h-14 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
-                <span class="font-['Poppins'] tracking-tight text-4xl font-black">
+        <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-8 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-xl font-black tracking-tight text-[#111111] dark:text-white group shrink-0">
+                <img src="images/logoCasatek.png" alt="Logo Casatek" class="h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
+                <span class="font-['Poppins'] tracking-tight text-3xl font-black">
                     CASA<span class="text-[#22C55E]">TEK</span>
                 </span>
             </a>
 
-            <div class="flex items-center gap-4 md:gap-8">
-                <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
+            <div class="flex items-center gap-3 lg:gap-5">
+                <ul class="hidden lg:flex items-center gap-4 xl:gap-6 text-xs lg:text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
                     <li class="relative group">
-                        <a href="index.html" class="hover:text-[#22C55E] transition-colors ">INICIO</a>
-                        <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                        <a href="index.html" class="hover:text-[#22C55E] transition-colors py-1">INICIO</a>
+                        <span class="absolute left-0 -bottom-[18px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
                     <li class="relative group">
-                        <a href="productos.html" class="hover:text-[#22C55E] transition-colors ">PRODUCTOS</a>
-                        <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                        <a href="productos.html" class="hover:text-[#22C55E] transition-colors py-1">PRODUCTOS</a>
+                        <span class="absolute left-0 -bottom-[18px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
                     <li class="relative group">
-                        <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors ">NOSOTROS</a>
-                        <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                        <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors py-1">NOSOTROS</a>
+                        <span class="absolute left-0 -bottom-[18px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
                     <li class="relative group">
-                        <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors ">CONTÁCTANOS</a>
-                        <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                        <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors py-1">CONTÁCTANOS</a>
+                        <span class="absolute left-0 -bottom-[18px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
 
-                    <!-- MANUALES -->
                     <li class="relative group">
-                        <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
+                        <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none py-1">
                             MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
                         </button>
                         <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                            <a href="manuales/Manual%20t%C3%A9cnico.pdf" download
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <a href="manuales/Manual%20t%C3%A9cnico.pdf" download class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
                             </a>
-                            <a href="manuales/Manual%20de%20usuario.pdf" download
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                            <a href="manuales/Manual%20de%20usuario.pdf" download class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
                             </a>
                         </div>
                     </li>
 
-                  
                     <li class="relative" id="nav-auth-desktop">
-                        <a id="btn-login-desktop" href="iniciarsesion.html"
-                           class="hover:text-[#22C55E] transition-colors ">
+                        <a id="btn-login-desktop" href="iniciarsesion.html" class="hover:text-[#22C55E] transition-colors py-1">
                             INICIAR SESIÓN
                         </a>
-
-                       
                         <div id="btn-perfil-desktop" class="hidden relative group/perfil">
                             <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
                                 <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
-                                <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
+                                <span id="nav-username" class="max-w-[90px] truncate text-xs lg:text-sm">Usuario</span>
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </button>
-
-                        
                             <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
-
-                          
                                 <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                                     <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
                                     <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
                                     <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
                                 </div>
-
-                           
-                                <button onclick="abrirModalPerfil()"
-                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                <button onclick="abrirModalPerfil()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
                                 </button>
-                                <a href="carrito.html"
-                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                <a href="carrito.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
                                 </a>
-                                <a href="MisTickets.html"
-                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                <a href="MisTickets.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-ticket w-4"></i> Mis tickets
                                 </a>
                                 <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
-                                    <button onclick="cerrarSesion()"
-                                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
+                                    <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
                                         <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
                                     </button>
                                 </div>
@@ -199,31 +176,30 @@
                     </li>
 
                     <li class="relative group">
-                        <a href="carrito.html" class="text-lg text-[#22C55E] transition-colors">
+                        <a href="carrito.html" class="text-base text-[#22C55E] transition-colors p-1">
                             <i class="fa-solid fa-cart-shopping"></i>
                         </a>
                     </li>
                     <li class="relative group">
-                        <a href="MisTickets.html" class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
-                            <i class="fa-solid fa-ticket text-lg"></i> MIS TICKETS
+                        <a href="MisTickets.html" class="flex items-center gap-1 hover:text-[#22C55E] transition-colors py-1">
+                            <i class="fa-solid fa-ticket text-base"></i> <span class="hidden xl:inline">MIS</span> TICKETS
                         </a>
                     </li>
                     <li class="relative group">
-                        <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
+                        <button id="theme-toggle" class="text-base hover:text-[#22C55E] transition-colors p-1">
                             <i id="theme-icon" class="fa-solid fa-moon"></i>
                         </button>
                     </li>
                 </ul>
 
-                <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
+                <button id="btn-open-sidebar" class="hidden lg:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
                     <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
                 </button>
-                <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
+                <button id="btn-open-menu-mobile" class="block lg:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </nav>
-
 
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
         <div id="sidebar-panel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
@@ -237,8 +213,7 @@
                     <h2 class="text-3xl font-black tracking-widest text-white font-['Poppins']">CASA<span class="text-white/90 font-light">TEK</span></h2>
                 </div>
 
-                <!-- Menú mobile -->
-                <div class="block md:hidden mt-8 space-y-4 border-b border-gray-800/60 pb-6">
+                <div class="block lg:hidden mt-8 space-y-4 border-b border-gray-800/60 pb-6">
                     <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
                     <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
                     <a href="productos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Productos</a>
@@ -247,15 +222,12 @@
                     <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
                     <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
 
-                    <!-- Manuales mobile -->
                     <div class="space-y-2 pt-1">
                         <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Manuales</h3>
-                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" download
-                           class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
+                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" download class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
                             <i class="fa-solid fa-file-pdf text-red-400"></i> Manual Técnico
                         </a>
-                        <a href="manuales/Manual%20de%20usuario.pdf" download
-                           class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
+                        <a href="manuales/Manual%20de%20usuario.pdf" download class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
                             <i class="fa-solid fa-file-pdf text-red-400"></i> Manual de Usuario
                         </a>
                     </div>
@@ -298,7 +270,7 @@
                     </div>
                 </div>
                 <div class="mt-8 space-y-4">
-                    <h3 class="text-xl font-extrabold tracking-tight pl-9 md:pl-0">Contactos</h3>
+                    <h3 class="text-xl font-extrabold tracking-tight pl-9 lg:pl-0">Contactos</h3>
                     <div class="space-y-1 font-medium pl-9">
                         <p class="text-xs text-gray-400">Linea de Soporte:</p>
                         <p class="text-sm text-gray-200">76572358</p>
@@ -323,11 +295,8 @@
         </div>
     </header>
 
-    <div id="modalPerfil"
-         class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div id="modalPerfil" class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
         <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-200" id="modalPerfilBox">
-
-            <!-- Header -->
             <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] p-6 text-white relative">
                 <button onclick="cerrarModalPerfil()" class="absolute top-4 right-4 bg-black/30 hover:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-xmark text-sm"></i>
@@ -341,99 +310,66 @@
                     </div>
                 </div>
             </div>
-
-            
             <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
-
-                <div id="perfil-error"  class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl"></div>
-                <div id="perfil-exito"  class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+                <div id="perfil-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl"></div>
+                <div id="perfil-exito" class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
                     <i class="fa-solid fa-circle-check"></i> <span>Datos actualizados correctamente</span>
                 </div>
-
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Nombre completo</label>
                     <div class="relative">
                         <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                        <input type="text" id="perfil-input-nombre" placeholder="Tu nombre"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        <input type="text" id="perfil-input-nombre" placeholder="Tu nombre" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
-
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Correo electrónico</label>
                     <div class="relative">
                         <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                        <input type="email" id="perfil-input-email" placeholder="correo@ejemplo.com"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        <input type="email" id="perfil-input-email" placeholder="correo@ejemplo.com" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
-
-              
                 <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Teléfono <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
                     <div class="relative">
                         <i class="fa-solid fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                        <input type="tel" id="perfil-input-phone" placeholder="591XXXXXXXX"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        <input type="tel" id="perfil-input-phone" placeholder="591XXXXXXXX" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
-
-              
                 <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">WhatsApp <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
                     <div class="relative">
                         <i class="fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                        <input type="tel" id="perfil-input-whatsapp" placeholder="591XXXXXXXX"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                        <input type="tel" id="perfil-input-whatsapp" placeholder="591XXXXXXXX" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
-
-              
                 <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cambiar contraseña <span class="font-normal normal-case">(dejar vacío para no cambiar)</span></p>
-
                     <div class="space-y-3">
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                            <input type="password" id="perfil-input-password" placeholder="Nueva contraseña"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            <input type="password" id="perfil-input-password" placeholder="Nueva contraseña" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                         </div>
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                            <input type="password" id="perfil-input-password-confirm" placeholder="Confirmar nueva contraseña"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            <input type="password" id="perfil-input-password-confirm" placeholder="Confirmar nueva contraseña" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                         </div>
                     </div>
                 </div>
-
             </div>
-
-           
             <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex gap-3">
                 <button onclick="cerrarModalPerfil()" class="flex-1 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     Cancelar
                 </button>
-                <button onclick="guardarPerfil()" id="btn-guardar-perfil"
-                        class="flex-1 bg-[#22C55E] hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                <button onclick="guardarPerfil()" id="btn-guardar-perfil" class="flex-1 bg-[#22C55E] hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar cambios
                 </button>
             </div>
         </div>
     </div>
 
-   
-    <main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="carrito-page max-w-6xl mx-auto px-4 py-10">
-
-            <nav class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-8">
-                <a href="index.html" class="hover:text-[#22C55E] transition-colors">Inicio</a>
-                <span>›</span>
-                <a href="productos.html" class="hover:text-[#22C55E] transition-colors">Productos</a>
-                <span>›</span>
-                <span class="text-[#22C55E] font-semibold">Mi Carrito</span>
-            </nav>
+    <main class="flex-grow pt-8 pb-16 w-full max-w-[1440px] mx-auto px-4 lg:px-12">
+        <div class="carrito-page w-full py-4">
 
             <header class="mb-10">
                 <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase mb-1">Tu compra</p>
@@ -445,29 +381,36 @@
                 </p>
             </header>
 
-            <div class="grid lg:grid-cols-3 gap-8 items-start">
+            <p class="text-center text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide mb-8">
+    HU-21
+</p>
+            <!-- Cambiado: items-stretch en lugar de items-start para forzar la igualdad de alturas -->
+            <div class="grid lg:grid-cols-[1fr_380px] gap-8 items-stretch w-full">
 
-                <section class="lg:col-span-2">
-
-                    <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4 tracking-wide" id="items-counter">
+                <!-- Columna Izquierda: Flex column para que pueda crecer -->
+                <section class="w-full flex flex-col">
+                    <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4 tracking-wide shrink-0" id="items-counter">
                         0 productos en tu carrito
                     </p>
 
-                    <ol class="space-y-4 list-none" id="cart-list"></ol>
+                    <ol class="space-y-4 list-none w-full shrink-0" id="cart-list"></ol>
 
-                    <article id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-12 text-center">
-                        <p class="text-5xl mb-4">🛒</p>
-                        <h2 class="text-lg font-black text-gray-700 dark:text-white mb-2">Tu carrito está vacío</h2>
-                        <p class="text-sm text-gray-400 mb-6">Agrega productos desde el catálogo para comenzar.</p>
-                        <a href="productos.html"
-                           class="inline-flex items-center gap-2 bg-[#1b803a] hover:bg-green-700 text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors">
-                            <i class="fa-solid fa-arrow-left text-xs"></i> Ver Catálogo
-                        </a>
+                    <!-- Modificado: Se envuelve el contenido en un artículo con flex-1 para que se estire al máximo espacio disponible -->
+                    <article id="empty-state" class="hidden w-full flex-1">
+                        <div class="w-full h-full flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-8 text-center min-h-[350px]">
+                            <div class="text-5xl text-gray-400 dark:text-gray-500 mb-4">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </div>
+                            <h2 class="text-xl font-black text-gray-700 dark:text-white mb-2">Tu carrito está vacío</h2>
+                            <p class="text-sm text-gray-400 mb-6">Agrega productos desde el catálogo para comenzar.</p>
+                            <a href="productos.html" class="inline-flex items-center gap-2 bg-[#1b803a] hover:bg-green-700 text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors">
+                                <i class="fa-solid fa-arrow-left text-xs"></i> Ver Catálogo
+                            </a>
+                        </div>
                     </article>
 
-                    <div id="btn-pagar-todo-wrap" class="hidden mt-6">
-                        <button id="btn-pagar-todo"
-                                class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg">
+                    <div id="btn-pagar-todo-wrap" class="hidden mt-6 shrink-0">
+                        <button id="btn-pagar-todo" class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg">
                             <i class="fa-solid fa-qrcode text-lg pointer-events-none"></i>
                             <span class="pointer-events-none">Pagar todo el carrito con QR BCP</span>
                             <span class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg pointer-events-none">
@@ -475,12 +418,11 @@
                             </span>
                         </button>
                     </div>
-
                 </section>
 
-                <aside class="sticky top-8">
-                    <section class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl p-7">
-
+                <!-- Columna Derecha: Se le añade self-start para que no se estire el panel blanco, permitiendo a la vez que defina la altura base -->
+                <aside class="sticky top-28 w-full self-start">
+                    <section class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl p-7 w-full">
                         <h2 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-6">
                             Resumen del pedido
                         </h2>
@@ -520,8 +462,7 @@
                             <span class="pointer-events-none">Pagar todo con QR BCP</span>
                         </button>
 
-                        <a href="productos.html"
-                           class="mt-1 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
+                        <a href="productos.html" class="mt-1 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
                             <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
                             Seguir Comprando
                         </a>
@@ -542,55 +483,43 @@
                                 <i class="fa-brands fa-whatsapp text-[#22C55E] text-base"></i>Soporte
                             </li>
                         </ul>
-
                     </section>
                 </aside>
             </div>
         </div>
 
-         <!-- MODAL QR  -->
+        <!-- MODAL QR -->
         <div id="modalQR" class="modal-qr-wrap">
             <div class="modal-qr-box">
-
                 <div style="background:#003087; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
                     <span style="color:white; font-weight:900; font-size:1.2rem; letter-spacing:.05em;">›BCP›</span>
-                    <button id="btn-cerrar-qr-header"
-                            style="background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; padding:4px 8px;">
+                    <button id="btn-cerrar-qr-header" style="background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; padding:4px 8px;">
                         ✕
                     </button>
                 </div>
-
                 <div style="padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem;">
-
                     <div style="width:100%; background:#f9fafb; border-radius:12px; padding:.5rem 1rem; text-align:center;">
                         <p id="qr-label" style="font-size:11px; color:#9ca3af; font-weight:700; margin:0;"></p>
                         <p id="qr-producto-nombre" style="font-size:13px; font-weight:900; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></p>
                     </div>
-
-                    <div id="qr-container"
-                         style="background:white; padding:12px; border-radius:16px; border:1px solid #e5e7eb; min-width:220px; min-height:220px; display:flex; align-items:center; justify-content:center;">
+                    <div id="qr-container" style="background:white; padding:12px; border-radius:16px; border:1px solid #e5e7eb; min-width:220px; min-height:220px; display:flex; align-items:center; justify-content:center;">
                     </div>
-
                     <div style="text-align:center;">
                         <p style="font-size:10px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.1em; margin:0 0 4px;">Monto a pagar</p>
                         <p style="font-size:2.2rem; font-weight:900; color:#003087; margin:0;">
                             Bs. <span id="qr-monto">0.00</span>
                         </p>
                     </div>
-
                     <div style="width:100%; border-top:1px solid #e5e7eb; padding-top:1rem; text-align:center;">
                         <p style="font-weight:900; font-size:14px; margin:0 0 2px; color:#111827;">Hugo Camilo Cussi Suxo</p>
                         <p style="font-size:12px; color:#9ca3af; margin:0;">No. Cta: 201-52029768-3-02</p>
                         <p style="font-size:12px; color:#9ca3af; margin:0;">Vencimiento: 06/06/2028</p>
                     </div>
-
                     <div style="width:100%; background:#eff6ff; border-radius:12px; padding:.75rem; text-align:center; font-size:12px; color:#1d4ed8;">
                         <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>
                         Escanea desde tu app bancaria. El monto ya está incluido.
                     </div>
-
-                    <button id="btn-cerrar-qr-footer"
-                            style="width:100%; background:#f3f4f6; border:none; border-radius:12px; padding:12px; font-weight:700; font-size:14px; cursor:pointer; color:#374151;">
+                    <button id="btn-cerrar-qr-footer" style="width:100%; background:#f3f4f6; border:none; border-radius:12px; padding:12px; font-weight:700; font-size:14px; cursor:pointer; color:#374151;">
                         Cerrar
                     </button>
                 </div>
@@ -598,57 +527,54 @@
         </div>
     </main>
 
-<!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
-<div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
-    <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
-        <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
-                <div>
-                    <p class="text-sm font-black leading-tight">Asistente Casatek</p>
-                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+    <!-- BURBUJA DE CHAT -->
+    <div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
+        <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
+            <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <p class="text-sm font-black leading-tight">Asistente Casatek</p>
+                        <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                    </div>
+                </div>
+                <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+                <div class="flex">
+                    <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
+                        ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
+                    </p>
                 </div>
             </div>
-            <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
+            <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off" class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
         </div>
-        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
-            <div class="flex">
-                <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
-                    ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
-                </p>
-            </div>
-        </div>
-        <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
-            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
-                   class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
-            <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
-        </form>
+        <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
+            <i class="fa-solid fa-comments"></i>
+        </button>
     </div>
-    <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
-        <i class="fa-solid fa-comments"></i>
-    </button>
-</div>
-<script>
-(function () {
-    var panel = document.getElementById('chat-panel');
-    function toggle() {
-        panel.classList.toggle('hidden');
-        panel.classList.toggle('flex');
-        if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
-    }
-    document.getElementById('chat-toggle').addEventListener('click', toggle);
-    document.getElementById('chat-close').addEventListener('click', toggle);
-    // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
-})();
-</script>
-
-    <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
-        <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        
+    <script>
+    (function () {
+        var panel = document.getElementById('chat-panel');
+        function toggle() {
+            panel.classList.toggle('hidden');
+            panel.classList.toggle('flex');
+            if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
+        }
+        document.getElementById('chat-toggle').addEventListener('click', toggle);
+        document.getElementById('chat-close').addEventListener('click', toggle);
+    })();
+    </script>
+    <script src="/js/chat.js"></script>
+    <footer class="w-full bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E] mt-auto">
+        <div class="max-w-[1440px] mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             <div class="space-y-4">
                 <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
                     CASA<span class="text-[#22C55E]">TEK</span>
@@ -657,7 +583,6 @@
                     Expertos en soluciones de seguridad electrónica, automatización y redes. Comprometidos con la protección y eficiencia de tu hogar y empresa.
                 </p>
             </div>
-
             <div class="space-y-4">
                 <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
@@ -667,7 +592,6 @@
                     <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
                 </ul>
             </div>
-
             <div class="space-y-4 text-sm">
                 <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Soporte</h4>
                 <ul class="space-y-3 text-gray-400">
@@ -685,7 +609,6 @@
                     </li>
                 </ul>
             </div>
-
             <div class="space-y-4">
                 <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Síguenos</h4>
                 <p class="text-xs text-gray-400">Mantente al tanto de las últimas novedades en tecnología.</p>
@@ -696,18 +619,14 @@
                 </div>
             </div>
         </div>
-
-        <div class="max-w-7xl mx-auto px-4 md:px-12 mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+        <div class="max-w-[1440px] mx-auto px-4 md:px-12 mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
             <p>&copy; <span id="footer-year"></span> Casatek Bolivia. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  
     <script>
-
     function closeSidebarFn() {
         const overlay = document.getElementById('sidebar-overlay');
         const panel   = document.getElementById('sidebar-panel');
@@ -716,14 +635,12 @@
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 
-  
     function inicializarNavAuth() {
         const token = localStorage.getItem('token');
         const user  = JSON.parse(localStorage.getItem('user') || 'null');
         const rank  = JSON.parse(localStorage.getItem('rank') || 'null');
 
         if (token && user) {
-            // Desktop
             document.getElementById('btn-login-desktop').classList.add('hidden');
             document.getElementById('btn-perfil-desktop').classList.remove('hidden');
 
@@ -734,7 +651,6 @@
             document.getElementById('dd-email').textContent          = user.email ?? '-';
             document.getElementById('dd-rango').textContent          = rank?.name ? '🏅 ' + rank.name : '';
 
-            // Mobile
             document.getElementById('mobile-login').classList.add('hidden');
             document.getElementById('mobile-perfil').classList.remove('hidden');
             document.getElementById('mobile-avatar').textContent = inicial;
@@ -743,7 +659,6 @@
         }
     }
 
-   
     function abrirModalPerfil() {
         const user = JSON.parse(localStorage.getItem('user') || 'null');
         const rank = JSON.parse(localStorage.getItem('rank') || 'null');
@@ -755,10 +670,10 @@
         document.getElementById('perfil-email-header').textContent   = user.email ?? '-';
         document.getElementById('perfil-rango-header').textContent   = rank?.name ? '🏅 ' + rank.name : '';
 
-        document.getElementById('perfil-input-nombre').value    = user.name     ?? '';
-        document.getElementById('perfil-input-email').value     = user.email    ?? '';
-        document.getElementById('perfil-input-phone').value     = user.phone    ?? '';
-        document.getElementById('perfil-input-whatsapp').value  = user.whatsapp ?? '';
+        document.getElementById('perfil-input-nombre').value     = user.name     ?? '';
+        document.getElementById('perfil-input-email').value      = user.email    ?? '';
+        document.getElementById('perfil-input-phone').value      = user.phone    ?? '';
+        document.getElementById('perfil-input-whatsapp').value   = user.whatsapp ?? '';
         document.getElementById('perfil-input-password').value         = '';
         document.getElementById('perfil-input-password-confirm').value = '';
 
@@ -782,7 +697,6 @@
         box.classList.add('scale-95');
     }
 
-    //  Guardar perfil
     async function guardarPerfil() {
         const token = localStorage.getItem('token');
         if (!token) return;
@@ -806,9 +720,9 @@
         btn.disabled  = true;
 
         const body = {
-            name:     document.getElementById('perfil-input-nombre').value.trim(),
-            email:    document.getElementById('perfil-input-email').value.trim(),
-            phone:    document.getElementById('perfil-input-phone').value.trim()    || null,
+            name:       document.getElementById('perfil-input-nombre').value.trim(),
+            email:      document.getElementById('perfil-input-email').value.trim(),
+            phone:      document.getElementById('perfil-input-phone').value.trim()    || null,
             whatsapp: document.getElementById('perfil-input-whatsapp').value.trim() || null,
         };
         if (password) {
@@ -852,7 +766,6 @@
         }
     }
 
-    // ── Cerrar sesión ──
     async function cerrarSesion() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -871,13 +784,11 @@
         window.location.href = 'index.html';
     }
 
-    // ── Cerrar modal al click fuera ──
     document.getElementById('modalPerfil').addEventListener('click', function(e) {
         if (e.target === this) cerrarModalPerfil();
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-
         inicializarNavAuth();
 
         const openSidebarBtn    = document.getElementById('btn-open-sidebar');
@@ -935,10 +846,11 @@
         if (closeBtn)          closeBtn.addEventListener('click', closeSidebarFn);
         if (overlay)           overlay.addEventListener('click', closeSidebarFn);
     });
-</script>
+    </script>
 
     <script>
 const CART_KEY = 'casatek_carrito';
+const API_BASE = 'http://localhost:8000/api'; // AGREGADO
 
 function getToken()    { return localStorage.getItem('token') || null; }
 function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
@@ -1014,7 +926,6 @@ function abrirQR(modo) {
     document.getElementById('qr-label').textContent           = label;
     document.getElementById('qr-producto-nombre').textContent = nombre;
 
-    // Limpiar y generar QR
     const container = document.getElementById('qr-container');
     container.innerHTML = '';
 
@@ -1030,11 +941,8 @@ function abrirQR(modo) {
         console.error('QR error:', e);
     }
 
-    // Mostrar modal y hacer scroll
     const modal = document.getElementById('modalQR');
     modal.classList.add('open');
-    
-    // Scroll suave hasta el modal
     setTimeout(() => {
         modal.scrollIntoView({
             behavior: 'smooth',
@@ -1047,9 +955,8 @@ function cerrarQR() {
     document.getElementById('modalQR').classList.remove('open');
 }
 
-// Busca el item del carrito en la BD a partir del id de producto
 async function buscarItemBD(productId) {
-    const res = await fetch('/api/cart', { headers: authHeaders() });
+    const res = await fetch(API_BASE + '/cart', { headers: authHeaders() });
     if (res.status === 401) { sesionExpirada(); return null; }
     const data = await res.json();
     return data.datos?.items?.find(i => String(i.product_id) === String(productId)) ?? null;
@@ -1062,12 +969,11 @@ async function cambiarQty(id, delta) {
     const nueva = Math.max(1, item.cantidad + delta);
     if (nueva === item.cantidad) return;
 
-    // Primero el servidor (valida stock); solo si acepta, se actualiza la pantalla
     if (getToken()) {
         try {
             const bdItem = await buscarItemBD(id);
             if (bdItem) {
-                const r = await fetch('/api/cart/items/' + bdItem.id, {
+                const r = await fetch(API_BASE + '/cart/items/' + bdItem.id, {
                     method:  'PUT',
                     headers: authHeaders(),
                     body:    JSON.stringify({ quantity: nueva }),
@@ -1101,13 +1007,20 @@ async function eliminar(id) {
         const carrito = getCarrito().filter(i => String(i.id) !== String(id));
         saveCarrito(carrito);
         recalcular();
-        if (carrito.length === 0) mostrarVacio();
+        
+        // JS PATCH: Remover hidden Y hacer display flex para que no se arruine el centrado
+        if (carrito.length === 0) {
+            const emptyState = document.getElementById('empty-state');
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
+        }
 
         if (!getToken()) return;
         try {
             const bdItem = await buscarItemBD(id);
             if (bdItem) {
-                await fetch('/api/cart/items/' + bdItem.id, {
+                await fetch(API_BASE + '/cart/items/' + bdItem.id, {
                     method:  'DELETE',
                     headers: authHeaders(),
                 });
@@ -1116,7 +1029,6 @@ async function eliminar(id) {
     }, 280);
 }
 
-// COMPRAR: genera un ticket del usuario conectado y redirige a MisTickets.html
 async function comprar() {
     const carrito = getCarrito();
     const user    = JSON.parse(localStorage.getItem('user') || 'null');
@@ -1135,21 +1047,19 @@ async function comprar() {
         total:  carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0),
     };
 
-    // Los tickets se guardan por usuario: cada cliente ve solo los suyos
     const key  = 'casatek_tickets_' + user.id;
-    let   prev = [];
+    let    prev = [];
     try { prev = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
     prev.push(ticket);
     localStorage.setItem(key, JSON.stringify(prev));
 
-    // Vaciar el carrito (local y en el servidor)
     try {
-        const res = await fetch('/api/cart', { headers: authHeaders() });
+        const res = await fetch(API_BASE + '/cart', { headers: authHeaders() });
         if (res.ok) {
             const data = await res.json();
             const items = data.datos?.items ?? [];
             await Promise.all(items.map(i =>
-                fetch('/api/cart/items/' + i.id, { method: 'DELETE', headers: authHeaders() })));
+                fetch(API_BASE + '/cart/items/' + i.id, { method: 'DELETE', headers: authHeaders() })));
         }
     } catch(e) { console.warn('No se pudo vaciar el carrito en el servidor:', e); }
     saveCarrito([]);
@@ -1158,7 +1068,9 @@ async function comprar() {
 }
 
 function mostrarVacio() {
-    document.getElementById('empty-state').classList.remove('hidden');
+    const emptyState = document.getElementById('empty-state');
+    emptyState.classList.remove('hidden');
+    emptyState.classList.add('flex'); // Se necesita para forzar el flex que sobrescriba el hidden base
     document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
 }
 
@@ -1220,20 +1132,23 @@ async function cargarCarrito() {
 
     if (token) {
         try {
-            const res = await fetch('/api/cart', { headers: authHeaders() });
+            const res = await fetch(API_BASE + '/cart', { headers: authHeaders() });
             if (res.status === 401) { sesionExpirada(); return; }
             const data    = await res.json();
             const bdItems = data.datos?.items ?? [];
-            // El servidor manda: se guarda siempre lo que hay en la BD (aunque esté vacío)
-            saveCarrito(bdItems.map(i => ({
-                id:          String(i.product_id),
-                nombre:      i.product?.name        ?? 'Producto',
-                marca:       i.product?.brand?.name ?? '',
-                precio:      parseFloat(i.price_when_added),
-                descripcion: i.product?.description ?? '',
-                img:         i.product?.image1      ?? '',
-                cantidad:    Number(i.quantity),
-            })));
+
+            // SOLUCION: solo sobrescribimos si hay items en el servidor
+            if (bdItems.length > 0) {
+                saveCarrito(bdItems.map(i => ({
+                    id:          String(i.product_id),
+                    nombre:      i.product?.name        ?? 'Producto',
+                    marca:       i.product?.brand?.name ?? '',
+                    precio:      parseFloat(i.price_when_added),
+                    descripcion: i.product?.description ?? '',
+                    img:         i.product?.image1      ?? '',
+                    cantidad:    Number(i.quantity),
+                })));
+            }
         } catch(e) { console.warn('No se pudo cargar carrito desde BD:', e); }
     }
 
@@ -1247,7 +1162,6 @@ async function cargarCarrito() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-
     cargarCarrito();
 
     document.getElementById('cart-list').addEventListener('click', function(e) {
@@ -1276,8 +1190,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === this) cerrarQR();
     });
 });
-</script>
-
+    </script>
     <script>
         document.getElementById('footer-year').textContent = new Date().getFullYear();
     </script>
