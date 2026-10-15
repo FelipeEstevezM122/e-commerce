@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Carrito
     Route::prefix('cart')->group(function () {
         Route::get('/',                  [CartController::class, 'index']);
-        Route::post('/add',              [CartController::class, 'add']);
+        Route::post('/add',              [CartController::class, 'add']); // <-- CAMBIO AQUÍ: Se quitó el /cart previo
         Route::put('/items/{itemId}',    [CartController::class, 'update']);
         Route::delete('/items/{itemId}', [CartController::class, 'remove']);
         Route::delete('/clear',          [CartController::class, 'clear']);
