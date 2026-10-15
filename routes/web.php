@@ -4,14 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\BillingInfoController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CatalogoController;
-//para chatbot
-use App\Http\Controllers\ChatbotController;
 
 //1. LOGIN / LOGOUT DE SESIÓN (para el panel admin blade)
 Route::post('/login-admin', function (Request $request) {
@@ -31,17 +26,25 @@ Route::post('/logout-admin', function (Request $request) {
     return redirect('/iniciarsesion');
 })->name('logout.admin');
 
-//2. RUTAS PÚBLICAS (vistas blade, sin autenticación)
-Route::get('/',                     fn() => view('index'));
-Route::get('/nosotros',             fn() => view('nosotros'))->name('nosotros');
-Route::get('/contactanos',          fn() => view('contactanos'))->name('contactanos');
-Route::get('/iniciarsesion',        fn() => view('iniciarsesion'))->name('iniciarsesion');
-Route::get('/carrito',              fn() => view('carrito'))->name('carrito');
-Route::get('/registro',             fn() => view('registro'))->name('registro');
-Route::get('/recuperar_contrasena', fn() => view('recuperar_contrasena'))->name('recuperar_contrasena');
+//2. PÁGINAS PÚBLICAS (HTML estáticos de public/Vistas)
+// Se mantienen los mismos nombres de ruta para no romper los enlaces de Blade
+$pagina = fn (string $archivo) => fn () => response()->file(public_path('Vistas/' . $archivo));
 
-// Catálogo con datos reales de la BD (filtros via SP sp_filtrar_productos)
-Route::get('/productos', [CatalogoController::class, 'index'])->name('productos');
+Route::get('/',                     $pagina('index.html'));
+Route::get('/nosotros',             $pagina('nosotros.html'))->name('nosotros');
+Route::get('/contactanos',          $pagina('contactanos.html'))->name('contactanos');
+Route::get('/iniciarsesion',        $pagina('iniciarsesion.html'))->name('iniciarsesion');
+Route::get('/carrito',              $pagina('carrito.html'))->name('carrito');
+Route::get('/registro',             $pagina('registro.html'))->name('registro');
+Route::get('/recuperar_contrasena', $pagina('recuperar_contrasena.html'))->name('recuperar_contrasena');
+Route::get('/productos',            $pagina('productos.html'))->name('productos');
+Route::get('/mis-tickets',          $pagina('MisTickets.html'))->name('mis-tickets');
+// Compatibilidad: enlaces antiguos tipo "productos.html" siguen funcionando
+Route::get('/{archivo}.html', function (string $archivo) {
+    $ruta = public_path('Vistas/' . $archivo . '.html');
+    abort_unless(is_file($ruta), 404);
+    return response()->file($ruta);
+})->where('archivo', '[A-Za-z0-9_\-]+');
 
 // Rangos públicos
 Route::get('ranks',        [RankController::class, 'index']);
@@ -74,6 +77,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/tickets',               [AdminController::class, 'tickets'])            ->name('tickets.index');
     Route::post('/orders/{order}/ticket',[TicketController::class, 'generate'])          ->name('tickets.generate');
 });
-
-//4. RUTAS PARA EL CHATBOT (vistas blade, sin autenticación)
-Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
