@@ -50,30 +50,30 @@ Route::get('/{archivo}.html', function (string $archivo) {
 Route::get('ranks',        [RankController::class, 'index']);
 Route::get('ranks/{rank}', [RankController::class, 'show']);
 
-//3. PANEL ADMIN (vistas blade, sesión Laravel)
+//3. PANEL ADMIN
+
+Route::get('/admin/dashboard',       $pagina('dashboard_admin.html'))     ->name('admin.dashboard');
+Route::get('/admin/products/create', $pagina('create_product_admin.html'))->name('admin.products.create');
+Route::get('/admin/users',           $pagina('users_admin.html'))         ->name('admin.users.index');
+Route::get('/admin/users/{user}',    $pagina('show_admin.html'))          ->name('admin.users.show');
+Route::get('/admin/orders',          $pagina('orders_admin.html'))        ->name('admin.orders.index');
+Route::get('/admin/tickets',         $pagina('tickets_admin.html'))       ->name('admin.tickets.index');
+
+// todavia no existe un html en Vistas para listar/editar productos, asi que estas 2 siguen usando el panel blade viejo con sesion mientras tanto (Fronten)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/products',               [ProductController::class, 'index'])->name('admin.products.index');
+    Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit']) ->name('admin.products.edit');
+});
+
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::post('/products',             [ProductController::class, 'store'])  ->name('products.store');
+    Route::put('/products/{product}',    [ProductController::class, 'update']) ->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
-    // Productos CRUD (index usa SP sp_admin_filtrar_productos)
-    Route::get('/products',                [ProductController::class, 'index'])  ->name('products.index');
-    Route::get('/products/create',         [ProductController::class, 'create']) ->name('products.create');
-    Route::post('/products',               [ProductController::class, 'store'])  ->name('products.store');
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])   ->name('products.edit');
-    Route::put('/products/{product}',      [ProductController::class, 'update']) ->name('products.update');
-    Route::delete('/products/{product}',   [ProductController::class, 'destroy'])->name('products.destroy');
-
-    // Usuarios (index usa SP sp_admin_filtrar_usuarios)
-    Route::get('/users',              [AdminController::class, 'users'])      ->name('users.index');
-    Route::get('/users/{user}',       [AdminController::class, 'showUser'])   ->name('users.show');
     Route::delete('/users/{user}',    [AdminController::class, 'deleteUser']) ->name('users.destroy');
     Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']) ->name('users.store-admin');
 
-    // Pedidos (index usa SP sp_admin_filtrar_pedidos)
-    Route::get('/orders',                  [AdminController::class, 'orders'])            ->name('orders.index');
-    Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus']) ->name('orders.status');
+    Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
 
-    // Tickets (index usa SP sp_admin_filtrar_tickets)
-    Route::get('/tickets',               [AdminController::class, 'tickets'])            ->name('tickets.index');
-    Route::post('/orders/{order}/ticket',[TicketController::class, 'generate'])          ->name('tickets.generate');
+    Route::post('/orders/{order}/ticket', [TicketController::class, 'generate'])->name('tickets.generate');
 });
