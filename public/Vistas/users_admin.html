@@ -112,6 +112,11 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 .u-name { font-weight:700; color:#fff; font-size:13px; }
 .u-email { font-size:11px; color:var(--muted); margin-top:1px; }
 
+.role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin:1px 3px 1px 0; }
+.role-admin     { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.role-cliente   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.role-mayorista { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.role-otro      { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
 .rank-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
 .rank-final    { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.25);  color:#4ade80; }
 .rank-wholesale{ background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.25); color:#facc15; }
@@ -180,7 +185,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <a href="#" class="ah-btn-logout" onclick="logoutAdmin(); return false;">
+        <a href="#" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </a>
@@ -244,6 +249,12 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="fSearch" name="search" placeholder="Buscar por nombre, email o teléfono..." class="s-input">
                 </div>
+                <select id="fRole" class="s-input" style="max-width:190px" onchange="applyFilters()">
+                    <option value="">Todos los tipos</option>
+                    <option value="cliente">Clientes</option>
+                    <option value="mayorista">Mayoristas</option>
+                    <option value="admin">Administradores</option>
+                </select>
                 <button type="submit" class="s-btn"><i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar</button>
                 <a href="#" class="s-clear" onclick="clearFilters(); return false;"><i class="fa-solid fa-xmark"></i> Limpiar</a>
             </form>
@@ -261,6 +272,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                         <tr>
                             <th>#</th>
                             <th>Usuario</th>
+                            <th>Tipo</th>
                             <th>Teléfono</th>
                             <th>WhatsApp</th>
                             <th>Código Acceso</th>
@@ -270,7 +282,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                         </tr>
                     </thead>
                     <tbody id="usersBody">
-                        <tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>
+                        <tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -305,7 +317,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 /* Si algo falla en el JavaScript de la página, se muestra aquí en vez de quedarse en silencio */
 window.addEventListener('error', function (e) {
     var b = document.getElementById('usersBody');
-    if (b) b.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Error de JavaScript: ' + String(e.message).replace(/</g, '&lt;') + '</p></div></td></tr>';
+    if (b) b.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Error de JavaScript: ' + String(e.message).replace(/</g, '&lt;') + '</p></div></td></tr>';
 });
 </script>
 <script>
@@ -366,6 +378,20 @@ function fmtDate(v) {
     return isNaN(d) ? String(v) : d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+function roleBadges(u) {
+    const names = (u.roles || []).map(r => r.name);
+    if (!names.length) return '<span class="role-badge role-otro">Sin rol</span>';
+    const meta = {
+        admin:     ['role-admin',     'fa-user-shield', 'Admin'],
+        cliente:   ['role-cliente',   'fa-user',        'Cliente'],
+        mayorista: ['role-mayorista', 'fa-store',       'Mayorista']
+    };
+    return names.map(n => {
+        const m = meta[n] || ['role-otro', 'fa-user', n];
+        return `<span class="role-badge ${m[0]}"><i class="fa-solid ${m[1]}" style="font-size:8px"></i> ${escapeHtml(m[2])}</span>`;
+    }).join('');
+}
+
 function rankBadge(rank) {
     const r = String(rank || '').toLowerCase();
     let cls = 'rank-default', label = rank || 'sin rango';
@@ -379,10 +405,12 @@ function loadUsers(page = 1) {
     const params = new URLSearchParams();
     const search = document.getElementById('fSearch').value.trim();
     if (search) params.set('search', search);
+    const role = document.getElementById('fRole').value;
+    if (role) params.set('role', role);
     params.set('page', page);
 
     document.getElementById('usersBody').innerHTML =
-        '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>';
+        '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>';
     document.getElementById('pagWrap').style.display = 'none';
     document.getElementById('pagLabel').textContent = '';
 
@@ -402,7 +430,7 @@ function loadUsers(page = 1) {
     })
     .catch(err => {
         document.getElementById('usersBody').innerHTML =
-            `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${escapeHtml(err.message)}</p></div></td></tr>`;
+            `<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${escapeHtml(err.message)}</p></div></td></tr>`;
         document.getElementById('panelCount').textContent = '';
     });
 }
@@ -417,7 +445,7 @@ function renderStats(json) {
 function renderTable(users) {
     const body = document.getElementById('usersBody');
     if (!users.length) {
-        body.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No se encontraron usuarios</p></div></td></tr>';
+        body.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No se encontraron usuarios</p></div></td></tr>';
         return;
     }
     const dash = '<span style="color:var(--muted)">—</span>';
@@ -436,6 +464,7 @@ function renderTable(users) {
                 <p class="u-name">${escapeHtml(u.name || '—')}</p>
                 <p class="u-email">${escapeHtml(u.email || '')}</p>
             </td>
+            <td>${roleBadges(u)}</td>
             <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
             <td>${whatsapp}</td>
             <td>${code}</td>
@@ -465,7 +494,7 @@ function renderPagination(p) {
 }
 
 function applyFilters() { loadUsers(1); }
-function clearFilters() { document.getElementById('fSearch').value = ''; loadUsers(1); }
+function clearFilters() { document.getElementById('fSearch').value = ''; document.getElementById('fRole').value = ''; loadUsers(1); }
 
 /* ---------- Modal de Eliminación ---------- */
 function deleteUser(id, name) {
@@ -524,6 +553,6 @@ window.logoutAdmin = logoutAdmin;
 loadUsers(1);
 })();
 </script>
-
+<script src="/js/admin-logout.js"></script>
 </body>
 </html>

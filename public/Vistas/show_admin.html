@@ -110,6 +110,11 @@ tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background 
 tbody tr:hover { background:rgba(255,255,255,.025); }
 td { padding:12px 18px; font-size:13px; color:#d1d5db; }
 
+.role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin:1px 3px 1px 0; }
+.role-admin     { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.role-cliente   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.role-mayorista { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.role-otro      { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
 .status-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
 .s-pending   { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
 .s-paid      { background:rgba(96,165,250,.12); border:1px solid rgba(96,165,250,.3); color:#60a5fa; }
@@ -149,7 +154,7 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <a href="#" class="ah-btn-logout" onclick="logoutAdmin();return false;">
+        <a href="#" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </a>
@@ -207,6 +212,7 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             <div class="info-card">
                 <h3><i class="fa-solid fa-shield-halved" style="color:#60a5fa"></i> Cuenta</h3>
                 <div class="info-row"><span class="info-key">Código de acceso</span><span class="info-val" id="iCode">—</span></div>
+                <div class="info-row"><span class="info-key">Tipo de cuenta</span><span class="info-val" id="iType">—</span></div>
                 <div class="info-row"><span class="info-key">Rango</span><span class="info-val" id="iRank">—</span></div>
                 <div class="info-row"><span class="info-key">Total pedidos</span><span class="info-val" style="color:var(--green);font-weight:800" id="iOrders">0</span></div>
                 <div class="info-row"><span class="info-key">Total gastado</span><span class="info-val" style="color:var(--green);font-weight:800" id="iSpent">Bs. 0.00</span></div>
@@ -325,6 +331,11 @@ function render(user, stats, tickets) {
         ? `<code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px">${esc(user.access_code)}</code>`
         : '—';
     set('iRank', rank || 'Sin rango');
+    const meta = { admin:['role-admin','Admin'], cliente:['role-cliente','Cliente'], mayorista:['role-mayorista','Mayorista'] };
+    const rl = (user.roles || []).map(r => r.name);
+    document.getElementById('iType').innerHTML = rl.length
+        ? rl.map(n => { const m = meta[n] || ['role-otro', n]; return `<span class="role-badge ${m[0]}">${esc(m[1])}</span>`; }).join('')
+        : '<span class="role-badge role-otro">Sin rol</span>';
     set('iOrders', stats.totalOrders ?? 0);
     set('iSpent', fmtBs(stats.totalSpent));
     document.getElementById('iOrders').textContent = stats.totalOrders ?? 0;
@@ -403,6 +414,6 @@ function deleteUser() {
 
 loadUser();
 </script>
-
+<script src="/js/admin-logout.js"></script>
 </body>
 </html>
