@@ -657,6 +657,25 @@
 
                 <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4"></div>
 
+                <!-- Elegir cómo entrar (solo cuentas con rol admin) -->
+                <div id="choicePanel" class="hidden space-y-4 text-center">
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Hola, <strong id="choiceName" class="text-gray-900 dark:text-white"></strong>.<br>
+                        Tu cuenta tiene permisos de administrador. ¿Cómo quieres entrar?
+                    </p>
+                    <button type="button" onclick="entrarComoAdmin()"
+                        class="w-full bg-[#1b803a] hover:bg-[#22C55E] text-white py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> PANEL DE ADMINISTRACIÓN
+                    </button>
+                    <button type="button" onclick="entrarComoCliente()"
+                        class="w-full border-2 border-[#1b803a] text-[#1b803a] dark:text-[#22C55E] hover:bg-[#1b803a] hover:text-white py-3 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-shopping"></i> COMPRAR COMO CLIENTE
+                    </button>
+                    <button type="button" onclick="usarOtraCuenta()" class="text-sm text-gray-500 dark:text-gray-400 hover:underline">
+                        Usar otra cuenta
+                    </button>
+                </div>
+
                 <form id="loginForm" class="space-y-6">
 
                     <div>
@@ -776,6 +795,20 @@ function getCookie(name) {
     return match ? decodeURIComponent(match.pop()) : '';
 }
 
+// ── Admin: elegir cómo entrar ──
+function mostrarElegirModo(user) {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('errorDiv').classList.add('hidden');
+    document.getElementById('choiceName').textContent = (user && user.name) ? user.name : '';
+    document.getElementById('choicePanel').classList.remove('hidden');
+}
+function entrarComoAdmin()   { window.location.href = '/dashboard_admin.html'; }
+function entrarComoCliente() { window.location.href = destinoSeguro(); }
+function usarOtraCuenta() {
+    ['token', 'user', 'roles', 'rank'].forEach(k => localStorage.removeItem(k));
+    location.reload();
+}
+
 // ── Si ya hay sesión válida, no hace falta iniciar sesión ──
 // ── Si ya hay sesión válida, redirigir según el rol ──
 async function redirigirSiHaySesion() {
@@ -792,7 +825,10 @@ async function redirigirSiHaySesion() {
             const esAdmin = (data.roles ?? []).some(r => r.name === 'admin');
             
             if (esAdmin) {
-                window.location.href = '/dashboard_admin.html';
+                // Admin con sesión activa: que elija cómo entrar
+                let u = data.user ?? null;
+                try { u = u || JSON.parse(localStorage.getItem('user') || 'null'); } catch (_) {}
+                mostrarElegirModo(u);
             } else {
                 window.location.href = destinoSeguro(); 
             }
@@ -877,28 +913,23 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         redirigiendo = true;
 
         if (esAdmin) {
-            // /login-admin siempre responde con redirect() (nunca JSON), así que
-            // tanto el éxito como el error terminan en un 200 OK una vez que
-            // fetch sigue la redirección. Para distinguirlos miramos a qué URL
-            // final llegó: si Auth::attempt() tuvo éxito, Laravel redirige a
-            // /admin/dashboard; si falló, vuelve (back()) a esta misma página.
-            const resAdmin = await fetch(ADMIN_LOGIN_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-                },
-                credentials: 'same-origin', // envía/recibe la cookie de sesión de Laravel
-                body: new URLSearchParams({ email, password })
-            });
+            // Abre en segundo plano la sesión del panel (guard "web"); si falla no se bloquea el acceso,
+            // porque el panel trabaja con el token. Se envía el XSRF-TOKEN para evitar el error 419.
+            try {
+                await fetch(ADMIN_LOGIN_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                    },
+                    credentials: 'same-origin',
+                    redirect: 'manual',
+                    body: new URLSearchParams({ email, password })
+                });
+            } catch (_) {}
 
-            if (resAdmin.url.includes('/dashboard_admin.html')) {
-                // La sesión de Laravel (guard "web") ya quedó abierta vía cookie.
-                window.location.href = resAdmin.url;
-            } else {
-                mostrarErrorGeneral('No se pudo abrir la sesión del panel admin. Verifica tu correo y contraseña.');
-                redirigiendo = false;
-            }
+            // El admin elige: panel de administración o tienda como cliente
+            mostrarElegirModo(data.user);
         } else {
             window.location.href = destinoSeguro();
         }
