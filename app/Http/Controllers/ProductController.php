@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use App\Models\ProductPriceHistory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
@@ -277,7 +278,8 @@ class ProductController extends Controller
 
         DB::transaction(function () use ($product, $validated, $request) {
             //si el precio cambio, guarda el precio anterior y el nuevo en el historial
-            if (isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
+            if (Schema::hasTable('product_price_history')
+                && isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
                 ProductPriceHistory::create([
                     'product_id' => $product->id,
                     'old_price'  => $product->base_price,
