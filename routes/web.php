@@ -14,7 +14,7 @@ Route::post('/login-admin', function (Request $request) {
 
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
-        return redirect()->intended('/admin/dashboard');
+        return redirect()->intended('/dashboard_admin.html');
     }
 
     return back()->withErrors(['email' => 'Credenciales incorrectas']);
@@ -50,30 +50,26 @@ Route::get('/{archivo}.html', function (string $archivo) {
 Route::get('ranks',        [RankController::class, 'index']);
 Route::get('ranks/{rank}', [RankController::class, 'show']);
 
-//3. PANEL ADMIN
+// 3. PANEL ADMIN
 
-Route::get('/admin/dashboard',       $pagina('dashboard_admin.html'))     ->name('admin.dashboard');
-Route::get('/admin/products/create', $pagina('create_product_admin.html'))->name('admin.products.create');
-Route::get('/admin/users',           $pagina('users_admin.html'))         ->name('admin.users.index');
-Route::get('/admin/users/{user}',    $pagina('show_admin.html'))          ->name('admin.users.show');
-Route::get('/admin/orders',          $pagina('orders_admin.html'))        ->name('admin.orders.index');
-Route::get('/admin/tickets',         $pagina('tickets_admin.html'))       ->name('admin.tickets.index');
+Route::get('/dashboard_admin.html',                  $pagina('dashboard_admin.html'))          ->name('admin.dashboard');
+Route::get('/create_product_admin.html',             $pagina('create_product_admin.html'))     ->name('admin.products.create');
+Route::get('/users_admin.html',                      $pagina('users_admin.html'))              ->name('admin.users.index');
+Route::get('/show_admin.html/{user}',                $pagina('show_admin.html'))               ->name('admin.users.show');
+Route::get('/orders_admin.html',                     $pagina('orders_admin.html'))             ->name('admin.orders.index');
+Route::get('/tickets_admin.html',                    $pagina('tickets_admin.html'))            ->name('admin.tickets.index');
+Route::get('/productos_lista_admin.html',            $pagina('productos_lista_admin.html'))    ->name('admin.products.index');
+Route::get('/productos_editar_admin.html/{product}', $pagina('productos_editar_admin.html'))   ->name('admin.products.edit');
 
-// todavia no existe un html en Vistas para listar/editar productos, asi que estas 2 siguen usando el panel blade viejo con sesion mientras tanto (Fronten)
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/products',               [ProductController::class, 'index'])->name('admin.products.index');
-    Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit']) ->name('admin.products.edit');
-});
-
+// Las acciones (store/update/destroy) siguen siendo JSON, protegidas por sesión:
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/products',             [ProductController::class, 'store'])  ->name('products.store');
     Route::put('/products/{product}',    [ProductController::class, 'update']) ->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::get('/products/{product}',    [ProductController::class, 'show'])   ->name('products.show'); // ← agrégala, la usa productos_editar_admin.html
 
     Route::delete('/users/{user}',    [AdminController::class, 'deleteUser']) ->name('users.destroy');
     Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']) ->name('users.store-admin');
-
     Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
-
     Route::post('/orders/{order}/ticket', [TicketController::class, 'generate'])->name('tickets.generate');
 });
