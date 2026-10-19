@@ -147,7 +147,7 @@
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="alert('Cerrar sesión (conectar con tu backend)')">
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </button>
@@ -395,6 +395,6 @@
     renderAll();
     loadTickets();
 </script>
-
+<script src="/js/admin-logout.js"></script>
 </body>
 </html>
