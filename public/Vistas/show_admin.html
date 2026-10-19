@@ -137,11 +137,11 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
     </a>
 
     <nav class="ah-nav">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
 
     <div class="ah-actions">
@@ -149,7 +149,7 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <a href="iniciarsesion.html" class="ah-btn-logout">
+        <a href="#" class="ah-btn-logout" onclick="logoutAdmin();return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </a>
@@ -160,11 +160,11 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
 </header>
 
 <nav id="mobileNav">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="show_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
 <!-- ===================== SHOW PAGE ===================== -->
@@ -172,180 +172,81 @@ td { padding:12px 18px; font-size:13px; color:#d1d5db; }
 
     <main id="main">
 
-        <a href="users_admin.html" class="back-link">
+        <a href="/users_admin.html" class="back-link">
             <i class="fa-solid fa-arrow-left"></i> Volver a Usuarios
         </a>
 
+        <div id="loadingBox" class="panel"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Cargando usuario...</p></div></div>
+        <div id="errorBox" class="panel" style="display:none"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p id="errorMsg"></p></div></div>
+
+        <div id="content" style="display:none">
         <div class="user-hero">
             <div class="hero-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <div class="hero-info">
-                <h2>María Fernanda Quispe</h2>
-                <p>maria.quispe@example.com</p>
-                <span class="hero-badge rank-wholesale">
-                    <i class="fa-solid fa-star" style="font-size:8px"></i> Cliente Mayorista
-                </span>
+                <h2 id="hName">—</h2>
+                <p id="hEmail">—</p>
+                <span class="hero-badge rank-default" id="hRank"></span>
             </div>
             <div class="hero-actions">
-                <form onsubmit="return confirm('¿Eliminar a María Fernanda Quispe? Esta acción no se puede deshacer.')">
-                    <button type="submit" class="del-btn">
-                        <i class="fa-solid fa-trash"></i> Eliminar usuario
-                    </button>
-                </form>
+                <button type="button" class="del-btn" onclick="deleteUser()">
+                    <i class="fa-solid fa-trash"></i> Eliminar usuario
+                </button>
             </div>
         </div>
 
         <div class="info-grid">
             <div class="info-card">
                 <h3><i class="fa-solid fa-address-card" style="color:var(--green)"></i> Información Personal</h3>
-                <div class="info-row">
-                    <span class="info-key">Nombre</span>
-                    <span class="info-val">María Fernanda Quispe</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Email</span>
-                    <span class="info-val" style="font-size:12px">maria.quispe@example.com</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Teléfono</span>
-                    <span class="info-val">+591 71234567</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">WhatsApp</span>
-                    <span class="info-val">
-                        <a href="https://wa.me/59171234567" target="_blank" style="color:#4ade80">
-                            <i class="fa-brands fa-whatsapp mr-1"></i>+591 71234567
-                        </a>
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Registrado</span>
-                    <span class="info-val">14/03/2025 09:22</span>
-                </div>
+                <div class="info-row"><span class="info-key">Nombre</span><span class="info-val" id="iName">—</span></div>
+                <div class="info-row"><span class="info-key">Email</span><span class="info-val" style="font-size:12px" id="iEmail">—</span></div>
+                <div class="info-row"><span class="info-key">Teléfono</span><span class="info-val" id="iPhone">—</span></div>
+                <div class="info-row"><span class="info-key">WhatsApp</span><span class="info-val" id="iWhatsapp">—</span></div>
+                <div class="info-row"><span class="info-key">Registrado</span><span class="info-val" id="iCreated">—</span></div>
             </div>
 
             <div class="info-card">
                 <h3><i class="fa-solid fa-shield-halved" style="color:#60a5fa"></i> Cuenta</h3>
-                <div class="info-row">
-                    <span class="info-key">Código de acceso</span>
-                    <span class="info-val">
-                        <code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px">CT-8841</code>
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Rango</span>
-                    <span class="info-val">Cliente Mayorista</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Total pedidos</span>
-                    <span class="info-val" style="color:var(--green);font-weight:800">6</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-key">Total gastado</span>
-                    <span class="info-val" style="color:var(--green);font-weight:800">
-                        Bs. 4,320.00
-                    </span>
-                </div>
+                <div class="info-row"><span class="info-key">Código de acceso</span><span class="info-val" id="iCode">—</span></div>
+                <div class="info-row"><span class="info-key">Rango</span><span class="info-val" id="iRank">—</span></div>
+                <div class="info-row"><span class="info-key">Total pedidos</span><span class="info-val" style="color:var(--green);font-weight:800" id="iOrders">0</span></div>
+                <div class="info-row"><span class="info-key">Total gastado</span><span class="info-val" style="color:var(--green);font-weight:800" id="iSpent">Bs. 0.00</span></div>
             </div>
         </div>
 
         <div class="panel">
             <div class="panel-head">
                 <h2><i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i> Pedidos del Usuario</h2>
-                <span style="font-size:11px;color:var(--muted)">6 pedidos</span>
+                <span style="font-size:11px;color:var(--muted)" id="ordersCount"></span>
             </div>
             <div style="overflow-x:auto">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Nº Pedido</th>
-                            <th>Fecha</th>
-                            <th>Total</th>
-                            <th>Pago</th>
-                            <th>Estado</th>
-                            <th>Ticket</th>
-                        </tr>
+                        <tr><th>Nº Pedido</th><th>Fecha</th><th>Total</th><th>Pago</th><th>Estado</th><th>Ticket</th></tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100234</td>
-                            <td style="font-size:12px;color:var(--muted)">21/09/2026 15:40</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 890.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">qr</td>
-                            <td><span class="status-badge s-delivered">Entregado</span></td>
-                            <td>
-                                <code style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:2px 8px;border-radius:6px;font-size:11px;color:#4ade80">TK-55231</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100198</td>
-                            <td style="font-size:12px;color:var(--muted)">10/09/2026 11:05</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 1,250.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">transferencia</td>
-                            <td><span class="status-badge s-shipped">Enviado</span></td>
-                            <td>
-                                <span style="color:var(--muted);font-size:12px">Sin ticket</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100177</td>
-                            <td style="font-size:12px;color:var(--muted)">02/09/2026 08:15</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 540.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">efectivo</td>
-                            <td><span class="status-badge s-paid">Pagado</span></td>
-                            <td>
-                                <code style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:2px 8px;border-radius:6px;font-size:11px;color:#4ade80">TK-55102</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100150</td>
-                            <td style="font-size:12px;color:var(--muted)">25/08/2026 17:30</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 320.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">qr</td>
-                            <td><span class="status-badge s-cancelled">Cancelado</span></td>
-                            <td>
-                                <span style="color:var(--muted);font-size:12px">Sin ticket</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100121</td>
-                            <td style="font-size:12px;color:var(--muted)">14/08/2026 13:02</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 780.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">transferencia</td>
-                            <td><span class="status-badge s-delivered">Entregado</span></td>
-                            <td>
-                                <code style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:2px 8px;border-radius:6px;font-size:11px;color:#4ade80">TK-54890</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:700;color:#fff;font-family:monospace">ORD-100099</td>
-                            <td style="font-size:12px;color:var(--muted)">30/07/2026 09:48</td>
-                            <td style="color:var(--green);font-weight:800">Bs. 540.00</td>
-                            <td style="font-size:12px;text-transform:capitalize">efectivo</td>
-                            <td><span class="status-badge s-pending">Pendiente</span></td>
-                            <td>
-                                <span style="color:var(--muted);font-size:12px">Sin ticket</span>
-                            </td>
-                        </tr>
-                        <!--
-                        Ejemplo de estado vacío (se muestra cuando el usuario no tiene pedidos):
-                        <tr>
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <i class="fa-solid fa-clipboard"></i>
-                                    <p style="font-size:13px">Este usuario no tiene pedidos</p>
-                                </div>
-                            </td>
-                        </tr>
-                        -->
-                    </tbody>
+                    <tbody id="ordersBody"></tbody>
                 </table>
             </div>
+        </div>
         </div>
 
     </main>
 </div>
 
 <script>
+const LOGIN_URL = '/iniciarsesion';
+const API_USERS = '/api/admin/users';
+const TOKEN_KEYS = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token'];
+
+function getToken() {
+    for (const k of TOKEN_KEYS) {
+        try { const v = localStorage.getItem(k); if (v) return v.replace(/^"|"$/g, ''); } catch (e) {}
+    }
+    return '';
+}
+function authHeaders() { return { 'Accept': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+function goLogin() { window.location.href = LOGIN_URL; }
+if (!getToken()) goLogin();
+
 function toggleMobileNav() {
     const nav  = document.getElementById('mobileNav');
     const icon = document.getElementById('hambIcon');
@@ -353,6 +254,134 @@ function toggleMobileNav() {
     nav.style.display = open ? 'none' : 'flex';
     icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
 }
+function logoutAdmin() {
+    fetch('/api/logout', { method: 'POST', headers: authHeaders() }).catch(() => {}).finally(() => {
+        TOKEN_KEYS.concat(['user', 'role', 'usuario']).forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+        goLogin();
+    });
+}
+
+/* ID: /show_admin.html/{id}  (o ?id=) */
+function getUserId() {
+    const m = window.location.pathname.match(/\/show_admin\.html\/(\d+)/);
+    return m ? m[1] : new URLSearchParams(window.location.search).get('id');
+}
+const userId = getUserId();
+let currentUser = null;
+
+function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+function fmtBs(n) { return 'Bs. ' + Number(n || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtDate(v, time) {
+    if (!v) return '—';
+    const d = new Date(v);
+    if (isNaN(d)) return String(v);
+    const o = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    if (time) { o.hour = '2-digit'; o.minute = '2-digit'; }
+    return d.toLocaleString('es-BO', o);
+}
+function rankLabel(u) {
+    const r = u.rank;
+    if (r && typeof r === 'object') return r.name || r.nombre || r.title || '';
+    return r || '';
+}
+function rankClass(label) {
+    const r = String(label).toLowerCase();
+    if (r.includes('mayor')) return 'rank-wholesale';
+    if (r.includes('final')) return 'rank-final';
+    return 'rank-default';
+}
+const STATUS = {
+    pending:   ['s-pending', 'Pendiente'],
+    paid:      ['s-paid', 'Pagado'],
+    shipped:   ['s-shipped', 'Enviado'],
+    delivered: ['s-delivered', 'Entregado'],
+    cancelled: ['s-cancelled', 'Cancelado']
+};
+function showError(msg) {
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBox').style.display = 'block';
+}
+const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined || v === '') ? '—' : v; };
+
+function render(user, stats, tickets) {
+    currentUser = user;
+    const rank = rankLabel(user);
+
+    set('hName', user.name); set('hEmail', user.email);
+    const hr = document.getElementById('hRank');
+    hr.className = 'hero-badge ' + rankClass(rank);
+    hr.innerHTML = '<i class="fa-solid fa-star" style="font-size:8px"></i> ' + esc(rank || 'Sin rango');
+
+    set('iName', user.name); set('iEmail', user.email); set('iPhone', user.phone);
+    const wa = user.whatsapp ? String(user.whatsapp).replace(/\D/g, '') : '';
+    document.getElementById('iWhatsapp').innerHTML = wa
+        ? `<a href="https://wa.me/${wa}" target="_blank" style="color:#4ade80"><i class="fa-brands fa-whatsapp mr-1"></i>${esc(user.whatsapp)}</a>`
+        : '—';
+    set('iCreated', fmtDate(user.created_at, true));
+    document.getElementById('iCode').innerHTML = user.access_code
+        ? `<code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px">${esc(user.access_code)}</code>`
+        : '—';
+    set('iRank', rank || 'Sin rango');
+    set('iOrders', stats.totalOrders ?? 0);
+    set('iSpent', fmtBs(stats.totalSpent));
+    document.getElementById('iOrders').textContent = stats.totalOrders ?? 0;
+
+    const orders = user.orders || [];
+    document.getElementById('ordersCount').textContent = orders.length + (orders.length === 1 ? ' pedido' : ' pedidos');
+    const body = document.getElementById('ordersBody');
+    if (!orders.length) {
+        body.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-clipboard"></i><p style="font-size:13px">Este usuario no tiene pedidos</p></div></td></tr>';
+    } else {
+        body.innerHTML = orders.map(o => {
+            const st = STATUS[o.status] || ['s-pending', o.status || '—'];
+            const tk = tickets && tickets[o.id];
+            return `<tr>
+                <td style="font-weight:700;color:#fff;font-family:monospace">${esc(o.order_number || ('#' + o.id))}</td>
+                <td style="font-size:12px;color:var(--muted)">${esc(fmtDate(o.created_at, true))}</td>
+                <td style="color:var(--green);font-weight:800">${fmtBs(o.total)}</td>
+                <td style="font-size:12px;text-transform:capitalize">${esc(o.payment_method || '—')}</td>
+                <td><span class="status-badge ${st[0]}">${esc(st[1])}</span></td>
+                <td>${tk
+                    ? `<code style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:2px 8px;border-radius:6px;font-size:11px;color:#4ade80">${esc(tk)}</code>`
+                    : '<span style="color:var(--muted);font-size:12px">Sin ticket</span>'}</td>
+            </tr>`;
+        }).join('');
+    }
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+}
+
+function loadUser() {
+    if (!userId) { showError('No se especificó ningún usuario. Vuelve a la lista y usa "Ver detalle".'); return; }
+    fetch(API_USERS + '/' + userId, { headers: authHeaders() })
+    .then(res => {
+        if (res.status === 401) { goLogin(); throw new Error('Sesión expirada'); }
+        if (res.status === 403) throw new Error('No tienes permiso de administrador.');
+        if (res.status === 404) throw new Error('El usuario no existe en la base de datos.');
+        if (!res.ok) throw new Error('No se pudo cargar el usuario (HTTP ' + res.status + ')');
+        return res.json();
+    })
+    .then(json => render(json.datos.user, json.datos.statistics || {}, json.datos.tickets || {}))
+    .catch(err => showError(err.message));
+}
+
+function deleteUser() {
+    if (!currentUser) return;
+    if (!confirm(`¿Eliminar a ${currentUser.name}? Esta acción no se puede deshacer.`)) return;
+    fetch(API_USERS + '/' + currentUser.id, { method: 'DELETE', headers: authHeaders() })
+    .then(async res => {
+        const json = await res.json().catch(() => ({}));
+        if (res.status === 401) { goLogin(); throw new Error('Sesión expirada'); }
+        if (!res.ok) throw new Error(json.message || 'No se pudo eliminar el usuario.');
+        window.location.href = '/users_admin.html';
+    })
+    .catch(err => alert(err.message));
+}
+
+loadUser();
 </script>
 
 </body>
