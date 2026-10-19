@@ -172,7 +172,7 @@
 
     <nav class="ah-nav">
         <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="/products_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
         <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
         <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
@@ -195,7 +195,7 @@
 
 <nav id="mobileNav">
     <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="/products_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
     <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
     <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
     <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
@@ -336,8 +336,8 @@
     const ROUTES = {
         index:   '/api/products',
         destroy: (id) => '/api/products/' + id,
-        // Página de edición: ajusta esta línea si tu editor se abre con otra dirección
-        edit:    (id) => '/edit_product_admin.html?id=' + id
+        // Página de edición (ruta de web.php: /productos_editar_admin.html/{product})
+        edit:    (id) => '/productos_editar_admin.html/' + id
     };
     const LOGIN_URL = '/iniciarsesion';
 
