@@ -268,10 +268,14 @@ class ProductController extends Controller
                     $request->file($field),
                     $sku
                 );
+            } elseif ($request->boolean('remove_' . $field) && $product->$field) {
+                // El admin pulsó (x) sobre una imagen existente: se borra de Cloudinary y de la BD
+                $this->deleteFromCloudinary($product->$field);
+                $validated[$field] = null;
             }
         }
 
-                DB::transaction(function () use ($product, $validated, $request) {
+        DB::transaction(function () use ($product, $validated, $request) {
             //si el precio cambio, guarda el precio anterior y el nuevo en el historial
             if (isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
                 ProductPriceHistory::create([

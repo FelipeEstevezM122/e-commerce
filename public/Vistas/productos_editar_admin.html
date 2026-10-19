@@ -149,7 +149,6 @@
         <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
         <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
         <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
         <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
     <div class="ah-actions">
@@ -171,7 +170,6 @@
     <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
     <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
     <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
     <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
@@ -386,6 +384,7 @@
         if (!input.files || !input.files[0]) return;
         const box = document.getElementById('box-' + field);
         const thumb = document.getElementById('thumb-' + field);
+        box.dataset.removed = '';   // si había marcada una eliminación, la nueva imagen la reemplaza
         const reader = new FileReader();
         reader.onload = function (e) {
             thumb.src = e.target.result;
@@ -394,22 +393,26 @@
         reader.readAsDataURL(input.files[0]);
     }
 
+    /* (x): 1) si hay una imagen nueva elegida, la descarta y vuelve a la actual;
+            2) si es la imagen guardada, la marca para ELIMINAR al guardar. */
     function imgRemove(e, field) {
         e.preventDefault();
         e.stopPropagation();
         const box = document.getElementById('box-' + field);
         const thumb = document.getElementById('thumb-' + field);
         const input = document.getElementById(field);
-        input.value = '';
-        // Si había una imagen existente guardada, la restauramos al quitar la selección
         const original = box.dataset.originalSrc;
-        if (original) {
-            thumb.src = original;
+        const hadNewFile = input.files && input.files.length > 0;
+
+        input.value = '';
+        if (hadNewFile && original && box.dataset.removed !== '1') {
+            thumb.src = original;            // vuelve a la imagen guardada
             box.classList.add('has-img');
-        } else {
-            thumb.src = '';
-            box.classList.remove('has-img');
+            return;
         }
+        thumb.src = '';
+        box.classList.remove('has-img');
+        if (original) box.dataset.removed = '1';   // se borrará en el servidor al guardar
     }
 
     /* ---------- Carga marcas y categorías para los selects ---------- */
@@ -528,6 +531,9 @@
         // Laravel espera _method=PUT cuando se envía como multipart/form-data (para soportar archivos)
         const formData = new FormData(form);
         formData.append('_method', 'PUT');
+        imgFields.forEach(f => {
+            if (document.getElementById('box-' + f).dataset.removed === '1') formData.append('remove_' + f, '1');
+        });
 
         fetch(ROUTES.update(productId), {
             method: 'POST', // se simula PUT con _method, requerido por Laravel para subir archivos
