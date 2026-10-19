@@ -136,24 +136,24 @@
 
 <!-- ===================== HEADER ===================== -->
 <header id="adminHeader">
-    <a href="dashboard_admin.html" class="ah-logo">
+    <a href="/dashboard_admin.html" class="ah-logo">
         <span class="ah-logo-dot"></span>
         <span class="ah-logo-name">Casatek</span>
         <span class="ah-logo-badge">Admin</span>
     </a>
     <nav class="ah-nav">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
     <div class="ah-actions">
         <div class="ah-user">
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="alert('Cerrar sesión (conectar con tu backend)')">
+        <button type="button" class="ah-btn-logout" onclick="logoutAdmin()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </button>
@@ -164,11 +164,11 @@
 </header>
 
 <nav id="mobileNav">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
 <!-- ===================== CREAR PRODUCTO ===================== -->
@@ -181,7 +181,7 @@
                 <h1 class="section-title">Agregar <span style="color:var(--green)">Producto</span></h1>
                 <p style="font-size:12px;color:var(--muted);margin-top:4px">Completa los campos para registrar un nuevo producto en el catálogo Casatek</p>
             </div>
-            <a href="productos_lista_admin.html" class="back-btn" style="margin-top:8px">
+            <a href="/productos_lista_admin.html" class="back-btn" style="margin-top:8px">
                 <i class="fa-solid fa-arrow-left"></i> Volver al panel
             </a>
         </div>
@@ -250,23 +250,13 @@
                         <div class="form-group">
                             <label class="form-label">Marca</label>
                             <input type="text" name="brand_name" list="brands-list" placeholder="Selecciona o escribe una nueva..." class="f-input" autocomplete="off">
-                            <datalist id="brands-list">
-                                <option value="Samsung">
-                                <option value="LG">
-                                <option value="Sony">
-                                <option value="Lenovo">
-                            </datalist>
+                            <datalist id="brands-list"></datalist>
                             <p class="hint"><i class="fa-solid fa-circle-info" style="font-size:10px"></i> Elige una existente o escribe una nueva para crearla.</p>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Categoría</label>
                             <input type="text" name="category_name" list="categories-list" placeholder="Selecciona o escribe una nueva..." class="f-input" autocomplete="off">
-                            <datalist id="categories-list">
-                                <option value="Televisores">
-                                <option value="Laptops">
-                                <option value="Audio">
-                                <option value="Accesorios">
-                            </datalist>
+                            <datalist id="categories-list"></datalist>
                             <p class="hint"><i class="fa-solid fa-circle-info" style="font-size:10px"></i> Elige una existente o escribe una nueva para crearla.</p>
                         </div>
                     </div>
@@ -292,7 +282,7 @@
 
             <!-- ACCIONES -->
             <div class="form-actions">
-                <a href="orders_admin.html" class="btn-cancel">
+                <a href="/productos_lista_admin.html" class="btn-cancel">
                     <i class="fa-solid fa-xmark"></i> Cancelar
                 </a>
                 <button type="submit" class="btn-submit" id="submitBtn">
@@ -307,6 +297,38 @@
 </div>
 
 <script>
+    // ---------- Config / auth (mismo token Bearer que la lista de productos) ----------
+    const API_PRODUCTS = '/api/products';
+    const LIST_URL = '/productos_lista_admin.html';
+    const LOGIN_URL = '/iniciarsesion';
+    const TOKEN_KEYS = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token'];
+    function getToken() {
+        for (const k of TOKEN_KEYS) {
+            try { const v = localStorage.getItem(k); if (v) return v.replace(/^"|"$/g, ''); } catch (e) {}
+        }
+        return '';
+    }
+    function authHeaders() { return { 'Accept': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+    function goLogin() { window.location.href = LOGIN_URL; }
+    if (!getToken()) goLogin();
+
+    function logoutAdmin() {
+        fetch('/api/logout', { method: 'POST', headers: authHeaders() }).catch(() => {}).finally(() => {
+            TOKEN_KEYS.concat(['user', 'role', 'usuario']).forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+            goLogin();
+        });
+    }
+
+    // ---------- Marcas y categorías reales para los datalist ----------
+    function fillDatalist(id, items) {
+        document.getElementById(id).innerHTML = (items || [])
+            .map(x => `<option value="${String(x.name).replace(/"/g, '&quot;')}">`).join('');
+    }
+    fetch(API_PRODUCTS + '?page=1', { headers: authHeaders() })
+        .then(r => r.ok ? r.json() : null)
+        .then(j => { if (j) { fillDatalist('brands-list', j.brands); fillDatalist('categories-list', j.categories); } })
+        .catch(() => {});
+
     // ---------- Menú móvil (header) ----------
     function toggleMobileNav() {
         const nav  = document.getElementById('mobileNav');
@@ -389,14 +411,33 @@
         document.getElementById('submitText').textContent = 'Guardando...';
         btn.disabled = true;
 
-        // Aquí iría tu fetch/POST real hacia el backend (Laravel, etc.)
-        setTimeout(() => {
-            alert('Producto guardado (simulado). Conecta este formulario a tu API real.');
+        const resetBtn = () => {
             document.getElementById('spinner').style.display = 'none';
             document.getElementById('submitIcon').style.display = 'inline';
             document.getElementById('submitText').textContent = 'Guardar producto';
             btn.disabled = false;
-        }, 900);
+        };
+        const showErrors = msgs => {
+            list.innerHTML = msgs.map(e => `<li>${e}</li>`).join('');
+            alertBox.style.display = 'block';
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        // multipart/form-data (incluye imágenes); NO se fija Content-Type a mano
+        fetch(API_PRODUCTS, { method: 'POST', headers: authHeaders(), body: new FormData(form) })
+        .then(async res => {
+            const json = await res.json().catch(() => ({}));
+            if (res.status === 401) { goLogin(); return; }
+            if (res.status === 403) { showErrors(['No tienes permiso de administrador.']); return; }
+            if (!res.ok) {
+                showErrors(json.errors ? Object.values(json.errors).flat() : [json.message || ('No se pudo guardar el producto (HTTP ' + res.status + ')')]);
+                return;
+            }
+            alert(json.message || 'Producto creado con éxito');
+            window.location.href = LIST_URL;
+        })
+        .catch(err => showErrors(['Error de conexión: ' + err.message]))
+        .finally(resetBtn);
     });
 </script>
 
