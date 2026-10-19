@@ -7,7 +7,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
-<script src="/js/admin-guard.js"></script>
+
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background:#060d0a; color:#f3f4f6; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
@@ -306,7 +306,7 @@
 
     <nav class="ah-nav">
         <a href="dashboard_admin.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="create_product_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
         <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
         <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
@@ -328,11 +328,11 @@
 </header>
 
 <nav id="mobileNav">
-    <a href="#" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="#"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="dashboard_admin.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
     <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="#"><i class="fa-solid fa-users"></i> Usuarios</a>
+    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
 <!-- ===================== DASHBOARD ===================== -->
@@ -431,17 +431,17 @@
         <!-- Accesos rápidos — 4 tarjetas -->
         <div class="quick-grid">
 
-            <a href="#" class="quick-card" style="--qc-color:rgba(34,197,94,.5)">
+            <a href="create_product_admin.html" class="quick-card" style="--qc-color:rgba(34,197,94,.5)">
                 <i class="fa-solid fa-plus quick-icon" style="color:#22C55E"></i>
                 <span class="quick-label">Nuevo Producto</span>
             </a>
 
-            <a href="#" class="quick-card" style="--qc-color:rgba(250,204,21,.5)">
+            <a href="orders_admin.html" class="quick-card" style="--qc-color:rgba(250,204,21,.5)">
                 <i class="fa-solid fa-clock quick-icon" style="color:#facc15"></i>
                 <span class="quick-label">Pedidos Pendientes</span>
             </a>
 
-            <a href="#" class="quick-card" style="--qc-color:rgba(96,165,250,.5)">
+            <a href="users_admin.html" class="quick-card" style="--qc-color:rgba(96,165,250,.5)">
                 <i class="fa-solid fa-user-plus quick-icon" style="color:#60a5fa"></i>
                 <span class="quick-label">Gestionar Usuarios</span>
             </a>
