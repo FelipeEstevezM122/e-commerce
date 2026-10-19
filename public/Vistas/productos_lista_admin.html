@@ -152,6 +152,16 @@
     .modal-close-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
     .modal-img { width:100%; height:180px; object-fit:cover; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); }
 
+    /* MODAL ELIMINAR PRODUCTO */
+    #deleteModal { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:20px; }
+    #deleteModal.open { display:flex; }
+    #deleteModal .modal-box { background:#111f16; border:1px solid rgba(239,68,68,.25); border-radius:20px; width:100%; max-width:400px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.6); animation:modalIn .2s ease; }
+    .del-icon-wrap { width:64px; height:64px; border-radius:50%; background:rgba(239,68,68,.15); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+    .btn-cancel { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:11px 24px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
+    .btn-cancel:hover { background:rgba(255,255,255,.1); color:#fff; }
+    .btn-confirm-del { background:#ef4444; border:none; color:#fff; border-radius:12px; padding:11px 24px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; box-shadow:0 4px 12px rgba(239,68,68,.3); }
+    .btn-confirm-del:hover { background:#dc2626; transform:translateY(-1px); }
+
     .fade-up { animation:fadeUp .4s ease both; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; } .delay-3 { animation-delay:.21s; } .delay-4 { animation-delay:.28s; }
@@ -329,6 +339,23 @@
     </div>
 </div>
 
+<!-- MODAL ELIMINAR PRODUCTO -->
+<div id="deleteModal">
+    <div class="modal-box">
+        <div style="padding:32px 24px 24px">
+            <div class="del-icon-wrap">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#f87171;font-size:28px"></i>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px">¿Eliminar producto?</h3>
+            <p style="font-size:14px;color:var(--muted);line-height:1.5">Estás a punto de eliminar <strong id="dm-name" style="color:#fff"></strong>. Esta acción no se puede deshacer.</p>
+        </div>
+        <div style="display:flex;justify-content:center;gap:12px;padding:0 24px 32px">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+            <button class="btn-confirm-del" onclick="executeDelete()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
 
 <script>
@@ -343,6 +370,7 @@
 
     let currentPage = 1;
     let productsCache = [];
+    let deleteTargetId = null; // Variable para almacenar el ID a eliminar
 
     /* ---------- Menú móvil (header) ---------- */
     function toggleMobileNav() {
@@ -555,12 +583,26 @@
         document.getElementById('viewModal').classList.remove('open');
         document.body.style.overflow = '';
     }
-    document.getElementById('viewModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeViewModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewModal(); });
 
-    /* ---------- Eliminar producto ---------- */
+    /* ---------- Modal "Eliminar" (Reemplaza el Confirm) ---------- */
     function deleteProduct(id, name) {
-        if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+        deleteTargetId = id;
+        document.getElementById('dm-name').textContent = `"${name}"`;
+        document.getElementById('deleteModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('open');
+        document.body.style.overflow = '';
+        deleteTargetId = null;
+    }
+
+    function executeDelete() {
+        if (!deleteTargetId) return;
+        
+        const id = deleteTargetId;
+        closeDeleteModal(); // Cierra el modal primero para mejor experiencia
 
         fetch(ROUTES.destroy(id), { method: 'DELETE', headers: authHeaders() })
         .then(async res => {
@@ -573,6 +615,16 @@
         })
         .catch(err => showToast(err.message, 'err'));
     }
+
+    /* ---------- Cierre de Modales haciendo clic fuera o presionando Esc ---------- */
+    document.getElementById('viewModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeViewModal(); });
+    document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
+    document.addEventListener('keydown', e => { 
+        if (e.key === 'Escape') { 
+            closeViewModal(); 
+            closeDeleteModal(); 
+        } 
+    });
 
     /* ---------- Helpers de escape ---------- */
     function escapeHtml(str) {
