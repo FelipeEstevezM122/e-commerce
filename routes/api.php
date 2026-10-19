@@ -37,10 +37,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me',         [AuthController::class, 'user']);
     Route::put('/me/update',  [AuthController::class, 'updateProfile']); // ← NUEVO
 
-    // Productos (crear, editar, eliminar → solo admin via policy)
-    Route::post('/products',             [ProductController::class, 'store']);
-    Route::put('/products/{product}',    [ProductController::class, 'update']);
-    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    // Productos (crear, editar, eliminar → solo admin)
+    // Se añade el middleware 'admin': antes cualquier usuario con sesión podía crear/editar/borrar productos.
+    // Las URLs no cambian (/api/products, /api/products/{id}).
+    Route::middleware('admin')->group(function () {
+        Route::post('/products',             [ProductController::class, 'store']);
+        Route::put('/products/{product}',    [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    });
 
     // Carrito
     Route::prefix('cart')->group(function () {
@@ -99,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gestión de usuarios
         Route::get('/users',           [AdminController::class, 'users']);
         Route::post('/users',          [AdminController::class, 'createUser']);
+        Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']); // modal "Nuevo Admin" del dashboard
         Route::get('/users/{user}',    [AdminController::class, 'showUser']);
         Route::put('/users/{user}',    [AdminController::class, 'updateUser']);
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
