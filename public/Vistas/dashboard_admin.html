@@ -292,6 +292,29 @@
         .stat-grid  { grid-template-columns: 1fr; }
         .quick-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ---------- Modal Nuevo Admin ---------- */
+    #adminOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9000;padding:16px}
+    #adminOverlay.open{display:flex}
+    .adm-box{background:var(--card);border:1px solid var(--border-h);border-radius:16px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .adm-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+    .adm-head h3{font-family:'Syne',sans-serif;font-size:16px;margin:0;color:#fff;display:flex;align-items:center;gap:8px}
+    .adm-close{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+    .adm-close:hover{color:#fff}
+    .adm-body{padding:20px 22px}
+    .adm-field{margin-bottom:14px}
+    .adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .adm-field input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+    .adm-field input:focus{border-color:var(--green)}
+    .adm-alert{display:none;border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
+    .adm-alert.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#f87171}
+    .adm-alert.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:#4ade80}
+    .adm-alert ul{margin:0;padding-left:16px}
+    .adm-actions{display:flex;gap:10px;margin-top:6px}
+    .adm-actions button{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid transparent}
+    .adm-cancel{background:transparent;border-color:rgba(255,255,255,.12)!important;color:var(--muted)}
+    .adm-save{background:var(--green);color:#052e16}
+    .adm-save:disabled{opacity:.6;cursor:wait}
 </style>
 </head>
 <body>
@@ -317,7 +340,7 @@
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="alert('Cerrar sesión (conectar con tu backend)')">
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </button>
@@ -456,6 +479,31 @@
     </main>
 </div>
 
+<!-- Modal: Nuevo Admin -->
+<div id="adminOverlay">
+    <div class="adm-box" role="dialog" aria-modal="true" aria-labelledby="admTitle">
+        <div class="adm-head">
+            <h3 id="admTitle"><i class="fa-solid fa-user-shield" style="color:var(--green)"></i> Nuevo administrador</h3>
+            <button type="button" class="adm-close" onclick="cerrarModal()" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="adm-body">
+            <div class="adm-alert err" id="admErr"></div>
+            <div class="adm-alert ok" id="admOk"></div>
+            <form id="adminForm" novalidate autocomplete="off">
+                <div class="adm-field"><label for="admin_name">Nombre</label><input type="text" id="admin_name" name="admin_name" maxlength="100" required></div>
+                <div class="adm-field"><label for="admin_email">Email</label><input type="email" id="admin_email" name="admin_email" maxlength="100" required></div>
+                <div class="adm-field"><label for="admin_password">Contraseña (mín. 8 caracteres)</label><input type="password" id="admin_password" name="admin_password" minlength="8" required></div>
+                <div class="adm-field"><label for="admin_password_confirmation">Confirmar contraseña</label><input type="password" id="admin_password_confirmation" name="admin_password_confirmation" required></div>
+                <div class="adm-actions">
+                    <button type="button" class="adm-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="adm-save" id="admSave"><i class="fa-solid fa-floppy-disk"></i> Crear admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin-logout.js"></script>
 <script>
     // ---------- Menú móvil (header) ----------
     function toggleMobileNav() {
@@ -466,10 +514,79 @@
         icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
     }
 
-    // ---------- Placeholder del modal "Nuevo Admin" ----------
+    // ---------- Protección: sin token -> inicio de sesión ----------
+    if (!window.adminToken || !window.adminToken()) window.location.href = '/iniciarsesion.html';
+
+    // ---------- Modal "Nuevo Admin" ----------
+    const API_STORE_ADMIN = '/api/admin/users/store-admin';
+    const admOverlay = document.getElementById('adminOverlay');
+    const admForm = document.getElementById('adminForm');
+    const admErr = document.getElementById('admErr');
+    const admOk = document.getElementById('admOk');
+
     function abrirModal() {
-        alert('Aquí abrirías tu modal real de "Nuevo Admin".');
+        admForm.reset();
+        admErr.style.display = 'none';
+        admOk.style.display = 'none';
+        admOverlay.classList.add('open');
+        document.getElementById('admin_name').focus();
     }
+    function cerrarModal() { admOverlay.classList.remove('open'); }
+    admOverlay.addEventListener('click', e => { if (e.target === admOverlay) cerrarModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+    function admShowErrors(list) {
+        admOk.style.display = 'none';
+        admErr.innerHTML = '<ul>' + list.map(x => '<li>' + x + '</li>').join('') + '</ul>';
+        admErr.style.display = 'block';
+    }
+
+    admForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        admErr.style.display = 'none';
+        admOk.style.display = 'none';
+
+        const payload = {
+            admin_name: document.getElementById('admin_name').value.trim(),
+            admin_email: document.getElementById('admin_email').value.trim(),
+            admin_password: document.getElementById('admin_password').value,
+            admin_password_confirmation: document.getElementById('admin_password_confirmation').value
+        };
+
+        const errs = [];
+        if (!payload.admin_name) errs.push('El nombre es obligatorio.');
+        if (!/^\S+@\S+\.\S+$/.test(payload.admin_email)) errs.push('Ingresa un email válido.');
+        if (payload.admin_password.length < 8) errs.push('La contraseña debe tener al menos 8 caracteres.');
+        if (payload.admin_password !== payload.admin_password_confirmation) errs.push('Las contraseñas no coinciden.');
+        if (errs.length) return admShowErrors(errs);
+
+        const btn = document.getElementById('admSave');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creando...';
+
+        try {
+            const res = await fetch(API_STORE_ADMIN, {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, window.adminAuthHeaders()),
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json().catch(() => ({}));
+            if (res.status === 401) { window.location.href = '/iniciarsesion.html'; return; }
+            if (res.status === 403) return admShowErrors(['No tienes permiso de administrador.']);
+            if (!res.ok) {
+                return admShowErrors(json.errors ? Object.values(json.errors).flat() : [json.message || ('No se pudo crear el administrador (HTTP ' + res.status + ')')]);
+            }
+            admForm.reset();
+            admOk.textContent = json.message || 'Administrador creado correctamente.';
+            admOk.style.display = 'block';
+            setTimeout(cerrarModal, 1800);
+        } catch (err) {
+            admShowErrors(['Error de conexión: ' + err.message]);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Crear admin';
+        }
+    });
 
     // ---------- Datos de ejemplo (sustituye por tu fetch/API real) ----------
     const data = {

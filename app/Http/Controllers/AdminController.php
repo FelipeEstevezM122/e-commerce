@@ -105,11 +105,25 @@ class AdminController extends Controller
 
             DB::commit();
 
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'datos' => $user->load('roles'),
+                    'message' => "Administrador '{$user->name}' creado correctamente."
+                ], Response::HTTP_CREATED);
+            }
+
             return redirect()->route('admin.dashboard')
                 ->with('admin_created', "Administrador '{$user->name}' creado correctamente.");
 
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Error al crear el administrador: ' . $e->getMessage()
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
             return redirect()->route('admin.dashboard')
                 ->with('admin_error', 'Error al crear el administrador: ' . $e->getMessage());
         }
@@ -140,7 +154,13 @@ class AdminController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
 
         if ($request->wantsJson()) {
-            return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
+            return response()->json([
+                'datos' => $users,
+                'totalUsers' => User::count(),
+                'totalFinal' => User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count(),
+                'totalWholesale' => User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count(),
+                'message' => 'Lista de usuarios'
+            ], Response::HTTP_OK);
         }
 
         return view('admin.users', compact('users'));
@@ -148,23 +168,18 @@ class AdminController extends Controller
 
     public function showUser(User $user)
     {
-        $user->load(
-            'rank',
-            'roles',
-            'orders.items.product.brand',
-            'orders.billingInfo',
-            'orders.ticket',
-            'accumulatedPurchases',
-            'billingInfo'
-        );
+        $user->load('rank', 'roles', 'orders', 'accumulatedPurchases', 'billingInfo');
 
         $totalOrders = $user->orders()->count();
         $totalSpent = $user->orders()->where('status', 'delivered')->sum('total');
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
         if (request()->wantsJson()) {
+            // Tickets de los pedidos del usuario: [order_id => ticket_number]
+            $tickets = Ticket::whereIn('order_id', $user->orders->pluck('id'))->pluck('ticket_number', 'order_id');
+
             return response()->json([
-                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder')],
+                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder'), 'tickets' => $tickets],
                 'message' => 'Detalles del usuario'
             ], Response::HTTP_OK);
         }
@@ -337,7 +352,7 @@ class AdminController extends Controller
 
     public function orders(Request $request)
     {
-        $query = Order::with('user', 'items.product.brand', 'billingInfo', 'ticket');
+        $query = Order::with('user', 'items.product', 'billingInfo');
 
         if ($request->filled('status'))
             $query->where('status', $request->status);
@@ -391,21 +406,14 @@ class AdminController extends Controller
     //lista de tickets para el panel admin con busqueda
     public function tickets(Request $request)
     {
-        $query = Ticket::whereHas('order', fn ($orderQuery) => $orderQuery->where('status', 'paid'))
-            ->with('order.user', 'order.items.product.brand', 'order.billingInfo');
+        $query = Ticket::with('order.user', 'order.items.product');
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($query) use ($search) {
-                $query->where('ticket_number', 'like', "%{$search}%")
-                    ->orWhereHas('order', function ($orderQuery) use ($search) {
-                        $orderQuery->where('order_number', 'like', "%{$search}%")
-                            ->orWhereHas('user', function ($userQuery) use ($search) {
-                                $userQuery->where('name', 'like', "%{$search}%")
-                                    ->orWhere('email', 'like', "%{$search}%");
-                            });
-                    });
-            });
+            $query->where('ticket_number', 'like', "%{$search}%")
+                  ->orWhereHas('order', function ($q) use ($search) {
+                      $q->where('order_number', 'like', "%{$search}%");
+                  });
         }
         if ($request->filled('from_date')) $query->whereDate('issued_at', '>=', $request->from_date);
         if ($request->filled('to_date'))   $query->whereDate('issued_at', '<=', $request->to_date);
