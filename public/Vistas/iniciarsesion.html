@@ -17,18 +17,22 @@
         }
     </script>
 
-    
+
     <script>
-        const API_BASE        = 'http://localhost:8000';   
-        const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; 
+        // Se usa el origen actual de la página (en vez de una URL fija como
+        // 'http://localhost:8000') para que coincida siempre, entres por
+        // localhost o por 127.0.0.1. Si ambos no coinciden, el navegador los
+        // trata como dominios distintos y bloquea las peticiones por CORS.
+        const API_BASE        = window.location.origin;
+        const ADMIN_LOGIN_URL = API_BASE + '/login-admin';
     </script>
 
-  
+
     <style>
         html { scroll-behavior: smooth; }
     </style>
 
-   
+
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -119,17 +123,17 @@
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
 
-                        
+
                         <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
 
-                          
+
                             <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                                 <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
                                 <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
                                 <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
                             </div>
 
-                           
+
                             <button onclick="abrirModalPerfil()"
                                     class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                 <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
@@ -650,13 +654,8 @@
                     <p class="text-gray-500 dark:text-gray-300 mt-2">Bienvenido nuevamente a CASATEK</p>
                 </div>
 
-                
-                <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4"></div>
 
-                <form id="sessionForm" method="POST" action="#" class="hidden">
-                    <input type="hidden" name="email"    id="sessionEmail">
-                    <input type="hidden" name="password" id="sessionPassword">
-                </form>
+                <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4"></div>
 
                 <form id="loginForm" class="space-y-6">
 
@@ -771,22 +770,41 @@ function cargarRecordado() {
     } catch (e) {}
 }
 
+// ── Lee una cookie por nombre (usada para el token CSRF de Laravel) ──
+function getCookie(name) {
+    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return match ? decodeURIComponent(match.pop()) : '';
+}
+
 // ── Si ya hay sesión válida, no hace falta iniciar sesión ──
+// ── Si ya hay sesión válida, redirigir según el rol ──
 async function redirigirSiHaySesion() {
     const token = localStorage.getItem('token');
     if (!token) return;
+    
     try {
         const res = await fetch(API_BASE + '/api/me', {
             headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token }
         });
-        if (res.ok) { window.location.href = destinoSeguro(); return; }
+        
+        if (res.ok) { 
+            const data = await res.json();
+            const esAdmin = (data.roles ?? []).some(r => r.name === 'admin');
+            
+            if (esAdmin) {
+                window.location.href = '/dashboard_admin.html';
+            } else {
+                window.location.href = destinoSeguro(); 
+            }
+            return; 
+        }
+        
         if (res.status === 401) {
             ['token', 'user', 'roles', 'rank'].forEach(k => localStorage.removeItem(k));
             location.reload();
         }
     } catch (e) { /* sin conexión: se deja el formulario */ }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     cargarRecordado();
     redirigirSiHaySesion();
@@ -849,16 +867,38 @@ document.getElementById('loginForm').addEventListener('submit', async function (
             else localStorage.removeItem(REMEMBER_KEY);
         } catch (_) {}
 
-        // 4. Admin → login de sesión del panel; cliente → vuelve a donde estaba
+        // 4. Admin → abre también la sesión del panel (guard "web" de Laravel);
+        //    cliente → vuelve a donde estaba.
+        //    IMPORTANTE: /login-admin pasa por el middleware CSRF de Laravel,
+        //    así que se envía el token leído de la cookie XSRF-TOKEN (header
+        //    X-XSRF-TOKEN) en lugar de hacer un submit() de formulario normal,
+        //    que no lleva ningún token y provoca el error 419 "Page Expired".
         const esAdmin = (data.user.roles ?? []).some(r => r.name === 'admin');
         redirigiendo = true;
 
         if (esAdmin) {
-            document.getElementById('sessionEmail').value    = email;
-            document.getElementById('sessionPassword').value = password;
-            const f = document.getElementById('sessionForm');
-            f.action = ADMIN_LOGIN_URL;
-            f.submit();
+            // /login-admin siempre responde con redirect() (nunca JSON), así que
+            // tanto el éxito como el error terminan en un 200 OK una vez que
+            // fetch sigue la redirección. Para distinguirlos miramos a qué URL
+            // final llegó: si Auth::attempt() tuvo éxito, Laravel redirige a
+            // /admin/dashboard; si falló, vuelve (back()) a esta misma página.
+            const resAdmin = await fetch(ADMIN_LOGIN_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                },
+                credentials: 'same-origin', // envía/recibe la cookie de sesión de Laravel
+                body: new URLSearchParams({ email, password })
+            });
+
+            if (resAdmin.url.includes('/dashboard_admin.html')) {
+                // La sesión de Laravel (guard "web") ya quedó abierta vía cookie.
+                window.location.href = resAdmin.url;
+            } else {
+                mostrarErrorGeneral('No se pudo abrir la sesión del panel admin. Verifica tu correo y contraseña.');
+                redirigiendo = false;
+            }
         } else {
             window.location.href = destinoSeguro();
         }
@@ -928,7 +968,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
 
 <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        
+
         <div class="space-y-4">
             <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
                 CASA<span class="text-[#22C55E]">TEK</span>
