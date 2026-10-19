@@ -140,7 +140,13 @@ class AdminController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
 
         if ($request->wantsJson()) {
-            return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
+            return response()->json([
+                'datos' => $users,
+                'totalUsers' => User::count(),
+                'totalFinal' => User::whereHas('rank', fn($q) => $q->where('name', 'like', '%final%'))->count(),
+                'totalWholesale' => User::whereHas('rank', fn($q) => $q->where('name', 'like', '%mayor%'))->count(),
+                'message' => 'Lista de usuarios'
+            ], Response::HTTP_OK);
         }
 
         return view('admin.users', compact('users'));
@@ -155,8 +161,11 @@ class AdminController extends Controller
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
         if (request()->wantsJson()) {
+            // Tickets de los pedidos del usuario: [order_id => ticket_number]
+            $tickets = Ticket::whereIn('order_id', $user->orders->pluck('id'))->pluck('ticket_number', 'order_id');
+
             return response()->json([
-                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder')],
+                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder'), 'tickets' => $tickets],
                 'message' => 'Detalles del usuario'
             ], Response::HTTP_OK);
         }
