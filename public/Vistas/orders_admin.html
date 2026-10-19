@@ -267,6 +267,16 @@
         .find(Boolean)
         ?.replace(/^"|"$/g, '');
     const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        }[character]));
+    }
+
     const STATUS_MAP = {
         pending:   { cls: 's-pending',   label: 'Pendiente' },
         paid:      { cls: 's-paid',      label: 'Pagado' },
