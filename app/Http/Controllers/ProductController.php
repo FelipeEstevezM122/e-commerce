@@ -100,6 +100,12 @@ class ProductController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'datos' => $products,
+                'totalProducts' => $totalProducts,
+                'totalBrands' => $totalBrands,
+                'lowStock' => $lowStock,
+                'noStock' => $noStock,
+                'brands' => $brands,
+                'categories' => $categories,
                 'message' => 'Lista de productos'
             ], Response::HTTP_OK);
         }
@@ -206,6 +212,8 @@ class ProductController extends Controller
     {
         return response()->json([
             'datos' => $product->load('brand', 'category'),
+            'brands' => Brand::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
             'message' => 'Producto mostrado con éxito'
         ], Response::HTTP_OK);
     }
@@ -236,13 +244,13 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:150',
-            'description' => 'sometimes|string',
+            'description' => 'nullable|string',
             'base_price' => 'sometimes|numeric|max:10000|min:0',
             'stock' => 'required|integer|max:150|min:0|',
             'sku' => 'required|string|max:50|unique:products,sku,' . $product->id,
             'warranty_days' => 'nullable|integer|min:0',
-            'brand_id' => 'sometimes|exists:brands,id',
-            'category_id' => 'sometimes|exists:categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => 'nullable|exists:categories,id',
             'image1' => 'nullable|file|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
