@@ -417,9 +417,9 @@
                             <i class="fa-solid fa-check"></i>
                         </button>
                     </div>`;
-                const ticketCell = order.ticket
+                const ticketCell = order.status === 'paid' && order.ticket
                     ? `<button type="button" class="update-btn" onclick="downloadTicket(orders.find(o => o.id === ${order.id}).ticket, this)"><i class="fa-solid fa-download"></i> ${escapeHtml(order.ticket.ticket_number)}</button>`
-                    : '<span style="color:var(--muted);font-size:12px">Sin ticket</span>';
+                    : '<span style="color:var(--muted);font-size:12px">Disponible cuando esté pagado</span>';
 
                 return `
                     <tr>

@@ -22,7 +22,9 @@ class TicketController extends Controller
     {
         $this->authorize('viewAny', Ticket::class);
 
-        $tickets = Ticket::whereHas('order', fn($q) => $q->where('user_id', $request->user()->id))
+        $tickets = Ticket::whereHas('order', fn($q) => $q
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'paid'))
             ->with('order.user', 'order.billingInfo', 'order.items.product.brand')
             ->orderBy('issued_at', 'desc')
             ->paginate(15);
@@ -55,6 +57,10 @@ class TicketController extends Controller
     {
         $this->authorize('view', $order);
 
+        if ($order->status !== 'paid') {
+            return response()->json(['message' => 'El ticket estará disponible cuando el pedido esté pagado.'], Response::HTTP_NOT_FOUND);
+        }
+
         $ticket = $order->ticket;
         if (!$ticket) {
             return response()->json(['message' => 'Este pedido aún no tiene ticket'], Response::HTTP_NOT_FOUND);
@@ -84,8 +90,8 @@ class TicketController extends Controller
     {
         $this->authorize('generate', Ticket::class);
 
-        if (!in_array($order->status, ['paid', 'delivered'])) {
-            return response()->json(['message' => 'Solo se puede generar ticket para pedidos pagados o entregados'], Response::HTTP_BAD_REQUEST);
+        if ($order->status !== 'paid') {
+            return response()->json(['message' => 'Solo se puede generar un ticket para pedidos pagados'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($order->ticket()->exists()) {

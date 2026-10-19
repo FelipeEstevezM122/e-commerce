@@ -57,7 +57,7 @@
     .section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
     .section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
 
-    .mini-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
+    .mini-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin:20px 0; }
     .mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
     .mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
     .mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
@@ -180,35 +180,8 @@
                     <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
                 </div>
                 <div>
-                    <p class="mini-label">Total</p>
+                    <p class="mini-label">Tickets pagados</p>
                     <p class="mini-val" id="statTotal">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-2">
-                <div class="mini-icon" style="background:rgba(250,204,21,.15)">
-                    <i class="fa-solid fa-clock" style="color:#facc15"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Pendientes</p>
-                    <p class="mini-val" id="statPending">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-3">
-                <div class="mini-icon" style="background:rgba(34,197,94,.15)">
-                    <i class="fa-solid fa-circle-check" style="color:#22C55E"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Entregados</p>
-                    <p class="mini-val" id="statDelivered">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-4">
-                <div class="mini-icon" style="background:rgba(239,68,68,.15)">
-                    <i class="fa-solid fa-ban" style="color:#f87171"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Cancelados</p>
-                    <p class="mini-val" id="statCancelled">0</p>
                 </div>
             </div>
         </div>
@@ -219,8 +192,6 @@
         <div class="alert-error" id="errorAlert" style="display:none">
             <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorMsg"></span>
         </div>
-
-        <div class="status-tabs" id="statusTabs"></div>
 
         <div class="panel">
             <div class="panel-head">
@@ -270,24 +241,8 @@
         .find(Boolean)
         ?.replace(/^"|"$/g, '');
     const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
-    const STATUS_MAP = {
-        pending:   { cls: 's-pending',   label: 'Pendiente' },
-        paid:      { cls: 's-pending',   label: 'Pagado' },
-        shipped:   { cls: 's-delivered', label: 'Enviado' },
-        delivered: { cls: 's-delivered', label: 'Entregado' },
-        cancelled: { cls: 's-cancelled', label: 'Cancelado' }
-    };
-    const TABS = [
-        { val: 'pending',   icon: 'fa-clock',        cls: 't-pending',   label: 'Pendientes' },
-        { val: 'paid',      icon: 'fa-credit-card',  cls: 't-pending',   label: 'Pagados' },
-        { val: 'shipped',   icon: 'fa-truck',         cls: 't-delivered', label: 'Enviados' },
-        { val: 'delivered', icon: 'fa-circle-check', cls: 't-delivered', label: 'Entregados' },
-        { val: 'cancelled', icon: 'fa-ban',          cls: 't-cancelled', label: 'Cancelados' }
-    ];
-
     let tickets = [];
 
-    let currentStatus = null;
     let currentPage = 1;
     const perPage = 5;
 
@@ -300,29 +255,7 @@
     }
 
     function renderStats() {
-        document.getElementById('statTotal').textContent     = tickets.length;
-        document.getElementById('statPending').textContent   = tickets.filter(t => t.status === 'pending').length;
-        document.getElementById('statDelivered').textContent = tickets.filter(t => t.status === 'delivered').length;
-        document.getElementById('statCancelled').textContent = tickets.filter(t => t.status === 'cancelled').length;
-    }
-
-    function renderTabs() {
-        const wrap = document.getElementById('statusTabs');
-        let html = `<span class="s-tab t-all ${!currentStatus ? 'active' : ''}" onclick="setStatus(null)">
-            <i class="fa-solid fa-border-all"></i> Todos
-            <span style="background:rgba(255,255,255,.1);padding:1px 7px;border-radius:10px;font-size:10px">${tickets.length}</span>
-        </span>`;
-        html += TABS.map(t => `
-            <span class="s-tab ${t.cls} ${currentStatus === t.val ? 'active' : ''}" onclick="setStatus('${t.val}')">
-                <i class="fa-solid ${t.icon}"></i> ${t.label}
-            </span>`).join('');
-        wrap.innerHTML = html;
-    }
-
-    function setStatus(val) {
-        currentStatus = val;
-        currentPage = 1;
-        renderAll();
+        document.getElementById('statTotal').textContent = tickets.length;
     }
 
     async function downloadTicket(ticket, button) {
@@ -358,7 +291,7 @@
     }
 
     function renderTable() {
-        const filtered = currentStatus ? tickets.filter(t => t.status === currentStatus) : tickets;
+        const filtered = tickets;
         document.getElementById('tableCount').textContent = `${filtered.length} ticket${filtered.length !== 1 ? 's' : ''}`;
 
         const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
@@ -376,7 +309,6 @@
                 </td></tr>`;
         } else {
             body.innerHTML = pageItems.map(ticket => {
-                const s = STATUS_MAP[ticket.status] || STATUS_MAP.pending;
                 const { date, time } = formatDate(ticket.created_at);
                 const itemsHtml = `<ul class="items-list">${ticket.items.map(i => `<li><span>${Number(i.quantity)} ×</span> ${escapeHtml(i.product?.name || 'Producto')}</li>`).join('')}</ul>`;
 
@@ -390,7 +322,7 @@
                         </td>
                         <td class="hide-sm">${itemsHtml}</td>
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(ticket.total)}</td>
-                        <td><span class="status-badge ${s.cls}">${s.label}</span></td>
+                        <td><span class="status-badge s-paid">Pagado</span></td>
                         <td><button type="button" class="update-btn" onclick="downloadTicket(tickets.find(t => t.id === ${ticket.id}), this)"><i class="fa-solid fa-download"></i> PDF</button></td>
                         <td class="hide-sm" style="font-size:11px;color:var(--muted)">${date}<br><span style="font-size:10px">${time}</span></td>
                     </tr>`;
@@ -419,7 +351,6 @@
 
     function renderAll() {
         renderStats();
-        renderTabs();
         renderTable();
     }
 
@@ -448,7 +379,7 @@
                         user: order.user || {},
                         items: order.items || [],
                         total: order.total || 0,
-                        status: order.status || 'pending',
+                        status: 'paid',
                         created_at: ticket.issued_at || ticket.created_at,
                     };
                 }));

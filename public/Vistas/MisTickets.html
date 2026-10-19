@@ -739,7 +739,7 @@ function normalizarApi(t) {
         address: order.billing_info?.address ?? '—',
         nit: order.billing_info?.nit ?? '—',
         orderNumber: order.order_number ?? '—',
-        status: order.status ?? 'pending',
+        status: order.status ?? 'paid',
         items,
         total:  parseFloat(order.total ?? t.total ?? items.reduce((a, i) => a + i.precio * i.cantidad, 0)),
     };

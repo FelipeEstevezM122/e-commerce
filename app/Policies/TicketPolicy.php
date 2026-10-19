@@ -16,8 +16,9 @@ class TicketPolicy
     // ¿Puede ver este ticket específico?
     public function view(User $user, Ticket $ticket): bool
     {
-        // El ticket pertenece al usuario dueño del pedido, o es admin
-        return $user->id === $ticket->order->user_id || $user->isAdmin();
+        // Solo los pedidos pagados tienen tickets visibles para su dueño o para un admin.
+        return $ticket->order->status === 'paid'
+            && ($user->id === $ticket->order->user_id || $user->isAdmin());
     }
 
     // ¿Puede ver todos los tickets? (solo admin)

@@ -391,7 +391,8 @@ class AdminController extends Controller
     //lista de tickets para el panel admin con busqueda
     public function tickets(Request $request)
     {
-        $query = Ticket::with('order.user', 'order.items.product.brand', 'order.billingInfo');
+        $query = Ticket::whereHas('order', fn ($orderQuery) => $orderQuery->where('status', 'paid'))
+            ->with('order.user', 'order.items.product.brand', 'order.billingInfo');
 
         if ($request->filled('search')) {
             $search = $request->search;

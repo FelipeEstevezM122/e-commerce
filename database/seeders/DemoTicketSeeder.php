@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class DemoTicketSeeder extends Seeder
@@ -35,11 +36,12 @@ class DemoTicketSeeder extends Seeder
         foreach ($customers as $customer) {
             $createdDemoOrder = false;
             $createdTicket = DB::transaction(function () use ($customer, &$createdDemoOrder) {
-                if ($customer->orders()->whereHas('ticket')->exists()) {
+                if ($customer->orders()->where('status', 'paid')->whereHas('ticket')->exists()) {
                     return false;
                 }
 
                 $existingOrder = $customer->orders()
+                    ->where('status', 'paid')
                     ->whereDoesntHave('ticket')
                     ->orderByDesc('created_at')
                     ->first();
@@ -64,9 +66,9 @@ class DemoTicketSeeder extends Seeder
                 $price = $customer->getFinalPrice($product->base_price);
                 $order = $customer->orders()->create([
                     'billing_info_id' => $customer->defaultBillingInfo()->value('id'),
-                    'order_number' => Order::generateOrderNumber(),
+                    'order_number' => 'DEMO-' . str_pad((string) $customer->id, 8, '0', STR_PAD_LEFT) . '-' . Str::upper(Str::random(6)),
                     'total' => $price * $quantity,
-                    'status' => 'pending',
+                    'status' => 'paid',
                     'payment_method' => 'efectivo',
                 ]);
 
@@ -78,7 +80,7 @@ class DemoTicketSeeder extends Seeder
                 ]);
 
                 Ticket::createForOrder($order);
-                $order->update(['status' => 'cancelled']);
+                Product::whereKey($product->id)->increment('stock', $quantity);
                 $createdDemoOrder = true;
 
                 return true;
@@ -93,6 +95,6 @@ class DemoTicketSeeder extends Seeder
         }
 
         $this->command->info("Tickets creados: {$ticketsCreated}.");
-        $this->command->info("Pedidos ficticios creados y cancelados: {$demoOrdersCreated}.");
+        $this->command->info("Pedidos ficticios pagados creados: {$demoOrdersCreated}.");
     }
 }

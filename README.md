@@ -65,7 +65,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## Pedidos y tickets de compra
 
-Al crear un pedido mediante `POST /api/orders`, CASATEK guarda el pedido y sus productos y genera un ticket único dentro de la misma transacción. Los tickets se asocian al pedido desde su creación; su estado refleja el estado del pedido y no confirma por sí solo que el pago haya sido recibido.
+Al crear un pedido mediante `POST /api/orders`, CASATEK guarda el pedido y sus productos y genera un ticket único dentro de la misma transacción. El ticket solo se muestra y permite descargar cuando el estado actual del pedido es `paid`; los pedidos pendientes, enviados, entregados o cancelados no aparecen en las listas de tickets.
 
 - Los clientes consultan sus pedidos en `/mis-pedidos` y sus tickets en `/mis-tickets`.
 - Cada pedido incluye un ticket descargable en PDF con los datos disponibles del cliente, facturación, productos y total.
@@ -74,4 +74,4 @@ Al crear un pedido mediante `POST /api/orders`, CASATEK guarda el pedido y sus p
 
 La migración `2026_10_19_123000_create_tickets_for_existing_orders` crea tickets para pedidos anteriores que aún no tenían uno. Tras actualizar el código, instala la nueva dependencia de PDF y aplica las migraciones dentro del contenedor con `docker compose exec app composer install` y `docker compose exec app php artisan migrate`. El stack debe estar levantado y el servicio de Laravel debe llamarse `app`.
 
-Para mostrar tickets de demostración asociados a cada usuario con rol cliente o mayorista, ejecuta `docker compose exec app php artisan db:seed --class=DemoTicketSeeder`. El seeder no duplica tickets: usa un pedido sin ticket cuando existe; si el cliente no tiene pedidos, crea un pedido de demostración cancelado, crea su ticket y devuelve el stock mediante los triggers. No lo agregues al `DatabaseSeeder` de producción.
+Para mostrar tickets de demostración asociados a cada usuario con rol cliente o mayorista, ejecuta `docker compose exec app php artisan db:seed --class=DemoTicketSeeder`. El seeder no duplica tickets pagados: usa un pedido pagado sin ticket cuando existe; de lo contrario, crea un pedido de demostración marcado `DEMO-` con estado pagado, crea su ticket y restaura el stock tras los triggers. No lo agregues al `DatabaseSeeder` de producción.
