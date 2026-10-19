@@ -337,7 +337,7 @@ function render(user, stats, tickets) {
     } else {
         body.innerHTML = orders.map(o => {
             const st = STATUS[o.status] || ['s-pending', o.status || '—'];
-            const tk = tickets && tickets[o.id];
+            const tk = o.ticket;
             return `<tr>
                 <td style="font-weight:700;color:#fff;font-family:monospace">${esc(o.order_number || ('#' + o.id))}</td>
                 <td style="font-size:12px;color:var(--muted)">${esc(fmtDate(o.created_at, true))}</td>
@@ -345,13 +345,33 @@ function render(user, stats, tickets) {
                 <td style="font-size:12px;text-transform:capitalize">${esc(o.payment_method || '—')}</td>
                 <td><span class="status-badge ${st[0]}">${esc(st[1])}</span></td>
                 <td>${tk
-                    ? `<code style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:2px 8px;border-radius:6px;font-size:11px;color:#4ade80">${esc(tk)}</code>`
+                    ? `<button type="button" onclick="downloadUserTicket(${Number(tk.id)}, '${esc(tk.ticket_number)}', this)" style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);padding:5px 8px;border-radius:6px;font-size:11px;color:#4ade80;cursor:pointer"><i class="fa-solid fa-download"></i> ${esc(tk.ticket_number)}</button>`
                     : '<span style="color:var(--muted);font-size:12px">Sin ticket</span>'}</td>
             </tr>`;
         }).join('');
     }
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('content').style.display = 'block';
+}
+
+async function downloadUserTicket(ticketId, ticketNumber, button) {
+    button.disabled = true;
+    try {
+        const response = await fetch(`/api/tickets/${ticketId}/download`, {
+            headers: { ...authHeaders(), 'Accept': 'application/pdf' },
+        });
+        if (!response.ok) throw new Error('No se pudo descargar el ticket (HTTP ' + response.status + ').');
+        const url = URL.createObjectURL(await response.blob());
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = ticketNumber + '.pdf';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function loadUser() {

@@ -237,7 +237,7 @@
                             <th class="hide-sm">Productos</th>
                             <th>Total</th>
                             <th>Estado</th>
-                            <th>Cambiar Estado</th>
+                            <th>Descarga</th>
                             <th class="hide-sm">Fecha</th>
                         </tr>
                     </thead>
@@ -265,27 +265,27 @@
         return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
 
-    // ---------- Estados (solo pendiente, entregado y cancelado) ----------
+    const token = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token']
+        .map(key => localStorage.getItem(key))
+        .find(Boolean)
+        ?.replace(/^"|"$/g, '');
+    const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
     const STATUS_MAP = {
         pending:   { cls: 's-pending',   label: 'Pendiente' },
+        paid:      { cls: 's-pending',   label: 'Pagado' },
+        shipped:   { cls: 's-delivered', label: 'Enviado' },
         delivered: { cls: 's-delivered', label: 'Entregado' },
         cancelled: { cls: 's-cancelled', label: 'Cancelado' }
     };
     const TABS = [
         { val: 'pending',   icon: 'fa-clock',        cls: 't-pending',   label: 'Pendientes' },
+        { val: 'paid',      icon: 'fa-credit-card',  cls: 't-pending',   label: 'Pagados' },
+        { val: 'shipped',   icon: 'fa-truck',         cls: 't-delivered', label: 'Enviados' },
         { val: 'delivered', icon: 'fa-circle-check', cls: 't-delivered', label: 'Entregados' },
         { val: 'cancelled', icon: 'fa-ban',          cls: 't-cancelled', label: 'Cancelados' }
     ];
 
-    // ---------- Datos de ejemplo (sustituye por tu fetch/API real: tickets de TODOS los clientes) ----------
-    let tickets = [
-        { id: 1, ticket_number: 'TK-0001', user: { id: 11, name: 'Marisol Quispe',  email: 'marisol@example.com' }, items: [{ nombre: 'Cámara Dahua 2MP', cantidad: 2, precio: 350 }, { nombre: 'Fuente 12V 2A', cantidad: 2, precio: 275 }], total: 1250.00, status: 'pending',   created_at: '2026-10-09T10:15:00' },
-        { id: 2, ticket_number: 'TK-0002', user: { id: 12, name: 'Jorge Fernández', email: 'jorge@example.com' },   items: [{ nombre: 'Router TP-Link AX1800', cantidad: 1, precio: 480.50 }], total: 480.50, status: 'delivered', created_at: '2026-10-08T16:40:00' },
-        { id: 3, ticket_number: 'TK-0003', user: { id: 13, name: 'Ana Mamani',      email: 'ana@example.com' },     items: [{ nombre: 'Kit Alarma Inalámbrica', cantidad: 3, precio: 1040 }], total: 3120.00, status: 'pending',   created_at: '2026-10-07T09:05:00' },
-        { id: 4, ticket_number: 'TK-0004', user: { id: 14, name: 'Luis Choque',     email: 'luis@example.com' },    items: [{ nombre: 'Sensor de Movimiento', cantidad: 2, precio: 105 }], total: 210.00, status: 'delivered', created_at: '2026-10-05T12:30:00' },
-        { id: 5, ticket_number: 'TK-0005', user: { id: 15, name: 'Carla Rojas',     email: 'carla@example.com' },   items: [{ nombre: 'Switch Mikrotik 8 puertos', cantidad: 1, precio: 990 }], total: 990.00, status: 'cancelled', created_at: '2026-10-04T08:00:00' },
-        { id: 6, ticket_number: 'TK-0006', user: { id: 16, name: 'Pedro Vargas',    email: 'pedro@example.com' },   items: [{ nombre: 'Cerradura Inteligente', cantidad: 1, precio: 640 }], total: 640.00, status: 'pending',   created_at: '2026-10-03T14:20:00' }
-    ];
+    let tickets = [];
 
     let currentStatus = null;
     let currentPage = 1;
@@ -325,13 +325,22 @@
         renderAll();
     }
 
-    function updateStatus(ticketId, newStatus) {
-        const ticket = tickets.find(t => t.id === ticketId);
-        if (!ticket) return;
-        ticket.status = newStatus;
-        showAlert('success', `Ticket ${ticket.ticket_number} actualizado a "${STATUS_MAP[newStatus].label}".`);
-        renderAll();
-        // Aquí iría tu fetch/PATCH real hacia el backend
+    async function downloadTicket(ticket, button) {
+        button.disabled = true;
+        try {
+            const response = await fetch(`/api/tickets/${ticket.id}/download`, { headers: { ...authHeaders, 'Accept': 'application/pdf' } });
+            if (!response.ok) throw new Error('No se pudo descargar el ticket (HTTP ' + response.status + ').');
+            const url = URL.createObjectURL(await response.blob());
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${ticket.ticket_number}.pdf`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) {
+            showAlert('error', error.message);
+        } finally {
+            button.disabled = false;
+        }
     }
 
     function showAlert(type, msg) {
@@ -367,20 +376,9 @@
                 </td></tr>`;
         } else {
             body.innerHTML = pageItems.map(ticket => {
-                const s = STATUS_MAP[ticket.status];
-                const locked = ['delivered', 'cancelled'].includes(ticket.status);
+                const s = STATUS_MAP[ticket.status] || STATUS_MAP.pending;
                 const { date, time } = formatDate(ticket.created_at);
-                const statusCell = locked
-                    ? `<span class="locked-status"><i class="fa-solid fa-lock"></i> ${s.label}</span>`
-                    : `<div class="status-form">
-                        <select class="status-select" id="sel-${ticket.id}">
-                            ${Object.entries(STATUS_MAP).map(([val, m]) => `<option value="${val}" ${ticket.status === val ? 'selected' : ''}>${m.label}</option>`).join('')}
-                        </select>
-                        <button type="button" class="update-btn" onclick="updateStatus(${ticket.id}, document.getElementById('sel-${ticket.id}').value)">
-                            <i class="fa-solid fa-check"></i>
-                        </button>
-                    </div>`;
-                const itemsHtml = `<ul class="items-list">${ticket.items.map(i => `<li><span>${i.cantidad} ×</span> ${escapeHtml(i.nombre)}</li>`).join('')}</ul>`;
+                const itemsHtml = `<ul class="items-list">${ticket.items.map(i => `<li><span>${Number(i.quantity)} ×</span> ${escapeHtml(i.product?.name || 'Producto')}</li>`).join('')}</ul>`;
 
                 return `
                     <tr>
@@ -393,7 +391,7 @@
                         <td class="hide-sm">${itemsHtml}</td>
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(ticket.total)}</td>
                         <td><span class="status-badge ${s.cls}">${s.label}</span></td>
-                        <td>${statusCell}</td>
+                        <td><button type="button" class="update-btn" onclick="downloadTicket(tickets.find(t => t.id === ${ticket.id}), this)"><i class="fa-solid fa-download"></i> PDF</button></td>
                         <td class="hide-sm" style="font-size:11px;color:var(--muted)">${date}<br><span style="font-size:10px">${time}</span></td>
                     </tr>`;
             }).join('');
@@ -425,7 +423,46 @@
         renderTable();
     }
 
+    async function loadTickets() {
+        if (!token) {
+            window.location.href = '/iniciarsesion';
+            return;
+        }
+        try {
+            let pageNumber = 1;
+            let lastPage = 1;
+            do {
+                const response = await fetch(`/api/admin/tickets?page=${pageNumber}`, { headers: authHeaders });
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/iniciarsesion';
+                    return;
+                }
+                if (!response.ok) throw new Error('No se pudieron cargar los tickets (HTTP ' + response.status + ').');
+                const payload = await response.json();
+                const page = payload.datos;
+                if (!page || !Array.isArray(page.data)) throw new Error('La respuesta de tickets no tiene el formato esperado.');
+                tickets.push(...page.data.map(ticket => {
+                    const order = ticket.order || {};
+                    return {
+                        ...ticket,
+                        user: order.user || {},
+                        items: order.items || [],
+                        total: order.total || 0,
+                        status: order.status || 'pending',
+                        created_at: ticket.issued_at || ticket.created_at,
+                    };
+                }));
+                pageNumber = page.current_page + 1;
+                lastPage = page.last_page;
+            } while (pageNumber <= lastPage);
+            renderAll();
+        } catch (error) {
+            showAlert('error', error.message || 'Error de conexión al cargar tickets.');
+        }
+    }
+
     renderAll();
+    loadTickets();
 </script>
 
 </body>

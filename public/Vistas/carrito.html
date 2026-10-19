@@ -166,6 +166,9 @@
                                 <a href="MisTickets.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-ticket w-4"></i> Mis tickets
                                 </a>
+                                <a href="/mis-pedidos" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-clipboard-list w-4"></i> Mis pedidos
+                                </a>
                                 <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                                     <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
                                         <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
@@ -850,7 +853,7 @@
 
     <script>
 const CART_KEY = 'casatek_carrito';
-const API_BASE = 'http://localhost:8000/api'; // AGREGADO
+const API_BASE = '/api';
 
 function getToken()    { return localStorage.getItem('token') || null; }
 function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
@@ -1037,34 +1040,47 @@ async function comprar() {
 
     const btn = document.getElementById('btn-comprar');
     btn.disabled = true;
-
-    const ticket = {
-        id:     Date.now().toString(36).toUpperCase(),
-        fecha:  new Date().toISOString(),
-        userId: user.id,
-        nombre: user.name,
-        items:  carrito.map(i => ({ nombre: i.nombre, marca: i.marca, cantidad: i.cantidad, precio: i.precio })),
-        total:  carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0),
-    };
-
-    const key  = 'casatek_tickets_' + user.id;
-    let    prev = [];
-    try { prev = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-    prev.push(ticket);
-    localStorage.setItem(key, JSON.stringify(prev));
-
     try {
-        const res = await fetch(API_BASE + '/cart', { headers: authHeaders() });
-        if (res.ok) {
-            const data = await res.json();
-            const items = data.datos?.items ?? [];
-            await Promise.all(items.map(i =>
-                fetch(API_BASE + '/cart/items/' + i.id, { method: 'DELETE', headers: authHeaders() })));
-        }
-    } catch(e) { console.warn('No se pudo vaciar el carrito en el servidor:', e); }
-    saveCarrito([]);
+        const response = await fetch(API_BASE + '/orders', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+                payment_method: 'qr',
+                items: carrito.map(item => ({
+                    product_id: Number(item.id),
+                    quantity: Number(item.cantidad),
+                })),
+            }),
+        });
 
-    window.location.href = 'MisTickets.html';
+        const result = await response.json();
+        if (response.status === 401) {
+            sesionExpirada();
+            return;
+        }
+        if (!response.ok) {
+            const validationErrors = result.errors
+                ? Object.values(result.errors).flat().join('\n')
+                : result.message;
+            throw new Error(validationErrors || 'No se pudo crear el pedido.');
+        }
+
+        const order = result.datos;
+        saveCarrito([]);
+        try {
+            const serverCart = await fetch(API_BASE + '/cart/clear', {
+                method: 'DELETE',
+                headers: authHeaders(),
+            });
+            if (!serverCart.ok) throw new Error('No se pudo vaciar el carrito remoto.');
+        } catch (cleanupError) {
+            console.warn('El pedido se creó, pero no se pudo sincronizar el carrito remoto.', cleanupError);
+        }
+        window.location.href = '/mis-pedidos?pedido=' + encodeURIComponent(order.id);
+    } catch (error) {
+        alert(error.message || 'No se pudo completar la compra. Inténtalo de nuevo.');
+        btn.disabled = false;
+    }
 }
 
 function mostrarVacio() {

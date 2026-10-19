@@ -39,6 +39,7 @@ Route::get('/registro',             $pagina('registro.html'))->name('registro');
 Route::get('/recuperar_contrasena', $pagina('recuperar_contrasena.html'))->name('recuperar_contrasena');
 Route::get('/productos',            $pagina('productos.html'))->name('productos');
 Route::get('/mis-tickets',          $pagina('MisTickets.html'))->name('mis-tickets');
+Route::get('/mis-pedidos',          $pagina('MisPedidos.html'))->name('mis-pedidos');
 // Compatibilidad: enlaces antiguos tipo "productos.html" siguen funcionando
 Route::get('/{archivo}.html', function (string $archivo) {
     $ruta = public_path('Vistas/' . $archivo . '.html');

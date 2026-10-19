@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Carrito
     Route::prefix('cart')->group(function () {
         Route::get('/',                  [CartController::class, 'index']);
-        Route::post('/add',              [CartController::class, 'add']); // <-- CAMBIO AQUÍ: Se quitó el /cart previo
+        Route::post('/add',              [CartController::class, 'add']);
         Route::put('/items/{itemId}',    [CartController::class, 'update']);
         Route::delete('/items/{itemId}', [CartController::class, 'remove']);
         Route::delete('/clear',          [CartController::class, 'clear']);
@@ -74,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('tickets')->group(function () {
         Route::get('/',          [TicketController::class, 'index']);
         Route::get('/{ticket}',  [TicketController::class, 'show']);
+        Route::get('/{ticket}/download', [TicketController::class, 'download']);
     });
 
     // Rangos (crear, editar, eliminar → solo admin via policy)

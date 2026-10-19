@@ -140,13 +140,7 @@ class AdminController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
 
         if ($request->wantsJson()) {
-            return response()->json([
-                'datos' => $users,
-                'totalUsers' => User::count(),
-                'totalFinal' => User::whereHas('rank', fn($q) => $q->where('name', 'like', '%final%'))->count(),
-                'totalWholesale' => User::whereHas('rank', fn($q) => $q->where('name', 'like', '%mayor%'))->count(),
-                'message' => 'Lista de usuarios'
-            ], Response::HTTP_OK);
+            return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
         }
 
         return view('admin.users', compact('users'));
@@ -154,18 +148,23 @@ class AdminController extends Controller
 
     public function showUser(User $user)
     {
-        $user->load('rank', 'roles', 'orders', 'accumulatedPurchases', 'billingInfo');
+        $user->load(
+            'rank',
+            'roles',
+            'orders.items.product.brand',
+            'orders.billingInfo',
+            'orders.ticket',
+            'accumulatedPurchases',
+            'billingInfo'
+        );
 
         $totalOrders = $user->orders()->count();
         $totalSpent = $user->orders()->where('status', 'delivered')->sum('total');
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
         if (request()->wantsJson()) {
-            // Tickets de los pedidos del usuario: [order_id => ticket_number]
-            $tickets = Ticket::whereIn('order_id', $user->orders->pluck('id'))->pluck('ticket_number', 'order_id');
-
             return response()->json([
-                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder'), 'tickets' => $tickets],
+                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder')],
                 'message' => 'Detalles del usuario'
             ], Response::HTTP_OK);
         }
@@ -338,7 +337,7 @@ class AdminController extends Controller
 
     public function orders(Request $request)
     {
-        $query = Order::with('user', 'items.product', 'billingInfo');
+        $query = Order::with('user', 'items.product.brand', 'billingInfo', 'ticket');
 
         if ($request->filled('status'))
             $query->where('status', $request->status);
@@ -392,14 +391,20 @@ class AdminController extends Controller
     //lista de tickets para el panel admin con busqueda
     public function tickets(Request $request)
     {
-        $query = Ticket::with('order.user', 'order.items.product');
+        $query = Ticket::with('order.user', 'order.items.product.brand', 'order.billingInfo');
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('ticket_number', 'like', "%{$search}%")
-                  ->orWhereHas('order', function ($q) use ($search) {
-                      $q->where('order_number', 'like', "%{$search}%");
-                  });
+            $query->where(function ($query) use ($search) {
+                $query->where('ticket_number', 'like', "%{$search}%")
+                    ->orWhereHas('order', function ($orderQuery) use ($search) {
+                        $orderQuery->where('order_number', 'like', "%{$search}%")
+                            ->orWhereHas('user', function ($userQuery) use ($search) {
+                                $userQuery->where('name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                            });
+                    });
+            });
         }
         if ($request->filled('from_date')) $query->whereDate('issued_at', '>=', $request->from_date);
         if ($request->filled('to_date'))   $query->whereDate('issued_at', '<=', $request->to_date);

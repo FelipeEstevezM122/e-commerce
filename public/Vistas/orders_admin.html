@@ -238,6 +238,7 @@
                             <th class="hide-sm">Pago</th>
                             <th>Estado</th>
                             <th>Cambiar Estado</th>
+                            <th>Ticket</th>
                             <th class="hide-sm">Fecha</th>
                         </tr>
                     </thead>
@@ -261,7 +262,11 @@
         icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
     }
 
-    // ---------- Datos de ejemplo (sustituye por tu fetch/API real) ----------
+    const token = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token']
+        .map(key => localStorage.getItem(key))
+        .find(Boolean)
+        ?.replace(/^"|"$/g, '');
+    const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
     const STATUS_MAP = {
         pending:   { cls: 's-pending',   label: 'Pendiente' },
         paid:      { cls: 's-paid',      label: 'Pagado' },
@@ -277,14 +282,7 @@
         { val: 'cancelled', icon: 'fa-ban',          cls: 't-cancelled', label: 'Cancelados' }
     ];
 
-    let orders = [
-        { id: 1, order_number: 'CT-0001', user: { name: 'Marisol Quispe', email: 'marisol@example.com' }, total: 1250.00, payment_method: 'qr', status: 'pending', created_at: '2026-09-24T10:15:00' },
-        { id: 2, order_number: 'CT-0002', user: { name: 'Jorge Fernández', email: 'jorge@example.com' }, total: 480.50, payment_method: 'tarjeta', status: 'paid', created_at: '2026-09-23T16:40:00' },
-        { id: 3, order_number: 'CT-0003', user: { name: 'Ana Mamani', email: 'ana@example.com' }, total: 3120.00, payment_method: 'transferencia', status: 'shipped', created_at: '2026-09-22T09:05:00' },
-        { id: 4, order_number: 'CT-0004', user: { name: 'Luis Choque', email: 'luis@example.com' }, total: 210.00, payment_method: 'qr', status: 'delivered', created_at: '2026-09-20T12:30:00' },
-        { id: 5, order_number: 'CT-0005', user: { name: 'Carla Rojas', email: 'carla@example.com' }, total: 990.00, payment_method: 'tarjeta', status: 'cancelled', created_at: '2026-09-19T08:00:00' },
-        { id: 6, order_number: 'CT-0006', user: { name: 'Pedro Vargas', email: 'pedro@example.com' }, total: 640.00, payment_method: 'qr', status: 'pending', created_at: '2026-09-18T14:20:00' }
-    ];
+    let orders = [];
 
     let currentStatus = null;
     let currentPage = 1;
@@ -324,13 +322,43 @@
         renderAll();
     }
 
-    function updateStatus(orderId, newStatus) {
+    async function updateStatus(orderId, newStatus) {
         const order = orders.find(o => o.id === orderId);
         if (!order) return;
-        order.status = newStatus;
-        showAlert('success', `Pedido ${order.order_number} actualizado a "${STATUS_MAP[newStatus].label}".`);
-        renderAll();
-        // Aquí iría tu fetch/PATCH real hacia el backend
+        try {
+            const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+                method: 'PATCH',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'No se pudo actualizar el pedido.');
+            order.status = result.datos?.status || newStatus;
+            showAlert('success', `Pedido ${order.order_number} actualizado a "${STATUS_MAP[order.status].label}".`);
+            renderAll();
+        } catch (error) {
+            showAlert('error', error.message);
+        }
+    }
+
+    async function downloadTicket(ticket, button) {
+        button.disabled = true;
+        try {
+            const response = await fetch(`/api/tickets/${ticket.id}/download`, {
+                headers: { ...authHeaders, 'Accept': 'application/pdf' },
+            });
+            if (!response.ok) throw new Error('No se pudo descargar el ticket (HTTP ' + response.status + ').');
+            const url = URL.createObjectURL(await response.blob());
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${ticket.ticket_number}.pdf`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) {
+            showAlert('error', error.message);
+        } finally {
+            button.disabled = false;
+        }
     }
 
     function showAlert(type, msg) {
@@ -358,7 +386,7 @@
         const body = document.getElementById('ordersBody');
         if (!pageItems.length) {
             body.innerHTML = `
-                <tr><td colspan="7">
+                <tr><td colspan="8">
                     <div class="empty-state">
                         <i class="fa-solid fa-clipboard"></i>
                         <p>No se encontraron pedidos</p>
@@ -379,18 +407,22 @@
                             <i class="fa-solid fa-check"></i>
                         </button>
                     </div>`;
+                const ticketCell = order.ticket
+                    ? `<button type="button" class="update-btn" onclick="downloadTicket(orders.find(o => o.id === ${order.id}).ticket, this)"><i class="fa-solid fa-download"></i> ${escapeHtml(order.ticket.ticket_number)}</button>`
+                    : '<span style="color:var(--muted);font-size:12px">Sin ticket</span>';
 
                 return `
                     <tr>
-                        <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">${order.order_number}</td>
+                        <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">${escapeHtml(order.order_number)}</td>
                         <td>
-                            <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">${order.user.name || '—'}</p>
-                            <p style="font-size:11px;color:var(--muted);margin:2px 0 0">${order.user.email || ''}</p>
+                            <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">${escapeHtml(order.user?.name || '—')}</p>
+                            <p style="font-size:11px;color:var(--muted);margin:2px 0 0">${escapeHtml(order.user?.email || '')}</p>
                         </td>
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(order.total)}</td>
-                        <td class="hide-sm" style="font-size:12px;text-transform:capitalize;color:#d1d5db">${order.payment_method || '—'}</td>
+                        <td class="hide-sm" style="font-size:12px;text-transform:capitalize;color:#d1d5db">${escapeHtml(order.payment_method || '—')}</td>
                         <td><span class="status-badge ${s.cls}">${s.label}</span></td>
                         <td>${statusCell}</td>
+                        <td>${ticketCell}</td>
                         <td class="hide-sm" style="font-size:11px;color:var(--muted)">${date}<br><span style="font-size:10px">${time}</span></td>
                     </tr>`;
             }).join('');
@@ -422,7 +454,36 @@
         renderTable();
     }
 
+    async function loadOrders() {
+        if (!token) {
+            window.location.href = '/iniciarsesion';
+            return;
+        }
+        try {
+            let pageNumber = 1;
+            let lastPage = 1;
+            do {
+                const response = await fetch(`/api/admin/orders?page=${pageNumber}`, { headers: authHeaders });
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/iniciarsesion';
+                    return;
+                }
+                if (!response.ok) throw new Error('No se pudieron cargar los pedidos (HTTP ' + response.status + ').');
+                const payload = await response.json();
+                const page = payload.datos;
+                if (!page || !Array.isArray(page.data)) throw new Error('La respuesta de pedidos no tiene el formato esperado.');
+                orders.push(...page.data);
+                pageNumber = page.current_page + 1;
+                lastPage = page.last_page;
+            } while (pageNumber <= lastPage);
+            renderAll();
+        } catch (error) {
+            showAlert('error', error.message || 'Error de conexión al cargar pedidos.');
+        }
+    }
+
     renderAll();
+    loadOrders();
 </script>
 
 </body>

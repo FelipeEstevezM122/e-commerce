@@ -131,6 +131,9 @@
                                 <a href="MisTickets.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-ticket w-4"></i> Mis tickets
                                 </a>
+                                <a href="/mis-pedidos" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    <i class="fa-solid fa-clipboard-list w-4"></i> Mis pedidos
+                                </a>
                                 <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                                     <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
                                         <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
@@ -349,6 +352,7 @@
                     </div>
                 </div>
             </section>
+            <p id="tickets-error" class="hidden mb-4 rounded-xl bg-red-100 p-4 text-sm font-semibold text-red-700"></p>
 
             <header class="mb-8">
                 <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase mb-1">Historial de compras</p>
@@ -619,10 +623,6 @@ const rank  = leer('rank', null);
 
 if (!token || !user) window.location.href = 'iniciarsesion.html?redirect=MisTickets.html';
 
-const TICKETS_KEY = 'casatek_tickets_' + (user ? user.id : 'anon');
-
-function getTickets() { return leer(TICKETS_KEY, []); }
-
 function pintarUsuario() {
     const inicial = (user.name || 'U')[0].toUpperCase();
     document.getElementById('hd-avatar').textContent      = inicial;
@@ -662,7 +662,7 @@ function crearTicket(t, index) {
         <div class="bg-[#111827] text-white px-6 py-4 flex flex-wrap justify-between items-center gap-2">
             <div>
                 <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase">Ticket</p>
-                <p class="font-black text-lg">#${escapeHtml(t.id)}</p>
+                <p class="font-black text-lg">${escapeHtml(t.ticketNumber)}</p>
             </div>
             <p class="text-xs text-gray-300"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(formatoFecha(t.fecha))}</p>
         </div>
@@ -671,6 +671,12 @@ function crearTicket(t, index) {
             <h2 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-3">Datos del cliente</h2>
             <dl class="grid sm:grid-cols-2 gap-3 text-sm">
                 <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Nombre</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.nombre)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Correo</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.email)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Teléfono</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.phone)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Dirección</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.address)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">NIT</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.nit)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Pedido</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.orderNumber)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Estado</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.status)}</dd></div>
             </dl>
         </div>
 
@@ -702,42 +708,92 @@ function crearTicket(t, index) {
                 <span class="text-3xl font-black text-[#22C55E]">${fmt(t.total)}</span>
             </div>
         </div>`;
+    const download = document.createElement('a');
+    download.href = '#';
+    download.className = 'mx-6 mb-6 inline-flex items-center gap-2 rounded-xl bg-[#22C55E] px-5 py-3 text-sm font-black text-white hover:bg-green-700';
+    download.innerHTML = '<i class="fa-solid fa-download"></i> Descargar PDF';
+    download.addEventListener('click', event => {
+        event.preventDefault();
+        descargarTicket(t.id, download);
+    });
+    li.appendChild(download);
     return li;
 }
 
 function normalizarApi(t) {
-    const items = (t.items || t.details || []).map(i => ({
+    const order = t.order || {};
+    const items = (order.items || t.items || t.details || []).map(i => ({
         nombre:   i.product?.name ?? i.nombre ?? i.name ?? 'Producto',
         marca:    i.product?.brand?.name ?? i.marca ?? '',
         cantidad: Number(i.quantity ?? i.cantidad ?? 1),
-        precio:   parseFloat(i.price ?? i.price_when_added ?? i.precio ?? 0),
+        precio:   parseFloat(i.price_when_ordered ?? i.price ?? i.precio ?? 0),
     }));
     return {
         id:     t.id,
-        fecha:  t.created_at ?? t.fecha,
-        userId: t.user_id ?? user.id,
-        nombre: t.user?.name ?? user.name,
+        ticketNumber: t.ticket_number || ('Ticket #' + t.id),
+        fecha:  t.issued_at ?? t.created_at ?? t.fecha,
+        userId: order.user_id ?? t.user_id ?? user.id,
+        nombre: order.user?.name ?? t.user?.name ?? user.name,
+        email:  order.user?.email ?? t.user?.email ?? user.email,
+        phone:  order.user?.phone ?? '—',
+        address: order.billing_info?.address ?? '—',
+        nit: order.billing_info?.nit ?? '—',
+        orderNumber: order.order_number ?? '—',
+        status: order.status ?? 'pending',
         items,
-        total:  parseFloat(t.total ?? items.reduce((a, i) => a + i.precio * i.cantidad, 0)),
+        total:  parseFloat(order.total ?? t.total ?? items.reduce((a, i) => a + i.precio * i.cantidad, 0)),
     };
 }
 
+async function descargarTicket(ticketId, button) {
+    button.classList.add('opacity-60', 'pointer-events-none');
+    try {
+        const response = await fetch(`/api/tickets/${ticketId}/download`, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/pdf' },
+        });
+        if (!response.ok) throw new Error('No se pudo descargar el ticket.');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${button.closest('li').querySelector('.font-black.text-lg').textContent}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        document.getElementById('tickets-error').textContent = error.message;
+        document.getElementById('tickets-error').classList.remove('hidden');
+    } finally {
+        button.classList.remove('opacity-60', 'pointer-events-none');
+    }
+}
+
 async function cargarTickets() {
-    let tickets = getTickets();
+    let tickets = [];
 
     try {
-        const res = await fetch('/api/tickets', { headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token } });
-        if (res.status === 401) {
-            ['token','user','roles','rank'].forEach(k => localStorage.removeItem(k));
-            window.location.href = 'iniciarsesion.html?redirect=MisTickets.html';
-            return;
-        }
-        if (res.ok) {
+        let pageNumber = 1;
+        let lastPage = 1;
+        do {
+            const res = await fetch(`/api/tickets?page=${pageNumber}`, {
+                headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
+            });
+            if (res.status === 401) {
+                ['token','user','roles','rank'].forEach(k => localStorage.removeItem(k));
+                window.location.href = 'iniciarsesion.html?redirect=MisTickets.html';
+                return;
+            }
+            if (!res.ok) throw new Error('No se pudieron cargar tus tickets (HTTP ' + res.status + ').');
             const data = await res.json();
-            const lista = data.datos ?? data.data ?? data;
-            if (Array.isArray(lista)) tickets = lista.map(normalizarApi);
-        }
-    } catch (e) {}
+            const paginated = data.datos;
+            if (!Array.isArray(paginated?.data)) throw new Error('La respuesta de tickets no tiene el formato esperado.');
+            tickets.push(...paginated.data.map(normalizarApi));
+            pageNumber = paginated.current_page + 1;
+            lastPage = paginated.last_page;
+        } while (pageNumber <= lastPage);
+    } catch (error) {
+        document.getElementById('tickets-error').textContent = error.message || 'Error de conexión al cargar tus tickets.';
+        document.getElementById('tickets-error').classList.remove('hidden');
+    }
 
     tickets = tickets.filter(t => String(t.userId) === String(user.id))
                      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));

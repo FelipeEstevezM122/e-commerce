@@ -6,6 +6,7 @@ use App\Models\BillingInfo;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class OrderController extends Controller
 
         $orders = $request->user()
             ->orders()
-            ->with('items.product', 'billingInfo')
+            ->with('items.product.brand', 'billingInfo', 'ticket')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -35,7 +36,7 @@ class OrderController extends Controller
         $this->authorize('view', $order); // Policy: dueño o admin
 
         return response()->json([
-            'datos'   => $order->load('items.product', 'billingInfo'),
+            'datos'   => $order->load('user', 'items.product.brand', 'billingInfo', 'ticket'),
             'message' => 'Detalle del pedido'
         ], Response::HTTP_OK);
     }
@@ -58,8 +59,14 @@ class OrderController extends Controller
         ]);
 
         $user     = $request->user();
-        $items    = $request->items;
-        $products = Product::whereIn('id', collect($items)->pluck('product_id'))->get()->keyBy('id');
+        $items = collect($request->items)
+            ->groupBy('product_id')
+            ->map(fn($productItems, $productId) => [
+                'product_id' => (int) $productId,
+                'quantity' => $productItems->sum('quantity'),
+            ])
+            ->values();
+        $products = Product::whereIn('id', $items->pluck('product_id'))->get()->keyBy('id');
 
         DB::beginTransaction();
         try {
@@ -108,10 +115,12 @@ class OrderController extends Controller
                 OrderItem::create(array_merge(['order_id' => $order->id], $item));
             }
 
+            Ticket::createForOrder($order);
+
             DB::commit();
 
             return response()->json([
-                'datos'   => $order->load('items.product', 'billingInfo'),
+                'datos'   => $order->load('user', 'items.product.brand', 'billingInfo', 'ticket'),
                 'message' => 'Pedido creado exitosamente'
             ], Response::HTTP_CREATED);
 
