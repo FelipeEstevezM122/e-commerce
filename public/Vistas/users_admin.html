@@ -169,17 +169,18 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 
 <!-- ===================== HEADER ADMIN ===================== -->
 <header id="adminHeader">
-    <a href="dashboard_admin.html" class="ah-logo">
+    <a href="/dashboard_admin.html" class="ah-logo">
         <span class="ah-logo-dot"></span>
         <span class="ah-logo-name">Casatek</span>
         <span class="ah-logo-badge">Admin</span>
     </a>
 
     <nav class="ah-nav">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="products_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/products_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
 
     <div class="ah-actions">
@@ -187,7 +188,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <a href="#" class="ah-btn-logout">
+        <a href="#" class="ah-btn-logout" onclick="logoutAdmin(); return false;">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="hidden-xs">Salir</span>
         </a>
@@ -198,10 +199,11 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
 </header>
 
 <nav id="mobileNav">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="products_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/products_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
 <!-- ===================== USERS PAGE ===================== -->
@@ -221,7 +223,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                 </div>
                 <div>
                     <p class="mini-label">Total usuarios</p>
-                    <p class="mini-val">128</p>
+                    <p class="mini-val" id="statTotal">—</p>
                 </div>
             </div>
             <div class="mini-card fade-up delay-2">
@@ -230,7 +232,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                 </div>
                 <div>
                     <p class="mini-label">Clientes finales</p>
-                    <p class="mini-val">94</p>
+                    <p class="mini-val" id="statFinal">—</p>
                 </div>
             </div>
             <div class="mini-card fade-up delay-3">
@@ -239,26 +241,26 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                 </div>
                 <div>
                     <p class="mini-label">Mayoristas</p>
-                    <p class="mini-val">34</p>
+                    <p class="mini-val" id="statWholesale">—</p>
                 </div>
             </div>
         </div>
 
         <div class="search-wrap">
-            <form onsubmit="return false" style="display:flex;gap:12px;flex:1;flex-wrap:wrap">
+            <form onsubmit="applyFilters(); return false" style="display:flex;gap:12px;flex:1;flex-wrap:wrap">
                 <div class="search-input-wrap">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" name="search" placeholder="Buscar por nombre, email o teléfono..." class="s-input">
+                    <input type="text" id="fSearch" name="search" placeholder="Buscar por nombre, email o teléfono..." class="s-input">
                 </div>
                 <button type="submit" class="s-btn"><i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar</button>
-                <a href="#" class="s-clear"><i class="fa-solid fa-xmark"></i> Limpiar</a>
+                <a href="#" class="s-clear" onclick="clearFilters(); return false;"><i class="fa-solid fa-xmark"></i> Limpiar</a>
             </form>
         </div>
 
         <div class="panel">
             <div class="panel-head">
                 <h2><i class="fa-solid fa-users" style="color:var(--green)"></i> Lista de Usuarios</h2>
-                <span>128 usuarios en total</span>
+                <span id="panelCount">cargando...</span>
             </div>
 
             <div style="overflow-x:auto">
@@ -275,318 +277,45 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                             <th style="text-align:center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td style="color:var(--muted);font-size:12px">1</td>
-                            <td>
-                                <p class="u-name">María Fernanda Quispe</p>
-                                <p class="u-email">maria.quispe@example.com</p>
-                            </td>
-                            <td>+591 71234567</td>
-                            <td>
-                                <a href="https://wa.me/59171234567" target="_blank" style="color:#4ade80;font-size:13px;display:flex;align-items:center;gap:5px">
-                                    <i class="fa-brands fa-whatsapp"></i> +591 71234567
-                                </a>
-                            </td>
-                            <td>
-                                <code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px;color:#e5e7eb">CT-8841</code>
-                            </td>
-                            <td>
-                                <span class="rank-badge rank-wholesale"><i class="fa-solid fa-star" style="font-size:8px"></i> mayorista</span>
-                            </td>
-                            <td style="font-size:12px;color:var(--muted)">14/03/2025</td>
-                            <td>
-                                <div style="display:flex;justify-content:center;gap:6px">
-                                    <button type="button" class="act-btn act-view" title="Ver detalle"
-                                        onclick="openUserModal({
-                                            id: '1',
-                                            name: 'María Fernanda Quispe',
-                                            email: 'maria.quispe@example.com',
-                                            phone: '+591 71234567',
-                                            whatsapp: '59171234567',
-                                            access_code: 'CT-8841',
-                                            rank: 'Cliente Mayorista',
-                                            created_at: '14/03/2025'
-                                        })">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <form onsubmit="return confirm('¿Eliminar a María Fernanda Quispe? Esta acción no se puede deshacer.')">
-                                        <button type="submit" class="act-btn act-del" title="Eliminar">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--muted);font-size:12px">2</td>
-                            <td>
-                                <p class="u-name">Carlos Alberto Rojas</p>
-                                <p class="u-email">carlos.rojas@example.com</p>
-                            </td>
-                            <td>+591 65432198</td>
-                            <td>
-                                <span style="color:var(--muted)">—</span>
-                            </td>
-                            <td>
-                                <span style="color:var(--muted)">—</span>
-                            </td>
-                            <td>
-                                <span class="rank-badge rank-final"><i class="fa-solid fa-star" style="font-size:8px"></i> cliente final</span>
-                            </td>
-                            <td style="font-size:12px;color:var(--muted)">02/06/2025</td>
-                            <td>
-                                <div style="display:flex;justify-content:center;gap:6px">
-                                    <button type="button" class="act-btn act-view" title="Ver detalle"
-                                        onclick="openUserModal({
-                                            id: '2',
-                                            name: 'Carlos Alberto Rojas',
-                                            email: 'carlos.rojas@example.com',
-                                            phone: '+591 65432198',
-                                            whatsapp: '',
-                                            access_code: '—',
-                                            rank: 'Cliente Final',
-                                            created_at: '02/06/2025'
-                                        })">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <form onsubmit="return confirm('¿Eliminar a Carlos Alberto Rojas? Esta acción no se puede deshacer.')">
-                                        <button type="submit" class="act-btn act-del" title="Eliminar">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--muted);font-size:12px">3</td>
-                            <td>
-                                <p class="u-name">Distribuidora Andina S.R.L.</p>
-                                <p class="u-email">compras@andina.com</p>
-                            </td>
-                            <td>+591 78889900</td>
-                            <td>
-                                <a href="https://wa.me/59178889900" target="_blank" style="color:#4ade80;font-size:13px;display:flex;align-items:center;gap:5px">
-                                    <i class="fa-brands fa-whatsapp"></i> +591 78889900
-                                </a>
-                            </td>
-                            <td>
-                                <code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px;color:#e5e7eb">CT-2290</code>
-                            </td>
-                            <td>
-                                <span class="rank-badge rank-wholesale"><i class="fa-solid fa-star" style="font-size:8px"></i> mayorista</span>
-                            </td>
-                            <td style="font-size:12px;color:var(--muted)">28/07/2025</td>
-                            <td>
-                                <div style="display:flex;justify-content:center;gap:6px">
-                                    <button type="button" class="act-btn act-view" title="Ver detalle"
-                                        onclick="openUserModal({
-                                            id: '3',
-                                            name: 'Distribuidora Andina S.R.L.',
-                                            email: 'compras@andina.com',
-                                            phone: '+591 78889900',
-                                            whatsapp: '59178889900',
-                                            access_code: 'CT-2290',
-                                            rank: 'Cliente Mayorista',
-                                            created_at: '28/07/2025'
-                                        })">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <form onsubmit="return confirm('¿Eliminar a Distribuidora Andina S.R.L.? Esta acción no se puede deshacer.')">
-                                        <button type="submit" class="act-btn act-del" title="Eliminar">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--muted);font-size:12px">4</td>
-                            <td>
-                                <p class="u-name">Ana Lucía Mendoza</p>
-                                <p class="u-email">ana.mendoza@example.com</p>
-                            </td>
-                            <td>—</td>
-                            <td>
-                                <span style="color:var(--muted)">—</span>
-                            </td>
-                            <td>
-                                <span style="color:var(--muted)">—</span>
-                            </td>
-                            <td>
-                                <span class="rank-badge rank-default"><i class="fa-solid fa-star" style="font-size:8px"></i> sin rango</span>
-                            </td>
-                            <td style="font-size:12px;color:var(--muted)">09/08/2025</td>
-                            <td>
-                                <div style="display:flex;justify-content:center;gap:6px">
-                                    <button type="button" class="act-btn act-view" title="Ver detalle"
-                                        onclick="openUserModal({
-                                            id: '4',
-                                            name: 'Ana Lucía Mendoza',
-                                            email: 'ana.mendoza@example.com',
-                                            phone: '—',
-                                            whatsapp: '',
-                                            access_code: '—',
-                                            rank: 'Sin rango',
-                                            created_at: '09/08/2025'
-                                        })">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <form onsubmit="return confirm('¿Eliminar a Ana Lucía Mendoza? Esta acción no se puede deshacer.')">
-                                        <button type="submit" class="act-btn act-del" title="Eliminar">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--muted);font-size:12px">5</td>
-                            <td>
-                                <p class="u-name">Jorge Luis Paredes</p>
-                                <p class="u-email">jorge.paredes@example.com</p>
-                            </td>
-                            <td>+591 60011223</td>
-                            <td>
-                                <a href="https://wa.me/59160011223" target="_blank" style="color:#4ade80;font-size:13px;display:flex;align-items:center;gap:5px">
-                                    <i class="fa-brands fa-whatsapp"></i> +591 60011223
-                                </a>
-                            </td>
-                            <td>
-                                <code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px;color:#e5e7eb">CT-4415</code>
-                            </td>
-                            <td>
-                                <span class="rank-badge rank-final"><i class="fa-solid fa-star" style="font-size:8px"></i> cliente final</span>
-                            </td>
-                            <td style="font-size:12px;color:var(--muted)">15/09/2025</td>
-                            <td>
-                                <div style="display:flex;justify-content:center;gap:6px">
-                                    <button type="button" class="act-btn act-view" title="Ver detalle"
-                                        onclick="openUserModal({
-                                            id: '5',
-                                            name: 'Jorge Luis Paredes',
-                                            email: 'jorge.paredes@example.com',
-                                            phone: '+591 60011223',
-                                            whatsapp: '59160011223',
-                                            access_code: 'CT-4415',
-                                            rank: 'Cliente Final',
-                                            created_at: '15/09/2025'
-                                        })">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <form onsubmit="return confirm('¿Eliminar a Jorge Luis Paredes? Esta acción no se puede deshacer.')">
-                                        <button type="submit" class="act-btn act-del" title="Eliminar">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <!--
-                        Ejemplo de estado vacío (cuando no hay usuarios que coincidan con la búsqueda):
-                        <tr>
-                            <td colspan="8">
-                                <div class="empty-state">
-                                    <i class="fa-solid fa-users-slash"></i>
-                                    <p>No se encontraron usuarios</p>
-                                </div>
-                            </td>
-                        </tr>
-                        -->
+                    <tbody id="usersBody">
+                        <tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="pag">
-                <span class="pag-btn disabled"><i class="fa-solid fa-chevron-left"></i></span>
-                <span class="pag-btn active">1</span>
-                <a href="#" class="pag-btn">2</a>
-                <a href="#" class="pag-btn">3</a>
-                <a href="#" class="pag-btn">4</a>
-                <a href="#" class="pag-btn"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
-            <p style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:14px">
-                Página 1 de 4
-            </p>
+            <div class="pag" id="pagWrap" style="display:none"></div>
+            <p id="pagLabel" style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:14px"></p>
         </div>
 
     </main>
 </div>
 
-<!-- USUARIO  -->
-<div id="userModal">
-    <div class="modal-box">
-
-        <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:10px">
-                <div style="width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,.15);display:flex;align-items:center;justify-content:center">
-                    <i class="fa-solid fa-user" style="color:#60a5fa;font-size:14px"></i>
-                </div>
-                <div>
-                    <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Detalle de usuario</p>
-                    <p id="modal-name" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff"></p>
-                </div>
-            </div>
-            <button class="modal-close-btn" onclick="closeUserModal()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div class="modal-body">
-
-            <div class="modal-grid-2">
-                <div class="modal-field">
-                    <p class="modal-field-label">ID</p>
-                    <p id="modal-id" class="modal-field-val"></p>
-                </div>
-                <div class="modal-field">
-                    <p class="modal-field-label">Registro</p>
-                    <p id="modal-date" class="modal-field-val"></p>
-                </div>
-            </div>
-
-            <div class="modal-field">
-                <p class="modal-field-label">Email</p>
-                <p id="modal-email" class="modal-field-val"></p>
-            </div>
-
-            <div class="modal-grid-2">
-                <div class="modal-field">
-                    <p class="modal-field-label">Teléfono</p>
-                    <p id="modal-phone" class="modal-field-val"></p>
-                </div>
-                <div class="modal-field">
-                    <p class="modal-field-label">WhatsApp</p>
-                    <p id="modal-whatsapp" class="modal-field-val"></p>
-                </div>
-            </div>
-
-            <div class="modal-grid-2">
-                <div class="modal-field">
-                    <p class="modal-field-label">Código de acceso</p>
-                    <p id="modal-code" class="modal-field-val" style="font-family:monospace"></p>
-                </div>
-                <div class="modal-field">
-                    <p class="modal-field-label">Rango</p>
-                    <p id="modal-rank" class="modal-field-val" style="color:var(--green)"></p>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button onclick="closeUserModal()"
-                style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9ca3af'">
-                Cerrar
-            </button>
-        </div>
-
-    </div>
-</div>
-
 <script>
-/* Menú móvil (header admin) */
+/* Si algo falla en el JavaScript de la página, se muestra aquí en vez de quedarse en silencio */
+window.addEventListener('error', function (e) {
+    var b = document.getElementById('usersBody');
+    if (b) b.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Error de JavaScript: ' + String(e.message).replace(/</g, '&lt;') + '</p></div></td></tr>';
+});
+</script>
+<script>
+(function () {
+'use strict';
+
+/* ---------- Config ---------- */
+const API_USERS = '/api/admin/users';
+const LOGIN_URL = '/iniciarsesion';
+const TOKEN_KEYS = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token'];
+
+function getToken() {
+    for (const k of TOKEN_KEYS) {
+        try { const v = localStorage.getItem(k); if (v) return v.replace(/^"|"$/g, ''); } catch (e) {}
+    }
+    return '';
+}
+function authHeaders() { return { 'Accept': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+function goLogin() { window.location.href = LOGIN_URL; }
+if (!getToken()) goLogin();
+
 function toggleMobileNav() {
     const nav  = document.getElementById('mobileNav');
     const icon = document.getElementById('hambIcon');
@@ -595,31 +324,151 @@ function toggleMobileNav() {
     icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
 }
 
-/* Modal de usuario */
-function openUserModal(u) {
-    document.getElementById('modal-name').textContent    = u.name;
-    document.getElementById('modal-id').textContent      = '#' + u.id;
-    document.getElementById('modal-date').textContent    = u.created_at;
-    document.getElementById('modal-email').textContent   = u.email;
-    document.getElementById('modal-phone').textContent   = u.phone;
-    document.getElementById('modal-code').textContent    = u.access_code;
-    document.getElementById('modal-rank').textContent    = u.rank;
-    document.getElementById('modal-whatsapp').innerHTML  = u.whatsapp
-        ? `<a href="https://wa.me/${u.whatsapp}" target="_blank" style="color:#4ade80;display:flex;align-items:center;gap:5px"><i class="fa-brands fa-whatsapp"></i> ${u.whatsapp}</a>`
-        : '—';
-    document.getElementById('userModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 }
-function closeUserModal() {
-    document.getElementById('userModal').classList.remove('open');
-    document.body.style.overflow = '';
+function escapeJs(str) { return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+let currentPage = 1;
+
+function rankName(u) {
+    const r = u.rank;
+    if (r && typeof r === 'object') return r.name || r.nombre || r.title || '';
+    return r || '';
 }
-document.getElementById('userModal').addEventListener('click', function(e) {
-    if (e.target === this) closeUserModal();
-});
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeUserModal();
-});
+function fmtDate(v) {
+    if (!v) return '—';
+    const d = new Date(v);
+    return isNaN(d) ? String(v) : d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function rankBadge(rank) {
+    const r = String(rank || '').toLowerCase();
+    let cls = 'rank-default', label = rank || 'sin rango';
+    if (r.includes('mayor')) cls = 'rank-wholesale';
+    else if (r.includes('final')) cls = 'rank-final';
+    return `<span class="rank-badge ${cls}"><i class="fa-solid fa-star" style="font-size:8px"></i> ${escapeHtml(label)}</span>`;
+}
+
+function loadUsers(page = 1) {
+    currentPage = page;
+    const params = new URLSearchParams();
+    const search = document.getElementById('fSearch').value.trim();
+    if (search) params.set('search', search);
+    params.set('page', page);
+
+    document.getElementById('usersBody').innerHTML =
+        '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>';
+    document.getElementById('pagWrap').style.display = 'none';
+    document.getElementById('pagLabel').textContent = '';
+
+    fetch(API_USERS + '?' + params.toString(), { headers: authHeaders() })
+    .then(res => {
+        if (res.status === 401) { goLogin(); throw new Error('Sesión expirada'); }
+        if (res.status === 403) throw new Error('No tienes permiso de administrador.');
+        if (!res.ok) throw new Error('No se pudo cargar la lista de usuarios (HTTP ' + res.status + ')');
+        return res.json();
+    })
+    .then(json => {
+        const pag = json.datos;
+        renderStats(json);
+        renderTable(pag.data || []);
+        renderPagination(pag);
+        document.getElementById('panelCount').textContent = (pag.total ?? (pag.data || []).length) + ' usuarios en total';
+    })
+    .catch(err => {
+        document.getElementById('usersBody').innerHTML =
+            `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${escapeHtml(err.message)}</p></div></td></tr>`;
+        document.getElementById('panelCount').textContent = '';
+    });
+}
+
+function renderStats(json) {
+    const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined) ? '—' : v; };
+    set('statTotal', json.totalUsers);
+    set('statFinal', json.totalFinal);
+    set('statWholesale', json.totalWholesale);
+}
+
+function renderTable(users) {
+    const body = document.getElementById('usersBody');
+    if (!users.length) {
+        body.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No se encontraron usuarios</p></div></td></tr>';
+        return;
+    }
+    const dash = '<span style="color:var(--muted)">—</span>';
+    body.innerHTML = users.map(u => {
+        const wa = u.whatsapp ? String(u.whatsapp).replace(/\D/g, '') : '';
+        const whatsapp = wa
+            ? `<a href="https://wa.me/${wa}" target="_blank" style="color:#4ade80;font-size:13px;display:flex;align-items:center;gap:5px"><i class="fa-brands fa-whatsapp"></i> ${escapeHtml(u.whatsapp)}</a>`
+            : dash;
+        const code = u.access_code
+            ? `<code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px;color:#e5e7eb">${escapeHtml(u.access_code)}</code>`
+            : dash;
+        return `
+        <tr>
+            <td style="color:var(--muted);font-size:12px">${u.id}</td>
+            <td>
+                <p class="u-name">${escapeHtml(u.name || '—')}</p>
+                <p class="u-email">${escapeHtml(u.email || '')}</p>
+            </td>
+            <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
+            <td>${whatsapp}</td>
+            <td>${code}</td>
+            <td>${rankBadge(rankName(u))}</td>
+            <td style="font-size:12px;color:var(--muted)">${escapeHtml(fmtDate(u.created_at))}</td>
+            <td>
+                <div style="display:flex;justify-content:center;gap:6px">
+                    <a href="/show_admin.html/${u.id}" class="act-btn act-view" title="Ver detalle"><i class="fa-solid fa-eye"></i></a>
+                    <button type="button" class="act-btn act-del" title="Eliminar" onclick="deleteUser(${u.id}, '${escapeJs(u.name)}')"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function renderPagination(p) {
+    const wrap = document.getElementById('pagWrap');
+    const label = document.getElementById('pagLabel');
+    const last = p.last_page || 1, cur = p.current_page || 1;
+    if (last <= 1) { wrap.style.display = 'none'; label.textContent = ''; return; }
+    let html = `<span class="pag-btn ${cur === 1 ? 'disabled' : ''}" onclick="loadUsers(${cur - 1})"><i class="fa-solid fa-chevron-left"></i></span>`;
+    for (let i = 1; i <= last; i++) html += `<span class="pag-btn ${i === cur ? 'active' : ''}" onclick="loadUsers(${i})">${i}</span>`;
+    html += `<span class="pag-btn ${cur === last ? 'disabled' : ''}" onclick="loadUsers(${cur + 1})"><i class="fa-solid fa-chevron-right"></i></span>`;
+    wrap.innerHTML = html;
+    wrap.style.display = 'flex';
+    label.textContent = `Página ${cur} de ${last}`;
+}
+
+function applyFilters() { loadUsers(1); }
+function clearFilters() { document.getElementById('fSearch').value = ''; loadUsers(1); }
+
+function deleteUser(id, name) {
+    if (!confirm(`¿Eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
+    fetch(API_USERS + '/' + id, { method: 'DELETE', headers: authHeaders() })
+    .then(async res => {
+        const json = await res.json().catch(() => ({}));
+        if (res.status === 401) { goLogin(); return; }
+        if (!res.ok) throw new Error(json.message || 'No se pudo eliminar el usuario.');
+        loadUsers(currentPage);
+    })
+    .catch(err => alert(err.message));
+}
+
+/* ---------- Funciones usadas por el HTML (onclick) ---------- */
+function logoutAdmin() {
+    TOKEN_KEYS.concat(['user', 'role', 'usuario']).forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    goLogin();
+}
+window.toggleMobileNav = toggleMobileNav;
+window.loadUsers = loadUsers;
+window.applyFilters = applyFilters;
+window.clearFilters = clearFilters;
+window.deleteUser = deleteUser;
+window.logoutAdmin = logoutAdmin;
+
+loadUsers(1);
+})();
 </script>
 
 </body>
