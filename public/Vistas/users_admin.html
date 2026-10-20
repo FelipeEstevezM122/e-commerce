@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuarios - Admin - Casatek</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="/js/admin-guard.js"></script>
+
+<style>
+:root {
+    --green:#22C55E; --green-dark:#15803d;
+    --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
+    --text:#f3f4f6; --muted:#6b7280;
+}
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
+body { color: #fff; overflow-x: hidden; }
+
+/* ── Header admin ── */
+#adminHeader {
+    background:rgba(6,13,10,.95); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:100;
+    padding:0 28px; height:64px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    font-family:'DM Sans',sans-serif;
+}
+.ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+.ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
+.ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
+.ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
+
+.ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
+.ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
+.ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+
+.ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
+.ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
+.ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
+.ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; text-decoration:none; }
+.ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
+
+.ah-hamburger { display:none; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:16px; transition:all .18s; flex-shrink:0; }
+.ah-hamburger:hover { color:var(--green); border-color:var(--border); }
+
+#mobileNav {
+    display:none; flex-direction:column; gap:4px;
+    background:rgba(6,13,10,.98); border-bottom:1px solid var(--border);
+    padding:12px 16px; font-family:'DM Sans',sans-serif;
+}
+#mobileNav a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; }
+#mobileNav a:hover, #mobileNav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+#mobileNav .mob-divider { height:1px; background:var(--border); margin:4px 0; }
+
+@media(max-width:900px) {
+    .ah-nav { display:none; }
+    .ah-hamburger { display:flex; }
+    .ah-logo-badge { display:none; }
+}
+@media(max-width:480px) {
+    #adminHeader { padding:0 14px; height:58px; }
+    .ah-user-name { display:none; }
+}
+
+/* ── Página Usuarios ── */
+#usersPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
+#main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
+
+.section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
+.section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
+
+.mini-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+.mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
+.mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+.mini-val { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff; line-height:1.1; }
+
+.search-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:20px; display:flex; gap:12px; flex-wrap:wrap; }
+.search-input-wrap { position:relative; flex:1; min-width:200px; }
+.search-input-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--green); font-size:13px; pointer-events:none; }
+.s-input { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:10px 14px 10px 40px; font-size:13px; font-family:'DM Sans',sans-serif; color:#fff; outline:none; transition:border-color .15s; }
+.s-input:focus { border-color:var(--green); }
+.s-input::placeholder { color:rgba(255,255,255,.2); }
+.s-btn { background:var(--green-dark); color:#fff; border:none; border-radius:12px; padding:10px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; font-family:'DM Sans',sans-serif; }
+.s-btn:hover { background:var(--green); }
+.s-clear { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:10px 16px; font-size:13px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:6px; transition:all .15s; cursor:pointer; }
+.s-clear:hover { color:#fff; background:rgba(255,255,255,.08); }
+
+.panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.panel-head h2 { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
+.panel-head span { font-size:11px; color:var(--muted); font-weight:600; }
+
+table { width:100%; border-collapse:collapse; }
+thead tr { background:rgba(0,0,0,.3); }
+th { padding:12px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; }
+tbody tr:hover { background:rgba(255,255,255,.025); }
+td { padding:14px 18px; font-size:13px; color:#d1d5db; }
+
+.u-name { font-weight:700; color:#fff; font-size:13px; }
+.u-email { font-size:11px; color:var(--muted); margin-top:1px; }
+
+.role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin:1px 3px 1px 0; }
+.role-admin     { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.role-cliente   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.role-mayorista { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.role-otro      { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
+.rank-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+.rank-final    { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.25);  color:#4ade80; }
+.rank-wholesale{ background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.25); color:#facc15; }
+.rank-default  { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
+
+.act-btn { width:32px; height:32px; border-radius:9px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; text-decoration:none; }
+.act-view { background:rgba(96,165,250,.12); color:#60a5fa; border:1px solid rgba(96,165,250,.25); }
+.act-view:hover { background:rgba(96,165,250,.25); }
+.act-del  { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.25); }
+.act-del:hover  { background:rgba(239,68,68,.25); }
+
+.pag { display:flex; align-items:center; justify-content:center; gap:6px; padding:16px; flex-wrap:wrap; border-top:1px solid var(--border); }
+.pag-btn { display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px; border-radius:9px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:#9ca3af; background:rgba(255,255,255,.04); text-decoration:none; transition:all .15s; cursor:pointer; }
+.pag-btn:hover { border-color:var(--green); color:var(--green); }
+.pag-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
+.pag-btn.disabled { opacity:.3; pointer-events:none; }
+
+.empty-state { text-align:center; padding:56px 20px; color:var(--muted); }
+.empty-state i { font-size:40px; opacity:.3; display:block; margin-bottom:12px; }
+.empty-state p { font-size:14px; }
+
+.fade-up { animation:fadeUp .4s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.delay-1 { animation-delay:.07s; } .delay-2 { animation-delay:.14s; } .delay-3 { animation-delay:.21s; }
+
+/* TOAST */
+.toast { position:fixed; bottom:24px; right:24px; z-index:999; padding:14px 20px; border-radius:12px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:10px; box-shadow:0 12px 30px rgba(0,0,0,.4); transform:translateY(20px); opacity:0; pointer-events:none; transition:all .25s; font-family:'DM Sans',sans-serif; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.ok   { background:#111f16; border:1px solid rgba(34,197,94,.4); color:#4ade80; }
+.toast.err  { background:#111f16; border:1px solid rgba(239,68,68,.4); color:#f87171; }
+
+/* MODAL ELIMINAR USUARIO */
+#deleteModal { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:20px; }
+#deleteModal.open { display:flex; }
+#deleteModal .modal-box { background:#111f16; border:1px solid rgba(239,68,68,.25); border-radius:20px; width:100%; max-width:400px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.6); animation:modalIn .2s ease; }
+.del-icon-wrap { width:64px; height:64px; border-radius:50%; background:rgba(239,68,68,.15); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+.btn-cancel { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:#9ca3af; border-radius:12px; padding:11px 24px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
+.btn-cancel:hover { background:rgba(255,255,255,.1); color:#fff; }
+.btn-confirm-del { background:#ef4444; border:none; color:#fff; border-radius:12px; padding:11px 24px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; box-shadow:0 4px 12px rgba(239,68,68,.3); }
+.btn-confirm-del:hover { background:#dc2626; transform:translateY(-1px); }
+
+@media(max-width:900px) { .mini-stats { grid-template-columns:1fr 1fr; } }
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .mini-stats { grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body class="bg-[#060d0a] text-white overflow-x-hidden">
+
+<!-- ===================== HEADER ADMIN ===================== -->
+<header id="adminHeader">
+    <a href="/dashboard_admin.html" class="ah-logo">
+        <span class="ah-logo-dot"></span>
+        <span class="ah-logo-name">Casatek</span>
+        <span class="ah-logo-badge">Admin</span>
+    </a>
+
+    <nav class="ah-nav">
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+    </nav>
+
+    <div class="ah-actions">
+        <div class="ah-user">
+            <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
+            <span class="ah-user-name">Admin</span>
+        </div>
+        <a href="#" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden-xs">Salir</span>
+        </a>
+        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+            <i class="fa-solid fa-bars" id="hambIcon"></i>
+        </button>
+    </div>
+</header>
+
+<nav id="mobileNav">
+    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="/users_admin.html" class="active"><i class="fa-solid fa-users"></i> Usuarios</a>
+</nav>
+
+<!-- ===================== USERS PAGE ===================== -->
+<div id="usersPage">
+
+    <main id="main">
+
+        <div class="fade-up">
+            <p class="section-label"><i class="fa-solid fa-users mr-1"></i> Gestión</p>
+            <h1 class="section-title">Usuarios <span style="color:var(--green)">Registrados</span></h1>
+        </div>
+
+        <div class="mini-stats">
+            <div class="mini-card fade-up delay-1">
+                <div class="mini-icon" style="background:rgba(59,130,246,.15)">
+                    <i class="fa-solid fa-users" style="color:#60a5fa"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Total usuarios</p>
+                    <p class="mini-val" id="statTotal">—</p>
+                </div>
+            </div>
+            <div class="mini-card fade-up delay-2">
+                <div class="mini-icon" style="background:rgba(34,197,94,.15)">
+                    <i class="fa-solid fa-user-check" style="color:#22C55E"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Clientes finales</p>
+                    <p class="mini-val" id="statFinal">—</p>
+                </div>
+            </div>
+            <div class="mini-card fade-up delay-3">
+                <div class="mini-icon" style="background:rgba(250,204,21,.15)">
+                    <i class="fa-solid fa-store" style="color:#facc15"></i>
+                </div>
+                <div>
+                    <p class="mini-label">Mayoristas</p>
+                    <p class="mini-val" id="statWholesale">—</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-wrap">
+            <form onsubmit="applyFilters(); return false" style="display:flex;gap:12px;flex:1;flex-wrap:wrap">
+                <div class="search-input-wrap">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="fSearch" name="search" placeholder="Buscar por nombre, email o teléfono..." class="s-input">
+                </div>
+                <select id="fRole" class="s-input" style="max-width:190px" onchange="applyFilters()">
+                    <option value="">Todos los tipos</option>
+                    <option value="cliente">Clientes</option>
+                    <option value="mayorista">Mayoristas</option>
+                    <option value="admin">Administradores</option>
+                </select>
+                <button type="submit" class="s-btn"><i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar</button>
+                <a href="#" class="s-clear" onclick="clearFilters(); return false;"><i class="fa-solid fa-xmark"></i> Limpiar</a>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h2><i class="fa-solid fa-users" style="color:var(--green)"></i> Lista de Usuarios</h2>
+                <span id="panelCount">cargando...</span>
+            </div>
+
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Usuario</th>
+                            <th>Tipo</th>
+                            <th>Teléfono</th>
+                            <th>WhatsApp</th>
+                            <th>Código Acceso</th>
+                            <th>Rango</th>
+                            <th>Registro</th>
+                            <th style="text-align:center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pag" id="pagWrap" style="display:none"></div>
+            <p id="pagLabel" style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:14px"></p>
+        </div>
+
+    </main>
+</div>
+
+<!-- MODAL ELIMINAR USUARIO -->
+<div id="deleteModal">
+    <div class="modal-box">
+        <div style="padding:32px 24px 24px">
+            <div class="del-icon-wrap">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#f87171;font-size:28px"></i>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px">¿Eliminar usuario?</h3>
+            <p style="font-size:14px;color:var(--muted);line-height:1.5">Estás a punto de eliminar al usuario <strong id="dm-name" style="color:#fff"></strong>. Esta acción no se puede deshacer.</p>
+        </div>
+        <div style="display:flex;justify-content:center;gap:12px;padding:0 24px 32px">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+            <button class="btn-confirm-del" onclick="executeDelete()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+/* Si algo falla en el JavaScript de la página, se muestra aquí en vez de quedarse en silencio */
+window.addEventListener('error', function (e) {
+    var b = document.getElementById('usersBody');
+    if (b) b.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Error de JavaScript: ' + String(e.message).replace(/</g, '&lt;') + '</p></div></td></tr>';
+});
+</script>
+<script>
+(function () {
+'use strict';
+
+/* ---------- Config ---------- */
+const API_USERS = '/api/admin/users';
+const LOGIN_URL = '/iniciarsesion';
+const TOKEN_KEYS = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token'];
+
+function getToken() {
+    for (const k of TOKEN_KEYS) {
+        try { const v = localStorage.getItem(k); if (v) return v.replace(/^"|"$/g, ''); } catch (e) {}
+    }
+    return '';
+}
+function authHeaders() { return { 'Accept': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+function goLogin() { window.location.href = LOGIN_URL; }
+if (!getToken()) goLogin();
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function showToast(msg, type = 'ok') {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    toast.className = 'toast show ' + type;
+    toast.querySelector('i').className = type === 'ok' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+    toastMsg.textContent = msg;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function toggleMobileNav() {
+    const nav  = document.getElementById('mobileNav');
+    const icon = document.getElementById('hambIcon');
+    const open = nav.style.display === 'flex';
+    nav.style.display = open ? 'none' : 'flex';
+    icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+}
+
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+function escapeJs(str) { return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+let currentPage = 1;
+let deleteTargetId = null;
+
+function rankName(u) {
+    const r = u.rank;
+    if (r && typeof r === 'object') return r.name || r.nombre || r.title || '';
+    return r || '';
+}
+function fmtDate(v) {
+    if (!v) return '—';
+    const d = new Date(v);
+    return isNaN(d) ? String(v) : d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function roleBadges(u) {
+    const names = (u.roles || []).map(r => r.name);
+    if (!names.length) return '<span class="role-badge role-otro">Sin rol</span>';
+    const meta = {
+        admin:     ['role-admin',     'fa-user-shield', 'Admin'],
+        cliente:   ['role-cliente',   'fa-user',        'Cliente'],
+        mayorista: ['role-mayorista', 'fa-store',       'Mayorista']
+    };
+    return names.map(n => {
+        const m = meta[n] || ['role-otro', 'fa-user', n];
+        return `<span class="role-badge ${m[0]}"><i class="fa-solid ${m[1]}" style="font-size:8px"></i> ${escapeHtml(m[2])}</span>`;
+    }).join('');
+}
+
+function rankBadge(rank) {
+    const r = String(rank || '').toLowerCase();
+    let cls = 'rank-default', label = rank || 'sin rango';
+    if (r.includes('mayor')) cls = 'rank-wholesale';
+    else if (r.includes('final')) cls = 'rank-final';
+    return `<span class="rank-badge ${cls}"><i class="fa-solid fa-star" style="font-size:8px"></i> ${escapeHtml(label)}</span>`;
+}
+
+function loadUsers(page = 1) {
+    currentPage = page;
+    const params = new URLSearchParams();
+    const search = document.getElementById('fSearch').value.trim();
+    if (search) params.set('search', search);
+    const role = document.getElementById('fRole').value;
+    if (role) params.set('role', role);
+    params.set('page', page);
+
+    document.getElementById('usersBody').innerHTML =
+        '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-spinner"></i><p>Cargando usuarios...</p></div></td></tr>';
+    document.getElementById('pagWrap').style.display = 'none';
+    document.getElementById('pagLabel').textContent = '';
+
+    fetch(API_USERS + '?' + params.toString(), { headers: authHeaders() })
+    .then(res => {
+        if (res.status === 401) { goLogin(); throw new Error('Sesión expirada'); }
+        if (res.status === 403) throw new Error('No tienes permiso de administrador.');
+        if (!res.ok) throw new Error('No se pudo cargar la lista de usuarios (HTTP ' + res.status + ')');
+        return res.json();
+    })
+    .then(json => {
+        const pag = json.datos;
+        renderStats(json);
+        renderTable(pag.data || []);
+        renderPagination(pag);
+        document.getElementById('panelCount').textContent = (pag.total ?? (pag.data || []).length) + ' usuarios en total';
+    })
+    .catch(err => {
+        document.getElementById('usersBody').innerHTML =
+            `<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${escapeHtml(err.message)}</p></div></td></tr>`;
+        document.getElementById('panelCount').textContent = '';
+    });
+}
+
+function renderStats(json) {
+    const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined) ? '—' : v; };
+    set('statTotal', json.totalUsers);
+    set('statFinal', json.totalFinal);
+    set('statWholesale', json.totalWholesale);
+}
+
+function renderTable(users) {
+    const body = document.getElementById('usersBody');
+    if (!users.length) {
+        body.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No se encontraron usuarios</p></div></td></tr>';
+        return;
+    }
+    const dash = '<span style="color:var(--muted)">—</span>';
+    body.innerHTML = users.map(u => {
+        const wa = u.whatsapp ? String(u.whatsapp).replace(/\D/g, '') : '';
+        const whatsapp = wa
+            ? `<a href="https://wa.me/${wa}" target="_blank" style="color:#4ade80;font-size:13px;display:flex;align-items:center;gap:5px"><i class="fa-brands fa-whatsapp"></i> ${escapeHtml(u.whatsapp)}</a>`
+            : dash;
+        const code = u.access_code
+            ? `<code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px;color:#e5e7eb">${escapeHtml(u.access_code)}</code>`
+            : dash;
+        return `
+        <tr>
+            <td style="color:var(--muted);font-size:12px">${u.id}</td>
+            <td>
+                <p class="u-name">${escapeHtml(u.name || '—')}</p>
+                <p class="u-email">${escapeHtml(u.email || '')}</p>
+            </td>
+            <td>${roleBadges(u)}</td>
+            <td>${u.phone ? escapeHtml(u.phone) : '—'}</td>
+            <td>${whatsapp}</td>
+            <td>${code}</td>
+            <td>${rankBadge(rankName(u))}</td>
+            <td style="font-size:12px;color:var(--muted)">${escapeHtml(fmtDate(u.created_at))}</td>
+            <td>
+                <div style="display:flex;justify-content:center;gap:6px">
+                    <a href="/show_admin.html/${u.id}" class="act-btn act-view" title="Ver detalle"><i class="fa-solid fa-eye"></i></a>
+                    <button type="button" class="act-btn act-del" title="Eliminar" onclick="deleteUser(${u.id}, '${escapeJs(u.name)}')"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function renderPagination(p) {
+    const wrap = document.getElementById('pagWrap');
+    const label = document.getElementById('pagLabel');
+    const last = p.last_page || 1, cur = p.current_page || 1;
+    if (last <= 1) { wrap.style.display = 'none'; label.textContent = ''; return; }
+    let html = `<span class="pag-btn ${cur === 1 ? 'disabled' : ''}" onclick="loadUsers(${cur - 1})"><i class="fa-solid fa-chevron-left"></i></span>`;
+    for (let i = 1; i <= last; i++) html += `<span class="pag-btn ${i === cur ? 'active' : ''}" onclick="loadUsers(${i})">${i}</span>`;
+    html += `<span class="pag-btn ${cur === last ? 'disabled' : ''}" onclick="loadUsers(${cur + 1})"><i class="fa-solid fa-chevron-right"></i></span>`;
+    wrap.innerHTML = html;
+    wrap.style.display = 'flex';
+    label.textContent = `Página ${cur} de ${last}`;
+}
+
+function applyFilters() { loadUsers(1); }
+function clearFilters() { document.getElementById('fSearch').value = ''; document.getElementById('fRole').value = ''; loadUsers(1); }
+
+/* ---------- Modal de Eliminación ---------- */
+function deleteUser(id, name) {
+    deleteTargetId = id;
+    document.getElementById('dm-name').textContent = `"${name}"`;
+    document.getElementById('deleteModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    deleteTargetId = null;
+}
+
+function executeDelete() {
+    if (!deleteTargetId) return;
+    
+    const id = deleteTargetId;
+    closeDeleteModal(); // Cerrar modal para UX más fluida
+
+    fetch(API_USERS + '/' + id, { method: 'DELETE', headers: authHeaders() })
+    .then(async res => {
+        const json = await res.json().catch(() => ({}));
+        if (res.status === 401) { goLogin(); return; }
+        if (!res.ok) throw new Error(json.message || 'No se pudo eliminar el usuario.');
+        showToast(json.message || 'Usuario eliminado con éxito', 'ok');
+        loadUsers(currentPage);
+    })
+    .catch(err => showToast(err.message, 'err'));
+}
+
+/* ---------- Eventos para cerrar Modal haciendo clic fuera o presionando Esc ---------- */
+document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
+document.addEventListener('keydown', e => { 
+    if (e.key === 'Escape') { 
+        closeDeleteModal(); 
+    } 
+});
+
+/* ---------- Funciones usadas por el HTML (onclick) ---------- */
+function logoutAdmin() {
+    TOKEN_KEYS.concat(['user', 'role', 'usuario']).forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    goLogin();
+}
+
+window.toggleMobileNav = toggleMobileNav;
+window.loadUsers = loadUsers;
+window.applyFilters = applyFilters;
+window.clearFilters = clearFilters;
+window.deleteUser = deleteUser;
+window.closeDeleteModal = closeDeleteModal;
+window.executeDelete = executeDelete;
+window.logoutAdmin = logoutAdmin;
+
+loadUsers(1);
+})();
+</script>
+<script src="/js/admin-logout.js"></script>
+</body>
+</html>

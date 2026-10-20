@@ -1,0 +1,62 @@
+{
+  "name": "CASATEK - Escenario de precio por tipo de cambio",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "price-forecast",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b180287a-5ca5-48c9-b2c2-8f3bc6726001",
+      "name": "Recibir datos del precio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "webhookId": "e02905d1-77ca-4ec0-bcc8-efadf3d03817"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const input = $input.first().json;\nconst d = input.body ?? input;\nconst n = (key) => d[key] === undefined || d[key] === null || d[key] === '' ? null : Number(d[key]);\nconst price = n('base_price');\nconst share = n('usd_cost_share');\nconst reference = n('reference_exchange_rate');\nconst current = n('current_exchange_rate');\nconst suppliedForecast = n('forecast_exchange_rate');\nconst errors = [];\nif (!Number.isFinite(price) || price <= 0) errors.push('base_price debe ser mayor que cero.');\nif (!Number.isFinite(share) || share < 0 || share > 1) errors.push('usd_cost_share debe estar entre 0 y 1.');\nif (!Number.isFinite(reference) || reference <= 0) errors.push('reference_exchange_rate debe ser mayor que cero.');\nif (!Number.isFinite(current) || current <= 0) errors.push('current_exchange_rate debe ser mayor que cero.');\nif (d.forecast_exchange_rate !== undefined && d.forecast_exchange_rate !== null && d.forecast_exchange_rate !== '' && (!Number.isFinite(suppliedForecast) || suppliedForecast <= 0)) errors.push('forecast_exchange_rate debe ser mayor que cero.');\nif (errors.length) return [{ json: { ok: false, statusCode: 400, errors } }];\nconst forecast = suppliedForecast ?? current;\nconst estimated = Math.round((price * ((1 - share) + share * forecast / reference) + Number.EPSILON) * 100) / 100;\nconst change = Math.round((estimated - price + Number.EPSILON) * 100) / 100;\nreturn [{ json: { ok: true, product_id: d.product_id ?? null, base_price: price, usd_cost_share: share, reference_exchange_rate: reference, current_exchange_rate: current, forecast_exchange_rate: forecast, forecast_rate_source: suppliedForecast === null ? 'caller_current_rate' : 'caller_supplied_scenario', estimated_price: estimated, estimated_change: change, estimated_change_percent: Math.round(change / price * 10000) / 100, method: 'FX-weighted scenario: base price × ((1 - USD cost share) + USD cost share × forecast rate / reference rate)', disclaimer: 'Estimación de escenario basada en los datos recibidos; no es una predicción estadística ni una cotización oficial del BCB.' } }];"
+      },
+      "id": "f89fc8d3-0506-4a5f-bb7e-006170317002",
+      "name": "Calcular escenario de precio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "id": "b5f64553-bd89-4bb7-8530-f8d82b975003",
+      "name": "Responder al cliente",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 300]
+    }
+  ],
+  "connections": {
+    "Recibir datos del precio": {
+      "main": [[{ "node": "Calcular escenario de precio", "type": "main", "index": 0 }]]
+    },
+    "Calcular escenario de precio": {
+      "main": [[{ "node": "Responder al cliente", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "71247112-36d0-4986-a623-03f7e3a12184",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "tags": []
+}

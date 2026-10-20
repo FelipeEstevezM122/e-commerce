@@ -9,7 +9,8 @@ use App\Http\Controllers\BillingInfoController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
-
+//para chatbot
+use App\Http\Controllers\ChatbotController;
 
 //1. RUTAS PÚBLICAS (sin autenticación)
 // Auth
@@ -25,6 +26,9 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/ranks',         [RankController::class, 'index']);
 Route::get('/ranks/{rank}',  [RankController::class, 'show']);
 
+// Chatbot
+Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
+
 //2. RUTAS PROTEGIDAS (requieren auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -33,10 +37,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me',         [AuthController::class, 'user']);
     Route::put('/me/update',  [AuthController::class, 'updateProfile']); // ← NUEVO
 
-    // Productos (crear, editar, eliminar → solo admin via policy)
-    Route::post('/products',             [ProductController::class, 'store']);
-    Route::put('/products/{product}',    [ProductController::class, 'update']);
-    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    // Productos (crear, editar, eliminar → solo admin)
+    // Se añade el middleware 'admin': antes cualquier usuario con sesión podía crear/editar/borrar productos.
+    // Las URLs no cambian (/api/products, /api/products/{id}).
+    Route::middleware('admin')->group(function () {
+        Route::post('/products',             [ProductController::class, 'store']);
+        Route::put('/products/{product}',    [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    });
 
     // Carrito
     Route::prefix('cart')->group(function () {
@@ -70,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('tickets')->group(function () {
         Route::get('/',          [TicketController::class, 'index']);
         Route::get('/{ticket}',  [TicketController::class, 'show']);
+        Route::get('/{ticket}/download', [TicketController::class, 'download']);
     });
 
     // Rangos (crear, editar, eliminar → solo admin via policy)
@@ -94,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gestión de usuarios
         Route::get('/users',           [AdminController::class, 'users']);
         Route::post('/users',          [AdminController::class, 'createUser']);
+        Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']); // modal "Nuevo Admin" del dashboard
         Route::get('/users/{user}',    [AdminController::class, 'showUser']);
         Route::put('/users/{user}',    [AdminController::class, 'updateUser']);
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);

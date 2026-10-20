@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
  
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Ticket;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\BillingInfo;
@@ -102,6 +103,13 @@ class AdminController extends Controller
  
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Error al crear el administrador: ' . $e->getMessage()
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
             return redirect()->route('admin.dashboard')
                 ->with('admin_error', 'Error al crear el administrador: ' . $e->getMessage());
         }
@@ -131,7 +139,13 @@ class AdminController extends Controller
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
  
         if ($request->wantsJson()) {
-            return response()->json(['datos' => $users, 'message' => 'Lista de usuarios'], Response::HTTP_OK);
+            return response()->json([
+                'datos' => $users,
+                'totalUsers' => User::count(),
+                'totalFinal' => User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count(),
+                'totalWholesale' => User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count(),
+                'message' => 'Lista de usuarios'
+            ], Response::HTTP_OK);
         }
  
         return view('admin.users', compact('users'));
@@ -146,8 +160,11 @@ class AdminController extends Controller
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
  
         if (request()->wantsJson()) {
+            // Tickets de los pedidos del usuario: [order_id => ticket_number]
+            $tickets = Ticket::whereIn('order_id', $user->orders->pluck('id'))->pluck('ticket_number', 'order_id');
+
             return response()->json([
-                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder')],
+                'datos' => ['user' => $user, 'statistics' => compact('totalOrders', 'totalSpent', 'averageOrder'), 'tickets' => $tickets],
                 'message' => 'Detalles del usuario'
             ], Response::HTTP_OK);
         }

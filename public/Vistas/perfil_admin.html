@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Perfil - Admin - Casatek</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="/js/admin-guard.js"></script>
+
+<style>
+:root {
+    --green:#22C55E; --green-dark:#15803d;
+    --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
+    --text:#f3f4f6; --muted:#6b7280;
+}
+body, html {
+    background: #060d0a !important;
+    margin: 0;
+    padding: 0;
+}
+body { color: #fff; overflow-x: hidden; }
+
+/* ── Header admin ── */
+#adminHeader {
+    background:rgba(6,13,10,.95); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:100;
+    padding:0 28px; height:64px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    font-family:'DM Sans',sans-serif;
+}
+.ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+.ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
+.ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
+.ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
+
+.ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
+.ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
+.ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+
+.ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
+.ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
+.ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
+.ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; text-decoration:none; }
+.ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
+
+.ah-hamburger { display:none; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:16px; transition:all .18s; flex-shrink:0; }
+.ah-hamburger:hover { color:var(--green); border-color:var(--border); }
+
+#mobileNav {
+    display:none; flex-direction:column; gap:4px;
+    background:rgba(6,13,10,.98); border-bottom:1px solid var(--border);
+    padding:12px 16px; font-family:'DM Sans',sans-serif;
+}
+#mobileNav a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; }
+#mobileNav a:hover, #mobileNav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+#mobileNav .mob-divider { height:1px; background:var(--border); margin:4px 0; }
+
+@media(max-width:900px) {
+    .ah-nav { display:none; }
+    .ah-hamburger { display:flex; }
+    .ah-logo-badge { display:none; }
+}
+@media(max-width:480px) {
+    #adminHeader { padding:0 14px; height:58px; }
+    .ah-user-name { display:none; }
+}
+
+/* ── Página Show Usuario ── */
+#showPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
+
+#main { padding:32px 28px 48px; max-width:1100px; margin:0 auto; }
+
+.back-link { display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; font-weight:600; text-decoration:none; margin-bottom:24px; transition:color .15s; }
+.back-link:hover { color:var(--green); }
+
+.user-hero { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px; display:flex; align-items:center; gap:24px; margin-bottom:20px; position:relative; overflow:hidden; }
+.user-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); opacity:.6; }
+.hero-avatar { width:72px; height:72px; border-radius:50%; background:rgba(34,197,94,.15); border:2px solid var(--border-h); display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--green); flex-shrink:0; }
+.hero-info h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#fff; margin-bottom:4px; }
+.hero-info p { font-size:13px; color:var(--muted); }
+.hero-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-top:8px; }
+.rank-final    { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.25);  color:#4ade80; }
+.rank-wholesale{ background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.25); color:#facc15; }
+.rank-default  { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
+.hero-actions { margin-left:auto; display:flex; gap:10px; flex-shrink:0; }
+
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+.info-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+.info-card h3 { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+.info-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.info-row:last-child { border-bottom:none; }
+.info-key { font-size:12px; color:var(--muted); }
+.info-val { font-size:13px; font-weight:600; color:#e5e7eb; text-align:right; }
+
+.panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.panel-head h2 { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
+table { width:100%; border-collapse:collapse; }
+thead tr { background:rgba(0,0,0,.3); }
+th { padding:11px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; }
+tbody tr:hover { background:rgba(255,255,255,.025); }
+td { padding:12px 18px; font-size:13px; color:#d1d5db; }
+
+.role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin:1px 3px 1px 0; }
+.role-admin     { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.role-cliente   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.role-mayorista { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.role-otro      { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
+.status-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+.s-pending   { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.s-paid      { background:rgba(96,165,250,.12); border:1px solid rgba(96,165,250,.3); color:#60a5fa; }
+.s-shipped   { background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.3); color:#c084fc; }
+.s-delivered { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.s-cancelled { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+
+.del-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.3); color:#f87171; font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
+.del-btn:hover { background:rgba(239,68,68,.25); }
+
+.empty-state { text-align:center; padding:40px; color:var(--muted); }
+.empty-state i { font-size:36px; opacity:.3; display:block; margin-bottom:10px; }
+
+@media(max-width:768px) { #main { padding:20px 16px 40px; } .info-grid { grid-template-columns:1fr; } .user-hero { flex-direction:column; text-align:center; } .hero-actions { margin-left:0; } }
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.f-group label { display:block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.f-group input { width:100%; background:#0b1610; border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:11px 13px; color:var(--text); font-size:13px; font-family:'DM Sans',sans-serif; outline:none; }
+.f-group input:focus { border-color:var(--green); }
+.f-sep { grid-column:1 / -1; font-family:'Syne',sans-serif; font-size:12px; font-weight:800; color:#fff; padding-top:8px; border-top:1px solid var(--border); margin-top:4px; }
+.f-hint { grid-column:1 / -1; font-size:11px; color:var(--muted); margin-top:-8px; }
+.alert { display:none; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:16px; }
+.alert.err { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.3); color:#f87171; }
+.alert.ok  { background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.3); color:#4ade80; }
+.alert ul { margin:0; padding-left:18px; }
+.btn-save { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; background:var(--green); color:#052e16; font-weight:800; font-size:13px; border-radius:10px; border:0; cursor:pointer; font-family:'DM Sans',sans-serif; }
+.btn-save:disabled { opacity:.6; cursor:wait; }
+.btn-alt { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; background:transparent; border:1px solid rgba(255,255,255,.12); color:#d1d5db; font-weight:700; font-size:12px; border-radius:10px; cursor:pointer; text-decoration:none; font-family:'DM Sans',sans-serif; }
+.btn-alt:hover { border-color:var(--green); color:#4ade80; }
+.role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin:1px 3px 1px 0; }
+.role-admin     { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+.role-cliente   { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
+.role-mayorista { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
+.role-otro      { background:rgba(156,163,175,.1); border:1px solid rgba(156,163,175,.2); color:#9ca3af; }
+@media(max-width:640px){ .form-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body class="bg-[#060d0a] text-white overflow-x-hidden">
+
+<!-- ===================== HEADER ADMIN ===================== -->
+<header id="adminHeader">
+    <a href="#" class="ah-logo">
+        <span class="ah-logo-dot"></span>
+        <span class="ah-logo-name">Casatek</span>
+        <span class="ah-logo-badge">Admin</span>
+    </a>
+
+    <nav class="ah-nav">
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="/users_admin.html" ><i class="fa-solid fa-users"></i> Usuarios</a>
+    </nav>
+
+    <div class="ah-actions">
+        <div class="ah-user">
+            <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
+            <span class="ah-user-name">Admin</span>
+        </div>
+        <a href="#" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden-xs">Salir</span>
+        </a>
+        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+            <i class="fa-solid fa-bars" id="hambIcon"></i>
+        </button>
+    </div>
+</header>
+
+<nav id="mobileNav">
+    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="/users_admin.html" ><i class="fa-solid fa-users"></i> Usuarios</a>
+</nav>
+
+<!-- ===================== SHOW PAGE ===================== -->
+<div id="showPage">
+
+    <main id="main">
+        <a href="/dashboard_admin.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al dashboard</a>
+
+        <div id="loadingBox" class="panel"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Cargando tu perfil...</p></div></div>
+        <div id="errorBox" class="panel" style="display:none"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p id="errorMsg"></p></div></div>
+
+        <div id="content" style="display:none">
+            <div class="user-hero">
+                <div class="hero-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                <div class="hero-info">
+                    <h2 id="hName">—</h2>
+                    <p id="hEmail">—</p>
+                    <div id="hRoles" style="margin-top:6px"></div>
+                </div>
+                <div class="hero-actions" style="display:flex;gap:10px;flex-wrap:wrap">
+                    <a href="/index.html" class="btn-alt"><i class="fa-solid fa-cart-shopping"></i> Ir a la tienda</a>
+                    <button type="button" class="del-btn" onclick="confirmarSalir()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fa-solid fa-address-card" style="color:var(--green)"></i> Mis datos</h3>
+                    <div class="info-row"><span class="info-key">Nombre</span><span class="info-val" id="iName">—</span></div>
+                    <div class="info-row"><span class="info-key">Email</span><span class="info-val" style="font-size:12px" id="iEmail">—</span></div>
+                    <div class="info-row"><span class="info-key">Teléfono</span><span class="info-val" id="iPhone">—</span></div>
+                    <div class="info-row"><span class="info-key">WhatsApp</span><span class="info-val" id="iWhatsapp">—</span></div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fa-solid fa-shield-halved" style="color:#60a5fa"></i> Cuenta</h3>
+                    <div class="info-row"><span class="info-key">Tipo de cuenta</span><span class="info-val" id="iType">—</span></div>
+                    <div class="info-row"><span class="info-key">Código de acceso</span><span class="info-val" id="iCode">—</span></div>
+                    <div class="info-row"><span class="info-key">Registrado</span><span class="info-val" id="iCreated">—</span></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head"><h2><i class="fa-solid fa-pen-to-square" style="color:#facc15"></i> Editar mis datos</h2></div>
+                <div style="padding:22px">
+                    <div class="alert ok" id="okAlert"><i class="fa-solid fa-circle-check"></i> <span id="okMsg"></span></div>
+                    <div class="alert err" id="errAlert"></div>
+                    <form id="profileForm" novalidate autocomplete="off">
+                        <div class="form-grid">
+                            <div class="f-group"><label for="f_name">Nombre</label><input type="text" id="f_name" maxlength="100" required></div>
+                            <div class="f-group"><label for="f_email">Email</label><input type="email" id="f_email" maxlength="100" required></div>
+                            <div class="f-group"><label for="f_phone">Teléfono</label><input type="tel" id="f_phone" placeholder="591XXXXXXXX"></div>
+                            <div class="f-group"><label for="f_whatsapp">WhatsApp</label><input type="tel" id="f_whatsapp" placeholder="591XXXXXXXX"></div>
+                            <div class="f-sep">Cambiar contraseña</div>
+                            <div class="f-hint">Déjalo vacío si no quieres cambiarla.</div>
+                            <div class="f-group"><label for="f_pass">Nueva contraseña</label><input type="password" id="f_pass" minlength="8" autocomplete="new-password"></div>
+                            <div class="f-group"><label for="f_pass2">Confirmar contraseña</label><input type="password" id="f_pass2" autocomplete="new-password"></div>
+                        </div>
+                        <div style="margin-top:20px;display:flex;justify-content:flex-end">
+                            <button type="submit" class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="/js/admin-logout.js"></script>
+<script>
+const LOGIN_URL = '/iniciarsesion.html';
+const API_ME = '/api/me';
+const API_UPDATE = '/api/me/update';
+let currentUser = null;
+
+if (!window.adminToken()) window.location.href = LOGIN_URL;
+
+function toggleMobileNav() {
+    const nav = document.getElementById('mobileNav');
+    const icon = document.getElementById('hambIcon');
+    const open = nav.style.display === 'flex';
+    nav.style.display = open ? 'none' : 'flex';
+    icon.className = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+}
+function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+function fmtDate(v) {
+    if (!v) return '—';
+    const d = new Date(v);
+    return isNaN(d) ? String(v) : d.toLocaleString('es-BO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined || v === '') ? '—' : v; };
+
+function roleBadges(roles) {
+    const meta = { admin:['role-admin','Admin'], cliente:['role-cliente','Cliente'], mayorista:['role-mayorista','Mayorista'] };
+    const names = (roles || []).map(r => r.name);
+    if (!names.length) return '<span class="role-badge role-otro">Sin rol</span>';
+    return names.map(n => { const m = meta[n] || ['role-otro', n]; return `<span class="role-badge ${m[0]}">${esc(m[1])}</span>`; }).join('');
+}
+
+function render(user, roles) {
+    currentUser = user;
+    set('hName', user.name); set('hEmail', user.email);
+    document.getElementById('hRoles').innerHTML = roleBadges(roles);
+    set('iName', user.name); set('iEmail', user.email); set('iPhone', user.phone); set('iWhatsapp', user.whatsapp);
+    document.getElementById('iType').innerHTML = roleBadges(roles);
+    document.getElementById('iCode').innerHTML = user.access_code
+        ? `<code style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:11px">${esc(user.access_code)}</code>` : '—';
+    set('iCreated', fmtDate(user.created_at));
+
+    document.getElementById('f_name').value = user.name || '';
+    document.getElementById('f_email').value = user.email || '';
+    document.getElementById('f_phone').value = user.phone || '';
+    document.getElementById('f_whatsapp').value = user.whatsapp || '';
+    document.getElementById('f_pass').value = '';
+    document.getElementById('f_pass2').value = '';
+
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+}
+
+function savedRoles() {
+    try { return JSON.parse(localStorage.getItem('roles') || '[]'); } catch (e) { return []; }
+}
+
+function loadProfile() {
+    fetch(API_ME, { headers: window.adminAuthHeaders() })
+    .then(res => {
+        if (res.status === 401) { window.location.href = LOGIN_URL; throw new Error('Sesión expirada'); }
+        if (!res.ok) throw new Error('No se pudo cargar tu perfil (HTTP ' + res.status + ')');
+        return res.json();
+    })
+    .then(data => {
+        const u = data.user ?? data.datos ?? data;
+        const roles = u.roles ?? data.roles ?? savedRoles();
+        render(u, roles);
+    })
+    .catch(err => {
+        document.getElementById('loadingBox').style.display = 'none';
+        document.getElementById('errorMsg').textContent = err.message;
+        document.getElementById('errorBox').style.display = 'block';
+    });
+}
+
+function showErrs(list) {
+    const a = document.getElementById('errAlert');
+    document.getElementById('okAlert').style.display = 'none';
+    a.innerHTML = '<ul>' + list.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    a.style.display = 'block';
+    a.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    document.getElementById('errAlert').style.display = 'none';
+    document.getElementById('okAlert').style.display = 'none';
+
+    const pass = document.getElementById('f_pass').value;
+    const pass2 = document.getElementById('f_pass2').value;
+    const body = {
+        name: document.getElementById('f_name').value.trim(),
+        email: document.getElementById('f_email').value.trim(),
+        phone: document.getElementById('f_phone').value.trim() || null,
+        whatsapp: document.getElementById('f_whatsapp').value.trim() || null
+    };
+
+    const errs = [];
+    if (!body.name) errs.push('El nombre es obligatorio.');
+    if (!/^\S+@\S+\.\S+$/.test(body.email)) errs.push('Ingresa un email válido.');
+    if (pass && pass.length < 8) errs.push('La nueva contraseña debe tener al menos 8 caracteres.');
+    if (pass && pass !== pass2) errs.push('Las contraseñas no coinciden.');
+    if (errs.length) return showErrs(errs);
+    if (pass) { body.password = pass; body.password_confirmation = pass2; }
+
+    const btn = document.getElementById('btnSave');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+    try {
+        const res = await fetch(API_UPDATE, {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, window.adminAuthHeaders()),
+            body: JSON.stringify(body)
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.status === 401) { window.location.href = LOGIN_URL; return; }
+        if (!res.ok) {
+            return showErrs(json.errors ? Object.values(json.errors).flat() : [json.message || ('No se pudo guardar (HTTP ' + res.status + ')')]);
+        }
+        const updated = json.user ?? json.datos ?? body;
+        const merged = Object.assign({}, currentUser, updated);
+        try {
+            const old = JSON.parse(localStorage.getItem('user') || '{}');
+            localStorage.setItem('user', JSON.stringify(Object.assign({}, old, updated)));
+        } catch (_) {}
+        render(merged, merged.roles ?? savedRoles());
+        // el nombre del header
+        document.querySelectorAll('.ah-user-name').forEach(n => n.textContent = String(merged.name || 'Admin').split(' ')[0]);
+        document.getElementById('okMsg').textContent = json.message || 'Perfil actualizado correctamente.';
+        document.getElementById('okAlert').style.display = 'block';
+        document.getElementById('okAlert').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+        showErrs(['Error de conexión: ' + err.message]);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';
+    }
+});
+
+loadProfile();
+</script>
+
+</body>
+</html>

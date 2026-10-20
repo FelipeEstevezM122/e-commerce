@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Ticket;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
@@ -22,8 +22,10 @@ class TicketController extends Controller
     {
         $this->authorize('viewAny', Ticket::class);
 
-        $tickets = Ticket::whereHas('order', fn($q) => $q->where('user_id', $request->user()->id))
-            ->with('order.items.product')
+        $tickets = Ticket::whereHas('order', fn($q) => $q
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'paid'))
+            ->with('order.user', 'order.billingInfo', 'order.items.product.brand')
             ->orderBy('issued_at', 'desc')
             ->paginate(15);
 
@@ -35,14 +37,29 @@ class TicketController extends Controller
         $this->authorize('view', $ticket);
 
         return response()->json([
-            'datos'   => $ticket->load('order.items.product', 'order.billingInfo'),
+            'datos'   => $ticket->load('order.user', 'order.items.product.brand', 'order.billingInfo'),
             'message' => 'Detalle del ticket'
         ], Response::HTTP_OK);
+    }
+
+    public function download(Ticket $ticket)
+    {
+        $this->authorize('view', $ticket);
+
+        $ticket->load('order.user', 'order.items.product.brand', 'order.billingInfo');
+
+        return Pdf::loadView('tickets.pdf', compact('ticket'))
+            ->setPaper('a4')
+            ->download($ticket->ticket_number . '.pdf');
     }
 
     public function showByOrder(Request $request, Order $order)
     {
         $this->authorize('view', $order);
+
+        if ($order->status !== 'paid') {
+            return response()->json(['message' => 'El ticket estará disponible cuando el pedido esté pagado.'], Response::HTTP_NOT_FOUND);
+        }
 
         $ticket = $order->ticket;
         if (!$ticket) {
@@ -50,7 +67,7 @@ class TicketController extends Controller
         }
 
         return response()->json([
-            'datos'   => $ticket->load('order.items.product', 'order.billingInfo'),
+            'datos'   => $ticket->load('order.user', 'order.items.product.brand', 'order.billingInfo'),
             'message' => 'Ticket del pedido'
         ], Response::HTTP_OK);
     }
@@ -73,22 +90,21 @@ class TicketController extends Controller
     {
         $this->authorize('generate', Ticket::class);
 
-        if (!in_array($order->status, ['paid', 'delivered'])) {
-            return response()->json(['message' => 'Solo se puede generar ticket para pedidos pagados o entregados'], Response::HTTP_BAD_REQUEST);
+        if ($order->status !== 'paid') {
+            return response()->json(['message' => 'Solo se puede generar un ticket para pedidos pagados'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($order->ticket()->exists()) {
-            return response()->json(['message' => 'Este pedido ya tiene un ticket', 'datos' => $order->ticket], Response::HTTP_OK);
+            return response()->json([
+                'message' => 'Este pedido ya tiene un ticket',
+                'datos' => $order->ticket()->with('order.user', 'order.items.product.brand', 'order.billingInfo')->first(),
+            ], Response::HTTP_OK);
         }
 
-        $ticket = Ticket::create([
-            'order_id'      => $order->id,
-            'ticket_number' => Ticket::generateTicketNumber(),
-            'issued_at'     => now(),
-        ]);
+        $ticket = Ticket::createForOrder($order);
 
         return response()->json([
-            'datos'   => $ticket->load('order.items.product', 'order.billingInfo'),
+            'datos'   => $ticket->load('order.user', 'order.items.product.brand', 'order.billingInfo'),
             'message' => 'Ticket generado exitosamente'
         ], Response::HTTP_CREATED);
     }

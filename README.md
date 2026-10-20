@@ -62,3 +62,16 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Pedidos y tickets de compra
+
+Al crear un pedido mediante `POST /api/orders`, CASATEK guarda el pedido y sus productos y genera un ticket único dentro de la misma transacción. El ticket solo se muestra y permite descargar cuando el estado actual del pedido es `paid`; los pedidos pendientes, enviados, entregados o cancelados no aparecen en las listas de tickets.
+
+- Los clientes consultan sus pedidos en `/mis-pedidos` y sus tickets en `/mis-tickets`.
+- Cada pedido incluye un ticket descargable en PDF con los datos disponibles del cliente, facturación, productos y total.
+- La descarga usa `GET /api/tickets/{ticket}/download` y requiere autenticación. Solo el dueño del pedido o un administrador puede acceder.
+- Administración consulta pedidos en `/orders_admin.html` y tickets en `/tickets_admin.html`.
+
+La migración `2026_10_19_123000_create_tickets_for_existing_orders` crea tickets para pedidos anteriores que aún no tenían uno. Tras actualizar el código, instala la nueva dependencia de PDF y aplica las migraciones dentro del contenedor con `docker compose exec app composer install` y `docker compose exec app php artisan migrate`. El stack debe estar levantado y el servicio de Laravel debe llamarse `app`.
+
+Para mostrar tickets de demostración asociados a cada usuario con rol cliente o mayorista, ejecuta `docker compose exec app php artisan db:seed --class=DemoTicketSeeder`. El seeder no duplica tickets pagados: usa un pedido pagado sin ticket cuando existe; de lo contrario, crea un pedido de demostración marcado `DEMO-` con estado pagado, crea su ticket y restaura el stock tras los triggers. No lo agregues al `DatabaseSeeder` de producción.

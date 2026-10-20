@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 // crea la tabla de tickets de compra
 // order_id es unique porque cada pedido solo puede tener un ticket
-// el ticket se genera automaticamente cuando el pedido pasa a delivered
+// la aplicacion crea el ticket junto al pedido; el trigger legado cubre pedidos antiguos
 return new class extends Migration
 {
     public function up()

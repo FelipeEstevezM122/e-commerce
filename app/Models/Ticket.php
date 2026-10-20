@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
-// representa el comprobante de un pedido entregado
-// se genera automaticamente cuando el pedido pasa a estado delivered
+// representa el comprobante asociado a un pedido
 class Ticket extends Model
 {
     use HasFactory;
@@ -26,10 +26,17 @@ class Ticket extends Model
         return $this->belongsTo(Order::class);
     }
 
-    // genera un numero de ticket unico tipo TKT-00000001
-    public static function generateTicketNumber(){
-        $last = self::latest('id')->first();
-        $number = $last ? intval(substr($last->ticket_number, 4)) + 1 : 1;
-        return 'TKT-' . str_pad($number, 8, '0', STR_PAD_LEFT);
+    // Usa un identificador aleatorio para evitar colisiones en compras simultaneas.
+    public static function generateTicketNumber(): string
+    {
+        return 'TKT-' . now()->format('Ymd') . '-' . Str::upper(Str::random(12));
+    }
+
+    public static function createForOrder(Order $order): self
+    {
+        return $order->ticket()->firstOrCreate([], [
+            'ticket_number' => self::generateTicketNumber(),
+            'issued_at' => now(),
+        ]);
     }
 }

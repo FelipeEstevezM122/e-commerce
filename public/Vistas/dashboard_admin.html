@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin - Casatek</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background:#060d0a; color:#f3f4f6; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+
+    :root {
+        --green:      #22C55E;
+        --green-dark: #15803d;
+        --bg:         #060d0a;
+        --surface:    #0e1a12;
+        --card:       #111f16;
+        --border:     rgba(34,197,94,.12);
+        --border-h:   rgba(34,197,94,.35);
+        --text:       #f3f4f6;
+        --muted:      #6b7280;
+    }
+
+    /* ===================== HEADER ===================== */
+    #adminHeader {
+        background:rgba(6,13,10,.95); backdrop-filter:blur(16px);
+        border-bottom:1px solid var(--border);
+        position:sticky; top:0; z-index:100;
+        padding:0 28px; height:64px;
+        display:flex; align-items:center; justify-content:space-between; gap:16px;
+    }
+    .ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+    .ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
+    .ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
+    .ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
+
+    .ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
+    .ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
+    .ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+
+    .ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
+    .ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
+    .ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
+    .ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; text-decoration:none; }
+    .ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
+
+    .ah-hamburger { display:none; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:16px; transition:all .18s; flex-shrink:0; }
+    .ah-hamburger:hover { color:var(--green); border-color:var(--border); }
+
+    #mobileNav {
+        display:none; flex-direction:column; gap:4px;
+        background:rgba(6,13,10,.98); border-bottom:1px solid var(--border);
+        padding:12px 16px;
+    }
+    #mobileNav a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; }
+    #mobileNav a:hover, #mobileNav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+
+    @media(max-width:900px) {
+        .ah-nav { display:none; }
+        .ah-hamburger { display:flex; }
+        .ah-logo-badge { display:none; }
+    }
+    @media(max-width:480px) {
+        #adminHeader { padding:0 14px; height:58px; }
+        .ah-user-name { display:none; }
+    }
+
+    /* ===================== DASHBOARD ===================== */
+    #adminDash { background: var(--bg); min-height: 100vh; color: var(--text); }
+
+    #adminMain {
+        padding: 32px 28px 48px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 6px;
+    }
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.15;
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+    }
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px 20px;
+        transition: border-color .2s, transform .2s;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: var(--accent-color, var(--green));
+        opacity: .7;
+    }
+    .stat-card:hover {
+        border-color: var(--border-h);
+        transform: translateY(-2px);
+    }
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
+    }
+    .stat-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+    .stat-icon {
+        width: 38px; height: 38px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px;
+    }
+    .stat-value {
+        font-family: 'Syne', sans-serif;
+        font-size: 36px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-sub {
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .stat-sub b { font-weight: 700; }
+
+    .bottom-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+    }
+    .panel-head {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .panel-head h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .panel-body { padding: 16px; }
+
+    .top-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        transition: background .15s;
+        margin-bottom: 4px;
+    }
+    .top-item:hover { background: rgba(255,255,255,.03); }
+    .top-rank {
+        width: 30px; height: 30px;
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 800;
+        flex-shrink: 0;
+    }
+    .top-name { flex: 1; font-size: 13px; font-weight: 600; color: #e5e7eb; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .top-badge {
+        background: rgba(34,197,94,.12);
+        border: 1px solid rgba(34,197,94,.25);
+        color: var(--green);
+        font-size: 10px; font-weight: 800;
+        padding: 3px 10px; border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .bar-month { font-size: 11px; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+    .bar-track {
+        flex: 1;
+        height: 24px;
+        background: rgba(255,255,255,.04);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--green-dark), var(--green));
+        border-radius: 8px;
+        min-width: 4px;
+        display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+    }
+    .bar-amount { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+    .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+    .quick-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px 12px;
+        text-align: center;
+        text-decoration: none;
+        transition: border-color .18s, transform .18s, background .18s;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .quick-card:hover {
+        border-color: var(--qc-color, var(--border-h));
+        transform: translateY(-3px);
+        background: rgba(255,255,255,.02);
+    }
+    .quick-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+    .quick-label { font-size: 12px; font-weight: 700; color: #9ca3af; }
+    .quick-card:hover .quick-label { color: #fff; }
+
+    .fade-up { animation: fadeUp .4s ease both; }
+    @keyframes fadeUp {
+        from { opacity:0; transform: translateY(16px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: .07s; }
+    .delay-2 { animation-delay: .14s; }
+    .delay-3 { animation-delay: .21s; }
+    .delay-4 { animation-delay: .28s; }
+
+    @media(max-width: 1100px) {
+        .stat-grid  { grid-template-columns: repeat(2,1fr); }
+        .quick-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media(max-width: 768px) {
+        #adminMain  { padding: 20px 16px 40px; }
+        .stat-grid  { grid-template-columns: 1fr 1fr; }
+        .bottom-grid { grid-template-columns: 1fr; }
+        .quick-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media(max-width: 480px) {
+        .stat-grid  { grid-template-columns: 1fr; }
+        .quick-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ---------- Modal Nuevo Admin ---------- */
+    #adminOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9000;padding:16px}
+    #adminOverlay.open{display:flex}
+    .adm-box{background:var(--card);border:1px solid var(--border-h);border-radius:16px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .adm-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+    .adm-head h3{font-family:'Syne',sans-serif;font-size:16px;margin:0;color:#fff;display:flex;align-items:center;gap:8px}
+    .adm-close{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+    .adm-close:hover{color:#fff}
+    .adm-body{padding:20px 22px}
+    .adm-field{margin-bottom:14px}
+    .adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .adm-field input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+    .adm-field input:focus{border-color:var(--green)}
+    .adm-alert{display:none;border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
+    .adm-alert.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#f87171}
+    .adm-alert.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:#4ade80}
+    .adm-alert ul{margin:0;padding-left:16px}
+    .adm-actions{display:flex;gap:10px;margin-top:6px}
+    .adm-actions button{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid transparent}
+    .adm-cancel{background:transparent;border-color:rgba(255,255,255,.12)!important;color:var(--muted)}
+    .adm-save{background:var(--green);color:#052e16}
+    .adm-save:disabled{opacity:.6;cursor:wait}
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header id="adminHeader">
+    <a href="#" class="ah-logo">
+        <span class="ah-logo-dot"></span>
+        <span class="ah-logo-name">Casatek</span>
+        <span class="ah-logo-badge">Admin</span>
+    </a>
+
+    <nav class="ah-nav">
+        <a href="dashboard_admin.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+    </nav>
+
+    <div class="ah-actions">
+        <div class="ah-user">
+            <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
+            <span class="ah-user-name">Admin</span>
+        </div>
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden-xs">Salir</span>
+        </button>
+        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+            <i class="fa-solid fa-bars" id="hambIcon"></i>
+        </button>
+    </div>
+</header>
+
+<nav id="mobileNav">
+    <a href="dashboard_admin.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+</nav>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div id="adminDash">
+    <main id="adminMain">
+
+        <div class="fade-up">
+            <p class="section-label"><i class="fa-solid fa-gauge-high mr-1"></i> Vista general</p>
+            <h1 class="section-title">
+                Panel <span style="color:var(--green)">Administrativo</span>
+            </h1>
+        </div>
+
+        <div class="stat-grid">
+
+            <div class="stat-card fade-up delay-1" style="--accent-color:#3b82f6">
+                <div class="stat-top">
+                    <span class="stat-label">Usuarios</span>
+                    <div class="stat-icon" style="background:rgba(59,130,246,.15)">
+                        <i class="fa-solid fa-users" style="color:#60a5fa"></i>
+                    </div>
+                </div>
+                <p class="stat-value" id="statTotalUsers">128</p>
+                <div class="stat-sub">
+                    <span><b style="color:#22C55E" id="statFinalCustomers">104</b> clientes</span>
+                    <span><b style="color:#facc15" id="statWholesalers">24</b> mayoristas</span>
+                </div>
+            </div>
+
+            <div class="stat-card fade-up delay-2" style="--accent-color:#22C55E">
+                <div class="stat-top">
+                    <span class="stat-label">Productos</span>
+                    <div class="stat-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-box" style="color:#22C55E"></i>
+                    </div>
+                </div>
+                <p class="stat-value" id="statTotalProducts">342</p>
+                <div class="stat-sub"><span>en catálogo activo</span></div>
+            </div>
+
+            <div class="stat-card fade-up delay-3" style="--accent-color:#a855f7">
+                <div class="stat-top">
+                    <span class="stat-label">Pedidos</span>
+                    <div class="stat-icon" style="background:rgba(168,85,247,.15)">
+                        <i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i>
+                    </div>
+                </div>
+                <p class="stat-value" id="statTotalOrders">89</p>
+                <div class="stat-sub">
+                    <span><b style="color:#facc15" id="statPendingOrders">12</b> pendientes</span>
+                    <span><b style="color:#22C55E" id="statCompletedOrders">71</b> entregados</span>
+                </div>
+            </div>
+
+            <div class="stat-card fade-up delay-4" style="--accent-color:#22C55E">
+                <div class="stat-top">
+                    <span class="stat-label">Ventas totales</span>
+                    <div class="stat-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-bolivar-sign" style="color:#22C55E"></i>
+                    </div>
+                </div>
+                <p class="stat-value green" id="statTotalSales">Bs. 0</p>
+                <div class="stat-sub"><span>de pedidos entregados</span></div>
+            </div>
+
+        </div>
+
+        <div class="bottom-grid">
+
+            <div class="panel fade-up">
+                <div class="panel-head">
+                    <h2>
+                        <i class="fa-solid fa-trophy" style="color:#facc15"></i>
+                        Top Productos Vendidos
+                    </h2>
+                </div>
+                <div class="panel-body" id="topProductsBody">
+                    <!-- generado por JS -->
+                </div>
+            </div>
+
+            <div class="panel fade-up delay-1">
+                <div class="panel-head">
+                    <h2>
+                        <i class="fa-solid fa-chart-line" style="color:var(--green)"></i>
+                        Ventas Últimos 6 Meses
+                    </h2>
+                </div>
+                <div class="panel-body" id="salesByMonthBody">
+                    <!-- generado por JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Accesos rápidos — 4 tarjetas -->
+        <div class="quick-grid">
+
+            <a href="create_product_admin.html" class="quick-card" style="--qc-color:rgba(34,197,94,.5)">
+                <i class="fa-solid fa-plus quick-icon" style="color:#22C55E"></i>
+                <span class="quick-label">Nuevo Producto</span>
+            </a>
+
+            <a href="orders_admin.html" class="quick-card" style="--qc-color:rgba(250,204,21,.5)">
+                <i class="fa-solid fa-clock quick-icon" style="color:#facc15"></i>
+                <span class="quick-label">Pedidos Pendientes</span>
+            </a>
+
+            <a href="users_admin.html" class="quick-card" style="--qc-color:rgba(96,165,250,.5)">
+                <i class="fa-solid fa-user-plus quick-icon" style="color:#60a5fa"></i>
+                <span class="quick-label">Gestionar Usuarios</span>
+            </a>
+
+            <button type="button" onclick="abrirModal()" class="quick-card" style="--qc-color:rgba(239,68,68,.5)">
+                <i class="fa-solid fa-user-shield quick-icon" style="color:#f87171"></i>
+                <span class="quick-label">Nuevo Admin</span>
+            </button>
+
+        </div>
+
+    </main>
+</div>
+
+<!-- Modal: Nuevo Admin -->
+<div id="adminOverlay">
+    <div class="adm-box" role="dialog" aria-modal="true" aria-labelledby="admTitle">
+        <div class="adm-head">
+            <h3 id="admTitle"><i class="fa-solid fa-user-shield" style="color:var(--green)"></i> Nuevo administrador</h3>
+            <button type="button" class="adm-close" onclick="cerrarModal()" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="adm-body">
+            <div class="adm-alert err" id="admErr"></div>
+            <div class="adm-alert ok" id="admOk"></div>
+            <form id="adminForm" novalidate autocomplete="off">
+                <div class="adm-field"><label for="admin_name">Nombre</label><input type="text" id="admin_name" name="admin_name" maxlength="100" required></div>
+                <div class="adm-field"><label for="admin_email">Email</label><input type="email" id="admin_email" name="admin_email" maxlength="100" required></div>
+                <div class="adm-field"><label for="admin_password">Contraseña (mín. 8 caracteres)</label><input type="password" id="admin_password" name="admin_password" minlength="8" required></div>
+                <div class="adm-field"><label for="admin_password_confirmation">Confirmar contraseña</label><input type="password" id="admin_password_confirmation" name="admin_password_confirmation" required></div>
+                <div class="adm-actions">
+                    <button type="button" class="adm-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="adm-save" id="admSave"><i class="fa-solid fa-floppy-disk"></i> Crear admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin-logout.js"></script>
+<script>
+    // ---------- Menú móvil (header) ----------
+    function toggleMobileNav() {
+        const nav  = document.getElementById('mobileNav');
+        const icon = document.getElementById('hambIcon');
+        const open = nav.style.display === 'flex';
+        nav.style.display = open ? 'none' : 'flex';
+        icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+    }
+
+    // ---------- Protección: sin token -> inicio de sesión ----------
+    if (!window.adminToken || !window.adminToken()) window.location.href = '/iniciarsesion.html';
+
+    // ---------- Modal "Nuevo Admin" ----------
+    const API_STORE_ADMIN = '/api/admin/users/store-admin';
+    const admOverlay = document.getElementById('adminOverlay');
+    const admForm = document.getElementById('adminForm');
+    const admErr = document.getElementById('admErr');
+    const admOk = document.getElementById('admOk');
+
+    function abrirModal() {
+        admForm.reset();
+        admErr.style.display = 'none';
+        admOk.style.display = 'none';
+        admOverlay.classList.add('open');
+        document.getElementById('admin_name').focus();
+    }
+    function cerrarModal() { admOverlay.classList.remove('open'); }
+    admOverlay.addEventListener('click', e => { if (e.target === admOverlay) cerrarModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+    function admShowErrors(list) {
+        admOk.style.display = 'none';
+        admErr.innerHTML = '<ul>' + list.map(x => '<li>' + x + '</li>').join('') + '</ul>';
+        admErr.style.display = 'block';
+    }
+
+    admForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        admErr.style.display = 'none';
+        admOk.style.display = 'none';
+
+        const payload = {
+            admin_name: document.getElementById('admin_name').value.trim(),
+            admin_email: document.getElementById('admin_email').value.trim(),
+            admin_password: document.getElementById('admin_password').value,
+            admin_password_confirmation: document.getElementById('admin_password_confirmation').value
+        };
+
+        const errs = [];
+        if (!payload.admin_name) errs.push('El nombre es obligatorio.');
+        if (!/^\S+@\S+\.\S+$/.test(payload.admin_email)) errs.push('Ingresa un email válido.');
+        if (payload.admin_password.length < 8) errs.push('La contraseña debe tener al menos 8 caracteres.');
+        if (payload.admin_password !== payload.admin_password_confirmation) errs.push('Las contraseñas no coinciden.');
+        if (errs.length) return admShowErrors(errs);
+
+        const btn = document.getElementById('admSave');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creando...';
+
+        try {
+            const res = await fetch(API_STORE_ADMIN, {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, window.adminAuthHeaders()),
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json().catch(() => ({}));
+            if (res.status === 401) { window.location.href = '/iniciarsesion.html'; return; }
+            if (res.status === 403) return admShowErrors(['No tienes permiso de administrador.']);
+            if (!res.ok) {
+                return admShowErrors(json.errors ? Object.values(json.errors).flat() : [json.message || ('No se pudo crear el administrador (HTTP ' + res.status + ')')]);
+            }
+            admForm.reset();
+            admOk.textContent = json.message || 'Administrador creado correctamente.';
+            admOk.style.display = 'block';
+            setTimeout(cerrarModal, 1800);
+        } catch (err) {
+            admShowErrors(['Error de conexión: ' + err.message]);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Crear admin';
+        }
+    });
+
+    // ---------- Datos de ejemplo (sustituye por tu fetch/API real) ----------
+    const data = {
+        totalSales: 184250,
+        topProducts: [
+            { name: 'Laptop Lenovo IdeaPad 3',      total_sold: 58 },
+            { name: 'Mouse Logitech M170',           total_sold: 47 },
+            { name: 'Monitor Samsung 24" Curvo',     total_sold: 39 },
+            { name: 'Teclado Mecánico Redragon',     total_sold: 31 },
+            { name: 'Audífonos JBL Tune 510BT',      total_sold: 22 }
+        ],
+        salesByMonth: [
+            { month: 4, total: 21400 },
+            { month: 5, total: 26800 },
+            { month: 6, total: 19750 },
+            { month: 7, total: 33200 },
+            { month: 8, total: 41100 },
+            { month: 9, total: 42000 }
+        ]
+    };
+
+    const monthNames = ['', 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    function formatBs(n) {
+        return 'Bs. ' + Math.round(n).toLocaleString('es-BO').replace(/,/g, ',');
+    }
+
+    // ---------- Ventas totales ----------
+    document.getElementById('statTotalSales').textContent = formatBs(data.totalSales);
+
+    // ---------- Top productos vendidos ----------
+    const topWrap = document.getElementById('topProductsBody');
+    if (!data.topProducts.length) {
+        topWrap.innerHTML = `
+            <div style="text-align:center;padding:36px 0;color:var(--muted)">
+                <i class="fa-solid fa-box-open" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+                <p style="font-size:13px">Sin ventas registradas</p>
+            </div>`;
+    } else {
+        const rankStyles = [
+            { bg: 'rgba(250,204,21,.15)', color: '#facc15' },
+            { bg: 'rgba(156,163,175,.12)', color: '#9ca3af' },
+            { bg: 'rgba(251,146,60,.15)', color: '#fb923c' }
+        ];
+        topWrap.innerHTML = data.topProducts.map((p, i) => {
+            const s = rankStyles[i] || { bg: 'rgba(255,255,255,.04)', color: '#4b5563' };
+            return `
+                <div class="top-item">
+                    <div class="top-rank" style="background:${s.bg};color:${s.color}">${i + 1}</div>
+                    <span class="top-name">${p.name}</span>
+                    <span class="top-badge">${p.total_sold} vendidos</span>
+                </div>`;
+        }).join('');
+    }
+
+    // ---------- Ventas últimos 6 meses ----------
+    const salesWrap = document.getElementById('salesByMonthBody');
+    if (!data.salesByMonth.length) {
+        salesWrap.innerHTML = `
+            <div style="text-align:center;padding:36px 0;color:var(--muted)">
+                <i class="fa-solid fa-chart-line" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+                <p style="font-size:13px">Sin datos de ventas</p>
+            </div>`;
+    } else {
+        const maxSale = Math.max(...data.salesByMonth.map(s => s.total), 1);
+        salesWrap.innerHTML = data.salesByMonth.map(s => {
+            const width = Math.max(6, (s.total / maxSale) * 100);
+            return `
+                <div class="bar-row">
+                    <span class="bar-month">${monthNames[s.month] || s.month}</span>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${width}%"></div>
+                    </div>
+                    <span class="bar-amount">${formatBs(s.total)}</span>
+                </div>`;
+        }).join('');
+    }
+</script>
+
+</body>
+</html>

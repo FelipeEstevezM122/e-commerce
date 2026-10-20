@@ -45,6 +45,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    //hitorial de cambios de precio del producto
+    public function priceHistory(){
+        return $this->hasMany(ProductPriceHistory::class)->orderBy('changed_at', 'desc');
+    }
+
     // verifica si hay suficiente stock para una cantidad pedida
     public function hasStock($quantity){
         return $this->stock >= $quantity;

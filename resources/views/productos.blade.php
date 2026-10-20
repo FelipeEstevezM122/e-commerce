@@ -407,6 +407,60 @@
     <span id="cartToastMsg">Producto agregado</span>
 </div>
 
+//vhatbot
+<!-- 1. Burbuja Flotante (Esquina Inferior o Superior Derecha) -->
+<div id="chatbot-toggle-btn" class="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-indigo-700 transition-transform hover:scale-105">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+</div>
+
+<!-- 2. Panel del Chat (Oculto por defecto) -->
+<div id="chatbot-panel" class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-gray-200">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <!-- Cabecera del Panel -->
+    <div class="bg-indigo-600 text-white p-4 flex justify-between items-center shadow-md">
+        <h3 class="font-semibold text-lg flex items-center gap-2">
+            🤖 Asistente Virtual
+        </h3>
+        <button id="chatbot-close-btn" class="text-white hover:text-gray-200 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Cuerpo de Mensajes (Respuestas arriba, scroll interno) -->
+    <div id="chatbot-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50">
+        <div class="flex justify-start">
+            <div class="bg-white text-gray-800 p-3 rounded-lg shadow-sm max-w-[80%] text-sm border border-gray-100">
+                ¡Hola! 👋 ¿En qué puedo ayudarte hoy con tus compras?
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Inferior: Input para mandar el mensaje -->
+    <div class="p-4 bg-white border-t border-gray-200 flex gap-2">
+        <input type="text" id="chatbot-input" placeholder="Escribe tu duda aquí..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <button id="chatbot-send-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 transition">
+            Enviar
+        </button>
+    </div>
+</div>
+
+<!-- Estilos extra si no usas Tailwind completo -->
+<style>
+    /* Asegura que el panel se deslice suavemente */
+    #chatbot-panel.open {
+        transform: translateX(0);
+    }
+</style>
+
+
 {{-- ══════════════ SCRIPTS ══════════════ --}}
 <script>
 const CART_KEY = 'casatek_carrito';
@@ -643,6 +697,99 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
 });
 
 actualizarBadge();
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('chatbot-toggle-btn');
+    const closeBtn = document.getElementById('chatbot-close-btn');
+    const panel = document.getElementById('chatbot-panel');
+    const sendBtn = document.getElementById('chatbot-send-btn');
+    const input = document.getElementById('chatbot-input');
+    const messagesContainer = document.getElementById('chatbot-messages');
+
+    // Control de apertura y cierre del panel
+    if (toggleBtn && panel) {
+        toggleBtn.addEventListener('click', () => {
+            panel.classList.toggle('open');
+        });
+    }
+
+    if (closeBtn && panel) {
+        closeBtn.addEventListener('click', () => {
+            panel.classList.remove('open');
+        });
+    }
+
+    // Función de envío vinculada de forma segura
+    async function handleSendMessage() {
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        appendMessage(text, 'user');
+        input.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        const loadingId = appendMessage('Pensando...', 'bot');
+
+        try {
+            const response = await fetch('/chat/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ message: text })
+            });
+
+            const data = await response.json();
+            document.getElementById(loadingId)?.remove();
+            
+            appendMessage(data.response || 'Respuesta vacía del servidor.', 'bot');
+
+        } catch (error) {
+            document.getElementById(loadingId)?.remove();
+            appendMessage('Error de red al conectar con Laravel.', 'bot');
+            console.error('Detalle del error:', error);
+        }
+
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Escuchadores de eventos para el botón y la tecla Enter
+    if (sendBtn) {
+        sendBtn.addEventListener('click', handleSendMessage);
+    }
+
+    if (input) {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+    }
+
+    function appendMessage(text, sender) {
+        const messageId = 'msg-' + Date.now();
+        const isUser = sender === 'user';
+        
+        const wrapper = document.createElement('div');
+        wrapper.id = messageId;
+        wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = `p-3 rounded-lg max-w-[80%] text-sm ${
+            isUser ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-100 shadow-sm rounded-bl-none'
+        }`;
+        bubble.innerText = text;
+
+        wrapper.appendChild(bubble);
+        messagesContainer.appendChild(wrapper);
+        return messageId;
+    }
+});
 </script>
 
 @endsection

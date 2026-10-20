@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use Illuminate\Database\QueryException;
 use App\Models\Category;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Models\ProductPriceHistory;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
@@ -97,6 +101,12 @@ class ProductController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'datos' => $products,
+                'totalProducts' => $totalProducts,
+                'totalBrands' => $totalBrands,
+                'lowStock' => $lowStock,
+                'noStock' => $noStock,
+                'brands' => $brands,
+                'categories' => $categories,
                 'message' => 'Lista de productos'
             ], Response::HTTP_OK);
         }
@@ -203,6 +213,8 @@ class ProductController extends Controller
     {
         return response()->json([
             'datos' => $product->load('brand', 'category'),
+            'brands' => Brand::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
             'message' => 'Producto mostrado con éxito'
         ], Response::HTTP_OK);
     }
@@ -233,13 +245,13 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:150',
-            'description' => 'sometimes|string',
+            'description' => 'nullable|string',
             'base_price' => 'sometimes|numeric|max:10000|min:0',
             'stock' => 'required|integer|max:150|min:0|',
             'sku' => 'required|string|max:50|unique:products,sku,' . $product->id,
             'warranty_days' => 'nullable|integer|min:0',
-            'brand_id' => 'sometimes|exists:brands,id',
-            'category_id' => 'sometimes|exists:categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => 'nullable|exists:categories,id',
             'image1' => 'nullable|file|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'image3' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
@@ -257,10 +269,28 @@ class ProductController extends Controller
                     $request->file($field),
                     $sku
                 );
+            } elseif ($request->boolean('remove_' . $field) && $product->$field) {
+                // El admin pulsó (x) sobre una imagen existente: se borra de Cloudinary y de la BD
+                $this->deleteFromCloudinary($product->$field);
+                $validated[$field] = null;
             }
         }
 
-        $product->update($validated);
+        DB::transaction(function () use ($product, $validated, $request) {
+            //si el precio cambio, guarda el precio anterior y el nuevo en el historial
+            if (Schema::hasTable('product_price_history')
+                && isset($validated['base_price']) && (float) $validated['base_price'] !== (float) $product->base_price) {
+                ProductPriceHistory::create([
+                    'product_id' => $product->id,
+                    'old_price'  => $product->base_price,
+                    'new_price'  => $validated['base_price'],
+                    'changed_by' => $request->user()?->id,
+                    'changed_at' => now(),
+                ]);
+            }
+
+            $product->update($validated);
+        });
 
         Cache::flush();
 
@@ -279,17 +309,29 @@ class ProductController extends Controller
 >>>>>>> d61b4a9d2b96d16bfec4ab449566c2270c0f8309
     }
 
+    //El trigger bloquea el borrado a nivel de bd si tiene productos activos
     public function destroy(Product $product)
     {
-        foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
-            if ($product->$field) {
-                $this->deleteFromCloudinary($product->$field);
+        try {
+            foreach (['image1', 'image2', 'image3', 'image4'] as $field) {
+                if ($product->$field) {
+                    $this->deleteFromCloudinary($product->$field);
+                }
             }
+
+            $product->delete();
+
+            Cache::flush();
+
+        } catch (QueryException $e) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'message' => 'No se puede eliminar: el producto tiene pedidos activos en curso.'
+                ], Response::HTTP_CONFLICT);
+            }
+            return redirect()->route('admin.products.index')
+                ->with('error', 'No se puede eliminar: el producto tiene pedidos activos en curso.');
         }
-
-        $product->delete();
-
-        Cache::flush();
 
         if (request()->wantsJson()) {
             return response()->json([
