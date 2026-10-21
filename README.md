@@ -82,7 +82,7 @@ La pregunta que guía el proyecto es: **¿cómo mejorar el control de ventas y a
 
 ## Arquitectura
 
-![Diagrama de arquitectura de CASATEK](docs/arquitectura.png)
+![Diagrama de arquitectura de CASATEK](docs/image.jpg)
 
 El usuario (cliente o administrador) entra a la aplicación web, que se comunica con el backend mediante HTTP/JSON. El backend es una API REST que corre en un contenedor Docker local y se conecta con la base de datos (TiDB Cloud en la nube y TiDB local en Docker para desarrollo), con el agente de IA que predice precios y con una API de tipo de cambio (dólar / Bs).
 
@@ -154,6 +154,6 @@ Las tareas del proyecto son las **historias de usuario (HU)** del Product Backlo
 |---|---|
 | Hugo Camilo Cussi Suxo | Líder, Backend, Base de datos, QA |
 | Marco Arturo Cabrera Escobar | Analista, Backend, Base de datos |
-| Alan Steven Torrez Lopez | Frontend, QA · Tablero de tareas y documentación |
+| Alan Steven Torrez Lopez | Coordinador, Frontend, QA |
 | Felipe Uriel Estevez Martinez | Analista, Backend, QA |
-| Francia Andrea Marin Moron | Frontend |
+| Francia Andrea Marin Moron | Frontend, QA |
