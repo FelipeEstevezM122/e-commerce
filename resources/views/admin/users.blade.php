@@ -228,7 +228,7 @@ td { padding:14px 18px; font-size:13px; color:#d1d5db; }
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                          onsubmit="return confirm('¿Eliminar a {{ addslashes($user->name) }}? Esta acción no se puede deshacer.')">
+                                            onsubmit="return confirm('¿Eliminar a {{ addslashes($user->name) }}? Esta acción no se puede deshacer.')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="act-btn act-del" title="Eliminar">
                                             <i class="fa-solid fa-trash"></i>
