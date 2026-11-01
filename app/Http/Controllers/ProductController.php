@@ -302,11 +302,7 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')
-<<<<<<< HEAD
-                        ->with('success', 'Producto actualizado con éxito');
-=======
             ->with('success', 'Producto actualizado con éxito');
->>>>>>> d61b4a9d2b96d16bfec4ab449566c2270c0f8309
     }
 
     //El trigger bloquea el borrado a nivel de bd si tiene productos activos
