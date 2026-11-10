@@ -172,7 +172,7 @@
     gap: 10px;
     margin-bottom: 10px;
 }
-.bar-month { font-size: 11px; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+.bar-month { font-size: 11px; color: var(--muted); width: 62px; text-align: left; flex-shrink: 0; }
 .bar-track {
     flex: 1;
     height: 24px;
@@ -344,28 +344,40 @@
                 <div class="panel-head">
                     <h2>
                         <i class="fa-solid fa-chart-line" style="color:var(--green)"></i>
-                        Ventas Últimos 6 Meses
+                        Reporte mensual de ventas
                     </h2>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <select id="salesMonthSelect" aria-label="Seleccionar mes"
+                                data-monthly-url="{{ route('admin.reports.sales.monthly') }}"
+                                style="max-width:150px;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:#111f16;color:#f3f4f6;font:600 11px 'DM Sans',sans-serif"
+                                {{ $availableSalesMonths->isEmpty() ? 'disabled' : '' }}>
+                            @forelse($availableSalesMonths as $month)
+                                @php [$year, $monthNumber] = explode('-', $month); @endphp
+                                <option value="{{ $month }}" {{ $selectedSalesMonth === $month ? 'selected' : '' }}>
+                                    {{ ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][(int) $monthNumber] }} {{ $year }}
+                                </option>
+                            @empty
+                                <option value="">Sin meses con ventas</option>
+                            @endforelse
+                        </select>
+                    <button type="button" id="exportSalesPdf"
+                            data-export-url="{{ route('admin.reports.sales.export') }}"
+                            data-monthly-url="{{ route('admin.reports.sales.monthly') }}"
+                            {{ $availableSalesMonths->isEmpty() ? 'disabled' : '' }}
+                            style="display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid rgba(34,197,94,.35);border-radius:9px;background:rgba(34,197,94,.1);color:#22C55E;font:700 11px 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap">
+                        <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    </div>
                 </div>
                 <div class="panel-body">
-                    @php
-                        $months = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-                        $maxSale = $salesByMonth->max('total') ?: 1;
-                    @endphp
-                    @forelse($salesByMonth as $sale)
-                    <div class="bar-row">
-                        <span class="bar-month">{{ $months[$sale->month] ?? $sale->month }}</span>
-                        <div class="bar-track">
-                            <div class="bar-fill" style="width:{{ max(6, ($sale->total / $maxSale) * 100) }}%"></div>
-                        </div>
-                        <span class="bar-amount">Bs. {{ number_format($sale->total, 0, '.', ',') }}</span>
+                    <p id="salesExportError" role="alert" style="display:none;color:#fca5a5;font-size:12px;margin-bottom:12px"></p>
+                    <div id="monthlySalesDetails">
+                        @if($monthlySalesReport)
+                            @include('admin.reports.sales-details', ['report' => $monthlySalesReport])
+                        @else
+                            <p style="text-align:center;padding:24px;color:var(--muted)">No hay ventas registradas.</p>
+                        @endif
                     </div>
-                    @empty
-                    <div style="text-align:center;padding:36px 0;color:var(--muted)">
-                        <i class="fa-solid fa-chart-line" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
-                        <p style="font-size:13px">Sin datos de ventas</p>
-                    </div>
-                    @endforelse
                 </div>
             </div>
 
@@ -399,5 +411,107 @@
     </main>
 
 </div>
+
+<script>
+const salesMonthSelect = document.getElementById('salesMonthSelect');
+const monthlySalesDetails = document.getElementById('monthlySalesDetails');
+document.getElementById('exportSalesPdf').addEventListener('click', async function () {
+    const button = this;
+    const error = document.getElementById('salesExportError');
+    button.disabled = true;
+    error.style.display = 'none';
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando...';
+
+    try {
+        const response = await fetch(button.dataset.exportUrl + '?month=' + encodeURIComponent(salesMonthSelect.value), {
+            headers: { 'Accept': 'application/pdf' },
+            credentials: 'same-origin',
+        });
+        if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.message || 'No se pudo generar el PDF (HTTP ' + response.status + ').');
+        }
+
+        const contentType = response.headers.get('Content-Type') || '';
+        const pdf = await response.blob();
+        if (!contentType.toLowerCase().includes('application/pdf')
+            || pdf.size < 100
+            || await pdf.slice(0, 5).text() !== '%PDF-'
+            || !(await pdf.slice(-10).text()).includes('%%EOF')) {
+            throw new Error('El archivo recibido no es un PDF válido.');
+        }
+
+        const url = URL.createObjectURL(pdf);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'reporte-ventas-' + salesMonthSelect.value + '.pdf';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (exception) {
+        error.textContent = exception.message || 'No se pudo exportar el reporte. Inténtalo nuevamente.';
+        error.style.display = 'block';
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Exportar PDF';
+    }
+});
+
+function escapeSalesHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+}
+
+function formatSalesAmount(value) {
+    return 'Bs. ' + Number(value || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+async function loadMonthlySalesDetails() {
+    const url = salesMonthSelect.dataset.monthlyUrl
+        || document.getElementById('exportSalesPdf').dataset.monthlyUrl;
+    if (!url || !salesMonthSelect.value) return;
+    monthlySalesDetails.textContent = 'Cargando reporte...';
+
+    try {
+        const response = await fetch(url + '?month=' + encodeURIComponent(salesMonthSelect.value), {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.message || 'No se pudo cargar el reporte.');
+
+        const report = payload.datos.report;
+        const rows = report.products.map(product => `
+            <tr>
+                <td>${escapeSalesHtml(product.sku)}</td>
+                <td>${escapeSalesHtml(product.name)}</td>
+                <td style="text-align:right">${Number(product.quantity_sold).toLocaleString('es-BO')}</td>
+                <td style="text-align:right">${formatSalesAmount(product.total)}</td>
+                <td style="text-align:right">${Number(product.stock).toLocaleString('es-BO')}</td>
+            </tr>`).join('');
+        monthlySalesDetails.innerHTML = `
+            <div style="overflow-x:auto">
+                <table style="width:100%;border-collapse:collapse;font-size:11px">
+                    <thead><tr style="color:#6b7280;text-align:left;text-transform:uppercase;font-size:9px">
+                        <th style="padding:9px 7px">SKU</th><th>Producto</th>
+                        <th style="text-align:right">Unidades</th><th style="text-align:right">Total vendido</th>
+                        <th style="text-align:right">Stock actual</th>
+                    </tr></thead>
+                    <tbody>${rows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af">No hay productos vendidos en este mes.</td></tr>'}</tbody>
+                    <tfoot><tr style="font-weight:800;color:#bbf7d0;border-top:1px solid rgba(34,197,94,.25)">
+                        <td colspan="3" style="padding:12px 7px">TOTAL FINAL DEL MES</td>
+                        <td style="text-align:right">${formatSalesAmount(report.totalSales)}</td><td></td>
+                    </tr></tfoot>
+                </table>
+            </div>`;
+    } catch (exception) {
+        monthlySalesDetails.textContent = exception.message || 'No se pudo cargar el reporte mensual.';
+    }
+}
+
+salesMonthSelect.addEventListener('change', loadMonthlySalesDetails);
+</script>
 
 @endsection

@@ -92,6 +92,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dashboard y reportes
         Route::get('/dashboard',     [AdminController::class, 'dashboard']);
         Route::get('/reports/sales', [AdminController::class, 'salesReport']);
+        Route::get('/reports/sales/monthly', [AdminController::class, 'monthlySalesReport']);
+        Route::get('/reports/sales/export', [AdminController::class, 'exportSalesReport']);
 
         // Reportes con stored procedures
         Route::get('/reports/sales/sp',     [AdminController::class, 'salesReportProcedure']);

@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\BillingInfo;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,8 @@ class AdminController extends Controller
         $totalOrders     = Order::count();
         $pendingOrders   = Order::where('status', 'pending')->count();
         $completedOrders = Order::where('status', 'delivered')->count();
-        $totalSales      = Order::where('status', 'delivered')->sum('total');
+        $salesReport     = $this->salesDashboardReport();
+        $totalSales      = $salesReport['totalSales'];
  
         $wholesalers    = User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count();
         $finalCustomers = User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count();
@@ -41,17 +43,7 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
  
-        $salesByMonth = Order::where('status', 'delivered')
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('SUM(total) as total')
-            )
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
-            ->get();
+        $salesByMonth = $salesReport['salesByMonth'];
  
         if (request()->wantsJson()) {
             return response()->json([
@@ -65,11 +57,18 @@ class AdminController extends Controller
                 'message' => 'Estadísticas del sistema'
             ], Response::HTTP_OK);
         }
- 
+
+        $availableSalesMonths = $this->availableSalesMonths();
+        $selectedSalesMonth = $availableSalesMonths->first();
+        $monthlySalesReport = $selectedSalesMonth
+            ? $this->monthlySalesDetails($selectedSalesMonth)
+            : null;
+
         return view('admin.dashboard', compact(
             'totalUsers', 'totalProducts', 'totalOrders',
             'pendingOrders', 'completedOrders', 'totalSales',
-            'wholesalers', 'finalCustomers', 'topProducts', 'salesByMonth'
+            'wholesalers', 'finalCustomers', 'topProducts', 'salesByMonth',
+            'availableSalesMonths', 'selectedSalesMonth', 'monthlySalesReport'
         ));
     }
  
@@ -399,6 +398,133 @@ class AdminController extends Controller
             ],
             'message' => 'Reporte de ventas'
         ], Response::HTTP_OK);
+    }
+
+    public function exportSalesReport()
+    {
+        $month = request()->validate(['month' => 'required|date_format:Y-m'])['month'];
+        try {
+            $report = $this->monthlySalesDetails($month);
+            if (!$report) {
+                return response()->json([
+                    'message' => 'No hay ventas registradas para el mes seleccionado.',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $pdf = Pdf::loadView('admin.reports.sales-pdf', [
+                'month' => $month,
+                'products' => $report['products'],
+                'totalSales' => $report['totalSales'],
+                'generatedAt' => now(),
+            ])->setPaper('a4', 'landscape')->output();
+
+            if (strlen($pdf) < 100
+                || substr($pdf, 0, 5) !== '%PDF-'
+                || strrpos($pdf, '%%EOF') === false) {
+                throw new \RuntimeException('El archivo generado no tiene un formato PDF válido.');
+            }
+
+            return response($pdf, Response::HTTP_OK, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="reporte-ventas-' . $month . '.pdf"',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'No se pudo generar el reporte PDF. Inténtalo nuevamente.',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private function salesDashboardReport(): array
+    {
+        return [
+            'totalSales' => Order::where('status', 'delivered')->sum('total'),
+            'salesByMonth' => Order::where('status', 'delivered')
+                ->select(
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('SUM(total) as total')
+                )
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'desc')
+                ->orderBy('month', 'desc')
+                ->get(),
+        ];
+    }
+
+    public function monthlySalesReport(Request $request)
+    {
+        $validated = $request->validate(['month' => 'nullable|date_format:Y-m']);
+        $availableMonths = $this->availableSalesMonths();
+        $month = $validated['month'] ?? $availableMonths->first();
+
+        if (!$month) {
+            return response()->json([
+                'datos' => ['months' => [], 'selected_month' => null, 'report' => null],
+                'message' => 'No hay ventas registradas.',
+            ], Response::HTTP_OK);
+        }
+
+        if (!$availableMonths->contains($month)) {
+            return response()->json([
+                'message' => 'No hay ventas registradas para el mes seleccionado.',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'datos' => [
+                'months' => $availableMonths,
+                'selected_month' => $month,
+                'report' => $this->monthlySalesDetails($month),
+                'total_sales' => Order::where('status', 'delivered')->sum('total'),
+            ],
+            'message' => 'Reporte mensual de ventas',
+        ], Response::HTTP_OK);
+    }
+
+    private function availableSalesMonths()
+    {
+        return Order::where('status', 'delivered')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"))
+            ->distinct()
+            ->orderByDesc('month')
+            ->pluck('month');
+    }
+
+    private function monthlySalesDetails(string $month): ?array
+    {
+        if (!$this->availableSalesMonths()->contains($month)) {
+            return null;
+        }
+
+        $start = \Carbon\Carbon::createFromFormat('!Y-m', $month);
+        $end = $start->copy()->endOfMonth();
+
+        $products = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('orders.status', 'delivered')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->select(
+                'products.sku',
+                'products.name',
+                'products.stock',
+                DB::raw('SUM(order_items.quantity) as quantity_sold'),
+                DB::raw('SUM(order_items.quantity * order_items.price_when_ordered) as total')
+            )
+            ->groupBy('products.sku', 'products.name', 'products.stock')
+            ->orderBy('products.name')
+            ->get();
+
+        return [
+            'products' => $products,
+            'totalSales' => Order::where('status', 'delivered')
+                ->whereBetween('created_at', [$start, $end])
+                ->sum('total'),
+        ];
     }
  
     public function salesReportProcedure(Request $request)

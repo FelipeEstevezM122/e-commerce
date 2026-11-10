@@ -223,7 +223,7 @@
         gap: 10px;
         margin-bottom: 10px;
     }
-    .bar-month { font-size: 11px; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+    .bar-month { font-size: 11px; color: var(--muted); width: 62px; text-align: left; flex-shrink: 0; }
     .bar-track {
         flex: 1;
         height: 24px;
@@ -239,6 +239,17 @@
         display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
     }
     .bar-amount { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+    .report-export-btn { display:flex; align-items:center; gap:7px; padding:8px 11px; border:1px solid rgba(34,197,94,.35); border-radius:9px; background:rgba(34,197,94,.1); color:#22C55E; font:700 11px 'DM Sans',sans-serif; cursor:pointer; white-space:nowrap; }
+    .report-export-btn:hover:not(:disabled) { background:rgba(34,197,94,.2); }
+    .report-export-btn:disabled { cursor:wait; opacity:.55; }
+    .report-export-error { color:#fca5a5; font-size:12px; padding:0 16px 14px; }
+    .sales-report-controls { display:flex; align-items:center; gap:8px; }
+    .sales-month-select { max-width:150px; padding:8px 10px; border:1px solid rgba(255,255,255,.12); border-radius:9px; background:#111f16; color:#f3f4f6; font:600 11px 'DM Sans',sans-serif; }
+    .sales-products-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .sales-products-table th { color:var(--muted); font-size:9px; text-align:left; text-transform:uppercase; letter-spacing:.06em; padding:9px 7px; border-bottom:1px solid var(--border); }
+    .sales-products-table td { color:#e5e7eb; padding:10px 7px; border-bottom:1px solid rgba(255,255,255,.05); }
+    .sales-products-table .number { text-align:right; white-space:nowrap; }
+    .sales-month-total { display:flex; justify-content:space-between; gap:12px; margin-top:12px; padding:12px; border:1px solid rgba(34,197,94,.25); border-radius:10px; color:#bbf7d0; font-size:12px; font-weight:800; }
 
     .quick-grid {
         display: grid;
@@ -417,7 +428,7 @@
                         <i class="fa-solid fa-bolivar-sign" style="color:#22C55E"></i>
                     </div>
                 </div>
-                <p class="stat-value green" id="statTotalSales">Bs. 0</p>
+                <p class="stat-value green" id="statTotalSales">Cargando...</p>
                 <div class="stat-sub"><span>de pedidos entregados</span></div>
             </div>
 
@@ -441,12 +452,21 @@
                 <div class="panel-head">
                     <h2>
                         <i class="fa-solid fa-chart-line" style="color:var(--green)"></i>
-                        Ventas Últimos 6 Meses
+                        Reporte mensual de ventas
                     </h2>
+                    <div class="sales-report-controls">
+                        <select id="salesMonthSelect" class="sales-month-select" aria-label="Seleccionar mes" disabled>
+                            <option value="">Cargando meses...</option>
+                        </select>
+                        <button type="button" class="report-export-btn" id="exportSalesPdf" disabled>
+                            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
                 </div>
                 <div class="panel-body" id="salesByMonthBody">
-                    <!-- generado por JS -->
+                    <p>Cargando reporte...</p>
                 </div>
+                <p id="salesExportError" class="report-export-error" role="alert" hidden></p>
             </div>
 
         </div>
@@ -588,34 +608,25 @@
         }
     });
 
-    // ---------- Datos de ejemplo (sustituye por tu fetch/API real) ----------
+    // ---------- Datos de ejemplo para métricas distintas al reporte de ventas ----------
     const data = {
-        totalSales: 184250,
         topProducts: [
             { name: 'Laptop Lenovo IdeaPad 3',      total_sold: 58 },
             { name: 'Mouse Logitech M170',           total_sold: 47 },
             { name: 'Monitor Samsung 24" Curvo',     total_sold: 39 },
             { name: 'Teclado Mecánico Redragon',     total_sold: 31 },
             { name: 'Audífonos JBL Tune 510BT',      total_sold: 22 }
-        ],
-        salesByMonth: [
-            { month: 4, total: 21400 },
-            { month: 5, total: 26800 },
-            { month: 6, total: 19750 },
-            { month: 7, total: 33200 },
-            { month: 8, total: 41100 },
-            { month: 9, total: 42000 }
         ]
     };
 
     const monthNames = ['', 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
     function formatBs(n) {
-        return 'Bs. ' + Math.round(n).toLocaleString('es-BO').replace(/,/g, ',');
+        return 'Bs. ' + Number(n).toLocaleString('es-BO', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     }
-
-    // ---------- Ventas totales ----------
-    document.getElementById('statTotalSales').textContent = formatBs(data.totalSales);
 
     // ---------- Top productos vendidos ----------
     const topWrap = document.getElementById('topProductsBody');
@@ -642,28 +653,140 @@
         }).join('');
     }
 
-    // ---------- Ventas últimos 6 meses ----------
     const salesWrap = document.getElementById('salesByMonthBody');
-    if (!data.salesByMonth.length) {
-        salesWrap.innerHTML = `
-            <div style="text-align:center;padding:36px 0;color:var(--muted)">
-                <i class="fa-solid fa-chart-line" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
-                <p style="font-size:13px">Sin datos de ventas</p>
-            </div>`;
-    } else {
-        const maxSale = Math.max(...data.salesByMonth.map(s => s.total), 1);
-        salesWrap.innerHTML = data.salesByMonth.map(s => {
-            const width = Math.max(6, (s.total / maxSale) * 100);
-            return `
-                <div class="bar-row">
-                    <span class="bar-month">${monthNames[s.month] || s.month}</span>
-                    <div class="bar-track">
-                        <div class="bar-fill" style="width:${width}%"></div>
-                    </div>
-                    <span class="bar-amount">${formatBs(s.total)}</span>
-                </div>`;
-        }).join('');
+    const exportSalesPdfButton = document.getElementById('exportSalesPdf');
+    const salesExportError = document.getElementById('salesExportError');
+    const salesMonthSelect = document.getElementById('salesMonthSelect');
+    let selectedSalesMonth = '';
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[char]);
     }
+
+    function formatSalesMonth(value) {
+        const [year, month] = value.split('-').map(Number);
+        const names = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        return `${names[month]} ${year}`;
+    }
+
+    function renderSalesReport(report) {
+        const products = report.products || [];
+        if (!products.length) {
+            salesWrap.innerHTML = '<p style="text-align:center;padding:24px;color:var(--muted)">No hay productos vendidos en este mes.</p>';
+        } else {
+            salesWrap.innerHTML = `
+                <div style="overflow-x:auto">
+                    <table class="sales-products-table">
+                        <thead><tr>
+                            <th>SKU</th><th>Producto</th>
+                            <th class="number">Unidades</th><th class="number">Total vendido</th><th class="number">Stock</th>
+                        </tr></thead>
+                        <tbody>${products.map(product => `
+                            <tr>
+                                <td>${escapeHtml(product.sku)}</td>
+                                <td>${escapeHtml(product.name)}</td>
+                                <td class="number">${Number(product.quantity_sold).toLocaleString('es-BO')}</td>
+                                <td class="number">${formatBs(Number(product.total))}</td>
+                                <td class="number">${Number(product.stock).toLocaleString('es-BO')}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+        salesWrap.insertAdjacentHTML('beforeend', `
+            <div class="sales-month-total">
+                <span>Total final ${escapeHtml(formatSalesMonth(report.month))}</span>
+                <span>${formatBs(Number(report.totalSales))}</span>
+            </div>`);
+    }
+
+    async function loadSalesReport(month) {
+        try {
+            const query = month ? '?month=' + encodeURIComponent(month) : '';
+            const response = await fetch('/api/admin/reports/sales/monthly' + query, {
+                headers: window.adminAuthHeaders(),
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload.message || 'HTTP ' + response.status);
+            }
+
+            const data = payload.datos;
+            if (!data || !Array.isArray(data.months)) {
+                throw new Error('La respuesta del reporte tiene un formato inesperado.');
+            }
+
+            document.getElementById('statTotalSales').textContent = formatBs(Number(data.total_sales || 0));
+            if (data.months.length === 0) {
+                salesMonthSelect.innerHTML = '<option value="">Sin meses con ventas</option>';
+                salesMonthSelect.disabled = true;
+                exportSalesPdfButton.disabled = true;
+                salesWrap.innerHTML = '<p style="text-align:center;padding:24px;color:var(--muted)">No hay ventas registradas.</p>';
+                return;
+            }
+
+            salesMonthSelect.innerHTML = data.months.map(value =>
+                `<option value="${escapeHtml(value)}">${escapeHtml(formatSalesMonth(value))}</option>`
+            ).join('');
+            salesMonthSelect.disabled = false;
+            selectedSalesMonth = data.selected_month;
+            salesMonthSelect.value = selectedSalesMonth;
+            renderSalesReport({ ...data.report, month: selectedSalesMonth });
+            exportSalesPdfButton.disabled = false;
+        } catch (error) {
+            salesWrap.textContent = 'No se pudo cargar el reporte de ventas: ' + error.message;
+            salesMonthSelect.disabled = true;
+            exportSalesPdfButton.disabled = true;
+        }
+    }
+
+    async function exportSalesReport() {
+        exportSalesPdfButton.disabled = true;
+        salesExportError.hidden = true;
+        exportSalesPdfButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando...';
+        try {
+            const response = await fetch('/api/admin/reports/sales/export?month=' + encodeURIComponent(selectedSalesMonth), {
+                headers: window.adminAuthHeaders(),
+            });
+            if (!response.ok) {
+                const payload = await response.json().catch(() => ({}));
+                throw new Error(payload.message || 'No se pudo generar el PDF (HTTP ' + response.status + ').');
+            }
+
+            const contentType = response.headers.get('Content-Type') || '';
+            const pdf = await response.blob();
+            if (!contentType.toLowerCase().includes('application/pdf')
+                || pdf.size < 100
+                || await pdf.slice(0, 5).text() !== '%PDF-'
+                || !(await pdf.slice(-10).text()).includes('%%EOF')) {
+                throw new Error('El archivo recibido no es un PDF válido.');
+            }
+
+            const url = URL.createObjectURL(pdf);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'reporte-ventas-' + selectedSalesMonth + '.pdf';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) {
+            salesExportError.textContent = error.message || 'No se pudo exportar el reporte. Inténtalo nuevamente.';
+            salesExportError.hidden = false;
+        } finally {
+            exportSalesPdfButton.disabled = !selectedSalesMonth;
+            exportSalesPdfButton.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Exportar PDF';
+        }
+    }
+
+    salesMonthSelect.addEventListener('change', () => {
+        selectedSalesMonth = salesMonthSelect.value;
+        if (selectedSalesMonth) loadSalesReport(selectedSalesMonth);
+    });
+    exportSalesPdfButton.addEventListener('click', exportSalesReport);
+    loadSalesReport();
 </script>
 
 </body>

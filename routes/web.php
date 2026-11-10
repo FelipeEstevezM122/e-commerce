@@ -53,9 +53,13 @@ Route::get('/productos_lista_admin.html', $pagina('productos_lista_admin.html'))
 
 // 4. TODAS LAS DEMÁS PÁGINAS: /<nombre>.html  ->  public/Vistas/<nombre>.html
 //    (nosotros.html, contactanos.html, registro.html, carrito.html, productos.html, MisTickets.html,
-//     MisPedidos.html, recuperar_contrasena.html, dashboard_admin.html, users_admin.html, orders_admin.html,
+//     recuperar_contrasena.html, dashboard_admin.html, users_admin.html, orders_admin.html,
 //     tickets_admin.html, create_product_admin.html, productos_lista_admin.html, ...)
 Route::get('/{archivo}.html', function (string $archivo) {
+    if ($archivo === 'MisPedidos') {
+        abort(404);
+    }
+
     $ruta = public_path('Vistas/' . $archivo . '.html');
     abort_unless(is_file($ruta), 404);
     return response()->file($ruta);
@@ -65,12 +69,11 @@ Route::get('/{archivo}.html', function (string $archivo) {
 //    Bórralo cuando ya no quede ningún enlace viejo dentro de tus HTML.
 foreach ([
     'nosotros', 'contactanos', 'iniciarsesion', 'carrito', 'registro',
-    'recuperar_contrasena', 'productos', 'MisTickets', 'MisPedidos',
+    'recuperar_contrasena', 'productos', 'MisTickets',
 ] as $legacy) {
     Route::redirect('/' . $legacy, '/' . $legacy . '.html');
 }
 Route::redirect('/mis-tickets', '/MisTickets.html');
-Route::redirect('/mis-pedidos', '/MisPedidos.html');
 
 // 6. RANGOS PÚBLICOS (JSON)
 Route::get('ranks',        [RankController::class, 'index']);
@@ -85,6 +88,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::delete('/users/{user}',    [AdminController::class, 'deleteUser']) ->name('users.destroy');
     Route::post('/users/store-admin', [AdminController::class, 'storeAdmin']) ->name('users.store-admin');
+    Route::get('/reports/sales/monthly', [AdminController::class, 'monthlySalesReport'])->name('reports.sales.monthly');
+    Route::get('/reports/sales/export', [AdminController::class, 'exportSalesReport'])->name('reports.sales.export');
     Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
     Route::post('/orders/{order}/ticket', [TicketController::class, 'generate'])->name('tickets.generate');
 });
