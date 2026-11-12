@@ -9,6 +9,7 @@ use App\Http\Controllers\BillingInfoController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PriceStatsController;
 //para chatbot
 use App\Http\Controllers\ChatbotController;
 
@@ -21,6 +22,11 @@ Route::post('/login',    [AuthController::class, 'login']);
 Route::get('/products',           [ProductController::class, 'index']);
 Route::get('/products/search',    [ProductController::class, 'search']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
+
+// HU-10: dolar en vivo y estadisticas de precios (lectura publica)
+Route::get('/exchange-rate',                  [PriceStatsController::class, 'exchangeRate']);
+Route::get('/price-stats',                    [PriceStatsController::class, 'overview']);
+Route::get('/price-stats/products/{product}', [PriceStatsController::class, 'productTimeline']);
 
 // Rangos (solo lectura publica)
 Route::get('/ranks',         [RankController::class, 'index']);
@@ -88,6 +94,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //3. RUTAS DE ADMINISTRADOR (auth:sanctum + middleware admin)
     Route::middleware('admin')->prefix('admin')->group(function () {
+
+        // HU-10: estadisticas de precios (admin: incluye quien cambio el precio)
+        Route::get('/price-stats', [PriceStatsController::class, 'adminOverview']);
 
         // Dashboard y reportes
         Route::get('/dashboard',     [AdminController::class, 'dashboard']);
