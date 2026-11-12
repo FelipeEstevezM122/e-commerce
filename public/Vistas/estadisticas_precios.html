@@ -853,8 +853,50 @@ document.addEventListener('DOMContentLoaded', inicializarNavAuth);
   const dk = () => document.documentElement.classList.contains('dark');
   const T = () => ({ line:'#22C55E', fill:'rgba(34,197,94,.12)', up:dk()?'#4ade80':'#15803d', down:dk()?'#f87171':'#dc2626', muted:dk()?'#9ca3af':'#6b7280', grid:dk()?'rgba(255,255,255,.07)':'rgba(0,0,0,.06)', tipBg:dk()?'#111827':'#ffffff', tipText:dk()?'#f9fafb':'#111111' });
   PriceStats.init({ admin:false, theme:T() });
-  // si cambian de tema, recargar para repintar las gráficas con los colores nuevos
-  let was = dk(); new MutationObserver(() => { if (dk() !== was) location.reload(); }).observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+  // Actualizar las gráficas al cambiar de tema, sin recargar la página.
+  // Recargar aquí generaba un bucle cuando se restauraba el tema guardado.
+  function actualizarColoresGraficas() {
+    if (typeof Chart === 'undefined') return;
+    const t = T();
+    ['chartDaily', 'chartTimeline'].forEach((id) => {
+      const canvas = document.getElementById(id);
+      const chart = canvas && Chart.getChart(canvas);
+      if (!chart) return; // Puede que los datos todavía estén cargando.
+
+      const opts = chart.options;
+      if (opts.scales?.x?.ticks) opts.scales.x.ticks.color = t.muted;
+      if (opts.scales?.y?.ticks) opts.scales.y.ticks.color = t.muted;
+      if (opts.scales?.y?.grid) opts.scales.y.grid.color = t.grid;
+      if (opts.plugins?.tooltip) {
+        opts.plugins.tooltip.backgroundColor = t.tipBg;
+        opts.plugins.tooltip.titleColor = t.tipText;
+        opts.plugins.tooltip.bodyColor = t.tipText;
+        opts.plugins.tooltip.borderColor = t.line;
+      }
+      const dataset = chart.data.datasets[0];
+      if (dataset && id === 'chartDaily') {
+        dataset.backgroundColor = dataset.data.map((v) => {
+          const n = typeof v === 'number' ? v : (v && v.y) || 0;
+          return n >= 0 ? t.up : t.down;
+        });
+      } else if (dataset && id === 'chartTimeline') {
+        const values = dataset.data.map((v) => typeof v === 'number' ? v : (v && v.y) || 0);
+        const max = Math.max(...values), min = Math.min(...values);
+        dataset.borderColor = t.line;
+        dataset.backgroundColor = t.fill;
+        dataset.pointBackgroundColor = values.map((v) => v === max ? t.up : v === min ? t.down : t.line);
+        dataset.pointBorderColor = dataset.pointBackgroundColor;
+      }
+      chart.update('none');
+    });
+  }
+  let temaAnterior = dk();
+  new MutationObserver(() => {
+    const temaActual = dk();
+    if (temaActual === temaAnterior) return;
+    temaAnterior = temaActual;
+    actualizarColoresGraficas();
+  }).observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
 })();
 </script>
 <script>
