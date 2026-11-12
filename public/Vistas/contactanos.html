@@ -59,6 +59,10 @@
                         <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
                     <li class="relative group">
+                    <a href="estadisticas_precios.html" class="hover:text-[#22C55E] transition-colors">ESTADÍSTICAS</a>
+                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                </li>
+                <li class="relative group">
                         <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
                         <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
                     </li>
@@ -170,6 +174,7 @@
                     <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
                     <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
                     <a href="productos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Productos</a>
+                    <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
                     <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
                     <a href="contactanos.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Contáctanos</a>
                     <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
@@ -508,6 +513,7 @@
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
                     <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
+                    <li><a href="estadisticas_precios.html" class="hover:text-white transition-colors">Estadísticas de Precios</a></li>
                     <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
                     <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
                 </ul>
@@ -780,5 +786,20 @@ function inicializarNavAuth() {
 document.addEventListener('DOMContentLoaded', inicializarNavAuth);
 </script>
 
+<script src="/js/client-nav.js"></script>
+<script>
+// HU-10 / perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
+window.abrirModalPerfil = function () { location.href = 'perfil.html'; };
+(function () {
+    let roles = [];
+    try { roles = JSON.parse(localStorage.getItem('roles') || '[]'); } catch (e) {}
+    if (!roles.some(r => r.name === 'admin')) return;
+    const html = '<a href="/dashboard_admin.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-[#22C55E] hover:bg-green-50 dark:hover:bg-gray-700 transition-colors"><i class="fa-solid fa-user-shield w-4"></i> Cambiar a administrador</a>';
+    const dd = document.querySelector('#btn-perfil-desktop .absolute');
+    if (dd) dd.insertAdjacentHTML('beforeend', html);
+    const mob = document.getElementById('mobile-perfil');
+    if (mob) mob.insertAdjacentHTML('beforeend', '<a href="/dashboard_admin.html" class="block text-lg font-bold text-[#22C55E]">Cambiar a administrador</a>');
+})();
+</script>
 </body>
 </html>
