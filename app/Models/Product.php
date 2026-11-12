@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 // representa un producto del catalogo
 class Product extends Model
@@ -24,6 +27,36 @@ class Product extends Model
         'brand_id',
         'category_id',
     ];
+
+
+    // HISTORIAL DE PRECIOS (HU-10)
+    // Se guarda automaticamente cada vez que cambia base_price, sin importar
+    // desde donde se actualice (controlador, tinker, seeder, etc.).
+    protected static function booted(): void
+    {
+        static::updating(function (Product $product) {
+            if (!$product->isDirty('base_price')) {
+                return;
+            }
+            $old = (float) $product->getOriginal('base_price');
+            $new = (float) $product->base_price;
+            if ($old === $new) {
+                return;
+            }
+            // Si la tabla no existe NO fallamos en silencio: avisamos en storage/logs/laravel.log
+            if (!Schema::hasTable('product_price_history')) {
+                Log::warning('product_price_history no existe: ejecute "php artisan migrate". Precio no registrado en historial.', ['product_id' => $product->id]);
+                return;
+            }
+            ProductPriceHistory::create([
+                'product_id' => $product->id,
+                'old_price'  => $old,
+                'new_price'  => $new,
+                'changed_by' => Auth::id(),   // null si el cambio no viene de un usuario logueado
+                'changed_at' => now(),
+            ]);
+        });
+    }
 
     // el producto pertenece a una marca
     public function brand(){
