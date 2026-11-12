@@ -85,6 +85,20 @@
     th { text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
     td { padding:11px 10px; border-bottom:1px solid var(--border); color:var(--text); }
     .fade-up { animation:fadeUp .4s ease both; } @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+    /* Paginación del historial: compatible con tema claro y oscuro */
+    .recent-pagination { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+    .recent-pagination[hidden] { display:none !important; }
+    .recent-page-info { color:var(--muted); font-size:12px; font-weight:600; }
+    .recent-page-actions { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .recent-page-btn { min-width:36px; min-height:36px; padding:7px 11px; border:1px solid var(--border); border-radius:9px; background:var(--card2); color:var(--text); font:600 12px var(--body); cursor:pointer; transition:background-color .15s,border-color .15s,color .15s; }
+    .recent-page-btn:hover:not(:disabled) { border-color:var(--green); color:var(--green); }
+    .recent-page-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+    .recent-page-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .recent-page-btn[aria-current="page"] { background:var(--green); color:#08150b; border-color:var(--green); }
+    .recent-page-ellipsis { color:var(--muted); padding:0 3px; }
+    @media(max-width:520px) { .recent-pagination { justify-content:center; } .recent-page-info { text-align:center; width:100%; } }
+
     @media(max-width:900px){ .live-grid,.two{grid-template-columns:1fr} .kpis{grid-template-columns:1fr 1fr} }
     @media(max-width:520px){ .kpis{grid-template-columns:1fr} .mini{grid-template-columns:1fr} .section-title{font-size:23px} .chart-box{height:260px} .seg{width:100%} .seg button{flex:1;padding:7px 4px} #productSel{min-width:0;width:100%} }
     @media (prefers-reduced-motion:reduce){ .fade-up,.live-dot{animation:none} }
@@ -502,6 +516,10 @@
   <section class="card fade-up">
     <h2 class="card-title">Últimos cambios de precio</h2>
     <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Antes</th><th>Ahora</th><th>Variación</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+    <nav id="recentPagination" class="recent-pagination" aria-label="Paginación de últimos cambios de precio" hidden>
+      <span id="recentPageInfo" class="recent-page-info" role="status" aria-live="polite"></span>
+      <div id="recentPageActions" class="recent-page-actions"></div>
+    </nav>
   </section>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>

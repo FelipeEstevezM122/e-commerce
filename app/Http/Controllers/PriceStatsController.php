@@ -81,15 +81,15 @@ class PriceStatsController extends Controller
      ============================================================ */
     public function overview(Request $request)
     {
-        return $this->buildOverview((int) $request->query('days', 30), false);
+        return $this->buildOverview((int) $request->query('days', 30), false, (int) $request->query('recent_page', 1));
     }
 
     public function adminOverview(Request $request)
     {
-        return $this->buildOverview((int) $request->query('days', 30), true);
+        return $this->buildOverview((int) $request->query('days', 30), true, (int) $request->query('recent_page', 1));
     }
 
-    private function buildOverview(int $days, bool $admin)
+    private function buildOverview(int $days, bool $admin, int $recentPage = 1)
     {
         $days  = max(7, min($days, 365));
         $since = now()->subDays($days);
@@ -138,6 +138,14 @@ class PriceStatsController extends Controller
             ->map(fn ($g, $d) => ['date' => $d, 'avg_pct' => round($g->avg('pct'), 2), 'changes' => $g->count()])
             ->sortKeys()->values();
 
+        // Paginación real de los últimos cambios dentro del período seleccionado.
+        $recentPerPage = 10;
+        $recentTotal = $changes->count();
+        $recentPages = max(1, (int) ceil($recentTotal / $recentPerPage));
+        $recentPage = max(1, min($recentPage, $recentPages));
+        $recent = $changes->sortByDesc('at')->values()
+            ->forPage($recentPage, $recentPerPage)->values();
+
         return response()->json([
             'simulated' => $simulated,
             'days'      => $days,
@@ -152,7 +160,13 @@ class PriceStatsController extends Controller
             'top_rises'      => $perProduct->sortByDesc('pct')->take(5)->values(),
             'top_drops'      => $perProduct->sortBy('pct')->take(5)->values(),
             'most_volatile'  => $perProduct->sortByDesc('changes')->take(5)->values(),
-            'recent'         => $changes->sortByDesc('at')->take(15)->values(),
+            'recent'         => $recent,
+            'recent_pagination' => [
+                'page' => $recentPage,
+                'per_page' => $recentPerPage,
+                'total' => $recentTotal,
+                'last_page' => $recentPages,
+            ],
             // lista para el selector de la grafica por producto
             'products'       => Product::orderBy('name')->get(['id', 'name', 'base_price']),
         ]);

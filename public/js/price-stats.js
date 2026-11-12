@@ -11,7 +11,7 @@ const PriceStats = (function () {
     const pctTxt = (p) => (p > 0 ? '+' : '') + Number(p).toFixed(2) + '%';
     const pctCls = (p) => (p > 0 ? 'up' : p < 0 ? 'down' : 'flat');
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    let cfg, charts = {}, lastRate = null, rateAt = null, days = 30, usdRate = 0;
+    let cfg, charts = {}, lastRate = null, rateAt = null, days = 30, usdRate = 0, recentPage = 1, recentRequestId = 0;
 
     function headers() {
         const h = { Accept: 'application/json' };
@@ -116,7 +116,7 @@ const PriceStats = (function () {
         $('listRises').innerHTML = rank(d.top_rises.filter((p) => p.pct > 0));
         $('listDrops').innerHTML = rank(d.top_drops.filter((p) => p.pct < 0));
 
-        $('recentBody').innerHTML = d.recent.map((r) => '<tr><td>' + new Date(r.at).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td><td>' + esc(r.name) + '</td><td>' + fmt(r.old) + '</td><td>' + fmt(r.new) + '</td><td><span class="chip ' + pctCls(r.pct) + '">' + pctTxt(r.pct) + '</span></td>' + (cfg.admin ? '<td>' + esc(r.by) + '</td>' : '') + '</tr>').join('') || '<tr><td colspan="6" class="empty">Aún no hay cambios de precio en este período</td></tr>';
+        renderRecent(d);
 
         const sel = $('productSel');
         if (!sel.options.length) {
@@ -125,13 +125,72 @@ const PriceStats = (function () {
         }
     }
 
+    /* ---------- PAGINACIÓN DE ÚLTIMOS CAMBIOS ---------- */
+    function renderRecent(d) {
+        const rows = Array.isArray(d.recent) ? d.recent : [];
+        const p = d.recent_pagination || { page: 1, per_page: 10, total: rows.length, last_page: 1 };
+        recentPage = p.page;
+        $('recentBody').innerHTML = rows.map((r) => '<tr><td>' + new Date(r.at).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td><td>' + esc(r.name) + '</td><td>' + fmt(r.old) + '</td><td>' + fmt(r.new) + '</td><td><span class="chip ' + pctCls(r.pct) + '">' + pctTxt(r.pct) + '</span></td>' + (cfg.admin ? '<td>' + esc(r.by) + '</td>' : '') + '</tr>').join('') || '<tr><td colspan="' + (cfg.admin ? 6 : 5) + '" class="empty">Aún no hay cambios de precio en este período</td></tr>';
+
+        const nav = $('recentPagination'), actions = $('recentPageActions');
+        nav.hidden = p.total <= p.per_page;
+        const start = p.total ? (p.page - 1) * p.per_page + 1 : 0;
+        const end = Math.min(p.page * p.per_page, p.total);
+        $('recentPageInfo').textContent = 'Mostrando ' + start + '–' + end + ' de ' + p.total + ' cambios';
+        actions.replaceChildren();
+        if (nav.hidden) return;
+
+        function button(label, page, disabled, current = false) {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'recent-page-btn';
+            b.textContent = label; b.disabled = disabled;
+            b.setAttribute('aria-label', current ? 'Página ' + page + ', actual' : label === 'Anterior' || label === 'Siguiente' ? label + ', página ' + page : 'Ir a la página ' + page);
+            if (current) b.setAttribute('aria-current', 'page');
+            else if (!disabled) b.addEventListener('click', () => loadRecentPage(page));
+            actions.appendChild(b);
+        }
+        button('Anterior', p.page - 1, p.page <= 1);
+        // Mostrar una ventana de páginas y puntos suspensivos si hay muchas.
+        const visible = new Set([1, p.last_page, p.page - 1, p.page, p.page + 1]);
+        let prev = 0;
+        for (const n of [...visible].filter((n) => n >= 1 && n <= p.last_page).sort((a, b) => a - b)) {
+            if (prev && n > prev + 1) {
+                const dots = document.createElement('span'); dots.className = 'recent-page-ellipsis'; dots.textContent = '…';
+                dots.setAttribute('aria-hidden', 'true'); actions.appendChild(dots);
+            }
+            button(String(n), n, false, n === p.page);
+            prev = n;
+        }
+        button('Siguiente', p.page + 1, p.page >= p.last_page);
+    }
+
+    async function loadRecentPage(page) {
+        const requestId = ++recentRequestId;
+        const actions = $('recentPageActions');
+        actions.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+        try {
+            const d = await api((cfg.admin ? '/api/admin/price-stats' : '/api/price-stats') + '?days=' + days + '&recent_page=' + page);
+            if (requestId !== recentRequestId) return;
+            renderRecent(d); // No recrear las gráficas ni modificar el selector de productos.
+        } catch (e) {
+            if (requestId !== recentRequestId) return;
+            $('recentPageInfo').textContent = 'No se pudo cargar la página. Intenta nuevamente.';
+            actions.querySelectorAll('button').forEach((b) => { b.disabled = b.getAttribute('aria-current') === 'page'; });
+        }
+    }
+
     async function loadTimeline(id) {
         try { drawTimeline(await api('/api/price-stats/products/' + id + '?days=' + Math.max(days, 30))); }
         catch (e) { $('tlNote').style.display = 'flex'; }
     }
     async function loadOverview() {
+        const requestId = ++recentRequestId; // Descarta respuestas anteriores al cambiar de período.
+        recentPage = 1;
         $('loading').style.display = 'flex';
-        try { renderOverview(await api((cfg.admin ? '/api/admin/price-stats' : '/api/price-stats') + '?days=' + days)); }
+        try {
+            const d = await api((cfg.admin ? '/api/admin/price-stats' : '/api/price-stats') + '?days=' + days + '&recent_page=1');
+            if (requestId === recentRequestId) renderOverview(d);
+        }
         catch (e) { $('errBox').style.display = 'flex'; }
         $('loading').style.display = 'none';
     }
