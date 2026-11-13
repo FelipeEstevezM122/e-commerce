@@ -104,6 +104,39 @@
     @media (prefers-reduced-motion:reduce){ .fade-up,.live-dot{animation:none} }
 
 
+
+    /* Predicción: lectura sencilla y adaptable a tema claro/oscuro. */
+    .forecast-intro { max-width:600px; line-height:1.6; }
+    .forecast-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .forecast-actions label { font-weight:700; }
+    .forecast-actions #productSel { min-width:210px; max-width:100%; }
+    .forecast-status { display:inline-flex; align-items:center; gap:6px; border-radius:20px; font-size:11px; font-weight:800; padding:6px 11px; border:1px solid var(--border); color:var(--muted); background:var(--card2); }
+    .forecast-status.ready { color:var(--up); background:rgba(34,197,94,.10); border-color:rgba(34,197,94,.20); }
+    .forecast-status.low { color:var(--notice); background:rgba(245,158,11,.09); border-color:rgba(245,158,11,.25); }
+    .forecast-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:16px 0 10px; }
+    .forecast-grid > .forecast-summary, .forecast-grid > .forecast-meta, .forecast-grid > .forecast-message { grid-column:1/-1; }
+    .forecast-summary { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 16px; padding:12px 16px; border:1px solid var(--border); border-radius:13px; background:var(--card2); }
+    .forecast-summary .forecast-current-label { color:var(--muted); font-size:12px; font-weight:600; }
+    .forecast-current-price { color:var(--text); font-size:21px; font-weight:800; white-space:nowrap; }
+    .forecast-tile { min-width:0; background:var(--card2); border:1px solid var(--border); border-radius:15px; padding:17px; }
+    .forecast-tile-title { font-size:14px; color:var(--text); font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:13px; }
+    .forecast-tile-title i { color:var(--green); }
+    .forecast-limits { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .forecast-limit { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 12px; min-width:0; }
+    .forecast-limit .limit-label { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); font-weight:700; }
+    .forecast-limit strong { display:block; font-size:clamp(17px,2vw,24px); font-weight:800; margin:6px 0 4px; overflow-wrap:anywhere; }
+    .forecast-limit .limit-change { font-size:11px; font-weight:700; }
+    .forecast-range { position:relative; height:6px; border-radius:99px; margin:20px 5px 16px; background:linear-gradient(90deg,rgba(239,68,68,.7),rgba(245,158,11,.6) 50%,rgba(34,197,94,.7)); }
+    .forecast-range-dot { position:absolute; top:50%; left:var(--forecast-mid,50%); transform:translate(-50%,-50%); height:13px; width:13px; background:var(--text); border:3px solid var(--card2); border-radius:50%; box-shadow:0 0 0 1px var(--border); }
+    .forecast-average { font-size:12px; color:var(--muted); text-align:center; }
+    .forecast-average b { color:var(--text); font-weight:800; }
+    .forecast-meta { font-size:11px; color:var(--muted); line-height:1.6; }
+    .forecast-note { display:flex; gap:8px; align-items:flex-start; color:var(--muted); font-size:12px; line-height:1.5; margin-top:8px; }
+    .forecast-note i { margin-top:2px; color:var(--notice); }
+    .forecast-message { background:var(--card2); border:1px dashed var(--border); border-radius:12px; color:var(--muted); padding:18px; font-size:13px; line-height:1.55; }
+    @media(max-width:650px) { .forecast-grid { grid-template-columns:1fr; } .forecast-actions { width:100%; } .forecast-actions #productSel { flex:1; min-width:0; } }
+    @media(max-width:380px) { .forecast-limits { grid-template-columns:1fr; } .forecast-current-price { font-size:18px; } }
+
     html body.bg-white{background:var(--bg)!important} .dark body{background:var(--bg)!important}
     main.pg{padding-top:0}</style>
 </head>
@@ -457,6 +490,27 @@
     </div>
   </div>
 
+  <!-- PREDICCIÓN: cifras estimadas, separadas del historial real del producto -->
+  <section class="card fade-up" aria-labelledby="forecastTitle">
+    <div class="card-head">
+      <div>
+        <p class="section-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Precios futuros</p>
+        <h2 class="card-title" id="forecastTitle"><i class="fa-solid fa-chart-line" style="color:var(--green)" aria-hidden="true"></i> ¿Cuánto podría costar este producto?</h2>
+        <p class="muted-s forecast-intro">Consulta su precio mínimo y máximo estimado según el dólar y su historial.</p>
+      </div>
+      <div class="forecast-actions">
+        <label for="productSel" class="muted-s">Producto</label>
+        <select id="productSel" aria-label="Seleccionar producto para predicción"><option value="">Cargando productos…</option></select>
+        <span id="forecastStatus" class="forecast-status" role="status">Cargando…</span>
+      </div>
+    </div>
+    <div id="forecastBody" class="forecast-grid" aria-live="polite">
+      <p class="forecast-message">Preparando la estimación del producto…</p>
+    </div>
+    <p id="forecastNote" class="forecast-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>Estimación orientativa; el precio puede variar.</span></p>
+  </section>
+
+
   <!-- ============ DÓLAR EN TIEMPO REAL ============
        CONEXIÓN API: los datos vienen de GET /api/exchange-rate (backend -> DolarApi Bolivia). -->
   <section class="card live fade-up" aria-label="Precio del dólar en Bolivia">
@@ -492,9 +546,9 @@
   <section class="card fade-up">
     <div class="card-head">
       <div><h2 class="card-title">Evolución del precio de un producto</h2><p class="muted-s">Cada pico es un cambio de precio. <span class="up">●</span> máximo · <span class="down">●</span> mínimo</p></div>
-      <select id="productSel" aria-label="Producto"></select>
+      <span class="muted-s">El mismo producto seleccionado en la predicción</span>
     </div>
-    <div class="chart-box"><canvas id="chartTimeline"></canvas></div>
+<div class="chart-box"><canvas id="chartTimeline"></canvas></div>
     <div class="mini">
       <div><p class="muted-s">Precio máximo</p><p class="val up" id="tlMax">—</p></div>
       <div><p class="muted-s">Precio mínimo</p><p class="val down" id="tlMin">—</p></div>
@@ -502,6 +556,7 @@
     </div>
     <p id="tlNote" class="muted-s note-sim" style="display:none"><i class="fa-solid fa-flask"></i> Línea de ejemplo: este producto aún no tiene historial.</p>
   </section>
+
 
   <section class="card fade-up">
     <div class="card-head"><div><h2 class="card-title">Picos del mercado por día</h2><p class="muted-s">Variación porcentual promedio de todos los precios que cambiaron cada día.</p></div></div>
@@ -523,7 +578,7 @@
   </section>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="/js/price-stats.js"></script></main>
+<script src="/js/price-stats.js?v=prediccion-amigable-20261113"></script></main>
 
     <!-- ============ FOOTER ============ -->
 <!-- ============ BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
