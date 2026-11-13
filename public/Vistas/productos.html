@@ -1,160 +1,1191 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Casatek - Catálogo de Productos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casatek - Catálogo de Productos</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config = { darkMode: 'class' }</script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-    body { font-family: 'Poppins', sans-serif; }
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
 
-    #filterDropdown, #recoDropdown { display: none; }
-    #filterDropdown.open, #recoDropdown.open { display: block; }
+        #filterDropdown,
+        #recoDropdown {
+            display: none;
+        }
 
-    #productModal { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
-    #productModal.open { opacity: 1; pointer-events: all; }
-    #productModal .modal-box { transform: scale(0.93) translateY(10px); transition: transform 0.25s ease; }
-    #productModal.open .modal-box { transform: scale(1) translateY(0); }
+        #filterDropdown.open,
+        #recoDropdown.open {
+            display: block;
+        }
 
-    .modal-thumb { width: 60px; height: 60px; object-fit: contain; border-radius: 10px; border: 2px solid transparent; background: #f3f4f6; cursor: pointer; transition: border-color .15s, transform .15s; padding: 4px; }
-    .dark .modal-thumb { background: #1f2937; }
-    .modal-thumb:hover { transform: scale(1.05); }
-    .modal-thumb.active { border-color: #22C55E; }
+        #productModal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
 
-    .stock-ok   { background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; }
-    .stock-low  { background:#fef9c3; color:#92400e; border:1px solid #fde68a; }
-    .stock-none { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
-    .dark .stock-ok   { background:rgba(34,197,94,.15);  color:#4ade80; border-color:rgba(34,197,94,.3); }
-    .dark .stock-low  { background:rgba(250,204,21,.15); color:#facc15; border-color:rgba(250,204,21,.3); }
-    .dark .stock-none { background:rgba(239,68,68,.15);  color:#f87171; border-color:rgba(239,68,68,.3); }
+        #productModal.open {
+            opacity: 1;
+            pointer-events: all;
+        }
 
-    .info-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); color:#374151; }
-    .dark .info-pill { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1); color:#d1d5db; }
+        #productModal .modal-box {
+            transform: scale(0.93) translateY(10px);
+            transition: transform 0.25s ease;
+        }
 
-    #cartToast { opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
-    #cartToast.show { opacity: 1; transform: translateY(0); }
-    #cartBadge { min-width: 18px; }
+        #productModal.open .modal-box {
+            transform: scale(1) translateY(0);
+        }
 
-    .pagination-btn { padding: .375rem .75rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; border-width: 1px; transition: all .15s; cursor: pointer; }
-    .pagination-btn.active { background: #22C55E; color: #fff; border-color: #22C55E; }
-    .pagination-btn:not(.active) { border-color: #d1d5db; color: #374151; background: #fff; }
-    .dark .pagination-btn:not(.active) { border-color: #4b5563; color: #e5e7eb; background: #1f2937; }
-    .pagination-btn:not(.active):hover { background: #f0fdf4; border-color: #22C55E; }
-    .pagination-btn.disabled { opacity: .4; pointer-events: none; }
+        .modal-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: #f3f4f6;
+            cursor: pointer;
+            transition: border-color .15s, transform .15s;
+            padding: 4px;
+        }
 
-    .modal-scroll { overflow-y: auto; max-height: 85vh; }
-    .modal-scroll::-webkit-scrollbar { width: 4px; }
-    .modal-scroll::-webkit-scrollbar-track { background: transparent; }
-    .modal-scroll::-webkit-scrollbar-thumb { background: #22C55E44; border-radius: 4px; }
+        .dark .modal-thumb {
+            background: #1f2937;
+        }
 
-    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-</style>
+        .modal-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        .modal-thumb.active {
+            border-color: #22C55E;
+        }
+
+        .stock-ok {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .stock-low {
+            background: #fef9c3;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .stock-none {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .dark .stock-ok {
+            background: rgba(34, 197, 94, .15);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, .3);
+        }
+
+        .dark .stock-low {
+            background: rgba(250, 204, 21, .15);
+            color: #facc15;
+            border-color: rgba(250, 204, 21, .3);
+        }
+
+        .dark .stock-none {
+            background: rgba(239, 68, 68, .15);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, .3);
+        }
+
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(0, 0, 0, .04);
+            border: 1px solid rgba(0, 0, 0, .08);
+            color: #374151;
+        }
+
+        .dark .info-pill {
+            background: rgba(255, 255, 255, .06);
+            border-color: rgba(255, 255, 255, .1);
+            color: #d1d5db;
+        }
+
+        #cartToast {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+
+        #cartToast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #cartBadge {
+            min-width: 18px;
+        }
+
+        .pagination-btn {
+            padding: .375rem .75rem;
+            border-radius: .5rem;
+            font-size: .875rem;
+            font-weight: 600;
+            border-width: 1px;
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .pagination-btn.active {
+            background: #22C55E;
+            color: #fff;
+            border-color: #22C55E;
+        }
+
+        .pagination-btn:not(.active) {
+            border-color: #d1d5db;
+            color: #374151;
+            background: #fff;
+        }
+
+        .dark .pagination-btn:not(.active) {
+            border-color: #4b5563;
+            color: #e5e7eb;
+            background: #1f2937;
+        }
+
+        .pagination-btn:not(.active):hover {
+            background: #f0fdf4;
+            border-color: #22C55E;
+        }
+
+        .pagination-btn.disabled {
+            opacity: .4;
+            pointer-events: none;
+        }
+
+        .modal-scroll {
+            overflow-y: auto;
+            max-height: 85vh;
+        }
+
+        .modal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal-scroll::-webkit-scrollbar-thumb {
+            background: #22C55E44;
+            border-radius: 4px;
+        }
+
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+
+        /* ===== Catálogo CASATEK: diseño UI/UX, sin modificar sus endpoints ===== */
+        :root {
+            --ct-green: #22C55E;
+            --ct-deep: #1b803a;
+            --ct-ink: #15231c;
+            --ct-muted: #64736b;
+            --ct-line: #e3ebe5;
+            --ct-panel: #ffffff;
+            --ct-canvas: #f6f8f6;
+        }
+
+        .dark {
+            --ct-ink: #f5faf6;
+            --ct-muted: #a4b4aa;
+            --ct-line: #31443a;
+            --ct-panel: #1c2922;
+            --ct-canvas: #101a14;
+        }
+
+        .catalog-main {
+            background: var(--ct-canvas);
+            color: var(--ct-ink);
+            min-height: 68vh;
+            padding: 30px 18px 52px;
+        }
+
+        .catalog-shell {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .catalog-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 22px;
+            padding: 5px 0 25px;
+        }
+
+        .catalog-hero-copy {
+            min-width: 0;
+        }
+
+        .catalog-eyebrow {
+            color: var(--ct-deep);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .13em;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 11px;
+        }
+
+        .dark .catalog-eyebrow {
+            color: #71d894;
+        }
+
+        .catalog-eyebrow span {
+            color: #16a34a;
+            margin-left: -7px;
+        }
+
+        .catalog-hero h1 {
+            font-weight: 800;
+            font-size: clamp(25px, 3vw, 37px);
+            line-height: 1.18;
+            letter-spacing: -.038em;
+        }
+
+        .catalog-hero h1 span {
+            color: var(--ct-deep);
+        }
+
+        .dark .catalog-hero h1 span {
+            color: #4ade80;
+        }
+
+        .catalog-hero p {
+            max-width: 670px;
+            font-size: 13px;
+            color: var(--ct-muted);
+            margin-top: 10px;
+            line-height: 1.75;
+        }
+
+        .cart-shortcut {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            min-height: 48px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #fff;
+            background: var(--ct-deep);
+            box-shadow: 0 7px 20px rgba(27, 128, 58, .15);
+            transition: transform .18s ease, box-shadow .18s ease, background .18s;
+        }
+
+        .cart-shortcut:hover {
+            background: #12632b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(27, 128, 58, .22);
+        }
+
+        .cart-shortcut-badge {
+            background: white;
+            color: #176b32;
+            font-size: 11px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            border-radius: 999px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .catalog-toolbar {
+            background: var(--ct-panel);
+            border: 1px solid var(--ct-line);
+            border-radius: 20px;
+            padding: 19px 22px;
+            box-shadow: 0 8px 26px rgba(16, 49, 27, .035);
+            position: relative;
+            z-index: 5;
+        }
+
+        .catalog-toolbar-top {
+            display: grid;
+            grid-template-columns: minmax(290px, 1.55fr) minmax(320px, 1fr);
+            align-items: start;
+            gap: 18px;
+        }
+
+        .catalog-field-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--ct-ink);
+            font-weight: 800;
+            margin-bottom: 9px;
+        }
+
+        .catalog-field-label>i {
+            color: #16a34a;
+        }
+
+        .catalog-search-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            height: 49px;
+            border: 1.5px solid #cbdcd0;
+            border-radius: 13px;
+            overflow: hidden;
+            background: #fafdfa;
+            transition: box-shadow .2s, border-color .2s;
+        }
+
+        .dark .catalog-search-input-wrap {
+            border-color: #3c5244;
+            background: #142018;
+        }
+
+        .catalog-search-input-wrap:focus-within {
+            border-color: var(--ct-green);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, .12);
+        }
+
+        .catalog-search-icon {
+            position: absolute;
+            left: 15px;
+            color: #16a34a;
+            pointer-events: none;
+        }
+
+        #searchInput {
+            outline: 0;
+            border: 0;
+            min-width: 0;
+            width: 100%;
+            flex: 1;
+            padding: 0 10px 0 43px;
+            background: transparent;
+            color: var(--ct-ink);
+            font-size: 13px;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        #searchInput::placeholder {
+            color: #84988b;
+        }
+
+        #searchInput::-webkit-search-cancel-button {
+            display: none;
+        }
+
+        .catalog-search-clear {
+            border-radius: 8px;
+            color: #71877a;
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: background .15s, color .15s;
+        }
+
+        .catalog-search-clear:hover {
+            background: #e9f5ed;
+            color: #135f2a;
+        }
+
+        .catalog-search-clear[hidden] {
+            display: none !important;
+        }
+
+        .catalog-search-submit {
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 17px;
+            color: #fff;
+            background: #1b803a;
+            font-weight: 800;
+            font-size: 12px;
+            transition: background .18s;
+        }
+
+        .catalog-search-submit:hover {
+            background: #12632b;
+        }
+
+        .catalog-field-help {
+            color: var(--ct-muted);
+            font-size: 11px;
+            margin-top: 7px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .catalog-field-help i {
+            color: #16a34a;
+        }
+
+        .catalog-tools-right {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px;
+            min-width: 0;
+        }
+
+        .catalog-menu-control {
+            min-width: 0;
+        }
+
+        .catalog-popover-anchor {
+            position: relative;
+        }
+
+        .catalog-menu-button {
+            height: 49px;
+            width: 100%;
+            min-width: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid var(--ct-line);
+            border-radius: 13px;
+            padding: 0 12px;
+            color: var(--ct-ink);
+            background: var(--ct-panel);
+            font-size: 12px;
+            font-weight: 750;
+            transition: transform .15s, border-color .15s, background .15s;
+        }
+
+        .catalog-menu-button:hover,
+        .catalog-menu-button[aria-expanded="true"] {
+            border-color: #5ac87b;
+            background: rgba(34, 197, 94, .055);
+        }
+
+        .catalog-menu-button>i:first-child {
+            color: #159447;
+        }
+
+        .catalog-menu-button span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .catalog-chevron {
+            color: var(--ct-muted);
+            font-size: 10px;
+            margin-left: auto;
+            transition: transform .2s;
+        }
+
+        .catalog-dropdown {
+            position: absolute;
+            top: calc(100% + 7px);
+            left: 0;
+            right: 0;
+            min-width: 205px;
+            background: var(--ct-panel);
+            border: 1px solid var(--ct-line);
+            border-radius: 13px;
+            box-shadow: 0 18px 38px rgba(6, 30, 12, .15);
+            z-index: 55;
+            padding: 7px;
+        }
+
+        .catalog-dropdown-title {
+            font-size: 10px;
+            color: var(--ct-muted);
+            padding: 7px 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .075em;
+        }
+
+        .catalog-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 650;
+            color: var(--ct-ink);
+            transition: background .14s, color .14s;
+        }
+
+        .catalog-dropdown button i {
+            width: 16px;
+            color: #16a34a;
+        }
+
+        .catalog-dropdown button:hover,
+        .catalog-dropdown button[aria-pressed="true"] {
+            background: rgba(34, 197, 94, .1);
+            color: #17853c;
+        }
+
+        .dark .catalog-dropdown button:hover,
+        .dark .catalog-dropdown button[aria-pressed="true"] {
+            color: #6ee89a;
+        }
+
+        .catalog-filter-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 18px;
+            padding: 14px 0 12px;
+            border-top: 1px solid var(--ct-line);
+        }
+
+        .catalog-filter-heading h2 {
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            gap: 9px;
+            align-items: center;
+        }
+
+        .catalog-filter-heading h2 i {
+            color: #16a34a;
+        }
+
+        .catalog-filter-heading p {
+            font-size: 11px;
+            color: var(--ct-muted);
+            margin-top: 4px;
+        }
+
+        .catalog-filter-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr minmax(240px, 1.15fr);
+            gap: 12px;
+        }
+
+        .catalog-filter-field {
+            min-width: 0;
+        }
+
+        .catalog-filter-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            margin: 0 0 7px;
+            color: var(--ct-ink);
+        }
+
+        .catalog-filter-field label span {
+            color: var(--ct-muted);
+            font-weight: 600;
+        }
+
+        .catalog-filter-field select,
+        .catalog-price-cell input {
+            width: 100%;
+            height: 43px;
+            padding: 0 12px;
+            border: 1px solid var(--ct-line);
+            border-radius: 10px;
+            background: var(--ct-panel);
+            color: var(--ct-ink);
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .catalog-filter-field select:focus-visible,
+        .catalog-price-cell input:focus-visible {
+            border-color: #22C55E;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, .12);
+        }
+
+        .catalog-price-inputs {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .catalog-price-cell {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+        }
+
+        .catalog-price-cell span {
+            position: absolute;
+            top: -7px;
+            left: 9px;
+            background: var(--ct-panel);
+            color: var(--ct-muted);
+            padding: 0 5px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .catalog-price-cell input {
+            padding-top: 4px;
+        }
+
+        .catalog-price-separator {
+            color: var(--ct-muted);
+        }
+
+        .catalog-filter-toggle {
+            display: none;
+            align-items: center;
+            gap: 9px;
+            color: #16723a;
+            background: rgba(34, 197, 94, .08);
+            border: 1px solid rgba(34, 197, 94, .28);
+            padding: 9px 11px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .dark .catalog-filter-toggle {
+            color: #6ce995;
+        }
+
+        .catalog-filter-toggle>i:last-child {
+            font-size: 9px;
+        }
+
+        .catalog-price-alert {
+            margin-top: 12px;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .dark .catalog-price-alert {
+            background: #492222;
+            color: #fca5a5;
+            border-color: #874343;
+        }
+
+        .catalog-price-alert.flex {
+            display: flex;
+        }
+
+        .catalog-results {
+            padding-top: 24px;
+        }
+
+        .catalog-results-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+
+        .catalog-results-title {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .catalog-results-title h2 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+
+        .catalog-results-title p {
+            font-size: 12px;
+            color: var(--ct-muted);
+        }
+
+        .catalog-results-title strong {
+            color: var(--ct-ink);
+        }
+
+        .catalog-reset {
+            align-items: center;
+            gap: 7px;
+            color: #b24f31;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 9px 12px;
+            border: 1px solid #f4d4c7;
+            border-radius: 10px;
+            background: #fff9f6;
+            transition: background .15s, transform .15s;
+        }
+
+        .catalog-reset.flex {
+            display: flex;
+        }
+
+        .catalog-reset:hover {
+            background: #fbe7de;
+            transform: translateY(-1px);
+        }
+
+        .dark .catalog-reset {
+            background: #35271f;
+            border-color: #654232;
+            color: #ffb69d;
+        }
+
+        .catalog-active-filters {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0 0 11px;
+        }
+
+        .catalog-active-filters:empty {
+            display: none;
+        }
+
+        .catalog-active-filters .catalog-chip {
+            font-size: 11px;
+            font-weight: 750;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 9px;
+            border: 1px solid rgba(34, 197, 94, .25);
+            color: #126c34;
+            background: #eaf9ee;
+            transition: background .15s;
+        }
+
+        .dark .catalog-active-filters .catalog-chip {
+            color: #9eebba;
+            background: #1d3e28;
+            border-color: #315c3b;
+        }
+
+        .catalog-active-filters .catalog-chip:hover {
+            background: #d8f4df;
+        }
+
+        .dark .catalog-active-filters .catalog-chip:hover {
+            background: #285533;
+        }
+
+        .catalog-product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            min-width: 0;
+            outline: 0;
+            border: 1px solid var(--ct-line) !important;
+            box-shadow: 0 3px 12px rgba(13, 42, 23, .045);
+        }
+
+        .product-card:hover,
+        .product-card:focus-visible {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 29px rgba(10, 55, 21, .13);
+            border-color: rgba(34, 197, 94, .5) !important;
+        }
+
+        .product-card:focus-visible {
+            outline: 3px solid rgba(34, 197, 94, .45);
+            outline-offset: 3px;
+        }
+
+        .product-card .product-photo {
+            height: 192px;
+        }
+
+        .product-card .product-action-primary,
+        .product-card .product-action-secondary {
+            min-height: 38px;
+            transition: transform .16s, background .16s, box-shadow .16s;
+        }
+
+        .product-card .product-action-primary:hover:not(:disabled),
+        .product-card .product-action-secondary:hover {
+            transform: translateY(-1px);
+        }
+
+        .catalog-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 23px;
+        }
+
+        .pagination-btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 35px;
+            height: 35px;
+            padding: 0 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .pagination-btn:focus-visible {
+            outline: 3px solid rgba(34, 197, 94, .36);
+            outline-offset: 2px;
+        }
+
+        .catalog-pagination-note {
+            text-align: center;
+            margin-top: 9px;
+            color: var(--ct-muted);
+            font-size: 11px;
+        }
+
+        .catalog-search-input-wrap button:focus-visible,
+        .catalog-menu-button:focus-visible,
+        .cart-shortcut:focus-visible,
+        .catalog-filter-toggle:focus-visible,
+        .catalog-reset:focus-visible {
+            outline: 3px solid rgba(34, 197, 94, .35);
+            outline-offset: 2px;
+        }
+
+        #cartToast {
+            z-index: 10001;
+        }
+
+        @media(max-width:1060px) {
+            .catalog-toolbar-top {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .catalog-tools-right {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .catalog-product-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media(max-width:780px) {
+            .catalog-filter-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .catalog-filter-price {
+                grid-column: span 2;
+            }
+
+            .catalog-product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media(max-width:610px) {
+            .catalog-main {
+                padding: 22px 13px 38px;
+            }
+
+            .catalog-hero {
+                align-items: flex-start;
+                padding-bottom: 17px;
+            }
+
+            .catalog-hero h1 {
+                font-size: 26px;
+            }
+
+            .catalog-hero p {
+                font-size: 12px;
+                margin-top: 7px;
+            }
+
+            .cart-shortcut {
+                padding: 10px 11px;
+                gap: 7px;
+                min-height: 43px;
+            }
+
+            .cart-shortcut>span:not(.cart-shortcut-badge) {
+                display: none;
+            }
+
+            .catalog-toolbar {
+                padding: 15px 13px;
+                border-radius: 16px;
+            }
+
+            .catalog-toolbar-top {
+                gap: 13px;
+            }
+
+            .catalog-menu-button {
+                padding: 0 10px;
+            }
+
+            .catalog-dropdown {
+                min-width: 180px;
+            }
+
+            .catalog-filter-heading {
+                margin-top: 14px;
+            }
+
+            .catalog-filter-heading p {
+                max-width: 255px;
+            }
+
+            .catalog-filter-toggle {
+                display: flex;
+            }
+
+            .catalog-filter-panel {
+                display: none;
+                grid-template-columns: 1fr 1fr;
+                padding-top: 7px;
+            }
+
+            .catalog-filter-panel.open {
+                display: grid;
+            }
+
+            .catalog-filter-field {
+                grid-column: span 2;
+            }
+
+            .catalog-results {
+                padding-top: 17px;
+            }
+
+            .catalog-product-grid {
+                gap: 11px;
+            }
+
+            .product-card .product-photo {
+                height: 158px;
+            }
+
+            .catalog-results-title h2 {
+                font-size: 16px;
+            }
+        }
+
+        @media(max-width:395px) {
+            .catalog-product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-card .product-photo {
+                height: 200px;
+            }
+
+            .catalog-search-submit {
+                padding: 0 13px;
+            }
+
+            .catalog-search-submit span {
+                display: none;
+            }
+
+            .catalog-hero h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .catalog-main *,
+            .catalog-main *::before,
+            .catalog-main *::after {
+                animation: none !important;
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
+
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
-<header class="w-full sticky top-0 z-[9999]">
-    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
-        <span>Ordene antes de las 16:30 pm, reciba su pedido hoy -
-            <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
-        </span>
-        <span class="flex items-center gap-6 text-white text-sm">
-            <span class="flex items-center gap-4">
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+    <header class="w-full sticky top-0 z-[9999]">
+        <p
+            class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
+            <span>Ordene antes de las 16:30 pm, reciba su pedido hoy -
+                <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
             </span>
-            <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
-                <span>esp</span><i class="fa-solid fa-chevron-down text-[10px]"></i>
+            <span class="flex items-center gap-6 text-white text-sm">
+                <span class="flex items-center gap-4">
+                    <a href="#" class="hover:text-gray-200 transition-colors"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                </span>
+                <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
+                    <span>esp</span><i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </span>
             </span>
-        </span>
-    </p>
+        </p>
 
-    <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
-            <span class="tracking-tight text-4xl font-black">CASA<span class="text-[#22C55E]">TEK</span></span>
-        </a>
+        <nav
+            class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
+            <a href="index.html"
+                class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
+                <span class="tracking-tight text-4xl font-black">CASA<span class="text-[#22C55E]">TEK</span></span>
+            </a>
 
-        <div class="flex items-center gap-4 md:gap-8">
-            <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
-                <li class="relative group">
-                    <a href="index.html" class="hover:text-[#22C55E] transition-colors">INICIO</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="productos.html" class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="estadisticas_precios.html" class="hover:text-[#22C55E] transition-colors">ESTADÍSTICAS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
-                        MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                    </button>
-                    <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
-                        </a>
-                        <a href="manuales/Manual%20de%20usuario.pdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold" download>
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
-                        </a>
-                    </div>
-                </li>
-                <li class="relative" id="nav-auth-desktop">
+            <div class="flex items-center gap-4 md:gap-8">
+                <ul
+                    class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
+                    <li class="relative group">
+                        <a href="index.html" class="hover:text-[#22C55E] transition-colors">INICIO</a>
+                        <span
+                            class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                    </li>
+                    <li class="relative group">
+                        <a href="productos.html"
+                            class="hover:text-[#22C55E] transition-colors text-[#22C55E]">PRODUCTOS</a>
+                        <span
+                            class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-full"></span>
+                    </li>
+                    <li class="relative group">
+                        <a href="estadisticas_precios.html"
+                            class="hover:text-[#22C55E] transition-colors">ESTADÍSTICAS</a>
+                        <span
+                            class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                    </li>
+                    <li class="relative group">
+                        <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors">NOSOTROS</a>
+                        <span
+                            class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                    </li>
+                    <li class="relative group">
+                        <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors">CONTÁCTANOS</a>
+                        <span
+                            class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
+                    </li>
+                    <li class="relative group">
+                        <button
+                            class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
+                            MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div
+                            class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                            <a href="manuales/Manual%20t%C3%A9cnico.pdf"
+                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold"
+                                download>
+                                <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
+                            </a>
+                            <a href="manuales/Manual%20de%20usuario.pdf"
+                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold"
+                                download>
+                                <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
+                            </a>
+                        </div>
+                    </li>
+                    <li class="relative" id="nav-auth-desktop">
                         <a id="btn-login-desktop" href="iniciarsesion.html"
-                           class="hover:text-[#22C55E] transition-colors ">
+                            class="hover:text-[#22C55E] transition-colors ">
                             INICIAR SESIÓN
                         </a>
 
-                       
+
                         <div id="btn-perfil-desktop" class="hidden relative group/perfil">
-                            <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
-                                <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
+                            <button
+                                class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
+                                <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black"
+                                    id="avatar-inicial">U</div>
                                 <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </button>
 
-                        
-                            <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
 
-                          
+                            <div
+                                class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
+
+
                                 <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                    <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
+                                    <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">
+                                        -</p>
                                     <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
-                                    <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
+                                    <span id="dd-rango"
+                                        class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
                                 </div>
 
-                           
+
                                 <button onclick="abrirModalPerfil()"
-                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
                                 </button>
                                 <a href="carrito.html"
-                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
                                 </a>
                                 <a href="MisTickets.html"
-                                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
+                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
                                     <i class="fa-solid fa-ticket w-4"></i> Mis tickets
                                 </a>
                                 <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                                     <button onclick="cerrarSesion()"
-                                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
+                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
                                         <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
                                     </button>
                                 </div>
@@ -168,577 +1199,742 @@
                         </a>
                     </li>
                     <li class="relative group">
-                        <a href="MisTickets.html" class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
+                        <a href="MisTickets.html"
+                            class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
                             <i class="fa-solid fa-ticket text-lg"></i> MIS TICKETS
                         </a>
                     </li>
-                <li class="relative group">
-                    <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
-            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
-                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-            </button>
-            <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </div>
-    </nav>
+                    <li class="relative group">
+                        <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
+                            <i id="theme-icon" class="fa-solid fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+                <button id="btn-open-sidebar"
+                    class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
+                    <i
+                        class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
+                </button>
+                <button id="btn-open-menu-mobile"
+                    class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="sidebar-panel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
-        <div>
-            <div class="flex justify-end">
-                <button id="btn-close-sidebar" class="text-red-500 hover:text-red-400 text-xl font-bold transition-colors p-2 focus:outline-none"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="mt-4 flex justify-center">
-                <h2 class="text-3xl font-black tracking-widest text-white">CASA<span class="text-white/90 font-light">TEK</span></h2>
-            </div>
-            <div class="mt-8 space-y-4 border-b border-gray-800/60 pb-6">
-                <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
-                <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
-                <a href="productos.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
-                <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
-                <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
-                <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
-                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
-                <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
-                <div id="mobile-login">
-                        <a href="iniciarsesion.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar Sesión</a>
+        <div id="sidebar-overlay"
+            class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
+        <div id="sidebar-panel"
+            class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
+            <div>
+                <div class="flex justify-end">
+                    <button id="btn-close-sidebar"
+                        class="text-red-500 hover:text-red-400 text-xl font-bold transition-colors p-2 focus:outline-none"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <h2 class="text-3xl font-black tracking-widest text-white">CASA<span
+                            class="text-white/90 font-light">TEK</span></h2>
+                </div>
+                <div class="mt-8 space-y-4 border-b border-gray-800/60 pb-6">
+                    <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
+                    <a href="index.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
+                    <a href="productos.html"
+                        class="block text-lg font-bold text-[#22C55E] transition-colors">Productos</a>
+                    <a id="side-est" href="estadisticas_precios.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
+                    <a href="nosotros.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
+                    <a href="contactanos.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
+                    <a href="carrito.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
+                    <a href="MisTickets.html"
+                        class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis
+                        Tickets</a>
+                    <div id="mobile-login">
+                        <a href="iniciarsesion.html"
+                            class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar
+                            Sesión</a>
                     </div>
                     <div id="mobile-perfil" class="hidden space-y-3">
                         <div class="flex items-center gap-3 py-2">
-                            <div class="w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-white" id="mobile-avatar">U</div>
+                            <div class="w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-white"
+                                id="mobile-avatar">U</div>
                             <div>
                                 <p class="font-bold text-white text-sm" id="mobile-nombre">-</p>
                                 <p class="text-xs text-gray-400" id="mobile-email">-</p>
                             </div>
                         </div>
-                        <button onclick="abrirModalPerfil(); closeSidebarFn();" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Editar perfil</button>
-                        <button onclick="cerrarSesion()" class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors">Cerrar sesión</button>
+                        <button onclick="abrirModalPerfil(); closeSidebarFn();"
+                            class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Editar
+                            perfil</button>
+                        <button onclick="cerrarSesion()"
+                            class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors">Cerrar
+                            sesión</button>
                     </div>
 
                     <div class="pt-3">
-                    <button id="theme-toggle-mobile" class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
-                        <i id="theme-icon-mobile" class="fa-solid fa-moon"></i><span>Modo Oscuro</span>
-                    </button>
+                        <button id="theme-toggle-mobile"
+                            class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
+                            <i id="theme-icon-mobile" class="fa-solid fa-moon"></i><span>Modo Oscuro</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-8 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="text-[#22C55E] text-2xl"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <h3 class="text-xl font-extrabold tracking-tight">Horarios de trabajo</h3>
+                    </div>
+                    <div class="space-y-1 font-medium pl-9">
+                        <p class="text-xs text-gray-400">Lunes a Viernes</p>
+                        <p class="text-sm text-gray-200">9:00 - 13:00 y de 14:30 - 19:00</p>
+                    </div>
+                    <div class="space-y-1 font-medium pt-2 pl-9">
+                        <p class="text-xs text-gray-400">Sábados</p>
+                        <p class="text-sm text-gray-200">9:00 - 13:00</p>
+                    </div>
                 </div>
             </div>
-            <div class="mt-8 space-y-4">
+            <div class="mt-8 pt-6 border-t border-gray-800/60 flex items-center justify-between">
+                <span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Síguenos</span>
                 <div class="flex items-center gap-3">
-                    <div class="text-[#22C55E] text-2xl"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h3 class="text-xl font-extrabold tracking-tight">Horarios de trabajo</h3>
-                </div>
-                <div class="space-y-1 font-medium pl-9">
-                    <p class="text-xs text-gray-400">Lunes a Viernes</p>
-                    <p class="text-sm text-gray-200">9:00 - 13:00 y de 14:30 - 19:00</p>
-                </div>
-                <div class="space-y-1 font-medium pt-2 pl-9">
-                    <p class="text-xs text-gray-400">Sábados</p>
-                    <p class="text-sm text-gray-200">9:00 - 13:00</p>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i
+                            class="fa-brands fa-youtube"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i
+                            class="fa-brands fa-whatsapp"></i></a>
                 </div>
             </div>
         </div>
-        <div class="mt-8 pt-6 border-t border-gray-800/60 flex items-center justify-between">
-            <span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Síguenos</span>
-            <div class="flex items-center gap-3">
-                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm"><i class="fa-brands fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </div>
-</header>
+    </header>
 
-<div id="modalPerfil"
-         class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-200" id="modalPerfilBox">
+    <div id="modalPerfil"
+        class="fixed inset-0 bg-black/50 z-[99999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-200"
+            id="modalPerfilBox">
 
             <!-- Header -->
             <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] p-6 text-white relative">
-                <button onclick="cerrarModalPerfil()" class="absolute top-4 right-4 bg-black/30 hover:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                <button onclick="cerrarModalPerfil()"
+                    class="absolute top-4 right-4 bg-black/30 hover:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-black" id="perfil-avatar-grande">U</div>
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-black"
+                        id="perfil-avatar-grande">U</div>
                     <div>
                         <p class="font-black text-xl" id="perfil-nombre-header">-</p>
                         <p class="text-white/70 text-sm" id="perfil-email-header">-</p>
-                        <span id="perfil-rango-header" class="mt-1 inline-block text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full"></span>
+                        <span id="perfil-rango-header"
+                            class="mt-1 inline-block text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full"></span>
                     </div>
                 </div>
             </div>
 
-            
+
             <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
 
-                <div id="perfil-error"  class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl"></div>
-                <div id="perfil-exito"  class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+                <div id="perfil-error"
+                    class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl"></div>
+                <div id="perfil-exito"
+                    class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
                     <i class="fa-solid fa-circle-check"></i> <span>Datos actualizados correctamente</span>
                 </div>
 
-                
+
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Nombre completo</label>
+                    <label
+                        class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Nombre
+                        completo</label>
                     <div class="relative">
                         <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
                         <input type="text" id="perfil-input-nombre" placeholder="Tu nombre"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
 
-                
+
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Correo electrónico</label>
+                    <label
+                        class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Correo
+                        electrónico</label>
                     <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <i
+                            class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
                         <input type="email" id="perfil-input-email" placeholder="correo@ejemplo.com"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
 
-              
+
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Teléfono <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
+                    <label
+                        class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Teléfono
+                        <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
                     <div class="relative">
-                        <i class="fa-solid fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <i
+                            class="fa-solid fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
                         <input type="tel" id="perfil-input-phone" placeholder="591XXXXXXXX"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
 
-              
+
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">WhatsApp <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
+                    <label
+                        class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">WhatsApp
+                        <span class="text-gray-400 font-normal normal-case">(opcional)</span></label>
                     <div class="relative">
-                        <i class="fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                        <i
+                            class="fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
                         <input type="tel" id="perfil-input-whatsapp" placeholder="591XXXXXXXX"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                     </div>
                 </div>
 
-              
+
                 <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cambiar contraseña <span class="font-normal normal-case">(dejar vacío para no cambiar)</span></p>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cambiar contraseña <span
+                            class="font-normal normal-case">(dejar vacío para no cambiar)</span></p>
 
                     <div class="space-y-3">
                         <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                            <i
+                                class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
                             <input type="password" id="perfil-input-password" placeholder="Nueva contraseña"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                                class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                         </div>
                         <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
-                            <input type="password" id="perfil-input-password-confirm" placeholder="Confirmar nueva contraseña"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                            <i
+                                class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#22C55E] text-sm"></i>
+                            <input type="password" id="perfil-input-password-confirm"
+                                placeholder="Confirmar nueva contraseña"
+                                class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
                         </div>
                     </div>
                 </div>
 
             </div>
 
-           
+
             <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex gap-3">
-                <button onclick="cerrarModalPerfil()" class="flex-1 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <button onclick="cerrarModalPerfil()"
+                    class="flex-1 border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     Cancelar
                 </button>
                 <button onclick="guardarPerfil()" id="btn-guardar-perfil"
-                        class="flex-1 bg-[#22C55E] hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                    class="flex-1 bg-[#22C55E] hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar cambios
                 </button>
             </div>
         </div>
     </div>
 
-<main class="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<section class="py-6 space-y-8 text-gray-800 dark:text-gray-100">
+    <main id="catalogo" class="catalog-main">
+        <div class="catalog-shell">
+            <header class="catalog-hero">
+                <div class="catalog-hero-copy">
+                    <div class="catalog-eyebrow"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                        CASA<span>TEK</span> · CATÁLOGO</div>
+                    <h1>Encuentra el producto <span>ideal para ti</span></h1>
+                    <p>Explora nuestros equipos de seguridad y tecnología. Busca por nombre o usa los filtros para
+                        encontrar lo que necesitas.</p>
+                </div>
+                <button id="cartViewBtn" type="button" class="cart-shortcut" aria-label="Ver mi carrito de compras">
+                    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span>Mi carrito</span>
+                    <span id="cartBadge" class="cart-shortcut-badge" aria-label="Productos en el carrito">0</span>
+                </button>
+            </header>
 
-    <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-5 border-gray-200 dark:border-gray-700">
-        <div class="flex items-center gap-3 shrink-0">
-            <span class="w-2 h-6 bg-[#22C55E] rounded-full"></span>
-            <h2 class="text-2xl font-bold tracking-tight">Nuestro Catálogo de Productos</h2>
-            <p class="absolute right-0 top-2 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">
-    HU-14
-</p>
+            <section class="catalog-toolbar" aria-label="Buscar y filtrar productos">
+                <div class="catalog-toolbar-top">
+                    <div class="catalog-search-group">
+                        <label class="catalog-field-label" for="searchInput"><i class="fa-solid fa-magnifying-glass"
+                                aria-hidden="true"></i> ¿Qué estás buscando?</label>
+                        <div class="catalog-search-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass catalog-search-icon" aria-hidden="true"></i>
+                            <input id="searchInput" type="search" autocomplete="off" spellcheck="false"
+                                placeholder="Ej.: cámara, sensor, alarma..." aria-describedby="searchHelp" />
+                            <button type="button" id="clearSearchBtn" class="catalog-search-clear"
+                                aria-label="Borrar texto de búsqueda" title="Borrar búsqueda" hidden><i
+                                    class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                            <button id="btnBuscar" type="button" class="catalog-search-submit"
+                                aria-label="Buscar productos"><i class="fa-solid fa-magnifying-glass"
+                                    aria-hidden="true"></i><span>Buscar</span></button>
+                        </div>
+                        <p id="searchHelp" class="catalog-field-help"><i class="fa-solid fa-bolt"
+                                aria-hidden="true"></i> Los resultados aparecen mientras escribes.</p>
+                    </div>
+
+                    <div class="catalog-tools-right">
+                        <div class="catalog-menu-control">
+                            <span class="catalog-field-label"><i class="fa-solid fa-arrow-down-wide-short"
+                                    aria-hidden="true"></i> Orden</span>
+                            <div class="catalog-popover-anchor">
+                                <button type="button" id="filterBtn" class="catalog-menu-button" aria-expanded="false"
+                                    aria-controls="filterDropdown">
+                                    <i class="fa-solid fa-arrow-up-wide-short" aria-hidden="true"></i><span
+                                        id="ordenTexto">Por defecto</span><i
+                                        class="fa-solid fa-chevron-down catalog-chevron" id="filterChevron"
+                                        aria-hidden="true"></i>
+                                </button>
+                                <div id="filterDropdown" class="catalog-dropdown" role="group"
+                                    aria-label="Opciones de ordenación">
+                                    <p class="catalog-dropdown-title">Ordenar resultados</p>
+                                    <button type="button" data-orden="default" class="filter-opt"><i
+                                            class="fa-solid fa-border-all" aria-hidden="true"></i> Por defecto</button>
+                                    <button type="button" data-orden="nombre" class="filter-opt"><i
+                                            class="fa-solid fa-arrow-down-a-z" aria-hidden="true"></i> Nombre
+                                        (A–Z)</button>
+                                    <button type="button" data-orden="precio_asc" class="filter-opt"><i
+                                            class="fa-solid fa-arrow-up-1-9" aria-hidden="true"></i> Menor
+                                        precio</button>
+                                    <button type="button" data-orden="precio_desc" class="filter-opt"><i
+                                            class="fa-solid fa-arrow-down-9-1" aria-hidden="true"></i> Mayor
+                                        precio</button>
+                                    <button type="button" data-orden="marca" class="filter-opt"><i
+                                            class="fa-solid fa-tag" aria-hidden="true"></i> Marca (A–Z)</button>
+                                    <button type="button" data-orden="categoria" class="filter-opt"><i
+                                            class="fa-solid fa-layer-group" aria-hidden="true"></i> Categoría
+                                        (A–Z)</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="catalog-menu-control">
+                            <span class="catalog-field-label"><i class="fa-regular fa-star" aria-hidden="true"></i>
+                                Sugerencias por precio</span>
+                            <div class="catalog-popover-anchor">
+                                <button type="button" id="recoBtn" class="catalog-menu-button" aria-expanded="false"
+                                    aria-controls="recoDropdown">
+                                    <i class="fa-regular fa-star" aria-hidden="true"></i><span id="recoTexto">Por
+                                        precio</span><i class="fa-solid fa-chevron-down catalog-chevron"
+                                        id="recoChevron" aria-hidden="true"></i>
+                                </button>
+                                <div id="recoDropdown" class="catalog-dropdown" role="group"
+                                    aria-label="Recomendaciones por precio">
+                                    <p class="catalog-dropdown-title">Ver productos por precio</p>
+                                    <button type="button" data-reco="" class="reco-opt"><i
+                                            class="fa-solid fa-border-all" aria-hidden="true"></i> Mostrar
+                                        todos</button>
+                                    <button type="button" data-reco="bajo" class="reco-opt"><i
+                                            class="fa-solid fa-arrow-down" aria-hidden="true"></i> Precios
+                                        bajos</button>
+                                    <button type="button" data-reco="alto" class="reco-opt"><i
+                                            class="fa-solid fa-arrow-up" aria-hidden="true"></i> Precios altos</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-filter-heading">
+                    <div>
+                        <h2><i class="fa-solid fa-sliders" aria-hidden="true"></i> Ajusta tu búsqueda</h2>
+                        <p>Selecciona una categoría, marca o rango de precio. Se aplican automáticamente.</p>
+                    </div>
+                    <button type="button" id="toggleFilters" class="catalog-filter-toggle" aria-expanded="false"
+                        aria-controls="filtersPanel">
+                        <i class="fa-solid fa-sliders" aria-hidden="true"></i><span>Mostrar filtros</span><i
+                            class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div id="filtersPanel" class="catalog-filter-panel">
+                    <div class="catalog-filter-field">
+                        <label for="categorySelect">Categoría</label>
+                        <select id="categorySelect">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                    <div class="catalog-filter-field">
+                        <label for="brandSelect">Marca</label>
+                        <select id="brandSelect">
+                            <option value="">Todas las marcas</option>
+                        </select>
+                    </div>
+                    <div class="catalog-filter-field catalog-filter-price">
+                        <label for="precioMin">Rango de precio <span>(Bs)</span></label>
+                        <div class="catalog-price-inputs">
+                            <div class="catalog-price-cell"><span>Desde</span><input id="precioMin" type="text"
+                                    inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"
+                                    placeholder="0" aria-label="Precio mínimo en bolivianos"></div>
+                            <span class="catalog-price-separator" aria-hidden="true">—</span>
+                            <div class="catalog-price-cell"><span>Hasta</span><input id="precioMax" type="text"
+                                    inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"
+                                    placeholder="9999" aria-label="Precio máximo en bolivianos"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="precioAlert" role="alert" aria-live="polite" class="catalog-price-alert hidden">
+                    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span id="precioError"></span>
+                </div>
+            </section>
+
+            <section class="catalog-results" aria-label="Resultados del catálogo">
+                <div class="catalog-results-head">
+                    <div class="catalog-results-title">
+                        <h2>Productos disponibles</h2>
+                        <p id="contadorTexto" role="status" aria-live="polite">Mostrando <strong
+                                id="contFrom">0</strong>–<strong id="contTo">0</strong> de <strong
+                                id="contTotal">0</strong> productos</p>
+                    </div>
+                    <button id="btnLimpiar" type="button" class="catalog-reset hidden"><i
+                            class="fa-solid fa-rotate-left" aria-hidden="true"></i> Limpiar filtros</button>
+                </div>
+                <div id="activeFilters" class="catalog-active-filters" aria-label="Filtros aplicados"></div>
+                <div id="productGrid" class="catalog-product-grid"></div>
+                <nav id="paginador" class="catalog-pagination" aria-label="Páginas de productos"></nav>
+                <p id="paginaTexto" class="catalog-pagination-note"></p>
+            </section>
         </div>
+    </main>
 
-        <div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
-            <p class="w-full text-center text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">HU-02</p>
-            <div class="relative flex-1 min-w-[180px]">
-                <input id="searchInput" type="text" placeholder="Buscar cámaras, sensores, alarmas..."
-                       class="w-full pl-11 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none text-sm transition-all shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400">
-                <span class="absolute left-4 top-3.5 text-gray-400 dark:text-gray-500"><i class="fa-solid fa-magnifying-glass text-sm"></i></span>
-            </div>
-
-            <select id="categorySelect" class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[150px]">
-                <option value="">Todas las categorías</option>
-            </select>
-
-            
-            <div class="flex items-center gap-1.5 relative">
-                <p class="absolute -top-[30px] left-1/2 -translate-x-1/2 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide whitespace-nowrap">HU-08</p>
-                <div class="flex items-center gap-1.5">
-                    <input id="precioMin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. mín" aria-label="Precio mínimo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
-                    <span class="text-gray-400 text-sm">–</span>
-                    <input id="precioMax" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="Bs. máx" aria-label="Precio máximo" class="w-24 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#22C55E] focus:border-[#22C55E] focus:outline-none shadow-sm transition-all">
-                </div>
-            </div>
-
-            <div class="flex flex-col items-center">
-    <select id="brandSelect"
-        class="py-2.5 pl-3 pr-8 border border-gray-300 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#22C55E] focus:outline-none shadow-sm min-w-[130px]">
-        <option value="">Todas las marcas</option>
-    </select>
-
-    <p class="mt-1 text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">
-        HU-12
-    </p>
-</div>
-
-            <div class="relative">
-                <button type="button" id="filterBtn" class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
-                    <i class="fa-solid fa-arrow-up-wide-short text-sm"></i> Ordenar
-                    <i class="fa-solid fa-chevron-down text-xs" id="filterChevron"></i>
-                </button>
-                <div id="filterDropdown" class="absolute right-0 top-[calc(100%+8px)] w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2">
-                    <p class="px-4 pt-1 pb-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Ordenar por</p>
-                    <button type="button" data-orden="default" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-border-all w-4"></i> Por defecto</button>
-                    <button type="button" data-orden="nombre" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-font w-4"></i> Nombre (A–Z)</button>
-                    <button type="button" data-orden="precio_asc" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-up-1-9 w-4"></i> Precio: menor a mayor</button>
-                    <button type="button" data-orden="precio_desc" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-down-9-1 w-4"></i> Precio: mayor a menor</button>
-                    <button type="button" data-orden="marca" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-tag w-4"></i> Marca (A–Z)</button>
-                    <button type="button" data-orden="categoria" class="filter-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-folder w-4"></i> Categoría (A–Z)</button>
-                </div>
-            </div>
-
-            <div class="relative">
-                <button type="button" id="recoBtn" class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 hover:border-[#22C55E] transition-all shadow-sm whitespace-nowrap">
-                    <i class="fa-solid fa-thumbs-up text-sm"></i> Recomendación
-                    <i class="fa-solid fa-chevron-down text-xs" id="recoChevron"></i>
-                </button>
-                <div id="recoDropdown" class="absolute right-0 top-[calc(100%+8px)] w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2">
-                    <p class="px-4 pt-1 pb-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Recomendados por precio</p>
-                    <button type="button" data-reco="" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-border-all w-4"></i> Todos</button>
-                    <button type="button" data-reco="bajo" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-down w-4"></i> Precio bajo</button>
-                    <button type="button" data-reco="alto" class="reco-opt w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] text-left font-medium"><i class="fa-solid fa-arrow-up w-4"></i> Precio alto</button>
-                </div>
-            </div>
-
-            <button id="btnBuscar" class="flex items-center gap-2 px-4 py-2.5 bg-[#22C55E] hover:bg-green-600 text-white font-bold rounded-xl text-sm transition-all shadow-sm whitespace-nowrap">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i> Buscar
+    <div id="productModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10020] flex items-center justify-center p-4"
+        onclick="cerrarModal(event)">
+        <div class="modal-box modal-scroll bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <button onclick="cerrarModal(null)"
+                class="absolute top-3 right-3 z-20 bg-black/30 hover:bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
             </button>
-            <button id="btnLimpiar" class="hidden items-center gap-2 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-400 transition-all shadow-sm whitespace-nowrap">
-                <i class="fa-solid fa-xmark text-sm"></i> Limpiar
-            </button>
-        </div>
-
-        <button id="cartViewBtn" class="flex items-center gap-2 px-4 py-2.5 border-2 border-[#22C55E] rounded-xl text-sm font-bold text-[#16a34a] dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all shadow-sm whitespace-nowrap">
-            <i class="fa-solid fa-cart-shopping text-sm"></i> Carrito
-            <span id="cartBadge" class="bg-[#22C55E] text-white text-[10px] font-extrabold rounded-full flex items-center justify-center h-5 px-1.5">0</span>
-        </button>
-    </div>
-
-    <div>
-        <div id="precioAlert" role="alert" aria-live="assertive" class="hidden items-center gap-3 bg-red-50 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 rounded-xl px-4 py-3 text-sm font-bold shadow-sm">
-            <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span id="precioError"></span>
-        </div>
-    </div>
-
-    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-2">
-        <span id="contadorTexto">Mostrando <strong id="contFrom">0</strong> – <strong id="contTo">0</strong> de <strong id="contTotal">0</strong> productos</span>
-        <div id="activeFilters" class="flex items-center gap-2 flex-wrap"></div>
-    </div>
-
-    <p class="w-full text-center text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide mb-4">
-    HU-20
-</p>
-
-<div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-    <div id="paginador" class="flex items-center justify-center gap-2 pt-4 flex-wrap"></div>
-    <p id="paginaTexto" class="text-center text-xs text-gray-400 dark:text-gray-500"></p>
-
-</section>
-</main>
-
-<div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="cerrarModal(event)">
-    <div class="modal-box modal-scroll bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg relative">
-        <button onclick="cerrarModal(null)" class="absolute top-3 right-3 z-20 bg-black/30 hover:bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors">
-            <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-        <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative rounded-t-2xl">
-            <img id="modalImgMain" src="" alt="" class="w-full h-full object-contain p-6 transition-opacity duration-200" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
-            <span id="modalStockBadge" class="absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
-        </div>
-        <div id="modalThumbs" class="flex gap-2 px-5 pt-3 pb-1"></div>
-        <div class="px-5 pb-6 pt-3 space-y-4">
-            <div class="flex items-center gap-2 flex-wrap">
-                <span id="modalMarca" class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider"></span>
-                <span id="modalCateg" class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider"></span>
+            <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative rounded-t-2xl">
+                <img id="modalImgMain" src="" alt=""
+                    class="w-full h-full object-contain p-6 transition-opacity duration-200"
+                    onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
+                <span id="modalStockBadge"
+                    class="absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
             </div>
-            <h3 id="modalNombre" class="text-xl font-black text-gray-900 dark:text-white leading-tight"></h3>
-            <p id="modalPrecio" class="text-3xl font-black text-[#22C55E]"></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="info-pill"><i class="fa-solid fa-barcode text-[10px] text-gray-400"></i><span class="text-gray-400 font-normal">SKU:</span><span id="modalSku" class="font-mono"></span></span>
-                <span class="info-pill" id="modalGarantiaPill"><i class="fa-solid fa-shield-halved text-[10px] text-blue-400"></i><span id="modalGarantia"></span></span>
-                <span class="info-pill" id="modalStockPill"><i class="fa-solid fa-boxes-stacked text-[10px]"></i><span id="modalStockText"></span></span>
-            </div>
-            <hr class="border-gray-100 dark:border-gray-700">
-            <div>
-                <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Descripción</p>
-                <p id="modalDesc" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
-            </div>
-            <hr class="border-gray-100 dark:border-gray-700">
-            <div class="space-y-2 pt-1">
-                <button id="modalCartBtn" class="w-full bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 border border-[#bbf7d0] dark:border-green-700 text-[#15803d] dark:text-green-400 text-sm font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
-                </button>
-                <a id="modalWaBtn" href="#" target="_blank" class="w-full bg-[#1b803a] hover:bg-green-700 text-white text-center text-sm font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                    <i class="fa-brands fa-whatsapp"></i> Cotizar por WhatsApp
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="cartToast" class="fixed bottom-24 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
-    <i id="cartToastIcon" class="fa-solid fa-circle-check text-[#22C55E]"></i>
-    <span id="cartToastMsg">Producto agregado</span>
-</div>
-
-
-<!--BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
-<div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
-    <div id="chat-panel" class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
-        <div class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-headset"></i></div>
+            <div id="modalThumbs" class="flex gap-2 px-5 pt-3 pb-1"></div>
+            <div class="px-5 pb-6 pt-3 space-y-4">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span id="modalMarca"
+                        class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider"></span>
+                    <span id="modalCateg"
+                        class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider"></span>
+                </div>
+                <h3 id="modalNombre" class="text-xl font-black text-gray-900 dark:text-white leading-tight"></h3>
+                <p id="modalPrecio" class="text-3xl font-black text-[#22C55E]"></p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="info-pill"><i class="fa-solid fa-barcode text-[10px] text-gray-400"></i><span
+                            class="text-gray-400 font-normal">SKU:</span><span id="modalSku"
+                            class="font-mono"></span></span>
+                    <span class="info-pill" id="modalGarantiaPill"><i
+                            class="fa-solid fa-shield-halved text-[10px] text-blue-400"></i><span
+                            id="modalGarantia"></span></span>
+                    <span class="info-pill" id="modalStockPill"><i
+                            class="fa-solid fa-boxes-stacked text-[10px]"></i><span id="modalStockText"></span></span>
+                </div>
+                <hr class="border-gray-100 dark:border-gray-700">
                 <div>
-                    <p class="text-sm font-black leading-tight">Asistente Casatek</p>
-                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                    <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Descripción</p>
+                    <p id="modalDesc" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
+                </div>
+                <hr class="border-gray-100 dark:border-gray-700">
+                <div class="space-y-2 pt-1">
+                    <button id="modalCartBtn"
+                        class="product-action-primary w-full bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 border border-[#bbf7d0] dark:border-green-700 text-[#15803d] dark:text-green-400 text-sm font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+                    </button>
+                    <a id="modalWaBtn" href="#" target="_blank"
+                        class="w-full bg-[#1b803a] hover:bg-green-700 text-white text-center text-sm font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <i class="fa-brands fa-whatsapp"></i> Cotizar por WhatsApp
+                    </a>
                 </div>
             </div>
-            <button type="button" id="chat-close" class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors" title="Cerrar">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
         </div>
-        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
-            <div class="flex">
-                <p class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
-                    ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
-                </p>
+    </div>
+
+    <div id="cartToast"
+        class="fixed bottom-24 right-6 z-[200] bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl flex items-center gap-2">
+        <i id="cartToastIcon" class="fa-solid fa-circle-check text-[#22C55E]"></i>
+        <span id="cartToastMsg">Producto agregado</span>
+    </div>
+
+
+    <!--BURBUJA DE CHAT (estática; luego se conectará el agente de IA) ============ -->
+    <div id="chat-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3 font-['Poppins']">
+        <div id="chat-panel"
+            class="hidden w-[320px] max-w-[calc(100vw-2.5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex-col">
+            <div
+                class="bg-gradient-to-r from-[#111111] via-[#1b803a] to-[#22C55E] text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"><i
+                            class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <p class="text-sm font-black leading-tight">Asistente Casatek</p>
+                        <p class="text-[10px] text-white/80 flex items-center gap-1"><span
+                                class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></span> En línea</p>
+                    </div>
+                </div>
+                <button type="button" id="chat-close"
+                    class="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition-colors"
+                    title="Cerrar">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+                <div class="flex">
+                    <p
+                        class="max-w-[85%] bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-100 text-xs leading-relaxed px-3 py-2 rounded-2xl rounded-tl-sm shadow-sm">
+                        ¡Hola! 👋 Soy el asistente de Casatek. ¿En qué puedo ayudarte hoy?
+                    </p>
+                </div>
+            </div>
+            <form id="chat-form"
+                class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800"
+                onsubmit="return false;">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
+                    class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
+                <button type="submit" id="chat-send"
+                    class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors"
+                    title="Enviar">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+        </div>
+        <button type="button" id="chat-toggle"
+            class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105"
+            title="Chatea con nosotros">
+            <i class="fa-solid fa-comments"></i>
+        </button>
+    </div>
+    <script>
+
+            (function () {
+                var panel = document.getElementById('chat-panel');
+                function toggle() {
+                    panel.classList.toggle('hidden');
+                    panel.classList.toggle('flex');
+                    if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
+                }
+                document.getElementById('chat-toggle').addEventListener('click', toggle);
+                document.getElementById('chat-close').addEventListener('click', toggle);
+                // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
+            })();
+    </script>
+    <script src="/js/chat.js"></script>
+
+    <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
+        <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="space-y-4">
+                <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span
+                        class="text-[#22C55E]">TEK</span></a>
+                <p class="text-xs text-gray-400 leading-relaxed">Expertos en soluciones de seguridad electrónica,
+                    automatización y redes. Comprometidos con la protección y eficiencia de tu hogar y empresa.</p>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                    <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a>
+                    </li>
+                    <li><a href="estadisticas_precios.html" class="hover:text-white transition-colors">Estadísticas de
+                            Precios</a></li>
+                    <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
+                    <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
+                </ul>
+            </div>
+            <div class="space-y-4 text-sm">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Soporte</h4>
+                <ul class="space-y-3 text-gray-400">
+                    <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot mt-1"></i><span>Calle Colombia
+                            Nro. 218, Zona San Pedro, La Paz - Bolivia</span></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-phone"></i><span>76216837 -
+                            77297541</span></li>
+                    <li class="flex items-center gap-3"><i
+                            class="fa-solid fa-envelope"></i><span>casatekbolivia@gmail.com</span></li>
+                </ul>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Síguenos</h4>
+                <p class="text-xs text-gray-400">Mantente al tanto de las últimas novedades en tecnología.</p>
+                <div class="flex gap-4">
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i
+                            class="fa-brands fa-youtube"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i
+                            class="fa-brands fa-whatsapp"></i></a>
+                </div>
             </div>
         </div>
-        <form id="chat-form" class="flex items-center gap-2 p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800" onsubmit="return false;">
-            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off"
-                   class="flex-1 min-w-0 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-[#22C55E] focus:outline-none">
-            <button type="submit" id="chat-send" class="w-9 h-9 shrink-0 bg-[#22C55E] hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-colors" title="Enviar">
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
-        </form>
-    </div>
-    <button type="button" id="chat-toggle" class="w-14 h-14 rounded-full bg-[#22C55E] hover:bg-green-600 text-white text-2xl shadow-xl flex items-center justify-center transition-all hover:scale-105" title="Chatea con nosotros">
-        <i class="fa-solid fa-comments"></i>
-    </button>
-</div>
-<script>
-    
-(function () {
-    var panel = document.getElementById('chat-panel');
-    function toggle() {
-        panel.classList.toggle('hidden');
-        panel.classList.toggle('flex');
-        if (!panel.classList.contains('hidden')) document.getElementById('chat-input').focus();
-    }
-    document.getElementById('chat-toggle').addEventListener('click', toggle);
-    document.getElementById('chat-close').addEventListener('click', toggle);
-    // TODO: aquí se conectará el agente de IA (envío y respuesta de mensajes)
-})();
-</script>
-<script src="/js/chat.js"></script>
-
-<footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
-    <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        <div class="space-y-4">
-            <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">CASA<span class="text-[#22C55E]">TEK</span></a>
-            <p class="text-xs text-gray-400 leading-relaxed">Expertos en soluciones de seguridad electrónica, automatización y redes. Comprometidos con la protección y eficiencia de tu hogar y empresa.</p>
+        <div
+            class="max-w-7xl mx-auto px-4 md:px-12 mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+            <p>&copy; <span id="anioActual"></span> Casatek Bolivia. Todos los derechos reservados.</p>
         </div>
-        <div class="space-y-4">
-            <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
-            <ul class="space-y-2 text-sm text-gray-400">
-                <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
-                <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a></li>
-                <li><a href="estadisticas_precios.html" class="hover:text-white transition-colors">Estadísticas de Precios</a></li>
-                <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
-                <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
-            </ul>
-        </div>
-        <div class="space-y-4 text-sm">
-            <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Soporte</h4>
-            <ul class="space-y-3 text-gray-400">
-                <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot mt-1"></i><span>Calle Colombia Nro. 218, Zona San Pedro, La Paz - Bolivia</span></li>
-                <li class="flex items-center gap-3"><i class="fa-solid fa-phone"></i><span>76216837 - 77297541</span></li>
-                <li class="flex items-center gap-3"><i class="fa-solid fa-envelope"></i><span>casatekbolivia@gmail.com</span></li>
-            </ul>
-        </div>
-        <div class="space-y-4">
-            <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Síguenos</h4>
-            <p class="text-xs text-gray-400">Mantente al tanto de las últimas novedades en tecnología.</p>
-            <div class="flex gap-4">
-                <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"><i class="fa-brands fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-4 md:px-12 mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-        <p>&copy; <span id="anioActual"></span> Casatek Bolivia. Todos los derechos reservados.</p>
-    </div>
-</footer>
+    </footer>
 
 
-<script>
-document.getElementById('anioActual').textContent = new Date().getFullYear();
+    <script>
+        document.getElementById('anioActual').textContent = new Date().getFullYear();
 
-// API 
+        // API 
 
-const API_URL = '/api/products';
+        const API_URL = '/api/products';
 
-let PRODUCTOS = [];
+        let PRODUCTOS = [];
 
-const catSel   = document.getElementById('categorySelect');
-const brandSel = document.getElementById('brandSelect');
+        const catSel = document.getElementById('categorySelect');
+        const brandSel = document.getElementById('brandSelect');
 
-function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function adaptarProducto(p) {
-    const imagenes = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
-    return {
-        id:          p.id,
-        nombre:      p.name ?? '',
-        marca:       p.brand?.name ?? 'Sin marca',
-        categoria:   p.category?.name ?? 'Sin categoría',
-        precio:      Number(p.base_price ?? 0),
-        descripcion: p.description ?? '',
-        img:         imagenes[0] ?? '',
-        imgs:        imagenes,
-        stock:       Number(p.stock ?? 0),
-        sku:         p.sku ?? '',
-        garantia:    Number(p.warranty_days ?? 0),
-    };
-}
-
-function llenarFiltros() {
-    catSel.length = 1; brandSel.length = 1;
-    [...new Set(PRODUCTOS.map(p => p.categoria))].sort().forEach(c => {
-        const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o);
-    });
-    [...new Set(PRODUCTOS.map(p => p.marca))].sort().forEach(m => {
-        const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o);
-    });
-}
-
-async function cargarProductos() {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = '<p class="col-span-4 text-center py-20 text-gray-400">Cargando productos...</p>';
-    try {
-        let todos = [], url = API_URL;
-        while (url) {
-            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const json = await res.json();
-            const pag = json.datos;
-            todos = todos.concat(Array.isArray(pag) ? pag : (pag.data ?? []));
-            url = Array.isArray(pag) ? null : (pag.next_page_url ?? null);
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
-        PRODUCTOS = todos.map(adaptarProducto);
-        llenarFiltros();
-        renderProductos();
-    } catch (err) {
-        console.error(err);
-        grid.innerHTML = '<p class="col-span-4 text-center py-20 text-red-400">No se pudieron cargar los productos.</p>';
-    }
-}
+
+        function adaptarProducto(p) {
+            const imagenes = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
+            return {
+                id: p.id,
+                nombre: p.name ?? '',
+                marca: p.brand?.name ?? 'Sin marca',
+                categoria: p.category?.name ?? 'Sin categoría',
+                precio: Number(p.base_price ?? 0),
+                descripcion: p.description ?? '',
+                img: imagenes[0] ?? '',
+                imgs: imagenes,
+                stock: Number(p.stock ?? 0),
+                sku: p.sku ?? '',
+                garantia: Number(p.warranty_days ?? 0),
+            };
+        }
+
+        function llenarFiltros() {
+            catSel.length = 1; brandSel.length = 1;
+            [...new Set(PRODUCTOS.map(p => p.categoria))].sort().forEach(c => {
+                const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o);
+            });
+            [...new Set(PRODUCTOS.map(p => p.marca))].sort().forEach(m => {
+                const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o);
+            });
+        }
+
+        async function cargarProductos() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '<div class="col-span-full flex items-center justify-center gap-3 py-12 text-sm font-semibold text-gray-500 dark:text-gray-400"><i class="fa-solid fa-spinner fa-spin text-green-500"></i> Cargando productos…</div>';
+            try {
+                let todos = [], url = API_URL;
+                while (url) {
+                    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const json = await res.json();
+                    const pag = json.datos;
+                    todos = todos.concat(Array.isArray(pag) ? pag : (pag.data ?? []));
+                    url = Array.isArray(pag) ? null : (pag.next_page_url ?? null);
+                }
+                PRODUCTOS = todos.map(adaptarProducto);
+                llenarFiltros();
+                renderProductos();
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<div class="col-span-full rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/30 text-center py-8 text-sm text-red-700 dark:text-red-300">No pudimos cargar los productos. Actualiza la página para intentarlo de nuevo.</div>';
+            }
+        }
 
 
-let estado = { q:'', category:'', brand:'', min:null, max:null, orden:'default', reco:'', page:1 };
-const POR_PAGINA = 8;
+        let estado = { q: '', category: '', brand: '', min: null, max: null, orden: 'default', reco: '', page: 1 };
+        const POR_PAGINA = 8;
 
-function filtrarProductos() {
-    let list = PRODUCTOS.filter(p => {
-        const matchQ = !estado.q || p.nombre.toLowerCase().includes(estado.q.toLowerCase());
-        const matchC = !estado.category || p.categoria === estado.category;
-        const matchB = !estado.brand || p.marca === estado.brand;
-        const matchP = (estado.min === null || p.precio >= estado.min) && (estado.max === null || p.precio <= estado.max);
-        return matchQ && matchC && matchB && matchP;
-    });
-    if (estado.reco && list.length) {
-        const precios = list.map(x => x.precio).sort((a,b) => a - b);
-        const n = Math.max(1, Math.ceil(precios.length / 3));
-        if (estado.reco === 'bajo') { const lim = precios[n - 1];                  list = list.filter(x => x.precio <= lim); }
-        else                        { const lim = precios[precios.length - n];     list = list.filter(x => x.precio >= lim); }
-    }
-    const ord = (estado.orden === 'default' && estado.reco) ? (estado.reco === 'bajo' ? 'precio_asc' : 'precio_desc') : estado.orden;
-    switch (ord) {
-        case 'nombre':      list.sort((a,b)=>a.nombre.localeCompare(b.nombre)); break;
-        case 'precio_asc':  list.sort((a,b)=>a.precio-b.precio); break;
-        case 'precio_desc': list.sort((a,b)=>b.precio-a.precio); break;
-        case 'marca':       list.sort((a,b)=>a.marca.localeCompare(b.marca)); break;
-        case 'categoria':   list.sort((a,b)=>a.categoria.localeCompare(b.categoria)); break;
-    }
-    return list;
-}
+        function filtrarProductos() {
+            let list = PRODUCTOS.filter(p => {
+                const matchQ = !estado.q || p.nombre.toLowerCase().includes(estado.q.toLowerCase());
+                const matchC = !estado.category || p.categoria === estado.category;
+                const matchB = !estado.brand || p.marca === estado.brand;
+                const matchP = (estado.min === null || p.precio >= estado.min) && (estado.max === null || p.precio <= estado.max);
+                return matchQ && matchC && matchB && matchP;
+            });
+            if (estado.reco && list.length) {
+                const precios = list.map(x => x.precio).sort((a, b) => a - b);
+                const n = Math.max(1, Math.ceil(precios.length / 3));
+                if (estado.reco === 'bajo') { const lim = precios[n - 1]; list = list.filter(x => x.precio <= lim); }
+                else { const lim = precios[precios.length - n]; list = list.filter(x => x.precio >= lim); }
+            }
+            const ord = (estado.orden === 'default' && estado.reco) ? (estado.reco === 'bajo' ? 'precio_asc' : 'precio_desc') : estado.orden;
+            switch (ord) {
+                case 'nombre': list.sort((a, b) => a.nombre.localeCompare(b.nombre)); break;
+                case 'precio_asc': list.sort((a, b) => a.precio - b.precio); break;
+                case 'precio_desc': list.sort((a, b) => b.precio - a.precio); break;
+                case 'marca': list.sort((a, b) => a.marca.localeCompare(b.marca)); break;
+                case 'categoria': list.sort((a, b) => a.categoria.localeCompare(b.categoria)); break;
+            }
+            return list;
+        }
 
-function renderActiveFilters() {
-    const cont = document.getElementById('activeFilters');
-    cont.innerHTML = '';
-    const btnLimpiar = document.getElementById('btnLimpiar');
-    let hay = false;
-    if (estado.q) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> "${escapeHtml(estado.q)}"</span>`; }
-    if (estado.category) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-folder text-[10px]"></i> ${escapeHtml(estado.category)}</span>`; }
-    if (estado.brand) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tag text-[10px]"></i> ${escapeHtml(estado.brand)}</span>`; }
-    if (estado.min !== null || estado.max !== null) {
-        hay = true;
-        const txt = estado.min !== null && estado.max !== null ? `Bs. ${estado.min} – ${estado.max}`
-                  : estado.min !== null ? `Desde Bs. ${estado.min}` : `Hasta Bs. ${estado.max}`;
-        cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-coins text-[10px]"></i> ${txt}</span>`;
-    }
-    if (estado.reco) { hay = true; cont.innerHTML += `<span class="inline-flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-thumbs-up text-[10px]"></i> Recomendación: ${estado.reco === 'bajo' ? 'precio bajo' : 'precio alto'}</span>`; }
-    btnLimpiar.classList.toggle('hidden', !hay);
-    btnLimpiar.classList.toggle('flex', hay);
-}
+        function renderActiveFilters() {
+            const cont = document.getElementById('activeFilters');
+            cont.replaceChildren();
+            const chips = [];
+            if (estado.q) chips.push(['q', 'Búsqueda: ' + estado.q]);
+            if (estado.category) chips.push(['category', 'Categoría: ' + estado.category]);
+            if (estado.brand) chips.push(['brand', 'Marca: ' + estado.brand]);
+            if (estado.min !== null || estado.max !== null) {
+                const txt = estado.min !== null && estado.max !== null ? `Bs ${estado.min} a ${estado.max}` : estado.min !== null ? `Desde Bs ${estado.min}` : `Hasta Bs ${estado.max}`;
+                chips.push(['price', txt]);
+            }
+            if (estado.reco) chips.push(['reco', estado.reco === 'bajo' ? 'Precios bajos' : 'Precios altos']);
+            if (estado.orden !== 'default') chips.push(['orden', 'Orden: ' + (document.getElementById('ordenTexto')?.textContent || estado.orden)]);
+            for (const [key, label] of chips) {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'catalog-chip';
+                b.setAttribute('aria-label', 'Quitar filtro ' + label);
+                b.append(document.createTextNode(label));
+                const x = document.createElement('i'); x.className = 'fa-solid fa-xmark'; x.setAttribute('aria-hidden', 'true'); b.appendChild(x);
+                b.addEventListener('click', () => {
+                    if (key === 'q') { estado.q = ''; searchInput.value = ''; clearSearchBtn.hidden = true; }
+                    if (key === 'category') { estado.category = ''; catSel.value = ''; }
+                    if (key === 'brand') { estado.brand = ''; brandSel.value = ''; }
+                    if (key === 'price') { estado.min = null; estado.max = null; minInp.value = ''; maxInp.value = ''; leerRangoPrecio(); }
+                    if (key === 'reco') estado.reco = '';
+                    if (key === 'orden') estado.orden = 'default';
+                    estado.page = 1; sincronizarMenus(); renderProductos();
+                });
+                cont.appendChild(b);
+            }
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            btnLimpiar.classList.toggle('hidden', !chips.length);
+            btnLimpiar.classList.toggle('flex', !!chips.length);
+        }
 
-function renderProductos() {
-    const grid = document.getElementById('productGrid');
-    const full = filtrarProductos();
-    const total = full.length;
-    const totalPages = Math.max(1, Math.ceil(total / POR_PAGINA));
-    if (estado.page > totalPages) estado.page = totalPages;
-    const start = (estado.page - 1) * POR_PAGINA;
-    const pageItems = full.slice(start, start + POR_PAGINA);
+        function renderProductos() {
+            const grid = document.getElementById('productGrid');
+            const full = filtrarProductos();
+            const total = full.length;
+            const totalPages = Math.max(1, Math.ceil(total / POR_PAGINA));
+            if (estado.page > totalPages) estado.page = totalPages;
+            const start = (estado.page - 1) * POR_PAGINA;
+            const pageItems = full.slice(start, start + POR_PAGINA);
 
-    grid.innerHTML = '';
-    if (pageItems.length === 0) {
-        grid.innerHTML = `<div class="col-span-4 text-center py-20 text-gray-400 dark:text-gray-500">
+            grid.innerHTML = '';
+            if (pageItems.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 px-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500">
             <i class="fa-solid fa-box-open text-5xl mb-4"></i>
             <p class="text-lg font-semibold">No se encontraron productos</p>
-            <p class="text-sm mt-1">Intenta con otra búsqueda o filtro</p>
+            <p class="text-sm mt-1 mb-4">Prueba con otra palabra o quita algún filtro.</p>
+            <button type="button" class="catalog-empty-reset inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1b803a] text-white text-xs font-bold hover:bg-green-700"><i class="fa-solid fa-rotate-left"></i> Ver todos los productos</button>
         </div>`;
-    }
-    pageItems.forEach(p => {
-        const stockBadge = p.stock <= 0
-            ? `<span class="absolute top-3 right-3 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Agotado</span>`
-            : (p.stock <= 5 ? `<span class="absolute top-3 right-3 bg-yellow-500 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Últimas unidades</span>` : '');
-        const card = document.createElement('div');
-        card.className = 'product-card bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col group cursor-pointer';
-        card.dataset.id = p.id;
-        card.onclick = () => abrirModal(p);
-        card.innerHTML = `
-            <div class="w-full h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden relative border-b border-gray-100 dark:border-gray-700">
+                const emptyResetBtn = grid.querySelector('.catalog-empty-reset');
+                if (PRODUCTOS.length) emptyResetBtn.addEventListener('click', () => document.getElementById('btnLimpiar').click());
+                else emptyResetBtn.remove();
+            }
+            pageItems.forEach(p => {
+                const stockBadge = p.stock <= 0
+                    ? `<span class="absolute top-3 right-3 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Agotado</span>`
+                    : (p.stock <= 5 ? `<span class="absolute top-3 right-3 bg-yellow-500 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Últimas unidades</span>` : '');
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group cursor-pointer';
+                card.tabIndex = 0; card.setAttribute('role', 'button'); card.setAttribute('aria-label', 'Ver detalles de ' + p.nombre);
+                card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirModal(p); } });
+                card.dataset.id = p.id;
+                card.onclick = () => abrirModal(p);
+                card.innerHTML = `
+            <div class="product-photo w-full h-48 bg-gray-50 dark:bg-gray-900 overflow-hidden relative border-b border-gray-100 dark:border-gray-700">
                 <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.nombre)}" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
                 <span class="absolute top-3 left-3 bg-[#22C55E] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">${escapeHtml(p.marca)}</span>
                 ${stockBadge}
@@ -751,512 +1947,536 @@ function renderProductos() {
                     <div class="pt-1"><span class="text-lg font-black text-gray-900 dark:text-green-400">${p.precio.toFixed(2)} Bs.</span></div>
                 </div>
                 <div class="space-y-2" data-stop>
-                    <button data-add class="w-full bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 border border-[#bbf7d0] dark:border-green-700 text-[#15803d] dark:text-green-400 text-xs font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" ${p.stock<=0?'disabled':''}>
-                        <i class="fa-solid fa-cart-plus text-sm"></i> ${p.stock<=0?'Sin stock':'Agregar al carrito'}
+                    <button data-add class="w-full bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 border border-[#bbf7d0] dark:border-green-700 text-[#15803d] dark:text-green-400 text-xs font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" ${p.stock <= 0 ? 'disabled' : ''}>
+                        <i class="fa-solid fa-cart-plus text-sm"></i> ${p.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
                     </button>
-                    <a href="https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20${encodeURIComponent(p.nombre)}" target="_blank" class="w-full bg-[#1b803a] hover:bg-green-700 text-white text-center text-xs font-bold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                    <a href="https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20${encodeURIComponent(p.nombre)}" target="_blank" class="product-action-secondary w-full bg-[#1b803a] hover:bg-green-700 text-white text-center text-xs font-bold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
                         <i class="fa-brands fa-whatsapp text-sm"></i> Cotizar por WhatsApp
                     </a>
                 </div>
             </div>`;
-        card.querySelector('[data-stop]').addEventListener('click', e => e.stopPropagation());
-        card.querySelector('[data-add]').addEventListener('click', () => agregarAlCarrito(p));
-        grid.appendChild(card);
-    });
-
-    document.getElementById('contFrom').textContent  = total === 0 ? 0 : start + 1;
-    document.getElementById('contTo').textContent    = Math.min(start + POR_PAGINA, total);
-    document.getElementById('contTotal').textContent = total;
-    renderActiveFilters();
-    renderPaginador(totalPages);
-}
-
-function renderPaginador(totalPages) {
-    const cont = document.getElementById('paginador');
-    const txt  = document.getElementById('paginaTexto');
-    cont.innerHTML = '';
-    if (totalPages <= 1) { txt.textContent = ''; return; }
-
-    const mkBtn = (label, page, opts={}) => {
-        const el = document.createElement(opts.active ? 'span' : 'a');
-        el.className = 'pagination-btn' + (opts.active ? ' active' : '') + (opts.disabled ? ' disabled' : '');
-        el.innerHTML = label;
-        if (!opts.active && !opts.disabled) el.addEventListener('click', () => { estado.page = page; renderProductos(); window.scrollTo({top:0,behavior:'smooth'}); });
-        return el;
-    };
-    cont.appendChild(mkBtn('<i class="fa-solid fa-chevron-left text-xs"></i>', estado.page - 1, { disabled: estado.page === 1 }));
-    for (let i = 1; i <= totalPages; i++) cont.appendChild(mkBtn(i, i, { active: i === estado.page }));
-    cont.appendChild(mkBtn('<i class="fa-solid fa-chevron-right text-xs"></i>', estado.page + 1, { disabled: estado.page === totalPages }));
-    txt.textContent = `Página ${estado.page} de ${totalPages}`;
-}
-
-const minInp = document.getElementById('precioMin');
-const maxInp = document.getElementById('precioMax');
-const precioErr = document.getElementById('precioError');
-const precioAlert = document.getElementById('precioAlert');
-const setAlerta = msg => { precioErr.textContent = msg; precioAlert.classList.toggle('hidden', !msg); precioAlert.classList.toggle('flex', !!msg); };
-
-function leerRangoPrecio() {
-    const rawMin = minInp.value.trim(), rawMax = maxInp.value.trim();
-    [minInp, maxInp].forEach(i => i.classList.remove('border-red-500'));
-    setAlerta('');
-    const fallo = (msg, ...inps) => {
-        setAlerta(msg);
-        inps.forEach(i => i.classList.add('border-red-500'));
-        return null;
-    };
-    let min = null, max = null;
-    const valido = v => /^\d{1,4}$/.test(v);
-    if (rawMin !== '') { if (!valido(rawMin)) return fallo('El precio mínimo debe ser un número positivo de hasta 4 dígitos (0–9999).', minInp); min = parseInt(rawMin, 10); }
-    if (rawMax !== '') { if (!valido(rawMax)) return fallo('El precio máximo debe ser un número positivo de hasta 4 dígitos (0–9999).', maxInp); max = parseInt(rawMax, 10); }
-    if (min !== null && max !== null && min > max) return fallo('El precio mínimo no puede ser mayor al máximo.', minInp, maxInp);
-    if (min === null && max !== null) min = 0;
-    return { min, max };
-}
-
-document.getElementById('btnBuscar').addEventListener('click', () => {
-    const rango = leerRangoPrecio();
-    if (!rango) return;
-    estado.min = rango.min; estado.max = rango.max;
-    estado.q = document.getElementById('searchInput').value.trim();
-    estado.category = catSel.value;
-    estado.brand = brandSel.value;
-    estado.page = 1;
-    renderProductos();
-});
-document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnBuscar').click(); });
-catSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
-brandSel.addEventListener('change', () => document.getElementById('btnBuscar').click());
-[minInp, maxInp].forEach(i => {
-    i.addEventListener('keydown', e => {
-        if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
-        if (!/^\d$/.test(e.key)) e.preventDefault();
-    });
-    i.addEventListener('input', () => {
-        const limpio = i.value.replace(/\D/g, '').slice(0, 4);
-        if (i.value !== limpio) i.value = limpio;
-    });
-    i.addEventListener('input', () => { setAlerta(''); i.classList.remove('border-red-500'); });
-});
-document.getElementById('btnLimpiar').addEventListener('click', () => {
-    estado = { q:'', category:'', brand:'', min:null, max:null, orden:'default', reco:'', page:1 };
-    document.getElementById('searchInput').value = '';
-    catSel.value = ''; brandSel.value = '';
-    minInp.value = ''; maxInp.value = '';
-    leerRangoPrecio();
-    renderProductos();
-});
-
-document.getElementById('filterBtn').addEventListener('click', e => {
-    e.stopPropagation();
-    const dd = document.getElementById('filterDropdown');
-    dd.classList.toggle('open');
-    document.getElementById('filterChevron').style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
-});
-document.addEventListener('click', () => {
-    document.getElementById('filterDropdown').classList.remove('open');
-    document.getElementById('filterChevron').style.transform = '';
-});
-document.querySelectorAll('.filter-opt').forEach(btn => {
-    btn.addEventListener('click', e => {
-        e.stopPropagation();
-        estado.orden = btn.dataset.orden;
-        estado.page = 1;
-        renderProductos();
-    });
-});
-
-document.getElementById('recoBtn').addEventListener('click', e => {
-    e.stopPropagation();
-    document.getElementById('filterDropdown').classList.remove('open');
-    document.getElementById('filterChevron').style.transform = '';
-    const dd = document.getElementById('recoDropdown');
-    dd.classList.toggle('open');
-    document.getElementById('recoChevron').style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
-});
-document.addEventListener('click', () => {
-    document.getElementById('recoDropdown').classList.remove('open');
-    document.getElementById('recoChevron').style.transform = '';
-});
-document.querySelectorAll('.reco-opt').forEach(btn => {
-    btn.addEventListener('click', e => {
-        e.stopPropagation();
-        estado.reco = btn.dataset.reco;
-        estado.page = 1;
-        document.getElementById('recoDropdown').classList.remove('open');
-        document.getElementById('recoChevron').style.transform = '';
-        renderProductos();
-    });
-});
-
-//CARRITO
-const CART_KEY = 'casatek_carrito';
-function getCarrito()  { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
-function saveCarrito(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
-function actualizarBadge() {
-    const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
-    document.getElementById('cartBadge').textContent = total;
-}
-function mostrarToast(nombre) {
-    const t = document.getElementById('cartToast');
-    document.getElementById('cartToastMsg').textContent = '"' + nombre + '" agregado al carrito';
-    document.getElementById('cartToastIcon').className = 'fa-solid fa-circle-check text-[#22C55E]';
-    t.style.background = ''; t.classList.add('show');
-    clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2400);
-}
-function mostrarToastError(msg) {
-    const t = document.getElementById('cartToast');
-    document.getElementById('cartToastMsg').textContent = msg;
-    document.getElementById('cartToastIcon').className = 'fa-solid fa-circle-xmark text-red-400';
-    t.style.background = '#7f1d1d'; t.classList.add('show');
-    clearTimeout(t._timer); t._timer = setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 2400);
-}
-async function agregarAlCarrito(p) {
-    if (p.stock <= 0) { mostrarToastError('Este producto no tiene stock disponible'); return; }
-
-    const token = localStorage.getItem('token');
-    // Verificamos si el usuario inició sesión
-    if (!token) {
-        mostrarToastError('Debes iniciar sesión para agregar al carrito');
-        setTimeout(() => window.location.href = 'iniciarsesion.html', 1500);
-        return;
-    }
-
-    const carrito = getCarrito();
-    const existe = carrito.find(i => i.id === p.id);
-    const yaEnCar = existe ? existe.cantidad : 0;
-
-    if (yaEnCar >= p.stock) { mostrarToastError('Ya tienes el máximo disponible (' + p.stock + ' unid.)'); return; }
-
-    try {
-        // 1. Enviamos el producto a la API
-        const res = await fetch('http://localhost:8000/api/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({ product_id: p.id, quantity: 1 })
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        // Si el backend lo rechaza (ej. error de stock), detenemos el proceso
-        if (!res.ok) {
-            mostrarToastError(data.message || 'Error al guardar en el servidor');
-            return;
-        }
-
-        // 2. Si el servidor respondió OK, actualizamos la vista localmente
-        if (existe) existe.cantidad++;
-        else carrito.push({ id:p.id, nombre:p.nombre, marca:p.marca, precio:p.precio, descripcion:p.descripcion, img:p.img, cantidad:1 });
-
-        saveCarrito(carrito);
-        actualizarBadge();
-        mostrarToast(p.nombre);
-
-    } catch (error) {
-        console.error(error);
-        mostrarToastError('Error de conexión con el servidor');
-    }
-}
-document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = 'carrito.html'; });
-
-
-let productoModal = null;
-function setMainImg(src) {
-    const img = document.getElementById('modalImgMain');
-    img.style.opacity = '0';
-    setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 150);
-    document.querySelectorAll('.modal-thumb').forEach(t => t.classList.toggle('active', t.dataset.src === src));
-}
-function abrirModal(p) {
-    productoModal = p;
-    setMainImg(p.img);
-
-    const thumbs = document.getElementById('modalThumbs');
-    thumbs.innerHTML = '';
-    if (p.imgs && p.imgs.length > 1) {
-        p.imgs.forEach(src => {
-            const t = document.createElement('img');
-            t.src = src; t.dataset.src = src;
-            t.className = 'modal-thumb' + (src === p.img ? ' active' : '');
-            t.onclick = () => setMainImg(src);
-            thumbs.appendChild(t);
-        });
-    }
-
-    document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${escapeHtml(p.marca)}`;
-    document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${escapeHtml(p.categoria)}`;
-    document.getElementById('modalNombre').textContent = p.nombre;
-    document.getElementById('modalPrecio').textContent = p.precio.toFixed(2) + ' Bs.';
-    document.getElementById('modalDesc').textContent = p.descripcion || 'Sin descripción.';
-    document.getElementById('modalSku').textContent = p.sku || '—';
-
-    const g = p.garantia; let garantiaText = 'Sin garantía';
-    if (g > 0) { if (g % 365 === 0) garantiaText = (g/365) + ' año' + (g/365>1?'s':''); else if (g % 30 === 0) garantiaText = (g/30) + ' mes' + (g/30>1?'es':''); else garantiaText = g + ' días'; }
-    document.getElementById('modalGarantia').textContent = garantiaText;
-
-    const s = p.stock;
-    const badge = document.getElementById('modalStockBadge');
-    const pill  = document.getElementById('modalStockPill');
-    const sText = document.getElementById('modalStockText');
-    if (s <= 0) { badge.textContent='Sin stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-none'; pill.className='info-pill stock-none'; sText.textContent='Sin stock'; }
-    else if (s <= 5) { badge.textContent='Últimas ' + s + ' unidades'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-low'; pill.className='info-pill stock-low'; sText.textContent= s + ' en stock'; }
-    else { badge.textContent = s + ' en stock'; badge.className='absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-ok'; pill.className='info-pill stock-ok'; sText.textContent= s + ' disponibles'; }
-
-    document.getElementById('modalWaBtn').href = 'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(p.nombre);
-
-    const btn = document.getElementById('modalCartBtn');
-    if (s <= 0) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-ban"></i> Sin stock'; btn.classList.add('opacity-50','cursor-not-allowed'); }
-    else { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Agregar al carrito'; btn.classList.remove('opacity-50','cursor-not-allowed'); }
-
-    document.getElementById('productModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-function cerrarModal(event) {
-    if (event === null || event.target === document.getElementById('productModal')) {
-        document.getElementById('productModal').classList.remove('open');
-        document.body.style.overflow = '';
-    }
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(null); });
-document.getElementById('modalCartBtn').addEventListener('click', () => {
-    if (!productoModal) return;
-    agregarAlCarrito(productoModal);
-    if (productoModal.stock > 0) cerrarModal(null);
-});
-
-//TEMA OSCURO / SIDEBAR / INICIO
-document.addEventListener('DOMContentLoaded', function () {
-    const openSidebarBtn = document.getElementById('btn-open-sidebar');
-    const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
-    const closeBtn = document.getElementById('btn-close-sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const panel = document.getElementById('sidebar-panel');
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
-    const themeIconMobile = document.getElementById('theme-icon-mobile');
-
-    if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-        if (themeIcon) themeIcon.classList.replace('fa-moon','fa-sun');
-        if (themeIconMobile) themeIconMobile.classList.replace('fa-moon','fa-sun');
-    }
-    function toggleTheme() {
-        document.documentElement.classList.toggle('dark');
-        const isDark = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        if (themeIcon) themeIcon.classList.replace(isDark?'fa-moon':'fa-sun', isDark?'fa-sun':'fa-moon');
-        if (themeIconMobile) themeIconMobile.classList.replace(isDark?'fa-moon':'fa-sun', isDark?'fa-sun':'fa-moon');
-    }
-    themeToggle.addEventListener('click', toggleTheme);
-    if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
-
-    function openSidebar() {
-        overlay.classList.remove('hidden');
-        setTimeout(() => { overlay.classList.add('opacity-100'); panel.classList.remove('translate-x-full'); }, 20);
-    }
-    function closeSidebarFn() {
-        overlay.classList.remove('opacity-100');
-        panel.classList.add('translate-x-full');
-        setTimeout(() => overlay.classList.add('hidden'), 300);
-    }
-    if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
-    if (openMenuMobileBtn) openMenuMobileBtn.addEventListener('click', openSidebar);
-    if (closeBtn) closeBtn.addEventListener('click', closeSidebarFn);
-    if (overlay) overlay.addEventListener('click', closeSidebarFn);
-
-    actualizarBadge();
-    cargarProductos();   // desde la API
-});
-</script>
-<script>
-if (!window.closeSidebarFn) {
-    window.closeSidebarFn = function () {
-        const overlay = document.getElementById('sidebar-overlay');
-        const panel   = document.getElementById('sidebar-panel');
-        overlay.classList.remove('opacity-100');
-        panel.classList.add('translate-x-full');
-        setTimeout(() => overlay.classList.add('hidden'), 300);
-    };
-}
-function inicializarNavAuth() {
-        const token = localStorage.getItem('token');
-        const user  = JSON.parse(localStorage.getItem('user') || 'null');
-        const rank  = JSON.parse(localStorage.getItem('rank') || 'null');
-
-        if (token && user) {
-            //Desktop
-            document.getElementById('btn-login-desktop').classList.add('hidden');
-            document.getElementById('btn-perfil-desktop').classList.remove('hidden');
-
-            const inicial = (user.name || 'U')[0].toUpperCase();
-            document.getElementById('avatar-inicial').textContent    = inicial;
-            document.getElementById('nav-username').textContent      = user.name?.split(' ')[0] ?? 'Usuario';
-            document.getElementById('dd-nombre').textContent         = user.name  ?? '-';
-            document.getElementById('dd-email').textContent          = user.email ?? '-';
-            document.getElementById('dd-rango').textContent          = rank?.name ? '🏅 ' + rank.name : '';
-
-            //Mobile
-            document.getElementById('mobile-login').classList.add('hidden');
-            document.getElementById('mobile-perfil').classList.remove('hidden');
-            document.getElementById('mobile-avatar').textContent = inicial;
-            document.getElementById('mobile-nombre').textContent = user.name  ?? '-';
-            document.getElementById('mobile-email').textContent  = user.email ?? '-';
-        }
-    }
-
-   
-    function abrirModalPerfil() {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        const rank = JSON.parse(localStorage.getItem('rank') || 'null');
-        if (!user) return;
-
-        const inicial = (user.name || 'U')[0].toUpperCase();
-        document.getElementById('perfil-avatar-grande').textContent  = inicial;
-        document.getElementById('perfil-nombre-header').textContent  = user.name  ?? '-';
-        document.getElementById('perfil-email-header').textContent   = user.email ?? '-';
-        document.getElementById('perfil-rango-header').textContent   = rank?.name ? '🏅 ' + rank.name : '';
-
-        document.getElementById('perfil-input-nombre').value    = user.name     ?? '';
-        document.getElementById('perfil-input-email').value     = user.email    ?? '';
-        document.getElementById('perfil-input-phone').value     = user.phone    ?? '';
-        document.getElementById('perfil-input-whatsapp').value  = user.whatsapp ?? '';
-        document.getElementById('perfil-input-password').value         = '';
-        document.getElementById('perfil-input-password-confirm').value = '';
-
-        document.getElementById('perfil-error').classList.add('hidden');
-        document.getElementById('perfil-exito').classList.add('hidden');
-
-        const modal = document.getElementById('modalPerfil');
-        const box   = document.getElementById('modalPerfilBox');
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        modal.classList.add('opacity-100');
-        box.classList.remove('scale-95');
-        box.classList.add('scale-100');
-    }
-
-    function cerrarModalPerfil() {
-        const modal = document.getElementById('modalPerfil');
-        const box   = document.getElementById('modalPerfilBox');
-        modal.classList.remove('opacity-100');
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        box.classList.remove('scale-100');
-        box.classList.add('scale-95');
-    }
-
-    //Guardar perfil
-    async function guardarPerfil() {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const btn       = document.getElementById('btn-guardar-perfil');
-        const errorDiv  = document.getElementById('perfil-error');
-        const exitoDiv  = document.getElementById('perfil-exito');
-        const password  = document.getElementById('perfil-input-password').value;
-        const passConf  = document.getElementById('perfil-input-password-confirm').value;
-
-        errorDiv.classList.add('hidden');
-        exitoDiv.classList.add('hidden');
-
-        if (password && password !== passConf) {
-            errorDiv.textContent = 'Las contraseñas no coinciden.';
-            errorDiv.classList.remove('hidden');
-            return;
-        }
-
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-        btn.disabled  = true;
-
-        const body = {
-            name:     document.getElementById('perfil-input-nombre').value.trim(),
-            email:    document.getElementById('perfil-input-email').value.trim(),
-            phone:    document.getElementById('perfil-input-phone').value.trim()    || null,
-            whatsapp: document.getElementById('perfil-input-whatsapp').value.trim() || null,
-        };
-        if (password) {
-            body.password              = password;
-            body.password_confirmation = passConf;
-        }
-
-        try {
-            const res  = await fetch('/api/me/update', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type':  'application/json',
-                    'Accept':        'application/json',
-                    'Authorization': 'Bearer ' + token,
-                },
-                body: JSON.stringify(body),
+                card.querySelector('[data-stop]').addEventListener('click', e => e.stopPropagation());
+                card.querySelector('[data-add]').addEventListener('click', () => agregarAlCarrito(p));
+                grid.appendChild(card);
             });
 
-            const data = await res.json();
+            document.getElementById('contFrom').textContent = total === 0 ? 0 : start + 1;
+            document.getElementById('contTo').textContent = Math.min(start + POR_PAGINA, total);
+            document.getElementById('contTotal').textContent = total;
+            renderActiveFilters();
+            renderPaginador(totalPages);
+        }
 
-            if (!res.ok) {
-                const msgs = data.errors
-                    ? Object.values(data.errors).flat().join(' ')
-                    : (data.message || 'Error al actualizar.');
-                errorDiv.textContent = msgs;
+        function renderPaginador(totalPages) {
+            const cont = document.getElementById('paginador');
+            const txt = document.getElementById('paginaTexto');
+            cont.innerHTML = '';
+            if (totalPages <= 1) { txt.textContent = ''; return; }
+
+            const mkBtn = (label, page, opts = {}) => {
+                const el = document.createElement(opts.active ? 'span' : 'button');
+                if (!opts.active) el.type = 'button';
+                el.className = 'pagination-btn' + (opts.active ? ' active' : '') + (opts.disabled ? ' disabled' : '');
+                el.innerHTML = label;
+                if (opts.active) el.setAttribute('aria-current', 'page');
+                if (opts.disabled) { el.disabled = true; el.setAttribute('aria-disabled', 'true'); }
+                if (!opts.active && !opts.disabled) el.addEventListener('click', () => { estado.page = page; renderProductos(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+                return el;
+            };
+            cont.appendChild(mkBtn('<i class="fa-solid fa-chevron-left text-xs"></i>', estado.page - 1, { disabled: estado.page === 1 }));
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(i - estado.page) <= 1) cont.appendChild(mkBtn(i, i, { active: i === estado.page }));
+                else if (i === 2 && estado.page > 3 || i === totalPages - 1 && estado.page < totalPages - 2) { const dots = document.createElement('span'); dots.textContent = '…'; dots.className = 'text-gray-400 px-1'; cont.appendChild(dots); }
+            }
+            cont.appendChild(mkBtn('<i class="fa-solid fa-chevron-right text-xs"></i>', estado.page + 1, { disabled: estado.page === totalPages }));
+            txt.textContent = `Página ${estado.page} de ${totalPages}`;
+        }
+
+        const minInp = document.getElementById('precioMin');
+        const maxInp = document.getElementById('precioMax');
+        const precioErr = document.getElementById('precioError');
+        const precioAlert = document.getElementById('precioAlert');
+        const setAlerta = msg => { precioErr.textContent = msg; precioAlert.classList.toggle('hidden', !msg); precioAlert.classList.toggle('flex', !!msg); };
+
+        function leerRangoPrecio() {
+            const rawMin = minInp.value.trim(), rawMax = maxInp.value.trim();
+            [minInp, maxInp].forEach(i => i.classList.remove('border-red-500'));
+            setAlerta('');
+            const fallo = (msg, ...inps) => {
+                setAlerta(msg);
+                inps.forEach(i => i.classList.add('border-red-500'));
+                return null;
+            };
+            let min = null, max = null;
+            const valido = v => /^\d{1,4}$/.test(v);
+            if (rawMin !== '') { if (!valido(rawMin)) return fallo('El precio mínimo debe ser un número positivo de hasta 4 dígitos (0–9999).', minInp); min = parseInt(rawMin, 10); }
+            if (rawMax !== '') { if (!valido(rawMax)) return fallo('El precio máximo debe ser un número positivo de hasta 4 dígitos (0–9999).', maxInp); max = parseInt(rawMax, 10); }
+            if (min !== null && max !== null && min > max) return fallo('El precio mínimo no puede ser mayor al máximo.', minInp, maxInp);
+            if (min === null && max !== null) min = 0;
+            return { min, max };
+        }
+
+        // Aplicación automática: mismas funciones de filtrado, sin enviar nuevas solicitudes al servidor.
+        let searchTimer = null;
+        let priceTimer = null;
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const btnBuscar = document.getElementById('btnBuscar');
+
+        function aplicarFiltros() {
+            const rango = leerRangoPrecio();
+            if (rango) { estado.min = rango.min; estado.max = rango.max; } // Conserva el último rango válido cuando hay un error.
+            estado.q = searchInput.value.trim();
+            estado.category = catSel.value;
+            estado.brand = brandSel.value;
+            estado.page = 1;
+            clearSearchBtn.hidden = !searchInput.value.length;
+            renderProductos();
+        }
+        btnBuscar.addEventListener('click', () => { clearTimeout(searchTimer); clearTimeout(priceTimer); aplicarFiltros(); });
+        searchInput.addEventListener('input', () => {
+            clearSearchBtn.hidden = !searchInput.value.length;
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(aplicarFiltros, 160);
+        });
+        searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(searchTimer); aplicarFiltros(); } });
+        clearSearchBtn.addEventListener('click', () => { searchInput.value = ''; clearTimeout(searchTimer); aplicarFiltros(); searchInput.focus(); });
+        catSel.addEventListener('change', aplicarFiltros);
+        brandSel.addEventListener('change', aplicarFiltros);
+        [minInp, maxInp].forEach(i => {
+            i.addEventListener('keydown', e => {
+                if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
+                if (!/^\d$/.test(e.key)) e.preventDefault();
+            });
+            i.addEventListener('input', () => {
+                const limpio = i.value.replace(/\D/g, '').slice(0, 4);
+                if (i.value !== limpio) i.value = limpio;
+                setAlerta(''); i.classList.remove('border-red-500');
+                clearTimeout(priceTimer);
+                priceTimer = setTimeout(aplicarFiltros, 380);
+            });
+            i.addEventListener('blur', () => { clearTimeout(priceTimer); aplicarFiltros(); });
+        });
+        function sincronizarMenus() {
+            const ordenes = { default: 'Por defecto', nombre: 'Nombre A–Z', precio_asc: 'Menor precio', precio_desc: 'Mayor precio', marca: 'Marca A–Z', categoria: 'Categoría A–Z' };
+            const recom = { '': 'Por precio', bajo: 'Precios bajos', alto: 'Precios altos' };
+            document.getElementById('ordenTexto').textContent = ordenes[estado.orden] || ordenes.default;
+            document.getElementById('recoTexto').textContent = recom[estado.reco] ?? recom[''];
+            document.querySelectorAll('.filter-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.orden === estado.orden)));
+            document.querySelectorAll('.reco-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.reco === estado.reco)));
+        }
+        function cerrarMenus() {
+            for (const [d, b, c] of [['filterDropdown', 'filterBtn', 'filterChevron'], ['recoDropdown', 'recoBtn', 'recoChevron']]) {
+                document.getElementById(d).classList.remove('open');
+                document.getElementById(b).setAttribute('aria-expanded', 'false');
+                document.getElementById(c).style.transform = '';
+            }
+        }
+        function alternarMenu(dropdownId, buttonId, chevronId) {
+            const open = !document.getElementById(dropdownId).classList.contains('open');
+            cerrarMenus();
+            if (open) {
+                document.getElementById(dropdownId).classList.add('open');
+                document.getElementById(buttonId).setAttribute('aria-expanded', 'true');
+                document.getElementById(chevronId).style.transform = 'rotate(180deg)';
+            }
+        }
+        document.getElementById('filterBtn').addEventListener('click', e => { e.stopPropagation(); alternarMenu('filterDropdown', 'filterBtn', 'filterChevron'); });
+        document.getElementById('recoBtn').addEventListener('click', e => { e.stopPropagation(); alternarMenu('recoDropdown', 'recoBtn', 'recoChevron'); });
+        document.addEventListener('click', e => { if (!e.target.closest('.catalog-popover-anchor')) cerrarMenus(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarMenus(); });
+        document.querySelectorAll('.filter-opt').forEach(btn => {
+            btn.addEventListener('click', e => { e.stopPropagation(); estado.orden = btn.dataset.orden; estado.page = 1; sincronizarMenus(); cerrarMenus(); renderProductos(); });
+        });
+        document.querySelectorAll('.reco-opt').forEach(btn => {
+            btn.addEventListener('click', e => { e.stopPropagation(); estado.reco = btn.dataset.reco; estado.page = 1; sincronizarMenus(); cerrarMenus(); renderProductos(); });
+        });
+        const toggleFilters = document.getElementById('toggleFilters');
+        toggleFilters.addEventListener('click', () => {
+            const panel = document.getElementById('filtersPanel');
+            const opened = panel.classList.toggle('open');
+            toggleFilters.setAttribute('aria-expanded', String(opened));
+            toggleFilters.querySelector('span').textContent = opened ? 'Ocultar filtros' : 'Mostrar filtros';
+            toggleFilters.querySelector('i:last-child').className = 'fa-solid fa-chevron-' + (opened ? 'up' : 'down');
+        });
+        document.getElementById('btnLimpiar').addEventListener('click', () => {
+            clearTimeout(searchTimer); clearTimeout(priceTimer);
+            estado = { q: '', category: '', brand: '', min: null, max: null, orden: 'default', reco: '', page: 1 };
+            searchInput.value = ''; clearSearchBtn.hidden = true;
+            catSel.value = ''; brandSel.value = ''; minInp.value = ''; maxInp.value = '';
+            leerRangoPrecio(); sincronizarMenus(); cerrarMenus(); renderProductos();
+        });
+        sincronizarMenus();
+
+        //CARRITO
+        const CART_KEY = 'casatek_carrito';
+        function getCarrito() { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
+        function saveCarrito(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+        function actualizarBadge() {
+            const total = getCarrito().reduce((acc, i) => acc + i.cantidad, 0);
+            document.getElementById('cartBadge').textContent = total;
+        }
+        function mostrarToast(nombre) {
+            const t = document.getElementById('cartToast');
+            document.getElementById('cartToastMsg').textContent = '"' + nombre + '" agregado al carrito';
+            document.getElementById('cartToastIcon').className = 'fa-solid fa-circle-check text-[#22C55E]';
+            t.style.background = ''; t.classList.add('show');
+            clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+        function mostrarToastError(msg) {
+            const t = document.getElementById('cartToast');
+            document.getElementById('cartToastMsg').textContent = msg;
+            document.getElementById('cartToastIcon').className = 'fa-solid fa-circle-xmark text-red-400';
+            t.style.background = '#7f1d1d'; t.classList.add('show');
+            clearTimeout(t._timer); t._timer = setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 2400);
+        }
+        async function agregarAlCarrito(p) {
+            if (p.stock <= 0) { mostrarToastError('Este producto no tiene stock disponible'); return; }
+
+            const token = localStorage.getItem('token');
+            // Verificamos si el usuario inició sesión
+            if (!token) {
+                mostrarToastError('Debes iniciar sesión para agregar al carrito');
+                setTimeout(() => window.location.href = 'iniciarsesion.html', 1500);
+                return;
+            }
+
+            const carrito = getCarrito();
+            const existe = carrito.find(i => i.id === p.id);
+            const yaEnCar = existe ? existe.cantidad : 0;
+
+            if (yaEnCar >= p.stock) { mostrarToastError('Ya tienes el máximo disponible (' + p.stock + ' unid.)'); return; }
+
+            try {
+                // 1. Enviamos el producto a la API
+                const res = await fetch('http://localhost:8000/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ product_id: p.id, quantity: 1 })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                // Si el backend lo rechaza (ej. error de stock), detenemos el proceso
+                if (!res.ok) {
+                    mostrarToastError(data.message || 'Error al guardar en el servidor');
+                    return;
+                }
+
+                // 2. Si el servidor respondió OK, actualizamos la vista localmente
+                if (existe) existe.cantidad++;
+                else carrito.push({ id: p.id, nombre: p.nombre, marca: p.marca, precio: p.precio, descripcion: p.descripcion, img: p.img, cantidad: 1 });
+
+                saveCarrito(carrito);
+                actualizarBadge();
+                mostrarToast(p.nombre);
+
+            } catch (error) {
+                console.error(error);
+                mostrarToastError('Error de conexión con el servidor');
+            }
+        }
+        document.getElementById('cartViewBtn').addEventListener('click', () => { window.location.href = 'carrito.html'; });
+
+
+        let productoModal = null;
+        function setMainImg(src) {
+            const img = document.getElementById('modalImgMain');
+            img.style.opacity = '0';
+            setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 150);
+            document.querySelectorAll('.modal-thumb').forEach(t => t.classList.toggle('active', t.dataset.src === src));
+        }
+        function abrirModal(p) {
+            productoModal = p;
+            setMainImg(p.img);
+
+            const thumbs = document.getElementById('modalThumbs');
+            thumbs.innerHTML = '';
+            if (p.imgs && p.imgs.length > 1) {
+                p.imgs.forEach(src => {
+                    const t = document.createElement('img');
+                    t.src = src; t.dataset.src = src;
+                    t.className = 'modal-thumb' + (src === p.img ? ' active' : '');
+                    t.onclick = () => setMainImg(src);
+                    thumbs.appendChild(t);
+                });
+            }
+
+            document.getElementById('modalMarca').innerHTML = `<i class="fa-solid fa-tag text-[9px]"></i> ${escapeHtml(p.marca)}`;
+            document.getElementById('modalCateg').innerHTML = `<i class="fa-solid fa-folder text-[9px]"></i> ${escapeHtml(p.categoria)}`;
+            document.getElementById('modalNombre').textContent = p.nombre;
+            document.getElementById('modalPrecio').textContent = p.precio.toFixed(2) + ' Bs.';
+            document.getElementById('modalDesc').textContent = p.descripcion || 'Sin descripción.';
+            document.getElementById('modalSku').textContent = p.sku || '—';
+
+            const g = p.garantia; let garantiaText = 'Sin garantía';
+            if (g > 0) { if (g % 365 === 0) garantiaText = (g / 365) + ' año' + (g / 365 > 1 ? 's' : ''); else if (g % 30 === 0) garantiaText = (g / 30) + ' mes' + (g / 30 > 1 ? 'es' : ''); else garantiaText = g + ' días'; }
+            document.getElementById('modalGarantia').textContent = garantiaText;
+
+            const s = p.stock;
+            const badge = document.getElementById('modalStockBadge');
+            const pill = document.getElementById('modalStockPill');
+            const sText = document.getElementById('modalStockText');
+            if (s <= 0) { badge.textContent = 'Sin stock'; badge.className = 'absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-none'; pill.className = 'info-pill stock-none'; sText.textContent = 'Sin stock'; }
+            else if (s <= 5) { badge.textContent = 'Últimas ' + s + ' unidades'; badge.className = 'absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-low'; pill.className = 'info-pill stock-low'; sText.textContent = s + ' en stock'; }
+            else { badge.textContent = s + ' en stock'; badge.className = 'absolute bottom-3 right-3 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider stock-ok'; pill.className = 'info-pill stock-ok'; sText.textContent = s + ' disponibles'; }
+
+            document.getElementById('modalWaBtn').href = 'https://wa.me/59176216837?text=Hola,%20me%20interesa%20el%20producto:%20' + encodeURIComponent(p.nombre);
+
+            const btn = document.getElementById('modalCartBtn');
+            if (s <= 0) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-ban"></i> Sin stock'; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+            else { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Agregar al carrito'; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+
+            document.getElementById('productModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarModal(event) {
+            if (event === null || event.target === document.getElementById('productModal')) {
+                document.getElementById('productModal').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(null); });
+        document.getElementById('modalCartBtn').addEventListener('click', () => {
+            if (!productoModal) return;
+            agregarAlCarrito(productoModal);
+            if (productoModal.stock > 0) cerrarModal(null);
+        });
+
+        //TEMA OSCURO / SIDEBAR / INICIO
+        document.addEventListener('DOMContentLoaded', function () {
+            const openSidebarBtn = document.getElementById('btn-open-sidebar');
+            const openMenuMobileBtn = document.getElementById('btn-open-menu-mobile');
+            const closeBtn = document.getElementById('btn-close-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const panel = document.getElementById('sidebar-panel');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+            const themeIconMobile = document.getElementById('theme-icon-mobile');
+
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun');
+                if (themeIconMobile) themeIconMobile.classList.replace('fa-moon', 'fa-sun');
+            }
+            function toggleTheme() {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                if (themeIcon) themeIcon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+                if (themeIconMobile) themeIconMobile.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+            }
+            themeToggle.addEventListener('click', toggleTheme);
+            if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+
+            function openSidebar() {
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.add('opacity-100'); panel.classList.remove('translate-x-full'); }, 20);
+            }
+            function closeSidebarFn() {
+                overlay.classList.remove('opacity-100');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+            if (openMenuMobileBtn) openMenuMobileBtn.addEventListener('click', openSidebar);
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebarFn);
+            if (overlay) overlay.addEventListener('click', closeSidebarFn);
+
+            actualizarBadge();
+            cargarProductos();   // desde la API
+        });
+    </script>
+    <script>
+        if (!window.closeSidebarFn) {
+            window.closeSidebarFn = function () {
+                const overlay = document.getElementById('sidebar-overlay');
+                const panel = document.getElementById('sidebar-panel');
+                overlay.classList.remove('opacity-100');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            };
+        }
+        function inicializarNavAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const rank = JSON.parse(localStorage.getItem('rank') || 'null');
+
+            if (token && user) {
+                //Desktop
+                document.getElementById('btn-login-desktop').classList.add('hidden');
+                document.getElementById('btn-perfil-desktop').classList.remove('hidden');
+
+                const inicial = (user.name || 'U')[0].toUpperCase();
+                document.getElementById('avatar-inicial').textContent = inicial;
+                document.getElementById('nav-username').textContent = user.name?.split(' ')[0] ?? 'Usuario';
+                document.getElementById('dd-nombre').textContent = user.name ?? '-';
+                document.getElementById('dd-email').textContent = user.email ?? '-';
+                document.getElementById('dd-rango').textContent = rank?.name ? '🏅 ' + rank.name : '';
+
+                //Mobile
+                document.getElementById('mobile-login').classList.add('hidden');
+                document.getElementById('mobile-perfil').classList.remove('hidden');
+                document.getElementById('mobile-avatar').textContent = inicial;
+                document.getElementById('mobile-nombre').textContent = user.name ?? '-';
+                document.getElementById('mobile-email').textContent = user.email ?? '-';
+            }
+        }
+
+
+        function abrirModalPerfil() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const rank = JSON.parse(localStorage.getItem('rank') || 'null');
+            if (!user) return;
+
+            const inicial = (user.name || 'U')[0].toUpperCase();
+            document.getElementById('perfil-avatar-grande').textContent = inicial;
+            document.getElementById('perfil-nombre-header').textContent = user.name ?? '-';
+            document.getElementById('perfil-email-header').textContent = user.email ?? '-';
+            document.getElementById('perfil-rango-header').textContent = rank?.name ? '🏅 ' + rank.name : '';
+
+            document.getElementById('perfil-input-nombre').value = user.name ?? '';
+            document.getElementById('perfil-input-email').value = user.email ?? '';
+            document.getElementById('perfil-input-phone').value = user.phone ?? '';
+            document.getElementById('perfil-input-whatsapp').value = user.whatsapp ?? '';
+            document.getElementById('perfil-input-password').value = '';
+            document.getElementById('perfil-input-password-confirm').value = '';
+
+            document.getElementById('perfil-error').classList.add('hidden');
+            document.getElementById('perfil-exito').classList.add('hidden');
+
+            const modal = document.getElementById('modalPerfil');
+            const box = document.getElementById('modalPerfilBox');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        function cerrarModalPerfil() {
+            const modal = document.getElementById('modalPerfil');
+            const box = document.getElementById('modalPerfilBox');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+        }
+
+        //Guardar perfil
+        async function guardarPerfil() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const btn = document.getElementById('btn-guardar-perfil');
+            const errorDiv = document.getElementById('perfil-error');
+            const exitoDiv = document.getElementById('perfil-exito');
+            const password = document.getElementById('perfil-input-password').value;
+            const passConf = document.getElementById('perfil-input-password-confirm').value;
+
+            errorDiv.classList.add('hidden');
+            exitoDiv.classList.add('hidden');
+
+            if (password && password !== passConf) {
+                errorDiv.textContent = 'Las contraseñas no coinciden.';
                 errorDiv.classList.remove('hidden');
                 return;
             }
-            localStorage.setItem('user', JSON.stringify(data.user));
-            inicializarNavAuth();
 
-            exitoDiv.classList.remove('hidden');
-            setTimeout(cerrarModalPerfil, 1500);
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
 
-        } catch(e) {
-            errorDiv.textContent = 'Error de conexión.';
-            errorDiv.classList.remove('hidden');
-        } finally {
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';
-            btn.disabled  = false;
-        }
-    }
+            const body = {
+                name: document.getElementById('perfil-input-nombre').value.trim(),
+                email: document.getElementById('perfil-input-email').value.trim(),
+                phone: document.getElementById('perfil-input-phone').value.trim() || null,
+                whatsapp: document.getElementById('perfil-input-whatsapp').value.trim() || null,
+            };
+            if (password) {
+                body.password = password;
+                body.password_confirmation = passConf;
+            }
 
-    //Cerrar sesión
-    async function cerrarSesion() {
-        const token = localStorage.getItem('token');
-        if (token) {
             try {
-                await fetch('/api/logout', {
-                    method:  'POST',
-                    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
+                const res = await fetch('/api/me/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    body: JSON.stringify(body),
                 });
-            } catch(e) {}
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const msgs = data.errors
+                        ? Object.values(data.errors).flat().join(' ')
+                        : (data.message || 'Error al actualizar.');
+                    errorDiv.textContent = msgs;
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                localStorage.setItem('user', JSON.stringify(data.user));
+                inicializarNavAuth();
+
+                exitoDiv.classList.remove('hidden');
+                setTimeout(cerrarModalPerfil, 1500);
+
+            } catch (e) {
+                errorDiv.textContent = 'Error de conexión.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';
+                btn.disabled = false;
+            }
         }
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('roles');
-        localStorage.removeItem('rank');
-        localStorage.removeItem('casatek_carrito');
-        window.location.href = 'index.html';
-    }
 
-    //Cerrar modal al click fuera
-    document.getElementById('modalPerfil').addEventListener('click', function(e) {
-        if (e.target === this) cerrarModalPerfil();
-    });
-document.addEventListener('DOMContentLoaded', inicializarNavAuth);
-</script>
+        //Cerrar sesión
+        async function cerrarSesion() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
+                    });
+                } catch (e) { }
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('roles');
+            localStorage.removeItem('rank');
+            localStorage.removeItem('casatek_carrito');
+            window.location.href = 'index.html';
+        }
 
-<script>
-// HU-10 / perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
-window.abrirModalPerfil = function () { location.href = 'perfil.html'; };
-(function () {
-    let roles = [];
-    try { roles = JSON.parse(localStorage.getItem('roles') || '[]'); } catch (e) {}
-    if (!roles.some(r => r.name === 'admin')) return;
-    const html = '<a href="/dashboard_admin.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-[#22C55E] hover:bg-green-50 dark:hover:bg-gray-700 transition-colors"><i class="fa-solid fa-user-shield w-4"></i> Cambiar a administrador</a>';
-    const dd = document.querySelector('#btn-perfil-desktop .absolute');
-    if (dd) dd.insertAdjacentHTML('beforeend', html);
-    const mob = document.getElementById('mobile-perfil');
-    if (mob) mob.insertAdjacentHTML('beforeend', '<a href="/dashboard_admin.html" class="block text-lg font-bold text-[#22C55E]">Cambiar a administrador</a>');
-})();
-</script>
+        //Cerrar modal al click fuera
+        document.getElementById('modalPerfil').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalPerfil();
+        });
+        document.addEventListener('DOMContentLoaded', inicializarNavAuth);
+    </script>
+
+    <script>
+        // Interacción del perfil y acceso administrativo
+        window.abrirModalPerfil = function () { location.href = 'perfil.html'; };
+        (function () {
+            let roles = [];
+            try { roles = JSON.parse(localStorage.getItem('roles') || '[]'); } catch (e) { }
+            if (!roles.some(r => r.name === 'admin')) return;
+            const html = '<a href="/dashboard_admin.html" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-[#22C55E] hover:bg-green-50 dark:hover:bg-gray-700 transition-colors"><i class="fa-solid fa-user-shield w-4"></i> Cambiar a administrador</a>';
+            const dd = document.querySelector('#btn-perfil-desktop .absolute');
+            if (dd) dd.insertAdjacentHTML('beforeend', html);
+            const mob = document.getElementById('mobile-perfil');
+            if (mob) mob.insertAdjacentHTML('beforeend', '<a href="/dashboard_admin.html" class="block text-lg font-bold text-[#22C55E]">Cambiar a administrador</a>');
+        })();
+    </script>
 </body>
+
 </html>

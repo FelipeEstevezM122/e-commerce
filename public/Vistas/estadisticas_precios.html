@@ -139,6 +139,209 @@
 
     html body.bg-white{background:var(--bg)!important} .dark body{background:var(--bg)!important}
     main.pg{padding-top:0}</style>
+<style id="casatek-stats-uiux">
+/* CASATEK | Ajustes exclusivos de presentación. No cambian cálculos ni eventos. */
+:root {
+  --bg:#f4f7f5; --card:#ffffff; --card2:#f7faf8; --input:#ffffff;
+  --border:#dde8e1; --border-h:#a4dbc0; --text:#182b22; --muted:#647568;
+  --green:#22C55E; --up:#15803d; --down:#d63c4a; --notice:#8f610c;
+  --live-bg:linear-gradient(125deg,#edfaf1 0%,#ffffff 68%);
+  --shadow:0 7px 30px rgba(18,65,38,.045); --shadow-lg:0 16px 44px rgba(18,65,38,.09);
+}
+.dark {
+  --bg:#101924; --card:#1b2936; --card2:#14222e; --input:#182633;
+  --border:#31424d; --border-h:#337353; --text:#edf8f0; --muted:#a5b6b3;
+  --up:#4ade80; --down:#fb7185; --notice:#fbbf24;
+  --live-bg:linear-gradient(125deg,#152c28 0%,#1b2936 75%);
+  --shadow:0 9px 25px rgba(0,0,0,.13); --shadow-lg:0 18px 42px rgba(0,0,0,.24);
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg)!important; color:var(--text); }
+.pg { padding:0!important; }
+.pg,.pg *, .pg *::before, .pg *::after { box-sizing:border-box; }
+.pg .wrap { width:min(100%,1440px); max-width:1440px; padding:clamp(16px,2.2vw,32px) clamp(16px,3.1vw,46px) 52px; gap:18px; }
+.pg .page-hero {
+  position:relative; overflow:hidden; isolation:isolate;
+  display:flex; align-items:center; justify-content:space-between; gap:22px;
+  padding:clamp(22px,3vw,34px); border:1px solid var(--border); border-radius:23px;
+  background:linear-gradient(117deg,#fff 5%,#f0fbf4 75%,#e7f7ed 100%);
+  box-shadow:var(--shadow);
+}
+.dark .pg .page-hero { background:linear-gradient(118deg,#1b2936 7%,#1b342f 73%,#15432d 130%); }
+.pg .page-hero::after {
+  content:''; position:absolute;z-index:-1; width:280px;height:280px;right:-96px;top:-169px;
+  background:radial-gradient(circle,rgba(34,197,94,.17),transparent 65%);pointer-events:none;
+}
+.pg .hero-copy { min-width:0;flex:1;max-width:780px; }
+.pg .eyebrow { display:inline-flex;gap:7px;align-items:center;font-size:10px;font-weight:850;letter-spacing:.11em;text-transform:uppercase;color:#147c40;margin-bottom:9px; }
+.dark .pg .eyebrow{ color:#66e297; }
+.pg .eyebrow .eyebrow-dot { width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(34,197,94,.12); }
+.pg .section-title { font-size:clamp(25px,3vw,39px);letter-spacing:-.04em;line-height:1.12;max-width:780px; }
+.pg .section-title .g { color:#149447; } .dark .pg .section-title .g { color:#4ade80; }
+.pg .sub { max-width:730px;font-size:13px;line-height:1.7;margin-top:9px; }
+.pg .hero-actions { display:flex;flex-direction:column;gap:9px;align-items:flex-end; flex-shrink:0; }
+.pg .hero-period-label {font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--muted);}
+.pg .seg {display:flex;flex-wrap:nowrap;gap:3px;background:var(--card);border-color:var(--border);border-radius:13px;padding:4px;box-shadow:var(--shadow);}
+.pg .seg button { min-height:38px;font-size:12px;font-weight:800;border-radius:9px;padding:9px 14px;transition:background .18s,transform .18s,color .18s;white-space:nowrap; }
+.pg .seg button.active {background:#19bc5b;color:#082515;box-shadow:0 5px 14px rgba(34,197,94,.23);}
+.pg .seg button:hover:not(.active) {background:rgba(34,197,94,.1);color:var(--text);}
+.pg .page-jumps {display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 3px;}
+.pg .page-jumps a {display:inline-flex;align-items:center;gap:8px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:999px;padding:9px 13px; font-size:11px;font-weight:750;text-decoration:none;transition:all .2s ease;}
+.pg .page-jumps a i { color:#19ad58;font-size:12px; }
+.pg .page-jumps a:hover,.pg .page-jumps a:focus-visible {color:var(--text);border-color:var(--border-h);background:var(--live-bg);transform:translateY(-2px);outline:none;}
+.pg .card {border-color:var(--border);border-radius:20px;padding:clamp(17px,2vw,24px);background:var(--card);box-shadow:var(--shadow);}
+.pg section.card,.pg .kpis .card {transition:box-shadow .24s,border-color .24s,transform .24s;}
+@media (hover:hover) {.pg section.card:hover {border-color:var(--border-h);box-shadow:var(--shadow-lg);}}
+.pg .card-head {margin-bottom:17px;align-items:center;gap:16px;}
+.pg .section-label {font-size:10px;letter-spacing:.13em;margin-bottom:8px;color:#168d46;}
+.dark .pg .section-label {color:#4ade80;}
+.pg .card-title {font-size:clamp(16px,1.65vw,21px);letter-spacing:-.022em;line-height:1.3;margin-bottom:6px;}
+.pg .muted-s {font-size:12px;line-height:1.65;color:var(--muted);}
+.pg .panel-kicker {display:inline-flex;align-items:center;gap:7px;color:#168d46;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px;}
+.dark .pg .panel-kicker {color:#60db91;}
+.pg .panel-heading {display:flex;align-items:center;gap:10px;}
+.pg .icon-shell {display:inline-flex;align-items:center;justify-content:center;flex:none;width:39px;height:39px;border-radius:12px;background:rgba(34,197,94,.12);color:#14984a;}
+.dark .pg .icon-shell{color:#6ce89d;background:rgba(34,197,94,.16);}
+.pg .section-side-note {font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:7px 11px;}
+.pg .card.feature-forecast {background:linear-gradient(116deg,var(--card) 0%,var(--card) 50%,rgba(34,197,94,.045) 100%);border-color:var(--border-h);box-shadow:var(--shadow-lg);position:relative;}
+.dark .pg .card.feature-forecast{background:linear-gradient(117deg,#1b2936 0%,#1b2936 52%,#19362d 100%);}
+.pg .feature-forecast::before {content:'';display:block;position:absolute;left:25px;right:25px;top:0;height:3px;background:linear-gradient(90deg,#22c55e,#86efac 65%,transparent);border-radius:0 0 8px 8px;}
+.pg .forecast-actions {display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.pg .forecast-actions label {font-size:11px;color:var(--muted);font-weight:800;}
+.pg .forecast-actions #productSel {min-width:230px;min-height:42px;border-radius:11px;background:var(--input);border-color:var(--border);font-size:12px;font-weight:700;padding:10px 13px;}
+.pg .forecast-actions #productSel:hover,.pg .forecast-actions #productSel:focus {border-color:#22c55e;}
+.pg .forecast-actions .forecast-status {white-space:nowrap;min-height:33px;}
+.pg .forecast-grid {margin:14px 0 9px;gap:12px;}
+.pg .forecast-summary {background:var(--card2);padding:13px 16px;border-radius:13px;}
+.pg .forecast-current-price {font-size:clamp(19px,2.2vw,25px);color:var(--text);}
+.pg .forecast-tile {padding:16px;background:var(--card2);border:1px solid var(--border);border-radius:15px;transition:border-color .2s,transform .2s;}
+@media (hover:hover) {.pg .forecast-tile:hover {border-color:var(--border-h);transform:translateY(-2px);}}
+.pg .forecast-tile-title {font-size:14px;margin-bottom:12px;}
+.pg .forecast-limit {padding:13px 12px;background:var(--card);border-radius:11px;}
+.pg .forecast-limit strong {font-size:clamp(18px,2vw,26px);letter-spacing:-.035em;}
+.pg .forecast-limit .limit-label {font-size:11px;}
+.pg .forecast-note {background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:10px 12px;margin-top:12px;color:var(--muted);}
+.pg .forecast-status {transition:all .2s;}
+.pg .live {background:var(--live-bg);border-color:var(--border-h);}
+.pg .live-head {margin-bottom:13px;}
+.pg .live-title {font-size:16px;font-weight:850;letter-spacing:-.016em;}
+.pg .live-dot {width:9px;height:9px;}
+.pg .live-grid {margin:0 0 11px;gap:12px;}
+.pg .rate {background:var(--card);border-color:var(--border);border-radius:15px;padding:17px;transition:border-color .2s,box-shadow .2s;}
+.pg .rate:hover {border-color:var(--border-h);box-shadow:0 5px 16px rgba(34,197,94,.07);}
+.pg .rate-lbl {font-size:10px;letter-spacing:.08em;margin-bottom:7px;}
+.pg .rate-val {font-size:clamp(23px,2.7vw,34px);letter-spacing:-.035em;line-height:1.23;}
+.pg .rate .muted-s {margin-top:7px;}
+.pg .conv-row {display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.pg .conv-row input {width:100px;max-width:130px;}
+.pg .conv-row select {min-width:120px;}
+.pg .conv .rate-val.sm {font-size:clamp(23px,2.2vw,30px);margin-top:9px;color:#168e48;}
+.dark .pg .conv .rate-val.sm {color:#4ade80;}
+.pg .live-foot {border-top:1px solid var(--border);padding-top:12px;}
+.pg .notice {border-radius:12px;min-height:45px;line-height:1.5;}
+.pg .kpis {margin:0;gap:12px;}
+.pg .kpi {min-height:137px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;position:relative;overflow:hidden;padding:17px 18px;}
+.pg .kpi::before {content:'';position:absolute;left:0;top:15px;bottom:15px;width:3px;border-radius:10px;background:#22c55e;opacity:.75;}
+.pg .kpi:nth-child(2)::before {background:#60a5fa;}
+.pg .kpi:nth-child(3)::before {background:#f59e0b;}
+.pg .kpi:nth-child(4)::before {background:#a78bfa;}
+.pg .kpi-lbl {gap:8px;line-height:1.4;font-size:11px;margin:0;}
+.pg .kpi-lbl i {font-size:13px;color:#169d51;}
+.pg .kpi:nth-child(2) .kpi-lbl i{color:#60a5fa;}
+.pg .kpi:nth-child(3) .kpi-lbl i{color:#e09a1f;}
+.pg .kpi:nth-child(4) .kpi-lbl i{color:#a78bfa;}
+.pg .kpi-val {font-size:clamp(23px,2.5vw,33px);line-height:1.2;letter-spacing:-.045em;overflow-wrap:anywhere;}
+.pg .kpi-context {color:var(--muted);font-size:10px;line-height:1.5;}
+.pg .data-heading {display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin:2px 0 -4px;}
+.pg .data-heading h2 {font-size:18px;font-weight:850;letter-spacing:-.03em;color:var(--text);}
+.pg .data-heading p {color:var(--muted);font-size:11px;line-height:1.5;}
+.pg .data-heading-rule {height:1px;flex:1;background:var(--border);min-width:40px;}
+.pg .chart-box {height:310px;border-radius:12px;}
+.pg .chart-box.short {height:236px;}
+.pg .chart-summary {margin-top:4px;}
+.pg .mini {margin-top:9px;gap:10px;padding-top:14px;}
+.pg .mini>div {background:var(--card2);border:1px solid var(--border);padding:13px 15px;border-radius:12px;}
+.pg .mini .val {font-size:20px;margin-top:5px;letter-spacing:-.025em;overflow-wrap:anywhere;}
+.pg .two {gap:12px;}
+.pg .rank {gap:6px;}
+.pg .rank li {background:var(--card2);border:1px solid transparent;transition:background .2s,border-color .2s;}
+.pg .rank li:hover {background:var(--card);border-color:var(--border-h);}
+.pg .rank .pos {background:rgba(34,197,94,.11);}
+.pg .rank .chip {max-width:100%;}
+.pg .table-wrap {overflow:auto;border:1px solid var(--border);border-radius:13px;background:var(--card);}
+.pg table {border-collapse:separate;border-spacing:0;min-width:560px;}
+.pg thead {background:var(--card2);}
+.pg th {padding:13px 14px;font-size:10px;}
+.pg td {padding:13px 14px;font-size:12px;}
+.pg tbody tr:hover {background:rgba(34,197,94,.045);}
+.pg tbody tr:last-child td {border-bottom:0;}
+.pg .recent-pagination {margin-top:13px;padding-top:13px;}
+.pg .recent-page-btn {border-radius:10px;min-width:38px;min-height:38px;transition:all .2s;}
+.pg .recent-page-btn:hover:not(:disabled) {transform:translateY(-2px);}
+.pg .recent-page-btn[aria-current="page"]{background:#22c55e;color:#0b2918;}
+.pg select,.pg input[type=number] {min-height:40px;border-radius:10px;border-color:var(--border);font-size:12px;transition:border-color .2s,box-shadow .2s;}
+.pg select:focus-visible,.pg input:focus-visible,.pg button:focus-visible,.pg a:focus-visible {outline:2px solid #22c55e;outline-offset:3px;}
+.pg .fade-up {animation-duration:.5s;}
+.pg [id^="chart"] {max-width:100%;}
+.pg section[id] {scroll-margin-top:120px;}
+.pg .section-foot {font-size:11px;color:var(--muted);line-height:1.65;margin-top:12px;}
+/* Controles existentes fuera del panel: solo acabado visual. */
+#chat-toggle {box-shadow:0 9px 26px rgba(34,197,94,.27);transition:transform .22s,box-shadow .22s;}
+#chat-toggle:hover {transform:translateY(-3px) scale(1.05);box-shadow:0 13px 30px rgba(34,197,94,.35);}
+header nav a,footer a {transition:color .2s,background-color .2s,transform .2s;}
+@media(max-width:1050px) {
+ .pg .page-hero {align-items:flex-start;}
+ .pg .hero-actions {align-items:flex-start;}
+ .pg .forecast-actions {justify-content:flex-start;}
+ .pg .forecast-actions #productSel {min-width:190px;}
+}
+@media(max-width:820px) {
+ .pg .page-hero {flex-direction:column;}
+ .pg .hero-actions {width:100%;}
+ .pg .hero-period-label {margin-bottom:0;}
+ .pg .kpis {grid-template-columns:repeat(2,minmax(0,1fr));}
+ .pg .live-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+ .pg .rate.conv{grid-column:1/-1;}
+ .pg .forecast-actions {width:100%;}
+ .pg .forecast-actions #productSel {flex:1;}
+ .pg .card-head {align-items:flex-start;}
+}
+@media(max-width:600px) {
+ .pg .wrap {gap:14px;padding:16px 13px 32px;}
+ .pg .page-hero {border-radius:18px;padding:19px 17px;gap:14px;}
+ .pg .section-title {font-size:clamp(24px,6vw,30px);}
+ .pg .page-jumps {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+ .pg .page-jumps a {justify-content:center;padding:10px 6px;font-size:11px;}
+ .pg .hero-actions,.pg .seg {width:100%;}
+ .pg .seg button {flex:1;min-width:0;padding:8px 4px;font-size:11px;}
+ .pg .card {padding:16px;border-radius:17px;}
+ .pg .card-head {margin-bottom:13px;}
+ .pg .forecast-actions {flex-wrap:wrap;justify-content:stretch;align-items:center;}
+ .pg .forecast-actions label {width:100%;}
+ .pg .forecast-actions #productSel {width:100%;min-width:0;}
+ .pg .forecast-actions .forecast-status {max-width:100%;}
+ .pg .forecast-grid {grid-template-columns:1fr;}
+ .pg .live-grid {grid-template-columns:1fr;gap:9px;}
+ .pg .rate.conv {grid-column:auto;}
+ .pg .kpis {grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+ .pg .kpi {min-height:128px;padding:14px 13px;}
+ .pg .kpi-val {font-size:clamp(21px,5vw,28px);}
+ .pg .chart-box {height:255px;}
+ .pg .chart-box.short {height:210px;}
+ .pg .mini {grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+ .pg .mini>div {padding:11px 9px;}
+ .pg .mini .val {font-size:16px;}
+ .pg .mini .muted-s {font-size:10px;}
+ .pg .data-heading {gap:7px;}
+}
+@media(max-width:380px) {
+ .pg .forecast-limits {grid-template-columns:1fr;}
+ .pg .kpis {grid-template-columns:1fr;}
+ .pg .mini {grid-template-columns:1fr;}
+ .pg .page-jumps a {font-size:10px;}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pg *,#chat-toggle{animation:none!important;transition:none!important;}}
+</style>
 </head>
 
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
@@ -153,9 +356,9 @@
             </span>
             <span class="flex items-center gap-6 text-white text-sm">
                 <span class="flex items-center gap-4">
-                    <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.facebook.com/camarasyalarmaslapaz" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.youtube.com/camarasyalarmaslapaz" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://wa.me/59176216837" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
                 </span>
                 <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
                     <span>esp</span>
@@ -297,8 +500,8 @@
                     <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
                     <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
                     <a href="productos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Productos</a>
-                    <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
-                    <a href="nosotros.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Nosotros</a>
+                    <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-[#22C55E] transition-colors">Estadísticas</a>
+                    <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
                     <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
                     <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
                 <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
@@ -368,9 +571,9 @@
                     <span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Siguenos</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.facebook.com/camarasyalarmaslapaz" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.youtube.com/camarasyalarmaslapaz" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://wa.me/59176216837" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-whatsapp"></i></a>
                 </div>
             </div>
         </div>
@@ -477,29 +680,47 @@
         </div>
     </div>
 
-<main class="pg"><div style="height:24px"></div><div class="wrap">
-  <div class="top-bar fade-up">
-    <div>
-      <p class="section-label"><i class="fa-solid fa-chart-line"></i> HU-10 · Análisis de precios</p>
-      <h1 class="section-title">Estadísticas de <span class="g">variación de precios</span></h1>
-      <p class="sub">Mira cómo cambian los precios de nuestros productos y entiende las tendencias antes de comprar.</p>
+<main class="pg" id="contenido-estadisticas">
+<div class="wrap">
+  <header class="page-hero fade-up">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Precios y tendencias</p>
+      <h1 class="section-title">Conoce cómo cambian los <span class="g">precios</span></h1>
+      <p class="sub">Revisa el historial, consulta el dólar y explora cuánto podría costar un producto. Todo en un solo lugar.</p>
     </div>
-    <div class="seg" role="group" aria-label="Período">
-      <button data-days="7">7 días</button><button data-days="30" class="active">30 días</button>
-      <button data-days="90">90 días</button><button data-days="365">1 año</button>
+    <div class="hero-actions">
+      <span class="hero-period-label">Ver estadísticas de los últimos</span>
+      <div class="seg" role="group" aria-label="Período de estadísticas">
+        <button type="button" data-days="7">7 días</button>
+        <button type="button" data-days="30" class="active">30 días</button>
+        <button type="button" data-days="90">90 días</button>
+        <button type="button" data-days="365">1 año</button>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- PREDICCIÓN: cifras estimadas, separadas del historial real del producto -->
-  <section class="card fade-up" aria-labelledby="forecastTitle">
+  <nav class="page-jumps fade-up" aria-label="Ir a las secciones de estadísticas">
+    <a href="#prediccion-producto"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Predicción</a>
+    <a href="#dolar-cotizaciones"><i class="fa-solid fa-dollar-sign" aria-hidden="true"></i> Dólar</a>
+    <a href="#historial-productos"><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Historial</a>
+    <a href="#ultimos-cambios"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Cambios recientes</a>
+  </nav>
+
+  <!-- Predicción: conserva exactamente los nodos que actualiza price-stats.js -->
+  <section class="card feature-forecast fade-up" id="prediccion-producto" aria-labelledby="forecastTitle">
     <div class="card-head">
       <div>
-        <p class="section-label"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Precios futuros</p>
-        <h2 class="card-title" id="forecastTitle"><i class="fa-solid fa-chart-line" style="color:var(--green)" aria-hidden="true"></i> ¿Cuánto podría costar este producto?</h2>
-        <p class="muted-s forecast-intro">Consulta su precio mínimo y máximo estimado según el dólar y su historial.</p>
+        <p class="panel-kicker"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Predicción de precios</p>
+        <div class="panel-heading">
+          <span class="icon-shell" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span>
+          <div>
+            <h2 class="card-title" id="forecastTitle">¿Cuánto podría costar?</h2>
+            <p class="muted-s forecast-intro">Elige un producto para ver su precio mínimo y máximo estimado a 7 y 30 días.</p>
+          </div>
+        </div>
       </div>
       <div class="forecast-actions">
-        <label for="productSel" class="muted-s">Producto</label>
+        <label for="productSel">Selecciona un producto</label>
         <select id="productSel" aria-label="Seleccionar producto para predicción"><option value="">Cargando productos…</option></select>
         <span id="forecastStatus" class="forecast-status" role="status">Cargando…</span>
       </div>
@@ -510,20 +731,18 @@
     <p id="forecastNote" class="forecast-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>Estimación orientativa; el precio puede variar.</span></p>
   </section>
 
-
-  <!-- ============ DÓLAR EN TIEMPO REAL ============
-       CONEXIÓN API: los datos vienen de GET /api/exchange-rate (backend -> DolarApi Bolivia). -->
-  <section class="card live fade-up" aria-label="Precio del dólar en Bolivia">
+  <!-- Dólar: valores obtenidos de los mismos endpoints originales -->
+  <section class="card live fade-up" id="dolar-cotizaciones" aria-label="Precio del dólar en Bolivia">
     <div class="live-head">
-      <div class="live-title"><span id="liveDot" class="live-dot"></span> Dólar en Bolivia · <b>en vivo</b></div>
+      <div class="live-title"><span id="liveDot" class="live-dot"></span><i class="fa-solid fa-coins" style="color:var(--green)" aria-hidden="true"></i> Dólar en Bolivia</div>
       <span id="usdAge" class="muted-s">Cargando…</span>
     </div>
     <div class="live-grid">
-      <div class="rate"><p class="rate-lbl">Dólar paralelo (venta)</p><p class="rate-val">Bs <span id="usdParallel">—</span></p><p class="muted-s">Compra: Bs <span id="usdParallelBuy">—</span></p></div>
-      <div class="rate"><p class="rate-lbl">Dólar oficial BCB (venta)</p><p class="rate-val">Bs <span id="usdOfficial">—</span></p><p class="muted-s">Compra: Bs <span id="usdOfficialBuy">—</span></p></div>
+      <div class="rate"><p class="rate-lbl">Dólar paralelo · venta</p><p class="rate-val">Bs <span id="usdParallel">—</span></p><p class="muted-s">Compra: Bs <span id="usdParallelBuy">—</span></p></div>
+      <div class="rate"><p class="rate-lbl">Dólar BCB · venta</p><p class="rate-val">Bs <span id="usdOfficial">—</span></p><p class="muted-s">Compra: Bs <span id="usdOfficialBuy">—</span></p></div>
       <div class="rate conv">
-        <p class="rate-lbl">Convertidor rápido</p>
-        <div class="conv-row"><input id="convAmount" type="number" min="0" value="100" aria-label="Monto"><select id="convDir" aria-label="Dirección"><option value="usd2bob">USD → Bs</option><option value="bob2usd">Bs → USD</option></select></div>
+        <p class="rate-lbl">Calcula el cambio</p>
+        <div class="conv-row"><input id="convAmount" type="number" min="0" value="100" aria-label="Monto para convertir"><select id="convDir" aria-label="Dirección de conversión"><option value="usd2bob">USD → Bs</option><option value="bob2usd">Bs → USD</option></select></div>
         <p class="rate-val sm" id="convResult">—</p>
       </div>
     </div>
@@ -534,42 +753,62 @@
   <div id="errBox" class="notice err" style="display:none"><i class="fa-solid fa-circle-exclamation"></i><span>No se pudieron cargar las estadísticas. Intenta de nuevo en unos segundos.</span></div>
   <div id="loading" class="notice" style="display:none"><i class="fa-solid fa-spinner fa-spin"></i><span>Cargando estadísticas…</span></div>
 
+  <div class="data-heading" aria-label="Resumen de cambios de precios">
+    <div><h2>Resumen del mercado</h2><p>Datos del período que elegiste arriba.</p></div>
+    <span class="data-heading-rule" aria-hidden="true"></span>
+  </div>
   <div class="kpis fade-up">
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-rotate"></i> Cambios de precio</p><p class="kpi-val" id="kChanges">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-box"></i> Productos afectados</p><p class="kpi-val" id="kProducts">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-percent"></i> Variación promedio</p><p class="kpi-val" id="kAvg">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-arrow-trend-up up"></i> Subidas / <i class="fa-solid fa-arrow-trend-down down"></i> Bajadas</p><p class="kpi-val"><span class="up" id="kRises">—</span> <span class="slash">/</span> <span class="down" id="kDrops">—</span></p></div>
+    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Cambios de precio</p><p class="kpi-val" id="kChanges">—</p><p class="kpi-context">Modificaciones registradas</p></div>
+    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-box" aria-hidden="true"></i> Productos afectados</p><p class="kpi-val" id="kProducts">—</p><p class="kpi-context">Productos con cambios</p></div>
+    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-percent" aria-hidden="true"></i> Variación promedio</p><p class="kpi-val" id="kAvg">—</p><p class="kpi-context" title="Promedio de los porcentajes de cambios de precio registrados; puede verse afectado por modificaciones muy grandes.">Promedio histórico · no es predicción</p></div>
+    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i> Subidas / Bajadas</p><p class="kpi-val"><span class="up" id="kRises">—</span> <span class="slash">/</span> <span class="down" id="kDrops">—</span></p><p class="kpi-context">Cantidad de cambios de cada tipo</p></div>
   </div>
 
-  <!-- ============ GRÁFICA DE PICOS POR PRODUCTO ============
-       CONEXIÓN BD: GET /api/price-stats/products/<built-in function id> lee product_price_history. -->
-  <section class="card fade-up">
+  <div class="data-heading" aria-label="Análisis del historial">
+    <div><h2>Historial de precios</h2><p>Estos son precios registrados, no predicciones.</p></div>
+    <span class="data-heading-rule" aria-hidden="true"></span>
+  </div>
+  <section class="card fade-up" id="historial-productos" aria-labelledby="timeline-title">
     <div class="card-head">
-      <div><h2 class="card-title">Evolución del precio de un producto</h2><p class="muted-s">Cada pico es un cambio de precio. <span class="up">●</span> máximo · <span class="down">●</span> mínimo</p></div>
-      <span class="muted-s">El mismo producto seleccionado en la predicción</span>
+      <div>
+        <h2 class="card-title" id="timeline-title"><i class="fa-solid fa-chart-line" style="color:var(--green)" aria-hidden="true"></i> Evolución del producto</h2>
+        <p class="muted-s">Observa cuándo cambió su precio y cuál fue su valor más alto y más bajo.</p>
+      </div>
+      <span class="section-side-note"><i class="fa-solid fa-link" aria-hidden="true"></i> Producto seleccionado arriba</span>
     </div>
-<div class="chart-box"><canvas id="chartTimeline"></canvas></div>
-    <div class="mini">
-      <div><p class="muted-s">Precio máximo</p><p class="val up" id="tlMax">—</p></div>
-      <div><p class="muted-s">Precio mínimo</p><p class="val down" id="tlMin">—</p></div>
-      <div><p class="muted-s">Variación del período</p><p class="val" id="tlVar">—</p></div>
+    <div class="chart-box"><canvas id="chartTimeline" aria-label="Gráfica histórica de precio del producto" role="img"></canvas></div>
+    <div class="mini chart-summary">
+      <div><p class="muted-s">Máximo registrado</p><p class="val up" id="tlMax">—</p></div>
+      <div><p class="muted-s">Mínimo registrado</p><p class="val down" id="tlMin">—</p></div>
+      <div><p class="muted-s">Cambio del período</p><p class="val" id="tlVar">—</p></div>
     </div>
     <p id="tlNote" class="muted-s note-sim" style="display:none"><i class="fa-solid fa-flask"></i> Línea de ejemplo: este producto aún no tiene historial.</p>
   </section>
 
-
-  <section class="card fade-up">
-    <div class="card-head"><div><h2 class="card-title">Picos del mercado por día</h2><p class="muted-s">Variación porcentual promedio de todos los precios que cambiaron cada día.</p></div></div>
-    <div class="chart-box short"><canvas id="chartDaily"></canvas></div>
+  <section class="card fade-up" aria-labelledby="daily-title">
+    <div class="card-head">
+      <div><h2 class="card-title" id="daily-title"><i class="fa-solid fa-chart-column" style="color:var(--green)" aria-hidden="true"></i> Movimientos por día</h2><p class="muted-s">Variación porcentual promedio de los productos que cambiaron de precio cada día.</p></div>
+      <span class="section-side-note">Todos los productos</span>
+    </div>
+    <div class="chart-box short"><canvas id="chartDaily" aria-label="Gráfica de variación diaria" role="img"></canvas></div>
   </section>
 
   <div class="two fade-up">
-    <section class="card"><h2 class="card-title"><i class="fa-solid fa-arrow-trend-up up"></i> Mayores subidas</h2><ol class="rank" id="listRises"></ol></section>
-    <section class="card"><h2 class="card-title"><i class="fa-solid fa-arrow-trend-down down"></i> Mayores bajadas</h2><ol class="rank" id="listDrops"></ol></section>
+    <section class="card" aria-labelledby="rises-title">
+      <h2 class="card-title" id="rises-title"><i class="fa-solid fa-arrow-trend-up up" aria-hidden="true"></i> Mayores subidas</h2>
+      <ol class="rank" id="listRises"></ol>
+    </section>
+    <section class="card" aria-labelledby="drops-title">
+      <h2 class="card-title" id="drops-title"><i class="fa-solid fa-arrow-trend-down down" aria-hidden="true"></i> Mayores bajadas</h2>
+      <ol class="rank" id="listDrops"></ol>
+    </section>
   </div>
 
-  <section class="card fade-up">
-    <h2 class="card-title">Últimos cambios de precio</h2>
+  <section class="card fade-up" id="ultimos-cambios" aria-labelledby="recent-title">
+    <div class="card-head">
+      <div><h2 class="card-title" id="recent-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--green)" aria-hidden="true"></i> Últimos cambios de precio</h2><p class="muted-s">Consulta los precios antes y después de cada modificación.</p></div>
+      <span class="section-side-note"><i class="fa-solid fa-table-list" aria-hidden="true"></i> Registro histórico</span>
+    </div>
     <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Antes</th><th>Ahora</th><th>Variación</th></tr></thead><tbody id="recentBody"></tbody></table></div>
     <nav id="recentPagination" class="recent-pagination" aria-label="Paginación de últimos cambios de precio" hidden>
       <span id="recentPageInfo" class="recent-page-info" role="status" aria-live="polite"></span>
