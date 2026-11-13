@@ -10,6 +10,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PriceStatsController;
+
+use App\Http\Controllers\ExchangeHistoryController;
 //para chatbot
 use App\Http\Controllers\ChatbotController;
 
@@ -26,6 +28,7 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 // HU-10: dolar en vivo y estadisticas de precios (lectura publica)
 Route::get('/exchange-rate',                  [PriceStatsController::class, 'exchangeRate']);
 Route::get('/price-stats',                    [PriceStatsController::class, 'overview']);
+Route::get('/price-stats/exchange-history', [ExchangeHistoryController::class, 'index']);
 Route::get('/price-stats/products/{product}', [PriceStatsController::class, 'productTimeline']);
 
 // Rangos (solo lectura publica)
