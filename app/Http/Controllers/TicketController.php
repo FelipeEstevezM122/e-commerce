@@ -73,14 +73,26 @@ class TicketController extends Controller
     }
 
     /**
-     * Vista admin de tickets — usa SP sp_admin_filtrar_tickets.
-     * La lógica completa vive en AdminController@tickets para mantener
-     * consistencia con el resto del panel; este método lo delega.
+     * Listado administrativo de comprobantes pagados.
+     * Mantiene la respuesta paginada { datos: { data, current_page, last_page } }
+     * que ya consume tickets_admin.html. No depende de AdminController::tickets().
      */
     public function adminIndex(Request $request)
     {
-        // Delegar al método del AdminController que usa el SP
-        return app(AdminController::class)->tickets($request);
+        // La ruta también exige auth:sanctum y middleware admin en routes/api.php.
+        $this->authorize('viewAll', Ticket::class);
+
+        $tickets = Ticket::query()
+            ->whereHas('order', fn ($q) => $q->where('status', 'paid'))
+            ->with(['order.user', 'order.items.product.brand', 'order.billingInfo'])
+            ->orderByDesc('issued_at')
+            ->orderByDesc('id')
+            ->paginate(15);
+
+        return response()->json([
+            'datos' => $tickets,
+            'message' => 'Tickets de los clientes',
+        ], Response::HTTP_OK);
     }
 
     /**
