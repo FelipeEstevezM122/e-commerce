@@ -11,7 +11,7 @@ const PriceStats = (function () {
     const pctTxt = (p) => (p > 0 ? '+' : '') + Number(p).toFixed(2) + '%';
     const pctCls = (p) => (p > 0 ? 'up' : p < 0 ? 'down' : 'flat');
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    let cfg, charts = {}, lastRate = null, rateAt = null, days = 30, usdRate = 0, recentPage = 1, recentRequestId = 0, forecastRequestId = 0, timelineRequestId = 0, exchangeHistory = null, exchangeHistoryPromise = null, currentTimeline = null;
+    let cfg, charts = {}, lastRate = null, rateAt = null, days = 30, usdRate = 0, recentPage = 1, recentRequestId = 0, forecastRequestId = 0, timelineRequestId = 0, currentTimeline = null;
 
     function headers() {
         const h = { Accept: 'application/json' };
@@ -111,113 +111,7 @@ const PriceStats = (function () {
        No representa una probabilidad calibrada ni un máximo absoluto garantizado.
     */
     const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-    const med = (a) => { const v = [...a].sort((x,y)=>x-y); return v.length ? (v.length % 2 ? v[(v.length-1)/2] : (v[v.length/2-1]+v[v.length/2])/2) : 0; };
-    const mad = (a) => med(a.map((x) => Math.abs(x-med(a)))) * 1.4826;
-    const quantile = (values, p) => {
-        const v = values.filter(Number.isFinite).sort((a,b) => a-b);
-        if (!v.length) return null;
-        const pos = (v.length - 1) * p, i = Math.floor(pos), r = pos - i;
-        return v[i] + (v[Math.min(i + 1, v.length - 1)] - v[i]) * r;
-    };
-    const rateDays = (points) => {
-        const byDate = new Map();
-        for (const p of points) {
-            const sell = Number(p.sell), date = String(p.date ?? '').slice(0, 10);
-            if (sell > 0 && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-                const at = Date.parse(date + 'T12:00:00Z');
-                if (Number.isFinite(at)) byDate.set(date, {at, sell});
-            }
-        }
-        return [...byDate.values()].sort((a,b) => a.at-b.at);
-    };
-    const findRate = (rates, at) => { let chosen=null; for (const r of rates) { if (r.at <= at) chosen=r.sell; else break; } return chosen; };
-
-    // Variaciones históricas para el mismo horizonte, no volatilidad diaria extrapolada.
-    // Se tolera hasta 1 día de diferencia si el proveedor tiene alguna fecha ausente.
-    const rollingRateReturns = (rates, horizon) => {
-        const result = [], dayMs = 86400000;
-        for (let i = 1; i < rates.length; i++) {
-            const target = rates[i].at - horizon * dayMs;
-            let closest = -1, distance = Infinity;
-            for (let j = i - 1; j >= 0; j--) {
-                const diff = Math.abs(rates[j].at - target);
-                if (diff < distance) { distance = diff; closest = j; }
-                if (rates[j].at < target - dayMs) break;
-            }
-            if (closest < 0 || distance > dayMs) continue;
-            const actualDays = (rates[i].at-rates[closest].at) / dayMs;
-            if (actualDays <= 0) continue;
-            const change = Math.log(rates[i].sell / rates[closest].sell) * horizon / actualDays;
-            if (Number.isFinite(change)) result.push(change);
-        }
-        return result;
-    };
-
-    function forecast(res, exchange) {
-        const history = (res.points || []).map(x => ({at: new Date(x.at).getTime(), price: Number(x.price)}))
-            .filter(x => Number.isFinite(x.at) && Number.isFinite(x.price) && x.price > 0)
-            .sort((a,b) => a.at-b.at);
-        const rates = rateDays(exchange.points || []);
-        if (!history.length || rates.length < 20)
-            return { unavailable: 'Faltan cotizaciones históricas del dólar o precios reales del producto.' };
-
-        // Los saltos bruscos registrados manualmente (p. ej. Bs 1.000 -> Bs 10)
-        // no implican que el dólar tenga esa misma influencia.
-        const steps = [];
-        let extreme = 0;
-        for (let i = 1; i < history.length; i++) {
-            const delta = (history[i].at-history[i-1].at) / 86400000;
-            if (delta <= 0) continue;
-            const raw = Math.log(history[i].price/history[i-1].price);
-            if (Math.abs(raw) > Math.log(1.5)) extreme++;
-            if (delta < 1 || Math.abs(raw) > Math.log(1.5)) continue;
-            const startRate = findRate(rates, history[i-1].at);
-            const endRate = findRate(rates, history[i].at);
-            steps.push({daily:raw/delta, usd:startRate && endRate ? Math.log(endRate/startRate)/delta : null});
-        }
-        const enoughProduct = steps.length >= 8 &&
-            (history[history.length-1].at-history[0].at)/86400000 >= 30;
-        const drift = enoughProduct ? clamp(med(steps.map(x=>x.daily)), -.005, .005) : 0;
-        const priceVol = enoughProduct ? clamp(mad(steps.map(x=>x.daily)), 0, .02) : 0;
-
-        // Elasticidad real: solo si hay suficientes variaciones de dólar y producto
-        // separadas en el tiempo. Si no, se prueban supuestos explícitos (25%-100%).
-        let elasticity = null;
-        const pairs = steps.filter(x=>x.usd !== null && Math.abs(x.usd) > .0001);
-        if (enoughProduct && pairs.length >= 8) {
-            const xs=pairs.map(x=>x.usd), ys=pairs.map(x=>x.daily), mx=med(xs), my=med(ys);
-            const denom=xs.reduce((acc,x)=>acc+(x-mx)**2,0);
-            if (denom > 1e-7)
-                elasticity = clamp(xs.reduce((acc,x,i)=>acc+(x-mx)*(ys[i]-my),0)/denom,0,1.5);
-        }
-        const last = history[history.length-1].price;
-        const forecastFor = (h) => {
-            const returns = rollingRateReturns(rates, h);
-            // Sin al menos 20 períodos comparables, no se publican límites arbitrarios.
-            if (returns.length < 20) return null;
-            const usdLow = quantile(returns, .05);
-            const usdMid = quantile(returns, .50);
-            const usdHigh = quantile(returns, .95);
-            const weights = elasticity === null ? [.25, 1] : [elasticity];
-            const midWeight = elasticity === null ? .625 : elasticity;
-            const base = Math.log(last) + clamp(drift*h, -.15, .15);
-            const residual = priceVol * Math.sqrt(h) * 1.28;
-            const lowerCandidates = weights.map(w => Math.exp(base+usdLow*w-residual));
-            const upperCandidates = weights.map(w => Math.exp(base+usdHigh*w+residual));
-            const mid = Math.exp(base + usdMid * midWeight);
-            // El precio sin cambios también es posible cuando no se conoce el traspaso.
-            const low = Math.max(.01, Math.min(last, mid, ...lowerCandidates));
-            const high = Math.max(last, mid, ...upperCandidates);
-            return {days:h, mid:+mid.toFixed(2), low:+low.toFixed(2), high:+high.toFixed(2),
-                samplePeriods:returns.length, usdLow, usdHigh};
-        };
-        const scenarios = [forecastFor(7), forecastFor(30)].filter(Boolean);
-        if (!scenarios.length) return {unavailable:'No hay suficientes períodos comparables para calcular los escenarios.'};
-        return {last,points:history.length,ratePoints:rates.length,extreme,elasticity,scenarios,
-            lowConfidence:!enoughProduct || extreme>0 || elasticity===null,
-            lastRate:rates[rates.length-1]};
-    }
-    function renderForecast(res, exchange) {
+    function renderForecast(res, f) {
         const body=$('forecastBody'), note=$('forecastNote'), status=$('forecastStatus');
         if(!body || !note || !status) return;
 
@@ -227,13 +121,12 @@ const PriceStats = (function () {
             status.className='forecast-status';
             note.innerHTML='<i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>Se necesitan datos reales para estimar precios.</span>';
         };
-        if(res.simulated || !exchange || !Array.isArray(exchange.points)) {
+        if(res.simulated) {
             message('Aún no hay suficientes datos reales para estimar este precio.', 'Sin datos');
             return;
         }
-        const f=forecast(res, exchange);
-        if(f.unavailable) {
-            message('Todavía faltan datos para calcular un rango de precios.', 'Datos insuficientes');
+        if(!f || !f.available) {
+            message((f && f.unavailable) || 'Todavía faltan datos para calcular un rango de precios.', 'Datos insuficientes');
             return;
         }
 
@@ -264,27 +157,20 @@ const PriceStats = (function () {
             (f.lowConfidence ? 'Rango orientativo: faltan datos para medir cómo influye el dólar en este producto.' : 'Rango orientativo; no es un precio garantizado.')+
             '</span>';
     }
-    async function loadForecast(id, timeline) {
+    async function loadForecast(id) {
         const requestId=++forecastRequestId;
         const body=$('forecastBody'); if(!body)return;
         $('forecastStatus').textContent='Analizando…';
         body.innerHTML='<p class="forecast-message">Calculando mínimo y máximo…</p>';
         try {
-            if (!exchangeHistory) {
-                if (!exchangeHistoryPromise) {
-                    exchangeHistoryPromise=api('/api/price-stats/exchange-history?days=365')
-                        .then(d => {exchangeHistory=d;return d;})
-                        .finally(() => {exchangeHistoryPromise=null;});
-                }
-                await exchangeHistoryPromise;
-            }
+            const result=await api('/api/price-stats/products/'+encodeURIComponent(id)+'/forecast?days='+days);
             if(requestId!==forecastRequestId)return;
-            renderForecast(timeline,exchangeHistory);
+            renderForecast(result,result.forecast);
         } catch(e) {
             if(requestId!==forecastRequestId)return;
             $('forecastStatus').textContent='No disponible';
-                body.innerHTML='<p class="forecast-message">No pudimos consultar el historial del dólar. Intenta actualizar la página.</p>';
-            $('forecastNote').innerHTML='<i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>No hay datos del dólar para estimar precios.</span>';
+            body.innerHTML='<p class="forecast-message">No pudimos consultar el escenario de precios. Intenta actualizar la página.</p>';
+            $('forecastNote').innerHTML='<i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>No se mostrará un pronóstico sin datos suficientes.</span>';
         }
     }
 
@@ -389,7 +275,7 @@ const PriceStats = (function () {
             if (requestId!==timelineRequestId || String($('productSel').value)!==String(id)) return;
             currentTimeline=res;
             drawTimeline(res);
-            loadForecast(id, res);
+            loadForecast(id);
         } catch (e) {
             if (requestId!==timelineRequestId) return;
             $('tlNote').style.display='flex';
@@ -420,7 +306,7 @@ const PriceStats = (function () {
         document.querySelectorAll('[data-days]').forEach((b) => b.addEventListener('click', () => {
             document.querySelectorAll('[data-days]').forEach((x) => x.classList.remove('active'));
             b.classList.add('active'); days = +b.dataset.days; $('errBox').style.display = 'none';
-            exchangeHistory = null; exchangeHistoryPromise = null; loadOverview(); if ($('productSel').value) loadTimeline($('productSel').value);
+            loadOverview(); if ($('productSel').value) loadTimeline($('productSel').value);
         }));
         $('productSel').addEventListener('change', (e) => loadTimeline(e.target.value));
         ['convAmount', 'convDir'].forEach((i) => $(i).addEventListener('input', convert));
