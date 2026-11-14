@@ -29,7 +29,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-    'gemini' => [
-        'key' => env('GEMINI_API_KEY'),
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+        'model' => env('GROQ_MODEL', 'openai/gpt-oss-20b'),
+        'max_output_tokens' => (int) env('GROQ_MAX_OUTPUT_TOKENS', 700),
     ],
 ];
