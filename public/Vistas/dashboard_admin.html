@@ -190,6 +190,71 @@ button:disabled {cursor:not-allowed}
 }
 @media(max-width:370px) {.stat-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.hero-actions{grid-template-columns:1fr}.ah-btn-logout{width:39px;font-size:14px}.ah-avatar{width:31px;height:31px}}
 @media(prefers-reduced-motion:reduce) {*,*:before,*:after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* CASATEK · Ajustes UI/UX exclusivos de presentación */
+
+/* Tipografía menos ancha y de lectura cómoda, sin alterar cifras ni cálculos */
+#adminDash .section-title{font:800 clamp(25px,2.25vw,31px)/1.18 'DM Sans',sans-serif;letter-spacing:-.028em}
+#adminDash .section-heading h2,#adminDash .panel-head h2,#adminDash .stat-value,#adminDash .quick-label,#adminDash .sales-month-total span:last-child{font-family:'DM Sans',sans-serif;letter-spacing:-.018em}
+#adminDash .dash-hero{padding:23px 28px}
+#adminDash .hero-description{max-width:610px;font-size:13.5px}
+#adminDash .stat-value{font-size:clamp(27px,2.4vw,33px)}
+#adminDash .stat-card{min-height:160px}
+#adminDash #statTotalSales{font-size:clamp(23px,2.1vw,30px)}
+#adminDash .quick-card{min-height:95px}
+#adminDash .report-export-btn{background:#2563eb;border-color:#5186f5;color:#fff}
+#adminDash .report-export-btn:hover:not(:disabled){background:#3b82f6;box-shadow:0 10px 24px rgba(59,130,246,.2)}
+#adminDash .report-export-btn:disabled{background:#243b54;border-color:#3c536c;color:#b5c5d4}
+#adminDash .sales-month-select{font-size:12px;max-width:173px}
+#adminDash .sales-products-table{font-size:12px}
+#adminDash .sales-products-table th{font-size:11px}
+#adminDash .sales-products-table td{padding:11px 10px}
+#adminDash .top-item{padding:11px 10px}
+#adminDash .top-name{font-size:12.5px}
+#adminDash .adm-head h3{font-family:'DM Sans',sans-serif}
+#adminDash .adm-save{background:#22C55E;color:#082d16}
+#adminDash .adm-cancel{background:#293c4c;color:#e6edf3}
+#adminDash .ah-logo-name{font-family:'DM Sans',sans-serif}
+.report-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 17px 14px;border-top:1px solid #344958}
+.report-pagination[hidden]{display:none!important}
+.report-page-info{font-size:11.5px;color:#b3c8d5}
+.report-page-buttons{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.report-page-button{min-width:34px;min-height:34px;border:1px solid #486171;background:#223748;border-radius:9px;padding:5px 9px;color:#dde9ef;font:800 11.5px 'DM Sans',sans-serif;cursor:pointer;transition:background .18s,border .18s,transform .18s}
+.report-page-button:hover:not(:disabled){background:#2a4b41;border-color:#62c987;transform:translateY(-1px)}
+.report-page-button.active{background:#22C55E;color:#082d18;border-color:#22C55E}
+.report-page-button:disabled{opacity:.44;cursor:not-allowed}
+#topProductsBody .top-item[hidden],#salesByMonthBody tbody tr[hidden]{display:none!important}
+@media(max-width:640px){#adminDash .dash-hero{padding:20px 17px}#adminDash .section-title{font-size:27px}#adminDash .stat-card{min-height:141px}#adminDash .report-pagination{padding:10px 13px}}
+
+
+/* HEADER sincronizado con productos_lista_admin(2).html.
+   Solo presentación; se mantienen enlaces, eventos y lógica del Dashboard. */
+.ah-logo-name {font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:-.055em;font-size:22px}
+.ah-btn-logout {color:#ffd0d0;border-color:#754149;background:#35232c}
+.ah-btn-logout:hover {color:#fff;border-color:#e66573;background:#723640}
+@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
+@media(min-width:1131px){.ah-nav{display:flex}.ah-hamburger{display:none}}
+@media(max-width:760px){#adminHeader{height:64px;padding:0 14px}#mobileNav{top:64px}.ah-user-name,.ah-logo-badge{display:none}.ah-logo-name{font-size:20px}}
+@media(max-width:380px){.ah-user{display:none}}
+/* Nuevo administrador: estética consistente con el dashboard */
+#adminOverlay{background:rgba(3,11,18,.82);backdrop-filter:blur(9px);padding:20px}
+#adminOverlay .adm-box{font-family:'DM Sans',sans-serif;max-width:520px;background:#172936;border:1px solid #416071;border-radius:22px;box-shadow:0 35px 100px rgba(0,0,0,.58);overflow-x:hidden}
+#adminOverlay .adm-head{padding:24px 26px 20px;background:linear-gradient(120deg,#1b3b32,#1c303e);border-bottom:1px solid #3d5866;align-items:center}
+#adminOverlay .adm-head h3{font:800 clamp(19px,3.5vw,23px)/1.25 'DM Sans',sans-serif!important;letter-spacing:-.035em;gap:12px;color:#f3fbf8}
+#adminOverlay .adm-head h3 i{width:43px;height:43px;flex-shrink:0;border-radius:13px;background:#214c3b;color:#86efac!important;font-size:17px}
+#adminOverlay .adm-help{font:500 12.5px/1.6 'DM Sans',sans-serif;color:#bed0d9;margin-top:11px;max-width:390px}
+#adminOverlay .adm-close{width:39px;height:39px;background:#29404c;border-color:#4c6876;border-radius:11px}
+#adminOverlay .adm-body{padding:24px 26px 26px}
+#adminOverlay .adm-field{margin-bottom:16px}
+#adminOverlay .adm-field label{font:700 12.5px 'DM Sans',sans-serif;color:#e2edf4;margin-bottom:8px}
+#adminOverlay .adm-field input{min-height:47px;background:#101f2c;border:1px solid #4a6372;border-radius:11px;padding:12px 14px;font:500 13px 'DM Sans',sans-serif;color:#f3f9fd}
+#adminOverlay .adm-field input::placeholder{color:#90a6b5}
+#adminOverlay .adm-field input:focus{border-color:#5be58c;box-shadow:0 0 0 3px rgba(34,197,94,.14)}
+#adminOverlay .adm-actions{gap:10px;margin-top:23px}
+#adminOverlay .adm-actions button{font:800 13px 'DM Sans',sans-serif;min-height:46px;border-radius:11px}
+#adminOverlay .adm-save{background:#22c55e;color:#092c18;box-shadow:0 8px 22px rgba(34,197,94,.12)}
+#adminOverlay .adm-cancel{background:#2b4050;color:#e8f0f6;border:1px solid #526c7b!important}
+@media(max-width:560px){#adminOverlay{padding:12px}#adminOverlay .adm-head{padding:19px 17px}#adminOverlay .adm-body{padding:19px 17px}#adminOverlay .adm-actions{flex-direction:column-reverse}}
 </style>
 </head>
 <body>
@@ -282,6 +347,7 @@ button:disabled {cursor:not-allowed}
             <span class="panel-tag">Datos de muestra</span>
           </div>
           <div class="panel-body" id="topProductsBody"><!-- generado por JS original --></div>
+          <div class="report-pagination" id="topProductsPager" hidden aria-label="Páginas de productos más vendidos"></div>
         </article>
         <article class="panel fade-up delay-1">
           <div class="panel-head">
@@ -293,6 +359,7 @@ button:disabled {cursor:not-allowed}
           </div>
           <p class="mobile-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Desliza la tabla para ver todas las columnas.</p>
           <div class="panel-body" id="salesByMonthBody" aria-live="polite"><p>Cargando reporte...</p></div>
+          <div class="report-pagination" id="salesReportPager" hidden aria-label="Páginas del reporte de ventas"></div>
           <p id="salesExportError" class="report-export-error" role="alert" hidden></p>
         </article>
       </div>
@@ -613,5 +680,58 @@ button:disabled {cursor:not-allowed}
     loadSalesReport();
 </script>
 
+<script>
+/* Paginación exclusivamente visual. No cambia las respuestas, peticiones ni cálculos originales. */
+(function () {
+    function createPager(contentId, pagerId, itemSelector, perPage) {
+        const content = document.getElementById(contentId);
+        const pager = document.getElementById(pagerId);
+        if (!content || !pager) return;
+        let page = 1;
+        const controls = document.createElement('div');
+        controls.className = 'report-page-buttons';
+        const info = document.createElement('span');
+        info.className = 'report-page-info';
+        pager.append(info, controls);
+
+        function update(resetPage) {
+            const items = Array.from(content.querySelectorAll(itemSelector));
+            if (resetPage) page = 1;
+            const count = items.length;
+            const pages = Math.max(1, Math.ceil(count / perPage));
+            page = Math.min(Math.max(1, page), pages);
+            items.forEach((item, idx) => { item.hidden = idx < (page - 1) * perPage || idx >= page * perPage; });
+            pager.hidden = count <= perPage;
+            if (count <= perPage) return;
+            const from = (page - 1) * perPage + 1;
+            const to = Math.min(page * perPage, count);
+            info.textContent = `Mostrando ${from}–${to} de ${count}`;
+            controls.replaceChildren();
+
+            function add(label, target, disabled, active, ariaLabel) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'report-page-button' + (active ? ' active' : '');
+                button.textContent = label;
+                button.disabled = disabled;
+                button.setAttribute('aria-label', ariaLabel);
+                if (active) button.setAttribute('aria-current', 'page');
+                button.addEventListener('click', () => { page = target; update(false); });
+                controls.appendChild(button);
+            }
+            add('‹', page - 1, page === 1, false, 'Página anterior');
+            const start = Math.max(1, Math.min(page - 2, pages - 4));
+            const end = Math.min(pages, start + 4);
+            for (let n = start; n <= end; n++) add(String(n), n, false, n === page, 'Página ' + n);
+            add('›', page + 1, page === pages, false, 'Página siguiente');
+        }
+        const observer = new MutationObserver(() => update(true));
+        observer.observe(content, {childList: true});
+        update(true);
+    }
+    createPager('topProductsBody', 'topProductsPager', '.top-item', 5);
+    createPager('salesByMonthBody', 'salesReportPager', '.sales-products-table tbody tr', 7);
+})();
+</script>
 </body>
 </html>

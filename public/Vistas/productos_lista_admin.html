@@ -168,49 +168,182 @@
 
     @media(max-width:1100px) { .mini-stats { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:768px) { #main { padding:20px 16px 40px; } .mini-stats { grid-template-columns:1fr 1fr; } }
+
+/* CASATEK · Ajustes UI/UX exclusivos de presentación */
+/* NAVEGACIÓN */
+#adminHeader {height:74px;padding:0 clamp(18px,3.1vw,46px);background:rgba(15,25,35,.96);border-bottom:1px solid #2b3b49;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 5px 25px rgba(0,0,0,.10)}
+.ah-logo {display:inline-flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
+.ah-logo-dot {width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12)}
+.ah-logo-name {font:800 22px 'Syne',sans-serif;color:#fff;letter-spacing:-.065em}
+.ah-logo-name .brand-tek{color:var(--green)}
+.ah-logo-badge {background:rgba(34,197,94,.11);color:#a7f3be;border:1px solid rgba(34,197,94,.3);font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:7px}
+.ah-nav {display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
+.ah-nav a {display:inline-flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;color:#b9c6d1;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s,transform .2s}
+.ah-nav a i {font-size:13px}
+.ah-nav a:hover {color:#eafff1;background:#243b36;transform:translateY(-1px)}
+.ah-nav a.active {background:rgba(34,197,94,.16);color:#80efa7;box-shadow:inset 0 0 0 1px rgba(34,197,94,.25)}
+.ah-actions {display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ah-user {display:flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid #334b4a;background:#1c3031;border-radius:22px}
+.ah-avatar {width:33px;height:33px;border-radius:12px;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;color:#6dea97;font-size:15px}
+.ah-user-name {font-size:12px;font-weight:800;color:#ecfff2}
+.ah-btn-logout {display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #42505a;color:#e0e9f0;background:rgba(255,255,255,.03);padding:10px 14px;font-size:12px;font-weight:800;border-radius:11px;cursor:pointer;text-decoration:none;transition:all .2s}
+.ah-btn-logout:hover {border-color:rgba(248,113,113,.6);background:rgba(248,113,113,.1);color:#ffc3c3;transform:translateY(-1px)}
+.ah-hamburger {display:none;width:42px;height:42px;border-radius:11px;align-items:center;justify-content:center;background:#21323f;color:#f7fafc;border:1px solid #39505d;font-size:18px;cursor:pointer;transition:background .2s}
+.ah-hamburger:hover {background:#2a463e;color:#86efac}
+#mobileNav {display:none;flex-direction:column;gap:5px;background:#152330;padding:14px 18px 18px;border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:99;box-shadow:0 18px 35px rgba(0,0,0,.24)}
+#mobileNav a {display:flex;align-items:center;gap:13px;text-decoration:none;color:#ccd8e0;border:1px solid transparent;padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px;transition:all .2s}
+#mobileNav a i {width:20px;text-align:center}
+#mobileNav a:hover,#mobileNav a.active {color:#9ef8bc;background:#234337;border-color:#345a4c}
+
+
+
+:root{--green:#22C55E;--green-dark:#15803d;--bg:#0d1620;--surface:#121f2b;--card:#172431;--card-soft:#1d2d3b;--border:#304252;--border-h:#357357;--text:#f3f7fb;--muted:#aebfcc}
+html,body{background:#0d1620!important;color:#f3f7fb;font-family:'DM Sans',system-ui,sans-serif;line-height:1.48;-webkit-font-smoothing:antialiased}
+body{min-width:0}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #86efac;outline-offset:3px}
+::selection{background:rgba(34,197,94,.25);color:#fff}
+#productsPage,#ordersPage{background:radial-gradient(circle at 90% 0,rgba(34,197,94,.065),transparent 32%),linear-gradient(#0f1a25,#0d1620 48%,#0b141d);min-height:calc(100vh - 74px)}
+#main{max-width:1530px;padding:25px clamp(17px,3.1vw,46px) 42px;margin-inline:auto}
+.section-title,.section-heading h2,.panel-head h2,.mini-val,.ah-logo-name{font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:-.024em}
+.section-title{font-size:clamp(24px,2.05vw,30px);line-height:1.17}
+.section-label{font-size:11px;letter-spacing:.085em;color:#81eca5}
+#productsPage .mini-stats,#ordersPage .mini-stats{gap:13px;margin:18px 0}
+.mini-card{min-width:0;padding:17px 18px;background:linear-gradient(145deg,#1b2b39,#172431);border:1px solid #354855;border-radius:15px;min-height:99px;box-shadow:0 8px 19px rgba(0,0,0,.10);transition:transform .22s,border-color .22s}
+.mini-card:hover{transform:translateY(-3px);border-color:#487c65}
+.mini-icon{width:42px;height:42px;border-radius:11px}
+.mini-label{font-size:11.5px;letter-spacing:.015em;text-transform:none;font-weight:700;color:#afc0ce;margin-bottom:3px}
+.mini-val{font-size:27px;color:#f7fafc;line-height:1.15;font-variant-numeric:tabular-nums}
+.panel,.search-wrap{background:#172632;border:1px solid #344958;border-radius:17px;box-shadow:0 12px 30px rgba(2,10,17,.12)}
+.panel-head{padding:16px 19px;gap:12px;flex-wrap:wrap;border-bottom:1px solid #344958}
+.panel-head h2{font-size:16px;color:#f6fbfe}
+.panel-head span,#panelCount,#tableCount{color:#bdcbd4!important;font-size:12px!important}
+.panel table{width:100%;border-collapse:collapse}
+.panel thead tr{background:#203341}
+.panel th{color:#c1d0da;font-weight:800;letter-spacing:.025em;font-size:11px;padding:13px 14px}
+.panel td{color:#e2edf3;font-size:12.5px;padding:13px 14px;border-bottom:1px solid #304452}
+.panel tbody tr:hover{background:#203641}
+.panel .p-name{font-size:13px;color:#f6f9fc}
+.panel .p-sku{color:#b3c3cf}
+.status-badge{padding:5px 9px;font-size:10.5px;text-transform:none;letter-spacing:.01em}
+.pag{padding:15px 16px;gap:7px;border-top:1px solid #354a59}
+.pag-btn{background:#233645;border:1px solid #425968;color:#d7e4ed;border-radius:9px;min-height:36px;min-width:36px;font-weight:800}
+.pag-btn:hover:not(.disabled){border-color:#70d892;color:#b1f7c8;background:#294539}
+.pag-btn.active{background:#22C55E;color:#092d18;border-color:#22C55E}
+.pag-btn.disabled{opacity:.45}
+.ah-logo-name{font-size:22px;letter-spacing:-.055em}
+.ah-logo-badge{font-size:10px}
+.ah-btn-logout{color:#ffd0d0;border-color:#754149;background:#35232c}
+.ah-btn-logout:hover{color:#fff;border-color:#e66573;background:#723640}
+.ah-hamburger{min-height:42px}
+@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
+@media(min-width:1131px){.ah-nav{display:flex}.ah-hamburger{display:none}}
+@media(max-width:760px){#main{padding:17px 13px 30px}.mini-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-card{padding:13px;gap:10px;min-height:88px}.mini-icon{width:36px;height:36px}.mini-label{font-size:10.5px}.mini-val{font-size:23px}.panel-head{padding:14px}.panel th,.panel td{padding:11px 12px}#adminHeader{height:64px;padding:0 14px}#mobileNav{top:64px}.ah-user-name,.ah-logo-badge{display:none}.ah-logo-name{font-size:20px}}
+@media(max-width:380px){.mini-stats{gap:8px}.mini-card{padding:11px;gap:7px}.mini-val{font-size:21px}.ah-user{display:none}}
+@media(prefers-reduced-motion:reduce){.mini-card,.pag-btn{transition:none!important}}
+
+
+#productsPage .top-bar{align-items:center;margin-bottom:2px;gap:16px}
+#productsPage .top-bar>div{min-width:0}
+#productsPage .btn-new{margin-top:0;min-height:43px;background:#22C55E;color:#082d19;border:1px solid #43dd79;border-radius:11px;font-size:12.5px;font-weight:800;padding:11px 17px;box-shadow:0 8px 18px rgba(34,197,94,.12);transition:transform .18s,box-shadow .18s,background .18s}
+#productsPage .btn-new:hover{background:#4ade80;transform:translateY(-2px);box-shadow:0 10px 24px rgba(34,197,94,.19)}
+#productsPage .search-wrap{padding:15px 17px;margin-bottom:16px}
+#productsPage .search-input-wrap{min-width:min(220px,100%)}
+#productsPage .s-input,#productsPage .s-select{border-color:#44596a;background:#101e2a;color:#f2f7fa;min-height:43px;font-size:12.5px}
+#productsPage .s-input::placeholder{color:#9eb1bf;opacity:1}
+#productsPage .s-select option{background:#152735}
+#productsPage .s-btn{min-height:43px;background:#2563eb;border:1px solid #5388f7;color:#fff;border-radius:11px;font-weight:800;padding:10px 17px;transition:transform .18s,background .18s}
+#productsPage .s-btn:hover{background:#3b82f6;transform:translateY(-1px)}
+#productsPage .s-clear{min-height:43px;background:#293948;color:#e2e8f0;border-color:#50606c;border-radius:11px}
+#productsPage .s-clear:hover{background:#364a58;color:#fff}
+#productsPage .act-btn{width:35px;height:35px;transition:transform .18s,background .18s;border-radius:9px}
+#productsPage .act-btn:hover{transform:translateY(-2px)}
+#productsPage .act-view{color:#93c5fd;background:#1e3a5f;border-color:#376394}
+#productsPage .act-edit{color:#fde68a;background:#514020;border-color:#8f712d}
+#productsPage .act-del{color:#fca5a5;background:#542b32;border-color:#8c444d}
+#productsPage .p-thumb,#productsPage .p-thumb-ph{width:51px;height:51px;border-radius:12px}
+#productsPage .panel>div[style*="overflow-x:auto"]{scrollbar-color:#466375 transparent}
+#productsPage .modal-box{background:#182938;border-color:#42596a}
+#productsPage .modal-field{background:#1f3441;border-color:#3b5261}
+#productsPage .modal-field-label{color:#aebfcd}
+#productsPage .modal-field-val{color:#f0f6fa}
+#productsPage .modal-header,#productsPage .modal-footer{border-color:#405665}
+#productsPage .toast{z-index:9999}
+.admin-help-caption{color:#a8bac7;font-size:12px;line-height:1.5;margin-top:5px}
+.admin-field-hint{display:block;width:100%;margin:0;font-size:11px;color:#a9bbc7}
+@media(max-width:700px){#productsPage .top-bar{align-items:flex-start}#productsPage .search-wrap form{align-items:stretch!important;gap:9px!important}#productsPage .search-input-wrap{flex-basis:100%}#productsPage .s-select{flex:1;min-width:120px}#productsPage .s-btn,#productsPage .s-clear{flex:1;justify-content:center}#productsPage .btn-new{white-space:nowrap}}
+
+
+/* CASATEK · Ficha de producto compacta y coherente con el panel */
+#viewModal { padding:16px; overflow-y:auto; overscroll-behavior:contain; background:rgba(3,10,17,.78); z-index:1100; }
+#viewModal .modal-box { width:min(850px,100%); max-width:850px; max-height:calc(100dvh - 32px); display:flex; flex-direction:column; background:#172632; border:1px solid #3b5664; border-radius:18px; box-shadow:0 24px 75px rgba(0,0,0,.55); overflow:hidden; }
+#viewModal .modal-header { flex-shrink:0; padding:15px 20px; background:#1c303d; border-bottom:1px solid #38505e; gap:16px; }
+#viewModal .modal-header > div { min-width:0; }
+#viewModal #vm-name { font-family:'DM Sans',sans-serif!important; font-size:clamp(15px,1.7vw,19px)!important; font-weight:800; line-height:1.3; overflow-wrap:anywhere; letter-spacing:-.02em; }
+#viewModal .modal-close-btn { flex-shrink:0; background:#2a3e4b; color:#dbe7ef; border-color:#486170; }
+#viewModal .modal-body { padding:18px 20px; display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:14px 18px; overflow-y:auto; min-height:0; scrollbar-color:#506b7b transparent; align-content:start; }
+#viewModal .vm-media { grid-row:span 3; min-width:0; display:flex; align-items:center; justify-content:center; background:#11202b; border:1px solid #3b5261; border-radius:13px; min-height:240px; max-height:340px; overflow:hidden; }
+#viewModal .modal-img { width:100%; height:100%; max-height:340px; min-height:200px; object-fit:contain; border:0; border-radius:0; background:transparent; }
+#viewModal .modal-grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+#viewModal .modal-field { padding:11px 12px; background:#203442; border:1px solid #3b5261; border-radius:11px; min-width:0; }
+#viewModal .modal-field-label { font-size:10px; font-weight:800; letter-spacing:.045em; color:#aebfcd; margin-bottom:5px; }
+#viewModal .modal-field-val { font-size:12.5px; line-height:1.45; color:#f0f6fa; font-weight:600; overflow-wrap:anywhere; }
+#viewModal .vm-description { grid-column:1/-1; }
+#viewModal #vm-description { font-weight:500; line-height:1.55; white-space:pre-wrap; }
+#viewModal .modal-footer { padding:11px 20px; flex-shrink:0; background:#1c303d; border-top:1px solid #38505e; }
+#viewModal .vm-close-action { background:#2c4350; border:1px solid #526977; color:#e9f2f8; border-radius:10px; padding:9px 20px; font-size:12px; font-weight:800; cursor:pointer; font-family:'DM Sans',sans-serif; }
+#viewModal .vm-close-action:hover { background:#385462; }
+@media(max-width:650px) {
+  #viewModal { padding:10px; align-items:center; }
+  #viewModal .modal-box { max-height:calc(100dvh - 20px); border-radius:14px; }
+  #viewModal .modal-header { padding:12px 14px; }
+  #viewModal .modal-body { grid-template-columns:minmax(0,1fr); padding:12px 14px; gap:10px; }
+  #viewModal .vm-media { grid-row:auto; min-height:140px; max-height:195px; }
+  #viewModal .modal-img { min-height:140px; max-height:195px; }
+  #viewModal .vm-description { grid-column:auto; }
+  #viewModal .modal-footer { padding:10px 14px; }
+}
+@media(max-height:600px) and (min-width:651px) { #viewModal .vm-media { min-height:160px; max-height:230px; } #viewModal .modal-img { min-height:160px; max-height:230px; } }
+
 </style>
 </head>
 <body>
 
 <!-- ===================== HEADER ===================== -->
 <header id="adminHeader">
-    <a href="/dashboard_admin.html" class="ah-logo">
-        <span class="ah-logo-dot"></span>
-        <span class="ah-logo-name">Casatek</span>
-        <span class="ah-logo-badge">Admin</span>
+    <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
+        <span class="ah-logo-dot" aria-hidden="true"></span>
+        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
+        <span class="ah-logo-badge">Administración</span>
     </a>
-
-    <nav class="ah-nav">
-        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-        <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
-        <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+    <nav class="ah-nav" aria-label="Navegación administrativa">
+        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
+        <a href="productos_lista_admin.html" class="active" aria-current="page"><i class="fa-solid fa-box"></i> Productos</a>
+        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+        <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
-
     <div class="ah-actions">
-        <div class="ah-user">
+        <div class="ah-user" title="Sesión de administrador">
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="hidden-xs">Salir</span>
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
+            <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
         </button>
-        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+        <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
             <i class="fa-solid fa-bars" id="hambIcon"></i>
         </button>
     </div>
 </header>
-
-<nav id="mobileNav">
-    <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
-    <a href="/users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+<nav id="mobileNav" aria-label="Menú administrativo móvil">
+    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
+    <a href="productos_lista_admin.html" class="active" aria-current="page"><i class="fa-solid fa-box"></i> Productos</a>
+    <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
+    <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
 <!-- ===================== PRODUCTOS ===================== -->
@@ -221,6 +354,7 @@
             <div>
                 <p class="section-label"><i class="fa-solid fa-box mr-1"></i> Catálogo</p>
                 <h1 class="section-title">Gestión de <span style="color:var(--green)">Productos</span></h1>
+                <p class="admin-help-caption">Revisa existencias, consulta detalles y administra el catálogo desde un mismo lugar.</p>
             </div>
             <a href="/create_product_admin.html" class="btn-new">
                 <i class="fa-solid fa-plus"></i> Nuevo producto
@@ -266,8 +400,9 @@
                     <option value="stock_asc">Stock: menor a mayor</option>
                     <option value="stock_desc">Stock: mayor a menor</option>
                 </select>
-                <button type="button" class="s-btn" onclick="applyFilters()"><i class="fa-solid fa-magnifying-glass mr-1"></i> Buscar</button>
-                <button type="button" class="s-clear" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i> Limpiar</button>
+
+                <button type="button" class="s-clear" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i> Limpiar filtros</button>
+            <p class="admin-field-hint"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Los resultados se actualizan automáticamente al escribir o cambiar los filtros.</p>
             </form>
         </div>
 
@@ -320,7 +455,7 @@
             <button class="modal-close-btn" onclick="closeViewModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-            <img id="vm-img" class="modal-img" src="" alt="">
+            <div class="vm-media"><img id="vm-img" class="modal-img" src="" alt="Imagen del producto"></div>
             <div class="modal-grid-2">
                 <div class="modal-field"><p class="modal-field-label">SKU</p><p id="vm-sku" class="modal-field-val" style="font-family:monospace"></p></div>
                 <div class="modal-field"><p class="modal-field-label">Precio</p><p id="vm-price" class="modal-field-val" style="color:var(--green)"></p></div>
@@ -333,10 +468,10 @@
                 <div class="modal-field"><p class="modal-field-label">Stock</p><p id="vm-stock" class="modal-field-val"></p></div>
                 <div class="modal-field"><p class="modal-field-label">Garantía</p><p id="vm-warranty" class="modal-field-val"></p></div>
             </div>
-            <div class="modal-field"><p class="modal-field-label">Descripción</p><p id="vm-description" class="modal-field-val"></p></div>
+            <div class="modal-field vm-description"><p class="modal-field-label">Descripción</p><p id="vm-description" class="modal-field-val"></p></div>
         </div>
         <div class="modal-footer">
-            <button onclick="closeViewModal()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Cerrar</button>
+            <button type="button" class="vm-close-action" onclick="closeViewModal()">Cerrar</button>
         </div>
     </div>
 </div>
@@ -373,6 +508,9 @@
     let currentPage = 1;
     let productsCache = [];
     let deleteTargetId = null; // Variable para almacenar el ID a eliminar
+    let productRequestSequence = 0;
+    let productRequestController = null;
+    let filterDebounceTimer = null;
 
     /* ---------- Menú móvil (header) ---------- */
     function toggleMobileNav() {
@@ -448,6 +586,9 @@
     /* ---------- Carga productos desde el backend ---------- */
     function loadProducts(page = 1) {
         currentPage = page;
+        const requestSequence = ++productRequestSequence;
+        if (productRequestController) productRequestController.abort();
+        productRequestController = new AbortController();
         document.getElementById('productsBody').innerHTML = `
             <tr><td colspan="6">
                 <div class="loading-state"><i class="fa-solid fa-spinner"></i><p>Cargando productos...</p></div>
@@ -455,13 +596,14 @@
         document.getElementById('pagWrap').style.display = 'none';
         document.getElementById('pagLabel').textContent = '';
 
-        fetch(ROUTES.index + '?' + buildQuery(page), { headers: authHeaders() })
+        fetch(ROUTES.index + '?' + buildQuery(page), { headers: authHeaders(), signal: productRequestController.signal })
         .then(res => {
             if (res.status === 401) { goLogin(); throw new Error('Sesión expirada'); }
             if (!res.ok) throw new Error('No se pudo cargar la lista de productos (HTTP ' + res.status + ')');
             return res.json();
         })
         .then(json => {
+            if (requestSequence !== productRequestSequence) return;
             const paginator = json.datos;
             const products  = paginator.data || [];
             productsCache = products;
@@ -473,6 +615,7 @@
             document.getElementById('panelCount').textContent = (paginator.total ?? products.length) + ' productos en total';
         })
         .catch(err => {
+            if (err.name === 'AbortError' || requestSequence !== productRequestSequence) return;
             document.getElementById('productsBody').innerHTML = `
                 <tr><td colspan="6">
                     <div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p></div>
@@ -557,20 +700,36 @@
     /* ---------- Filtros ---------- */
     function applyFilters() { loadProducts(1); }
     function clearFilters() {
+        clearTimeout(filterDebounceTimer);
         document.getElementById('fSearch').value = '';
         document.getElementById('fStock').value = '';
         document.getElementById('fOrden').value = 'reciente';
         loadProducts(1);
     }
-    document.getElementById('fSearch').addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
+    // Búsqueda en vivo con pausa breve para evitar consultas por cada tecla.
+    document.getElementById('fSearch').addEventListener('input', () => {
+        clearTimeout(filterDebounceTimer);
+        filterDebounceTimer = setTimeout(() => applyFilters(), 320);
+    });
+    ['fStock', 'fOrden'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+            clearTimeout(filterDebounceTimer);
+            applyFilters();
+        });
+    });
+    document.getElementById('filterForm').addEventListener('submit', e => {
+        e.preventDefault();
+        clearTimeout(filterDebounceTimer);
+        applyFilters();
+    });
 
     /* ---------- Modal "Ver" ---------- */
     function viewProduct(id) {
-        const p = productsCache.find(x => x.id === id);
+        const p = productsCache.find(x => String(x.id) === String(id));
         if (!p) return;
         document.getElementById('vm-name').textContent = p.name;
         document.getElementById('vm-img').src = p.image1 || '';
-        document.getElementById('vm-img').style.display = p.image1 ? 'block' : 'none';
+        document.querySelector('#viewModal .vm-media').style.display = p.image1 ? 'flex' : 'none';
         document.getElementById('vm-sku').textContent = p.sku || '—';
         document.getElementById('vm-price').textContent = formatBs(p.base_price);
         document.getElementById('vm-brand').textContent = p.brand?.name || '—';

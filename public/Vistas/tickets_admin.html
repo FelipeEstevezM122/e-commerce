@@ -124,46 +124,219 @@
         .mini-stats { grid-template-columns:1fr 1fr; }
         th.hide-sm, td.hide-sm { display:none; }
     }
+
+
+#adminHeader {height:74px;padding:0 clamp(18px,3.1vw,46px);background:rgba(15,25,35,.96);border-bottom:1px solid #2b3b49;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 5px 25px rgba(0,0,0,.10)}
+.ah-logo {display:inline-flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
+.ah-logo-dot {width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12)}
+.ah-logo-name {font:800 22px 'Syne',sans-serif;color:#fff;letter-spacing:-.065em}
+.ah-logo-name .brand-tek{color:var(--green)}
+.ah-logo-badge {background:rgba(34,197,94,.11);color:#a7f3be;border:1px solid rgba(34,197,94,.3);font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:7px}
+.ah-nav {display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
+.ah-nav a {display:inline-flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;color:#b9c6d1;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s,transform .2s}
+.ah-nav a i {font-size:13px}
+.ah-nav a:hover {color:#eafff1;background:#243b36;transform:translateY(-1px)}
+.ah-nav a.active {background:rgba(34,197,94,.16);color:#80efa7;box-shadow:inset 0 0 0 1px rgba(34,197,94,.25)}
+.ah-actions {display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ah-user {display:flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid #334b4a;background:#1c3031;border-radius:22px}
+.ah-avatar {width:33px;height:33px;border-radius:12px;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;color:#6dea97;font-size:15px}
+.ah-user-name {font-size:12px;font-weight:800;color:#ecfff2}
+.ah-btn-logout {display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #42505a;color:#e0e9f0;background:rgba(255,255,255,.03);padding:10px 14px;font-size:12px;font-weight:800;border-radius:11px;cursor:pointer;text-decoration:none;transition:all .2s}
+.ah-btn-logout:hover {border-color:rgba(248,113,113,.6);background:rgba(248,113,113,.1);color:#ffc3c3;transform:translateY(-1px)}
+.ah-hamburger {display:none;width:42px;height:42px;border-radius:11px;align-items:center;justify-content:center;background:#21323f;color:#f7fafc;border:1px solid #39505d;font-size:18px;cursor:pointer;transition:background .2s}
+.ah-hamburger:hover {background:#2a463e;color:#86efac}
+#mobileNav {display:none;flex-direction:column;gap:5px;background:#152330;padding:14px 18px 18px;border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:99;box-shadow:0 18px 35px rgba(0,0,0,.24)}
+#mobileNav a {display:flex;align-items:center;gap:13px;text-decoration:none;color:#ccd8e0;border:1px solid transparent;padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px;transition:all .2s}
+#mobileNav a i {width:20px;text-align:center}
+#mobileNav a:hover,#mobileNav a.active {color:#9ef8bc;background:#234337;border-color:#345a4c}
+
+
+
+/* ===========================================================
+   CASATEK · Sistema visual admin, compatible con Dashboard.
+   Solo CSS de presentación. No altera scripts ni endpoints.
+   =========================================================== */
+*,*::before,*::after{box-sizing:border-box}
+:root {--green:#22c55e;--green-dark:#15803d;--bg:#0d1620;--card:#192936;--card2:#142531;--input:#182b38;--border:#344a58;--border-h:#55776b;--text:#eef5f9;--muted:#b0c3cf;--up:#4ade80;--down:#fca5a5;--notice:#fcd34d;--shadow:0 12px 30px rgba(0,0,0,.10);color-scheme:dark}
+html,body {background:#0d1620!important;color:#eef5f9;font-family:'DM Sans',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font-family:'DM Sans',sans-serif}
+a,button,select,input{ -webkit-tap-highlight-color:transparent }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #86efac;outline-offset:3px}
+::selection{background:rgba(34,197,94,.29);color:#fff}
+#adminHeader{height:74px;padding:0 clamp(16px,3vw,46px);background:rgba(15,25,35,.97);border-bottom:1px solid #304657;box-shadow:0 5px 24px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
+.ah-logo-name{font:800 22px 'DM Sans',sans-serif;letter-spacing:-.055em}
+.ah-logo-name .brand-tek{color:#22c55e}
+.ah-logo-dot{width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12);animation:none}
+.ah-logo-badge{border-radius:8px;background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.27);color:#a7f3be;font-size:10px;padding:5px 9px}
+.ah-nav{min-width:0;gap:4px}
+.ah-nav a{font:700 12.5px 'DM Sans',sans-serif;color:#c3d2dc;padding:10px 11px;border-radius:10px;transition:color .2s,background .2s,transform .2s}
+.ah-nav a:hover{color:#e9fff1;background:#244138;transform:translateY(-1px)}
+.ah-nav a.active{background:rgba(34,197,94,.14);color:#80efa7;border:1px solid rgba(34,197,94,.27)}
+.ah-actions{gap:9px}
+.ah-user{background:#1c3037;border:1px solid #35534e;border-radius:22px;padding:5px 12px 5px 5px}
+.ah-avatar{background:rgba(34,197,94,.18);color:#8ff2b2;width:34px;height:34px;border-radius:11px}
+.ah-user-name{color:#eafff0}
+.ah-btn-logout{border:1px solid #4d5864;color:#e4ecf2;background:rgba(255,255,255,.035);border-radius:11px;padding:10px 14px;font-size:12px}
+.ah-btn-logout:hover{border-color:#ef8585;background:rgba(239,68,68,.1);color:#fecaca}
+.ah-hamburger{width:43px;height:43px;border-radius:11px;background:#233744;border-color:#3c5867;color:#fff}
+#mobileNav{background:#152430;border-bottom:1px solid #344858;padding:14px 18px;position:sticky;top:73px;z-index:98;box-shadow:0 19px 30px rgba(0,0,0,.2)}
+#mobileNav a{font:700 14px 'DM Sans',sans-serif;padding:11px 13px;border-radius:10px;color:#d4dfe7}
+#mobileNav a:hover,#mobileNav a.active{color:#a3f6bd;background:#254337;border:1px solid #385a4a}
+#ticketsPage,#usersPage{background:linear-gradient(180deg,#101d29 0%,#0d1620 60%)!important;min-height:calc(100vh - 74px);color:#edf5fa}
+#main{max-width:1530px;margin:auto;padding:25px clamp(16px,3vw,46px) 46px}
+.section-title{font:800 clamp(25px,2.5vw,31px)/1.18 'DM Sans',sans-serif;letter-spacing:-.028em;color:#f8fbfd}
+.section-label{font:800 11px 'DM Sans',sans-serif;color:#75e69b;letter-spacing:.09em;margin-bottom:6px}
+.admin-page-intro{background:linear-gradient(110deg,#18362d,#18323b);border:1px solid #375c4f;border-radius:19px;padding:22px 25px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:13px 24px;box-shadow:0 15px 30px rgba(0,0,0,.1)}
+.admin-page-intro p.admin-desc{color:#c4d4d9;font:500 13px/1.65 'DM Sans',sans-serif;margin-top:8px;max-width:700px}
+.admin-intro-actions{display:flex;gap:10px;flex-wrap:wrap}
+.admin-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 14px;border-radius:11px;text-decoration:none;white-space:nowrap;font:800 12px 'DM Sans',sans-serif;transition:transform .2s,background .2s}
+.admin-link:hover{transform:translateY(-2px)}
+.admin-link-primary{background:#22c55e;color:#082d18}
+.admin-link-primary:hover{background:#4ade80}
+.admin-link-secondary{background:#244256;border:1px solid #496679;color:#edf6fb}
+.admin-link-secondary:hover{background:#31546b}
+.mini-stats{gap:14px;margin:17px 0 18px}
+.mini-card{border:1px solid #344b5a;border-radius:16px;padding:16px 19px;min-height:104px;background:linear-gradient(145deg,#1b2d3b,#172835);box-shadow:0 12px 24px rgba(0,0,0,.08);transition:transform .2s,border-color .2s}
+.mini-card:hover{transform:translateY(-3px);border-color:#5a8976}
+.mini-icon{width:43px;height:43px;border-radius:12px}
+.mini-label{font:700 12px 'DM Sans',sans-serif;text-transform:none;letter-spacing:0;color:#c1d0d8}
+.mini-val{font:800 29px 'DM Sans',sans-serif;letter-spacing:-.025em;margin-top:3px}
+.panel{border:1px solid #354e5c;background:#182935;border-radius:18px;box-shadow:0 15px 32px rgba(0,0,0,.12)}
+.panel-head{padding:15px 19px;border-color:#344958;gap:12px;flex-wrap:wrap}
+.panel-head h2{font:800 16px 'DM Sans',sans-serif;letter-spacing:-.01em;display:flex;gap:10px;align-items:center}
+.panel-head>span{color:#c2d0d9!important;font-size:12px!important}
+.panel-head h2 i{border-radius:9px;background:#284738;padding:9px;color:#86efac!important}
+table{min-width:760px;border-collapse:separate;border-spacing:0}
+thead tr{background:#213543}
+th{font:800 11px 'DM Sans',sans-serif;letter-spacing:.025em;color:#b5c9d6;padding:11px 15px;border-bottom:1px solid #395163}
+td{font:500 12.5px/1.5 'DM Sans',sans-serif;color:#e4edf4;padding:12px 15px;border-bottom:1px solid #304554}
+tbody tr:hover{background:#213846}
+.pag{background:#162633;border-color:#364a59;padding:13px;gap:7px}
+.pag-btn{border:1px solid #465f70;color:#d5e4ed;background:#233947;border-radius:9px;min-width:36px;min-height:36px;font-weight:800;transition:background .2s,transform .2s,border-color .2s}
+.pag-btn:hover{background:#304c5f;transform:translateY(-1px);border-color:#75dc9b}
+.pag-btn.active{background:#22c55e;color:#082d17;border-color:#22c55e}
+.pag-btn.disabled{opacity:.38;pointer-events:none}
+.empty-state{padding:35px 20px;color:#b5c4ce}
+.empty-state i{font-size:32px;opacity:.6;color:#8bbda2}
+.empty-state p{color:#b7c8d3;font-size:13px}
+.alert-error{color:#fecaca;background:rgba(239,68,68,.10);border-color:#8a4750;margin:0 0 15px}
+.alert-success{color:#bbf7d0;background:rgba(34,197,94,.10);border-color:#34795a}
+.status-badge{font-size:11px;letter-spacing:0;border-radius:9px}
+.update-btn,.s-btn{background:#22c55e;color:#082b16;border:1px solid #36cc6e;border-radius:10px;min-height:34px;padding:7px 11px;font:800 12px 'DM Sans',sans-serif;transition:background .2s,transform .2s}
+.update-btn:hover,.s-btn:hover{background:#4ade80;transform:translateY(-1px)}
+.btn-cancel,.s-clear{background:#293b49;color:#e7f0f5;border-color:#536475;border-radius:10px}
+.btn-cancel:hover,.s-clear:hover{background:#354958;color:#fff}
+.btn-confirm-del{background:#dc4545;color:#fff;border-radius:10px}
+.btn-confirm-del:hover{background:#b91c1c}
+.act-view{background:rgba(59,130,246,.14);color:#93c5fd;border:1px solid #396295}
+.act-view:hover{background:rgba(59,130,246,.25)}
+.act-del{background:rgba(239,68,68,.13);color:#fda4af;border:1px solid #884b52}
+.act-del:hover{background:rgba(239,68,68,.25)}
+.act-btn{width:36px;height:36px;border-radius:10px}
+.admin-table-hint{display:none;padding:9px 17px;color:#adbdc8;font-size:11.5px}
+.admin-table-hint i{color:#86efac;margin-right:5px}
+@media(max-width:1320px){.ah-nav a{font-size:11.5px;padding:9px 8px;gap:6px}}
+@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
+@media(max-width:1050px){.admin-table-hint{display:block}}
+@media(max-width:640px){#adminHeader{height:64px}#mobileNav{top:63px}#main{padding:17px 15px 30px}.admin-page-intro{padding:18px 17px;border-radius:15px}.admin-page-intro p.admin-desc{font-size:12px}.admin-intro-actions{width:100%}.admin-intro-actions .admin-link{flex:1}.section-title{font-size:26px}.mini-stats{gap:10px}.mini-card{padding:13px;min-height:88px}.mini-val{font-size:25px}.ah-user{padding:4px}.ah-user-name,.hidden-xs{display:none}.ah-btn-logout{min-width:39px;padding:10px}.panel-head{padding:13px 15px}.panel-head h2{font-size:14px}}
+@media(max-width:390px){.ah-logo-badge{display:none}.ah-logo-name{font-size:19px}.ah-hamburger{width:39px;height:39px}.ah-avatar{width:30px;height:30px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+#ticketsPage .tickets-summary{display:flex;align-items:flex-start;max-width:370px}
+#ticketsPage .tickets-summary .mini-card{width:100%;border-top:3px solid #22c55e}
+#ticketsPage .panel{margin-top:15px}
+#ticketsPage .items-list li{color:#d5e6ee}
+#ticketsPage .items-list li span{color:#9fb4c4}
+#ticketsPage .update-btn{background:#2563eb;color:#fff;border-color:#4682ee}
+#ticketsPage .update-btn:hover{background:#3b82f6}
+#ticketsPage table{min-width:860px}
+#ticketsPage .mini-stats{margin-bottom:14px}
+@media(max-width:640px){#ticketsPage .tickets-summary{max-width:100%}}
+
+
+#ticketsPage .admin-ticket-side{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+#ticketsPage .admin-ticket-side .tickets-summary{width:195px;max-width:none;margin:0}
+#ticketsPage .admin-ticket-side .mini-card{min-height:92px;padding:12px 14px;gap:10px;border-top:0}
+#ticketsPage .admin-ticket-side .mini-icon{width:38px;height:38px}
+#ticketsPage .admin-ticket-side .mini-val{font-size:27px}
+#ticketsPage .admin-intro-actions{align-items:center}
+@media(max-width:730px){#ticketsPage .admin-ticket-side{width:100%;justify-content:flex-start}#ticketsPage .admin-ticket-side .tickets-summary{width:210px;flex:1}#ticketsPage .admin-intro-actions{width:auto}}
+@media(max-width:410px){#ticketsPage .admin-ticket-side .tickets-summary{width:100%;flex:auto}#ticketsPage .admin-intro-actions{width:100%}#ticketsPage .admin-intro-actions .admin-link{width:100%}}
+
+
+/* Gestión de comprobantes: cabecera compacta y filtros automáticos */
+#ticketsPage .admin-page-intro{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:22px;padding:23px 28px;background:linear-gradient(112deg,#193c32 0%,#19323b 62%,#172b39 100%);border-color:#3b6256;min-height:158px}
+#ticketsPage .admin-page-intro .section-label{display:inline-flex;align-items:center;gap:7px;margin:0 0 9px}
+#ticketsPage .admin-page-intro .section-title{font-size:clamp(27px,2.3vw,34px);margin:0}
+#ticketsPage .admin-page-intro .admin-desc{max-width:610px;margin:10px 0 0;font-size:13px;line-height:1.55}
+#ticketsPage .admin-ticket-side{align-items:center;gap:12px;flex-wrap:nowrap}
+#ticketsPage .admin-ticket-side .tickets-summary{width:186px;flex:none}
+#ticketsPage .admin-ticket-side .mini-card{min-height:87px;padding:12px 15px;border:1px solid #3c5665;background:rgba(18,35,48,.72);border-radius:14px;box-shadow:none}
+#ticketsPage .admin-ticket-side .mini-icon{background:rgba(34,197,94,.13)!important}
+#ticketsPage .admin-ticket-side .mini-icon i{color:#75e69b!important}
+#ticketsPage .admin-ticket-side .mini-val{font-size:26px}
+#ticketsPage .admin-ticket-side .admin-link{min-height:43px}
+#ticketsPage .ticket-filters{margin-top:17px;padding:18px 20px;background:#182a37;border:1px solid #38505f;border-radius:17px;box-shadow:0 10px 28px rgba(0,0,0,.08)}
+#ticketsPage .ticket-filter-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+#ticketsPage .ticket-filter-heading h2{margin:0;color:#f3f8fb;font-size:14px;font-weight:800;display:flex;align-items:center;gap:9px}
+#ticketsPage .ticket-filter-heading h2 i{color:#7ee7a1}
+#ticketsPage .ticket-filter-heading span{font-size:11px;color:#b4c6d1}
+#ticketsPage .ticket-filter-grid{display:grid;grid-template-columns:minmax(250px,1.7fr) minmax(150px,1fr) minmax(150px,1fr) auto;gap:12px;align-items:end}
+#ticketsPage .ticket-filter-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+#ticketsPage .ticket-filter-field label{font-size:11px;font-weight:800;color:#c4d5df}
+#ticketsPage .ticket-input-wrap{position:relative}
+#ticketsPage .ticket-input-wrap i{position:absolute;top:50%;left:13px;transform:translateY(-50%);color:#9bb3c1;pointer-events:none}
+#ticketsPage .ticket-filter-input{height:43px;width:100%;min-width:0;padding:0 12px;background:#223746;color:#f2f8fc;border:1px solid #4c6473;border-radius:10px;font-size:12px;outline:none;color-scheme:dark}
+#ticketsPage .ticket-filter-input.search{padding-left:37px}
+#ticketsPage .ticket-filter-input::placeholder{color:#a2b4c0}
+#ticketsPage .ticket-filter-input:focus{border-color:#78e2a0;box-shadow:0 0 0 3px rgba(34,197,94,.13)}
+#ticketsPage .ticket-filter-clear{height:43px;border:1px solid #557080;border-radius:10px;padding:0 15px;background:#2a4251;color:#ecf5fa;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+#ticketsPage .ticket-filter-clear:hover{background:#365364;border-color:#8daebe}
+#ticketsPage .ticket-filter-feedback{margin:12px 0 0;color:#b7cbd5;font-size:11.5px;min-height:17px}
+#ticketsPage .ticket-filter-error{color:#fca5a5}
+@media(max-width:1000px){#ticketsPage .ticket-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ticketsPage .ticket-filter-field:first-child{grid-column:1/-1}#ticketsPage .ticket-filter-clear{width:100%}}
+@media(max-width:780px){#ticketsPage .admin-page-intro{grid-template-columns:1fr;padding:20px}#ticketsPage .admin-ticket-side{justify-content:flex-start}#ticketsPage .admin-ticket-side .tickets-summary{width:185px;flex:none}}
+@media(max-width:520px){#ticketsPage .ticket-filter-grid{grid-template-columns:1fr}#ticketsPage .ticket-filter-field:first-child{grid-column:auto}#ticketsPage .ticket-filters{padding:15px}#ticketsPage .admin-ticket-side{flex-wrap:wrap}#ticketsPage .admin-ticket-side .tickets-summary{width:100%;flex:1}#ticketsPage .admin-intro-actions{width:100%}#ticketsPage .admin-intro-actions .admin-link{width:100%}}
+
 </style>
 </head>
 <body>
 
 <!-- ===================== HEADER ===================== -->
 <header id="adminHeader">
-    <a href="dashboard_admin.html" class="ah-logo">
-        <span class="ah-logo-dot"></span>
-        <span class="ah-logo-name">Casatek</span>
-        <span class="ah-logo-badge">Admin</span>
+    <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
+        <span class="ah-logo-dot" aria-hidden="true"></span>
+        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
+        <span class="ah-logo-badge">Administración</span>
     </a>
-    <nav class="ah-nav">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <nav class="ah-nav" aria-label="Navegación administrativa">
+        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
         <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
         <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html" class="active"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+        <a href="tickets_admin.html" class="active" aria-current="page"><i class="fa-solid fa-ticket"></i> Tickets</a>
+        <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
         <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
     <div class="ah-actions">
-        <div class="ah-user">
+        <div class="ah-user" title="Sesión de administrador">
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="hidden-xs">Salir</span>
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
+            <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
         </button>
-        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+        <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
             <i class="fa-solid fa-bars" id="hambIcon"></i>
         </button>
     </div>
 </header>
-
-<nav id="mobileNav">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<nav id="mobileNav" aria-label="Menú administrativo móvil">
+    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
     <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
     <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="tickets_admin.html" class="active"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+    <a href="tickets_admin.html" class="active" aria-current="page"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
     <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
@@ -171,12 +344,14 @@
 <div id="ticketsPage">
     <main id="main">
 
-        <div class="fade-up">
-            <p class="section-label"><i class="fa-solid fa-ticket mr-1"></i> Gestión</p>
-            <h1 class="section-title">Panel de <span style="color:var(--green)">Tickets</span></h1>
-        </div>
-
-        <div class="mini-stats">
+        <div class="fade-up admin-page-intro">
+            <div>
+                <p class="section-label"><i class="fa-solid fa-ticket"></i> Gestión de comprobantes</p>
+                <h1 class="section-title">Panel de <span style="color:var(--green)">Tickets</span></h1>
+                <p class="admin-desc">Administra los comprobantes de tus clientes, encuentra compras rápidamente y descarga los tickets en PDF.</p>
+            </div>
+            <div class="admin-ticket-side">
+                <div class="mini-stats tickets-summary">
             <div class="mini-card fade-up delay-1">
                 <div class="mini-icon" style="background:rgba(255,255,255,.06)">
                     <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
@@ -187,6 +362,10 @@
                 </div>
             </div>
         </div>
+                <div class="admin-intro-actions"><a class="admin-link admin-link-secondary" href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Ver pedidos</a></div>
+            </div>
+        </div>
+
 
         <div class="alert-success" id="successAlert" style="display:none">
             <i class="fa-solid fa-circle-check"></i> <span id="successMsg"></span>
@@ -195,12 +374,38 @@
             <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorMsg"></span>
         </div>
 
+        <section class="ticket-filters" aria-label="Filtros de tickets">
+            <div class="ticket-filter-heading">
+                <h2><i class="fa-solid fa-filter"></i> Buscar y filtrar comprobantes</h2>
+                <span><i class="fa-solid fa-bolt"></i> Filtrado automático</span>
+            </div>
+            <div class="ticket-filter-grid">
+                <div class="ticket-filter-field">
+                    <label for="ticketSearch">N.º de ticket, cliente, correo o producto</label>
+                    <div class="ticket-input-wrap"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input id="ticketSearch" class="ticket-filter-input search" type="search" placeholder="Busca por ticket, nombre, correo o producto" autocomplete="off">
+                    </div>
+                </div>
+                <div class="ticket-filter-field">
+                    <label for="ticketDateFrom">Fecha desde</label>
+                    <input id="ticketDateFrom" class="ticket-filter-input" type="date">
+                </div>
+                <div class="ticket-filter-field">
+                    <label for="ticketDateTo">Fecha hasta</label>
+                    <input id="ticketDateTo" class="ticket-filter-input" type="date">
+                </div>
+                <button id="ticketClearFilters" class="ticket-filter-clear" type="button"><i class="fa-solid fa-rotate-left"></i> Limpiar</button>
+            </div>
+            <p id="ticketFilterFeedback" class="ticket-filter-feedback" role="status" aria-live="polite">Mostrando todos los tickets disponibles.</p>
+        </section>
+
         <div class="panel">
             <div class="panel-head">
                 <h2><i class="fa-solid fa-ticket" style="color:#c084fc"></i> Tickets de todos los clientes</h2>
                 <span style="font-size:11px;color:var(--muted)" id="tableCount">0 tickets</span>
             </div>
 
+            <p class="admin-table-hint"><i class="fa-solid fa-arrows-left-right"></i> Desliza para ver todas las columnas.</p>
             <div style="overflow-x:auto">
                 <table>
                     <thead>
@@ -247,6 +452,66 @@
 
     let currentPage = 1;
     const perPage = 5;
+    let ticketSearchTerm = '';
+    let ticketDateFrom = '';
+    let ticketDateTo = '';
+
+    function normalizeTicketText(value) {
+        return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+    function ticketLocalDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '';
+        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    }
+    function getFilteredTickets() {
+        if (ticketDateFrom && ticketDateTo && ticketDateFrom > ticketDateTo) return [];
+        return tickets.filter(ticket => {
+            if (ticketSearchTerm) {
+                const productNames = (ticket.items || []).map(item => item.product?.name || '').join(' ');
+                const searchable = normalizeTicketText([
+                    ticket.ticket_number, ticket.user?.name, ticket.user?.email, productNames
+                ].join(' '));
+                if (!searchable.includes(ticketSearchTerm)) return false;
+            }
+            if (ticketDateFrom || ticketDateTo) {
+                const date = ticketLocalDate(ticket.created_at);
+                if (!date || (ticketDateFrom && date < ticketDateFrom) || (ticketDateTo && date > ticketDateTo)) return false;
+            }
+            return true;
+        });
+    }
+    function updateTicketFilterFeedback(count) {
+        const feedback = document.getElementById('ticketFilterFeedback');
+        const invalidRange = ticketDateFrom && ticketDateTo && ticketDateFrom > ticketDateTo;
+        feedback.classList.toggle('ticket-filter-error', Boolean(invalidRange));
+        feedback.textContent = invalidRange
+            ? 'La fecha «Desde» no puede ser posterior a la fecha «Hasta».'
+            : `${count} ${count === 1 ? 'ticket encontrado' : 'tickets encontrados'}${ticketSearchTerm || ticketDateFrom || ticketDateTo ? ' con los filtros seleccionados' : ' en total'}.`;
+    }
+    document.getElementById('ticketSearch').addEventListener('input', event => {
+        ticketSearchTerm = normalizeTicketText(event.target.value);
+        currentPage = 1;
+        renderTable();
+    });
+    document.getElementById('ticketDateFrom').addEventListener('change', event => {
+        ticketDateFrom = event.target.value;
+        currentPage = 1;
+        renderTable();
+    });
+    document.getElementById('ticketDateTo').addEventListener('change', event => {
+        ticketDateTo = event.target.value;
+        currentPage = 1;
+        renderTable();
+    });
+    document.getElementById('ticketClearFilters').addEventListener('click', () => {
+        document.getElementById('ticketSearch').value = '';
+        document.getElementById('ticketDateFrom').value = '';
+        document.getElementById('ticketDateTo').value = '';
+        ticketSearchTerm = ticketDateFrom = ticketDateTo = '';
+        currentPage = 1;
+        renderTable();
+    });
 
     function formatBs(n) { return 'Bs. ' + Number(n).toFixed(2); }
     function formatDate(iso) {
@@ -293,7 +558,8 @@
     }
 
     function renderTable() {
-        const filtered = tickets;
+        const filtered = getFilteredTickets();
+        updateTicketFilterFeedback(filtered.length);
         document.getElementById('tableCount').textContent = `${filtered.length} ticket${filtered.length !== 1 ? 's' : ''}`;
 
         const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
@@ -320,7 +586,6 @@
                         <td>
                             <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">${escapeHtml(ticket.user.name) || '—'}</p>
                             <p style="font-size:11px;color:var(--muted);margin:2px 0 0">${escapeHtml(ticket.user.email)}</p>
-                            <p style="font-size:10px;color:var(--muted);margin:2px 0 0">ID Usuario: ${escapeHtml(ticket.user.id)}</p>
                         </td>
                         <td class="hide-sm">${itemsHtml}</td>
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(ticket.total)}</td>

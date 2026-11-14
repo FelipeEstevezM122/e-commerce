@@ -124,46 +124,173 @@
         .mini-stats { grid-template-columns:1fr 1fr; }
         th.hide-sm, td.hide-sm { display:none; }
     }
+
+/* CASATEK · Ajustes UI/UX exclusivos de presentación */
+/* NAVEGACIÓN */
+#adminHeader {height:74px;padding:0 clamp(18px,3.1vw,46px);background:rgba(15,25,35,.96);border-bottom:1px solid #2b3b49;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 5px 25px rgba(0,0,0,.10)}
+.ah-logo {display:inline-flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
+.ah-logo-dot {width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12)}
+.ah-logo-name {font:800 22px 'Syne',sans-serif;color:#fff;letter-spacing:-.065em}
+.ah-logo-name .brand-tek{color:var(--green)}
+.ah-logo-badge {background:rgba(34,197,94,.11);color:#a7f3be;border:1px solid rgba(34,197,94,.3);font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:7px}
+.ah-nav {display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
+.ah-nav a {display:inline-flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;color:#b9c6d1;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s,transform .2s}
+.ah-nav a i {font-size:13px}
+.ah-nav a:hover {color:#eafff1;background:#243b36;transform:translateY(-1px)}
+.ah-nav a.active {background:rgba(34,197,94,.16);color:#80efa7;box-shadow:inset 0 0 0 1px rgba(34,197,94,.25)}
+.ah-actions {display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ah-user {display:flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid #334b4a;background:#1c3031;border-radius:22px}
+.ah-avatar {width:33px;height:33px;border-radius:12px;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;color:#6dea97;font-size:15px}
+.ah-user-name {font-size:12px;font-weight:800;color:#ecfff2}
+.ah-btn-logout {display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #42505a;color:#e0e9f0;background:rgba(255,255,255,.03);padding:10px 14px;font-size:12px;font-weight:800;border-radius:11px;cursor:pointer;text-decoration:none;transition:all .2s}
+.ah-btn-logout:hover {border-color:rgba(248,113,113,.6);background:rgba(248,113,113,.1);color:#ffc3c3;transform:translateY(-1px)}
+.ah-hamburger {display:none;width:42px;height:42px;border-radius:11px;align-items:center;justify-content:center;background:#21323f;color:#f7fafc;border:1px solid #39505d;font-size:18px;cursor:pointer;transition:background .2s}
+.ah-hamburger:hover {background:#2a463e;color:#86efac}
+#mobileNav {display:none;flex-direction:column;gap:5px;background:#152330;padding:14px 18px 18px;border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:99;box-shadow:0 18px 35px rgba(0,0,0,.24)}
+#mobileNav a {display:flex;align-items:center;gap:13px;text-decoration:none;color:#ccd8e0;border:1px solid transparent;padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px;transition:all .2s}
+#mobileNav a i {width:20px;text-align:center}
+#mobileNav a:hover,#mobileNav a.active {color:#9ef8bc;background:#234337;border-color:#345a4c}
+
+
+
+:root{--green:#22C55E;--green-dark:#15803d;--bg:#0d1620;--surface:#121f2b;--card:#172431;--card-soft:#1d2d3b;--border:#304252;--border-h:#357357;--text:#f3f7fb;--muted:#aebfcc}
+html,body{background:#0d1620!important;color:#f3f7fb;font-family:'DM Sans',system-ui,sans-serif;line-height:1.48;-webkit-font-smoothing:antialiased}
+body{min-width:0}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #86efac;outline-offset:3px}
+::selection{background:rgba(34,197,94,.25);color:#fff}
+#productsPage,#ordersPage{background:radial-gradient(circle at 90% 0,rgba(34,197,94,.065),transparent 32%),linear-gradient(#0f1a25,#0d1620 48%,#0b141d);min-height:calc(100vh - 74px)}
+#main{max-width:1530px;padding:25px clamp(17px,3.1vw,46px) 42px;margin-inline:auto}
+.section-title,.section-heading h2,.panel-head h2,.mini-val,.ah-logo-name{font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:-.024em}
+.section-title{font-size:clamp(24px,2.05vw,30px);line-height:1.17}
+.section-label{font-size:11px;letter-spacing:.085em;color:#81eca5}
+#productsPage .mini-stats,#ordersPage .mini-stats{gap:13px;margin:18px 0}
+.mini-card{min-width:0;padding:17px 18px;background:linear-gradient(145deg,#1b2b39,#172431);border:1px solid #354855;border-radius:15px;min-height:99px;box-shadow:0 8px 19px rgba(0,0,0,.10);transition:transform .22s,border-color .22s}
+.mini-card:hover{transform:translateY(-3px);border-color:#487c65}
+.mini-icon{width:42px;height:42px;border-radius:11px}
+.mini-label{font-size:11.5px;letter-spacing:.015em;text-transform:none;font-weight:700;color:#afc0ce;margin-bottom:3px}
+.mini-val{font-size:27px;color:#f7fafc;line-height:1.15;font-variant-numeric:tabular-nums}
+.panel,.search-wrap{background:#172632;border:1px solid #344958;border-radius:17px;box-shadow:0 12px 30px rgba(2,10,17,.12)}
+.panel-head{padding:16px 19px;gap:12px;flex-wrap:wrap;border-bottom:1px solid #344958}
+.panel-head h2{font-size:16px;color:#f6fbfe}
+.panel-head span,#panelCount,#tableCount{color:#bdcbd4!important;font-size:12px!important}
+.panel table{width:100%;border-collapse:collapse}
+.panel thead tr{background:#203341}
+.panel th{color:#c1d0da;font-weight:800;letter-spacing:.025em;font-size:11px;padding:13px 14px}
+.panel td{color:#e2edf3;font-size:12.5px;padding:13px 14px;border-bottom:1px solid #304452}
+.panel tbody tr:hover{background:#203641}
+.panel .p-name{font-size:13px;color:#f6f9fc}
+.panel .p-sku{color:#b3c3cf}
+.status-badge{padding:5px 9px;font-size:10.5px;text-transform:none;letter-spacing:.01em}
+.pag{padding:15px 16px;gap:7px;border-top:1px solid #354a59}
+.pag-btn{background:#233645;border:1px solid #425968;color:#d7e4ed;border-radius:9px;min-height:36px;min-width:36px;font-weight:800}
+.pag-btn:hover:not(.disabled){border-color:#70d892;color:#b1f7c8;background:#294539}
+.pag-btn.active{background:#22C55E;color:#092d18;border-color:#22C55E}
+.pag-btn.disabled{opacity:.45}
+.ah-logo-name{font-size:22px;letter-spacing:-.055em}
+.ah-logo-badge{font-size:10px}
+.ah-btn-logout{color:#ffd0d0;border-color:#754149;background:#35232c}
+.ah-btn-logout:hover{color:#fff;border-color:#e66573;background:#723640}
+.ah-hamburger{min-height:42px}
+@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
+@media(min-width:1131px){.ah-nav{display:flex}.ah-hamburger{display:none}}
+@media(max-width:760px){#main{padding:17px 13px 30px}.mini-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-card{padding:13px;gap:10px;min-height:88px}.mini-icon{width:36px;height:36px}.mini-label{font-size:10.5px}.mini-val{font-size:23px}.panel-head{padding:14px}.panel th,.panel td{padding:11px 12px}#adminHeader{height:64px;padding:0 14px}#mobileNav{top:64px}.ah-user-name,.ah-logo-badge{display:none}.ah-logo-name{font-size:20px}}
+@media(max-width:380px){.mini-stats{gap:8px}.mini-card{padding:11px;gap:7px}.mini-val{font-size:21px}.ah-user{display:none}}
+@media(prefers-reduced-motion:reduce){.mini-card,.pag-btn{transition:none!important}}
+
+
+#ordersPage .admin-page-intro{background:linear-gradient(108deg,#18362b,#182b3b);border:1px solid #385747;border-radius:18px;padding:19px 22px;margin-bottom:5px}
+#ordersPage .admin-page-intro .section-label{margin-bottom:5px}
+#ordersPage .admin-page-intro p:last-child{font-size:12.5px;color:#bed0cf;line-height:1.55;margin-top:7px}
+#ordersPage .status-tabs{gap:7px;margin:0 0 15px}
+#ordersPage .s-tab{background:#213341;border:1px solid #3c5160;color:#c5d3dc;border-radius:10px;padding:9px 12px;min-height:38px;font-weight:700;font-size:12px;transition:transform .2s,background .2s}
+#ordersPage .s-tab:hover{transform:translateY(-1px);color:#f5f8fb;background:#294455}
+#ordersPage .s-tab.active{font-weight:800}
+#ordersPage .status-form{gap:7px;align-items:center}
+#ordersPage .status-select{background:#223746;border:1px solid #4d6372;min-height:34px;color:#f2f7fa;border-radius:9px;padding:6px 7px;font-size:11px;min-width:120px}
+#ordersPage .status-select option{background:#1d2d3b}
+#ordersPage .update-btn{background:#168c48;color:#fff;border:1px solid #39ac69;border-radius:9px;padding:7px 10px;min-height:34px;font-weight:800;transition:background .18s,transform .18s}
+#ordersPage .update-btn:hover{background:#22C55E;color:#082a16;transform:translateY(-1px)}
+#ordersPage td:nth-child(7) .update-btn{background:#1d4ed8;border-color:#4d7cf0;color:#fff}
+#ordersPage td:nth-child(7) .update-btn:hover{background:#2563eb;color:#fff}
+#ordersPage .locked-status{color:#bbcbd7;font-size:11.5px;font-style:normal}
+#ordersPage .status-badge{font-weight:800}
+#ordersPage .alert-success,#ordersPage .alert-error{font-size:12.5px}
+#ordersPage td:nth-child(2) p{max-width:260px;overflow-wrap:anywhere}
+.admin-table-hint{padding:10px 17px 0;color:#a8bac7;font-size:11px;display:none}
+@media(max-width:1050px){#ordersPage .admin-table-hint{display:block}}
+@media(max-width:600px){#ordersPage .admin-page-intro{padding:16px;border-radius:14px}#ordersPage .s-tab{font-size:11px;padding:8px 10px}#ordersPage .status-form{flex-wrap:wrap}}
+
+
+/* Buscador y filtros automáticos, exclusivamente en la interfaz */
+#ordersPage .order-filters{background:#172632;border:1px solid #344958;border-radius:16px;padding:17px 19px;margin:0 0 16px}
+#ordersPage .order-filters-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:13px;color:#e9f5fc;font-size:14px;font-weight:800}
+#ordersPage .order-filters-heading small{color:#aebfcc;font-size:11px;font-weight:500}
+#ordersPage .order-filters-grid{display:grid;grid-template-columns:minmax(250px,1fr) minmax(170px,230px) auto;gap:12px;align-items:end}
+#ordersPage .order-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+#ordersPage .order-field label{font-size:11px;font-weight:800;color:#c1d0da}
+#ordersPage .order-input{width:100%;height:43px;border:1px solid #496071;background:#203442;color:#f4f9fc;border-radius:10px;padding:0 13px;font-size:12.5px;outline:none;color-scheme:dark}
+#ordersPage .order-input::placeholder{color:#9aafbd}
+#ordersPage .order-input:focus{border-color:#66d78d;box-shadow:0 0 0 3px rgba(34,197,94,.13)}
+#ordersPage .order-clear{height:43px;padding:0 16px;border-radius:10px;background:#293d4b;border:1px solid #4d6473;color:#e5eef4;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+#ordersPage .order-clear:hover{background:#354e5d;border-color:#79a4b6}
+#ordersPage .order-filter-result{font-size:11.5px;color:#aebfcc;margin:10px 0 0}
+#ordersPage .status-tabs .s-tab{font-family:'DM Sans',sans-serif;outline-offset:3px}
+#ordersPage .status-tabs .s-tab:focus-visible{outline:2px solid #86efac}
+#ordersPage .s-tab.t-all.active{background:#37566a;border-color:#7693a4;color:#fff}
+#ordersPage .s-tab.t-pending.active{background:#51431e;border-color:#b89431;color:#ffe18a}
+#ordersPage .s-tab.t-paid.active{background:#1d4165;border-color:#458aca;color:#a9d9ff}
+#ordersPage .s-tab.t-shipped.active{background:#45315e;border-color:#9562ca;color:#e0c3ff}
+#ordersPage .s-tab.t-delivered.active{background:#1b5136;border-color:#3eaf6e;color:#a2f3c0}
+#ordersPage .s-tab.t-cancelled.active{background:#572d37;border-color:#c56c79;color:#ffc0c7}
+@media(max-width:780px){#ordersPage .order-filters-grid{grid-template-columns:1fr 1fr}#ordersPage .order-field:first-child{grid-column:1/-1}#ordersPage .order-clear{width:100%}}
+@media(max-width:490px){#ordersPage .order-filters-grid{grid-template-columns:1fr}#ordersPage .order-field:first-child{grid-column:auto}#ordersPage .order-filters{padding:14px}}
+
+/* Rango de fechas y pestañas centradas */
+#ordersPage .order-filters-grid{grid-template-columns:minmax(220px,1.6fr) minmax(145px,.75fr) minmax(145px,.75fr) auto;gap:12px;align-items:end}
+#ordersPage .status-tabs{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;width:100%;margin:0 auto 18px}
+#ordersPage .status-tabs .s-tab{display:inline-flex;justify-content:center;align-items:center;min-height:44px;padding:10px 17px;text-align:center}
+@media(max-width:1050px){#ordersPage .order-filters-grid{grid-template-columns:repeat(3,minmax(0,1fr))}#ordersPage .order-clear{grid-column:1/-1;justify-self:center;min-width:190px}}
+@media(max-width:700px){#ordersPage .order-filters-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ordersPage .order-field:first-child{grid-column:1/-1}#ordersPage .order-clear{grid-column:1/-1;width:100%}#ordersPage .status-tabs .s-tab{flex:1 1 145px;padding:10px 12px}}
+@media(max-width:400px){#ordersPage .order-filters-grid{grid-template-columns:1fr}#ordersPage .order-field:first-child{grid-column:auto}#ordersPage .status-tabs .s-tab{flex:1 1 125px}}
 </style>
 </head>
 <body>
 
 <!-- ===================== HEADER ===================== -->
 <header id="adminHeader">
-    <a href="dashboard_admin.html" class="ah-logo">
-        <span class="ah-logo-dot"></span>
-        <span class="ah-logo-name">Casatek</span>
-        <span class="ah-logo-badge">Admin</span>
+    <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
+        <span class="ah-logo-dot" aria-hidden="true"></span>
+        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
+        <span class="ah-logo-badge">Administración</span>
     </a>
-    <nav class="ah-nav">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <nav class="ah-nav" aria-label="Navegación administrativa">
+        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
         <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html" class="active"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+        <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
         <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
     <div class="ah-actions">
-        <div class="ah-user">
+        <div class="ah-user" title="Sesión de administrador">
             <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
             <span class="ah-user-name">Admin</span>
         </div>
-        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="hidden-xs">Salir</span>
+        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
+            <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
         </button>
-        <button class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Menú">
+        <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
             <i class="fa-solid fa-bars" id="hambIcon"></i>
         </button>
     </div>
 </header>
-
-<nav id="mobileNav">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<nav id="mobileNav" aria-label="Menú administrativo móvil">
+    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
     <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="orders_admin.html" class="active"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="/estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+    <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+    <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
     <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
 </nav>
 
@@ -171,9 +298,10 @@
 <div id="ordersPage">
     <main id="main">
 
-        <div class="fade-up">
+        <div class="fade-up admin-page-intro">
             <p class="section-label"><i class="fa-solid fa-clipboard-list mr-1"></i> Gestión</p>
             <h1 class="section-title">Panel de <span style="color:var(--green)">Pedidos</span></h1>
+            <p>Consulta tus pedidos y actualiza su estado cuando corresponda. Selecciona una pestaña para filtrar el listado.</p>
         </div>
 
         <div class="mini-stats">
@@ -222,6 +350,17 @@
             <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorMsg"></span>
         </div>
 
+
+        <section class="order-filters" aria-label="Búsqueda de pedidos">
+            <div class="order-filters-heading"><span><i class="fa-solid fa-magnifying-glass" style="color:#6ee7a0"></i> Buscar y filtrar pedidos</span><small>Resultados automáticos · sin botón Buscar</small></div>
+            <div class="order-filters-grid">
+                <div class="order-field"><label for="orderSearchInput">N.º de pedido, cliente o correo</label><input class="order-input" type="search" id="orderSearchInput" placeholder="Escribe un número, nombre o correo" autocomplete="off"></div>
+                <div class="order-field"><label for="orderDateFrom">Desde</label><input class="order-input" type="date" id="orderDateFrom"></div>
+                <div class="order-field"><label for="orderDateTo">Hasta</label><input class="order-input" type="date" id="orderDateTo"></div>
+                <button type="button" class="order-clear" id="clearOrderFilters"><i class="fa-solid fa-rotate-left"></i> Limpiar filtros</button>
+            </div>
+            <p class="order-filter-result" id="orderFilterResult" role="status" aria-live="polite">Mostrando todos los pedidos disponibles.</p>
+        </section>
         <div class="status-tabs" id="statusTabs"></div>
 
         <div class="panel">
@@ -230,6 +369,7 @@
                 <span style="font-size:11px;color:var(--muted)" id="tableCount">0 pedidos</span>
             </div>
 
+            <p class="admin-table-hint"><i class="fa-solid fa-arrows-left-right"></i> Desliza la tabla horizontalmente para ver todas las columnas.</p>
             <div style="overflow-x:auto">
                 <table>
                     <thead>
@@ -299,6 +439,55 @@
     let currentStatus = null;
     let currentPage = 1;
     const perPage = 5;
+    let orderSearchText = '';
+    let orderDateFrom = '';
+     let orderDateTo = '';
+    function normalizeOrderSearch(value) {
+        return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+    function getFilteredOrders() {
+        return orders.filter(order => {
+            if (currentStatus && order.status !== currentStatus) return false;
+            if (orderSearchText) {
+                const text = normalizeOrderSearch([order.order_number, order.id, order.user?.name, order.user?.email].join(' '));
+                if (!text.includes(orderSearchText)) return false;
+            }
+            if (orderDateFrom || orderDateTo) {
+                 const d = new Date(order.created_at);
+                 if (Number.isNaN(d.getTime())) return false;
+                 const date = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+                 if (orderDateFrom && date < orderDateFrom) return false;
+                 if (orderDateTo && date > orderDateTo) return false;
+             }
+            return true;
+        });
+    }
+    document.getElementById('orderSearchInput').addEventListener('input', event => {
+        orderSearchText = normalizeOrderSearch(event.target.value);
+        currentPage = 1;
+        renderTable();
+    });
+    document.getElementById('orderDateFrom').addEventListener('change', event => {
+         orderDateFrom = event.target.value;
+         currentPage = 1;
+         renderTable();
+     });
+     document.getElementById('orderDateTo').addEventListener('change', event => {
+         orderDateTo = event.target.value;
+         currentPage = 1;
+         renderTable();
+     });
+    document.getElementById('clearOrderFilters').addEventListener('click', () => {
+        document.getElementById('orderSearchInput').value = '';
+        document.getElementById('orderDateFrom').value = '';
+         document.getElementById('orderDateTo').value = '';
+        orderSearchText = '';
+        orderDateFrom = '';
+         orderDateTo = '';
+        currentPage = 1;
+        renderTable();
+    });
+
 
     function formatBs(n) { return 'Bs. ' + Number(n).toFixed(2); }
     function formatDate(iso) {
@@ -317,14 +506,14 @@
 
     function renderTabs() {
         const wrap = document.getElementById('statusTabs');
-        let html = `<span class="s-tab t-all ${!currentStatus ? 'active' : ''}" onclick="setStatus(null)">
+        let html = `<button type="button" class="s-tab t-all ${!currentStatus ? 'active' : ''}" aria-pressed="${!currentStatus}" onclick="setStatus(null)">
             <i class="fa-solid fa-border-all"></i> Todos
             <span style="background:rgba(255,255,255,.1);padding:1px 7px;border-radius:10px;font-size:10px">${orders.length}</span>
-        </span>`;
+        </button>`;
         html += TABS.map(t => `
-            <span class="s-tab ${t.cls} ${currentStatus === t.val ? 'active' : ''}" onclick="setStatus('${t.val}')">
+            <button type="button" class="s-tab ${t.cls} ${currentStatus === t.val ? 'active' : ''}" aria-pressed="${currentStatus === t.val}" onclick="setStatus('${t.val}')">
                 <i class="fa-solid ${t.icon}"></i> ${t.label}
-            </span>`).join('');
+            </button>`).join('');
         wrap.innerHTML = html;
     }
 
@@ -388,7 +577,8 @@
     }
 
     function renderTable() {
-        const filtered = currentStatus ? orders.filter(o => o.status === currentStatus) : orders;
+        const filtered = getFilteredOrders();
+        document.getElementById('orderFilterResult').textContent = `${filtered.length} ${filtered.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}${(currentStatus || orderSearchText || orderDateFrom || orderDateTo) ? ' con los filtros seleccionados' : ' en total'}.`;
         document.getElementById('tableCount').textContent = `${filtered.length} pedidos`;
 
         const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));

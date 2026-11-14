@@ -132,18 +132,173 @@
         #main { padding: 20px 16px 40px; }
     }
 </style>
+
+<style id="casatek-admin-ux-styles">
+
+/* CASATEK · ESTILO ADMIN UNIFICADO. Solo presentación, no modifica endpoints. */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --green:#22C55E;--green-dark:#15803d;
+  --bg:#0d1620;--card:#172431;--card2:#1d2e3d;
+  --border:#304252;--border-h:#4c806b;
+  --text:#f3f7fb;--muted:#b1c1ce;
+  --ux-panel:#172431;--ux-contrast:#f4f8fb;
+  color-scheme:dark;
+}
+html,body{background:#0d1620!important;color:var(--text);font-family:'DM Sans',system-ui,sans-serif!important;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{min-width:0}
+button,input,select,textarea{font-family:'DM Sans',system-ui,sans-serif}
+button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent }
+a,button{transition:background-color .19s ease,border-color .19s ease,color .19s ease,transform .19s ease,box-shadow .19s ease}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #86efac!important;outline-offset:3px}
+#showPage,#editPage,#createPage{background:radial-gradient(circle at 95% 0%,rgba(34,197,94,.06),transparent 33%),#0d1620!important;min-height:calc(100vh - 70px);color:var(--text)}
+#main{width:100%;max-width:1240px;margin:0 auto;padding:24px clamp(16px,3vw,38px) 38px}
+/* Cabecera consistente con Dashboard Admin */
+#adminHeader{height:70px;min-height:70px;background:rgba(15,25,35,.97)!important;border-bottom:1px solid #304252!important;padding:0 clamp(16px,2.8vw,36px)!important;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 8px 24px rgba(0,0,0,.12);backdrop-filter:blur(16px)}
+.ah-logo{display:inline-flex;gap:10px;align-items:center;min-width:0;text-decoration:none;flex-shrink:0}
+.ux-brand-image{width:35px;height:35px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(34,197,94,.16))}
+.ah-logo-name{font:800 19px 'DM Sans',sans-serif!important;color:#fff;letter-spacing:-.055em;white-space:nowrap}
+.brand-tek{color:var(--green)}
+.ah-logo-badge{padding:5px 8px;border:1px solid #3a6955;background:#183829;color:#9df2b6;border-radius:7px;font-size:10px;letter-spacing:.045em}
+.ah-nav{display:flex;justify-content:center;gap:2px;flex:1;min-width:0}
+.ah-nav a{font:700 12px 'DM Sans',sans-serif!important;min-height:40px;gap:7px;display:inline-flex;align-items:center;white-space:nowrap;padding:9px 11px;border-radius:10px;color:#bdcbd5!important;border:1px solid transparent!important}
+.ah-nav a:hover{color:#e8fff0!important;background:#223b34!important;transform:translateY(-1px)}
+.ah-nav a.active{background:#204434!important;border-color:#356b50!important;color:#8bf0ae!important}
+.ah-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ah-user{background:#1d3035;border:1px solid #37534f;border-radius:24px;padding:5px 10px 5px 5px;gap:8px}
+.ah-avatar{height:32px;width:32px;background:#25453a;color:#9bf2b7;border:0;border-radius:10px}
+.ah-user-name{font-size:12px;color:#edfff3}
+.ah-btn-logout{display:inline-flex;align-items:center;min-height:41px;padding:9px 13px;border-radius:10px;border:1px solid #5a4650;background:#30252b;color:#fca5a5;font-weight:750;font-size:12px;cursor:pointer;white-space:nowrap}
+.ah-btn-logout:hover{background:#46292f;color:#fff;border-color:#a45860;transform:translateY(-1px)}
+.ah-hamburger{display:none;width:43px;height:42px;align-items:center;justify-content:center;border:1px solid #42586a;background:#20323e;color:#f3f7fb;border-radius:11px;font-size:18px;cursor:pointer}
+.ah-hamburger:hover{background:#284939;color:#a4f5be}
+#mobileNav{display:none;flex-direction:column;gap:4px;background:#152330;border-bottom:1px solid #364b5e;position:sticky;top:70px;z-index:99;padding:12px 18px;max-height:calc(100vh - 70px);overflow:auto;box-shadow:0 15px 28px rgba(0,0,0,.22)}
+#mobileNav a{min-height:40px;display:flex;align-items:center;gap:12px;color:#c3d0dd;font:700 13px 'DM Sans',sans-serif;padding:10px 13px;border-radius:10px;border:1px solid transparent}
+#mobileNav a:hover,#mobileNav a.active{background:#254337;color:#9af1b6;border-color:#395f4d}
+#mobileNav a i{width:18px;text-align:center}
+/* Títulos, contenedores y espacios */
+.section-label{font-size:11px;font-weight:750;letter-spacing:.08em;color:#7aefa5;margin-bottom:6px}
+.section-title{font:750 clamp(24px,2.6vw,31px)/1.16 'DM Sans',sans-serif!important;letter-spacing:-.033em;color:#f5f9fd}
+#main> .fade-up:first-child{margin-bottom:8px}
+#main .back-link,#main .back-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #3b4f5f;background:#1d2c3b;color:#d3e1eb;border-radius:10px;padding:9px 13px;margin-bottom:16px;text-decoration:none;font:700 12px 'DM Sans',sans-serif}
+#main .back-link:hover,#main .back-btn:hover{border-color:#518973;color:#a4f6c1;background:#263f3d;transform:translateY(-1px)}
+.panel,.info-card,.user-hero{background:var(--ux-panel)!important;border:1px solid var(--border)!important;border-radius:17px;box-shadow:0 10px 26px rgba(1,9,14,.10);min-width:0}
+.panel{overflow:hidden}
+.panel-head{display:flex;align-items:center;gap:10px;padding:15px 19px;background:#1a2b39;border-bottom:1px solid #304353}
+.panel-head h2{font:750 15px 'DM Sans',sans-serif!important;color:#f5f9fd;letter-spacing:-.01em}
+.panel-body{padding:18px 20px}
+.panel-head i{color:#8ff3b3}
+.panel:hover,.info-card:hover{border-color:#456679!important}
+/* Tarjetas de usuario */
+.user-hero{padding:20px 22px;display:flex;align-items:center;gap:17px;flex-wrap:wrap;margin-bottom:16px;background:linear-gradient(110deg,#1a3730 0%,#172f3d 100%)!important;border-color:#396258!important}
+.user-hero:before{height:3px;background:linear-gradient(90deg,#22C55E,#4d80a3)}
+.hero-avatar{height:62px;width:62px;font-size:23px;border-radius:17px;background:#234b3b;border-color:#4d9471;color:#93f8b4}
+.hero-info{min-width:0;flex:1}
+.hero-info h2{font:800 clamp(19px,2vw,25px) 'DM Sans',sans-serif!important;line-height:1.2;letter-spacing:-.025em;overflow-wrap:anywhere;margin-bottom:4px}
+.hero-info p{font-size:12px;color:#c0d0dc;overflow-wrap:anywhere}
+.hero-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hero-actions>a,.hero-actions>button{min-height:41px}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-bottom:16px}
+.info-card{padding:18px 20px}
+.info-card h3{font:750 12px 'DM Sans',sans-serif;letter-spacing:.045em;color:#c6d6e1;margin-bottom:10px}
+.info-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #2e4051}
+.info-row:last-child{border-bottom:0}
+.info-key{font-size:12px;color:#acbdcb;flex:0 0 auto}
+.info-val{font-size:12.5px;color:#f0f6fa;min-width:0;text-align:right;overflow-wrap:anywhere}
+/* Formularios accesibles */
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 17px}
+.form-group,.f-group{min-width:0}
+.form-label,.f-group label{font:700 12px 'DM Sans',sans-serif;letter-spacing:.01em;text-transform:none;color:#d3e1e9;margin-bottom:6px}
+.f-input,.f-select,.f-textarea,.f-group input{background:#101e2b!important;border:1px solid #41566a!important;color:#f2f8fc!important;min-height:44px;width:100%;font:500 13px 'DM Sans',sans-serif;padding:11px 13px;border-radius:10px;outline:none;box-shadow:inset 0 1px 2px rgba(0,0,0,.07)}
+.f-textarea{min-height:92px;line-height:1.55;resize:vertical}
+.f-input::placeholder,.f-group input::placeholder,.f-textarea::placeholder{color:#8499aa!important}
+.f-input:focus,.f-select:focus,.f-textarea:focus,.f-group input:focus{background:#152a35!important;border-color:#55d589!important;box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.f-select option{background:#152330;color:#fff}
+.hint,.f-hint{color:#a8b9c7;font-size:11.5px;line-height:1.45;margin-top:4px}
+.f-sep{font:750 13px 'DM Sans',sans-serif;color:#92eeb4;letter-spacing:.005em;border-color:#344b5c;padding-top:16px;margin-top:2px}
+/* Acciones diferenciadas */
+.btn-save,.btn-submit{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:11px;padding:11px 20px;border:1px solid #21b557!important;background:#22C55E!important;color:#082c18!important;font:800 13px 'DM Sans',sans-serif!important;box-shadow:0 8px 16px rgba(34,197,94,.10);cursor:pointer}
+.btn-save:hover:not(:disabled),.btn-submit:hover:not(:disabled){background:#4ade80!important;transform:translateY(-2px);box-shadow:0 12px 20px rgba(34,197,94,.18)}
+.btn-cancel,.btn-alt{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 17px;border-radius:11px;border:1px solid #506170!important;color:#dbe6ef!important;background:#273645!important;text-decoration:none;font:700 12px 'DM Sans',sans-serif!important;cursor:pointer}
+.btn-cancel:hover,.btn-alt:hover{background:#344958!important;border-color:#6c8596!important;transform:translateY(-1px)}
+.del-btn,.btn-confirm-del{min-height:41px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 15px;border-radius:10px;background:#43282f!important;color:#fecaca!important;border:1px solid #91525d!important;font:750 12px 'DM Sans',sans-serif;cursor:pointer}
+.del-btn:hover,.btn-confirm-del:hover{background:#65303b!important;color:#fff!important;transform:translateY(-1px)}
+.btn-save:disabled,.btn-submit:disabled{opacity:.55;cursor:wait;transform:none}
+.form-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:17px}
+.alert,.alert-err,.alert-ok{border-radius:11px;font-size:12px;line-height:1.5}
+.empty-state,.loading-state{padding:28px 18px;color:#b5c6d3}
+.empty-state i,.loading-state i{opacity:.7;color:#86ecaa}
+/* Tabla y acciones de la página de usuario */
+.panel table{width:100%;border-collapse:collapse;min-width:650px}
+.panel thead tr{background:#1b3040}
+.panel th{padding:11px 13px;text-align:left;font:750 10.5px 'DM Sans',sans-serif;color:#b5c6d4;letter-spacing:.035em;border-bottom:1px solid #3c5263}
+.panel td{padding:12px 13px;font-size:12px;color:#e1ebf2;border-bottom:1px solid #304252}
+.panel tbody tr:hover{background:#223743}
+#ordersBody tr[hidden]{display:none!important}
+/* Imágenes para productos: relación estable y previsualización */
+.img-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.img-box{padding-top:75%!important;border-radius:13px;background:#142332!important;border-color:#4c6071!important}
+.img-box:hover{border-color:#50d686!important;background:#1a3737!important}
+.img-box.has-img{border-color:#448d69!important}
+.img-thumb{object-fit:cover;object-position:center}
+.img-del{width:27px;height:27px;font-size:12px}
+.img-placeholder i{font-size:23px;color:#83a5b4}
+.img-placeholder span{font-size:10px;letter-spacing:.025em;color:#a6bbc8}
+.img-tag{color:#9db4c4;font-size:10px;letter-spacing:.03em}
+.img-box.has-img .img-tag{color:#99efb3}
+/* Paginador de vista de detalle, sin alterar la lista de la API */
+.ux-pager{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 18px;border-top:1px solid #344756;background:#1a2b39}
+.ux-pager[hidden]{display:none!important}
+.ux-pager-status{font-size:11.5px;color:#b8c9d4}
+.ux-pager-controls{display:flex;align-items:center;gap:8px}
+.ux-pager-btn{display:inline-flex;gap:7px;align-items:center;justify-content:center;min-height:34px;border:1px solid #435869;background:#243848;color:#e2ecf3;border-radius:9px;padding:7px 11px;font:750 11px 'DM Sans',sans-serif;cursor:pointer}
+.ux-pager-btn:hover:not(:disabled){border-color:#60d592;background:#294a42;color:#b9ffcf}
+.ux-pager-btn:disabled{opacity:.35;cursor:not-allowed}
+.ux-pager-count{color:#9debba;font:800 11px 'DM Sans',sans-serif;white-space:nowrap}
+/* accesibilidad y descanso visual */
+@media(max-width:1239px){.ah-nav{display:none!important}.ah-hamburger{display:inline-flex!important}.ah-logo-badge{display:none}}
+@media(max-width:800px){.info-grid{grid-template-columns:1fr}#main{padding:18px 16px 32px}.user-hero{padding:16px}.hero-actions{width:100%;margin-left:0}.panel-body{padding:16px}.info-card{padding:16px}.panel-head{padding:13px 16px}}
+@media(max-width:620px){.user-hero{flex-direction:row!important;text-align:left!important;align-items:center!important}.hero-info{flex:1;min-width:150px}#adminHeader{min-height:62px;height:62px;padding:0 13px!important}#mobileNav{top:62px;max-height:calc(100vh - 62px)}.ah-user-name{display:none}.ah-btn-logout{padding:10px;min-width:39px;justify-content:center}.ah-btn-logout .hidden-xs{display:none}.ah-logo-name{font-size:17px!important}.ux-brand-image{width:30px;height:30px}.form-grid{grid-template-columns:1fr}.img-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.user-hero{align-items:flex-start}.hero-avatar{width:54px;height:54px}.hero-actions>*{flex:1}.ux-pager{justify-content:center}.ux-pager-status{width:100%;text-align:center}.form-actions>*{flex:1;min-width:126px}}
+@media(max-width:370px){.ah-logo-name{font-size:15px!important}.ah-actions{gap:5px}.ah-user{display:none}.ux-brand-image{width:28px;height:28px}}
+@media(prefers-reduced-motion:reduce){.fade-up,.img-box,.user-hero,.panel{animation:none!important;transition:none!important;transform:none!important}}
+
+/* Formularios de productos: equilibrio sin huecos grandes */
+#main{max-width:1150px}
+#productForm .panel{margin-top:0!important}
+#productForm .panel + .panel{margin-top:15px!important}
+#productForm .panel-head{padding:14px 18px}
+#productForm .panel-body{padding:17px 18px}
+#productForm .form-grid{gap:14px 18px}
+#productForm .section-sep{margin:18px 0}
+#productForm .img-grid{margin-top:3px}
+#main .fade-up:first-child{margin-bottom:14px!important}
+#productForm .form-actions{padding:4px 0 8px}
+#main .back-btn{margin-top:0!important;margin-bottom:0}
+/* Las tres partes del formulario quedan distinguidas por una franja */
+#productForm .panel:nth-of-type(1) .panel-head i{color:#86efac!important}
+#productForm .panel:nth-of-type(2) .panel-head i{color:#93c5fd!important}
+#productForm .panel:nth-of-type(3) .panel-head i{color:#c4b5fd!important}
+@media(max-width:700px){#productForm .panel-body{padding:15px}#productForm .panel-head{padding:13px 15px}#main .fade-up:first-child{gap:10px!important}}
+
+.ux-intro{display:flex;flex-direction:column;gap:2px;margin:0 0 15px;min-width:0}
+.ux-intro-kicker{color:#87e9ab;text-transform:uppercase;font-size:10px;letter-spacing:.08em;font-weight:800;display:inline-flex;align-items:center;gap:7px}
+.ux-intro-title{font:800 clamp(24px,2.7vw,32px)/1.18 'DM Sans',sans-serif;color:#f4f9fb;letter-spacing:-.035em;margin:0}
+.ux-intro-title span{color:#4ade80}
+.ux-intro>p{color:#aebfcb;font-size:12px;margin-top:3px}
+
+</style>
 </head>
 <body>
 
 <!-- ===================== HEADER ===================== -->
 <header id="adminHeader">
     <a href="/dashboard_admin.html" class="ah-logo">
-        <span class="ah-logo-dot"></span>
-        <span class="ah-logo-name">Casatek</span>
+        <img class="ux-brand-image" src="/images/logoCasatek.png" alt="Logo CASATEK" width="35" height="35">
+        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
         <span class="ah-logo-badge">Admin</span>
     </a>
     <nav class="ah-nav">
-        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="/dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
         <a href="/productos_lista_admin.html" class="active"><i class="fa-solid fa-box"></i> Productos</a>
         <a href="/orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="/tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
