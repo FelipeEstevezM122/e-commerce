@@ -10,6 +10,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PriceStatsController;
+use App\Http\Controllers\PriceForecastController;
 
 use App\Http\Controllers\ExchangeHistoryController;
 //para chatbot
@@ -30,13 +31,14 @@ Route::get('/exchange-rate',                  [PriceStatsController::class, 'exc
 Route::get('/price-stats',                    [PriceStatsController::class, 'overview']);
 Route::get('/price-stats/exchange-history', [ExchangeHistoryController::class, 'index']);
 Route::get('/price-stats/products/{product}', [PriceStatsController::class, 'productTimeline']);
+Route::get('/price-stats/products/{product}/forecast', [PriceForecastController::class, 'show']);
 
 // Rangos (solo lectura publica)
 Route::get('/ranks',         [RankController::class, 'index']);
 Route::get('/ranks/{rank}',  [RankController::class, 'show']);
 
 // Chatbot
-Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
+Route::post('/chat/send', [ChatbotController::class, 'sendMessage'])->middleware('throttle:10,1');
 
 //2. RUTAS PROTEGIDAS (requieren auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
