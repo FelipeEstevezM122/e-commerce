@@ -20,7 +20,7 @@
 
     
     <script>
-        const API_BASE        = 'http://localhost:8000';   
+        const API_BASE        = window.location.origin;   
         const ADMIN_LOGIN_URL = API_BASE + '/login-admin'; 
     </script>
 
@@ -34,242 +34,384 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+<style>
+
+
+/* ================================================================
+   CASATEK / DISEÑO VISUAL: INICIO DE SESIÓN Y NAV RESPONSIVO
+   Estilos aislados: no modifican las llamadas API ni autenticación.
+   ================================================================ */
+:root {
+  --ct-page:#f3f7f4; --ct-pane:#fff; --ct-ink:#14231b;
+  --ct-sub:#607267; --ct-line:#dce9df; --ct-soft:#eff8f1;
+  --ct-green:#16a34a; --ct-deep:#176534; --ct-lift:0 24px 65px rgba(18,64,37,.10);
+  --ct-hero:linear-gradient(143deg,#e9f8ec 0%,#ddf4e5 60%,#c0edcf 100%);
+  --ct-hero-ink:#153d26; --ct-hero-sub:#476c53; --ct-hero-line:rgba(32,132,65,.18);
+}
+.dark {
+  --ct-page:#101827; --ct-pane:#1c2937; --ct-ink:#f4faf6;
+  --ct-sub:#abbbae; --ct-line:#344439; --ct-soft:#1b3026;
+  --ct-green:#22c55e; --ct-deep:#15803d; --ct-lift:0 24px 65px rgba(0,0,0,.26);
+  --ct-hero:linear-gradient(145deg,#0e2218 0%,#143d27 62%,#176735 115%);
+  --ct-hero-ink:#f0fff5; --ct-hero-sub:#c3dec9; --ct-hero-line:rgba(189,255,206,.15);
+}
+body.ct-auth-page { background:var(--ct-page)!important; color:var(--ct-ink);font-family:'Poppins',sans-serif; }
+.ct-auth-page a:focus-visible,.ct-auth-page button:focus-visible,.ct-auth-page input:focus-visible {outline:3px solid #4ade80;outline-offset:3px;}
+/* Barra superior compacta y nav con espacio reservado al logo */
+.ct-site-header { position:sticky;top:0;z-index:9999; width:100%; box-shadow:0 4px 18px rgba(0,0,0,.05); }
+.ct-topbar { min-height:34px; padding:6px clamp(14px,2.7vw,42px); display:flex;align-items:center;justify-content:space-between;gap:12px 24px;background:#167c38;color:white;font-size:11px;font-weight:600;line-height:1.5;}
+.ct-topbar strong {color:#fde047;font-weight:800;}
+.ct-top-social { display:flex;align-items:center;gap:14px;white-space:nowrap; }
+.ct-top-social a {color:white;display:inline-flex;align-items:center;justify-content:center;width:22px;height:24px;transition:transform .2s,color .2s;}
+.ct-top-social a:hover {color:#dcfce7;transform:translateY(-2px);}
+.ct-language {margin-left:8px;display:flex;gap:6px;align-items:center;opacity:.9;}
+.ct-navbar { min-height:74px; padding:10px clamp(16px,2.6vw,42px); display:flex;align-items:center;justify-content:space-between;gap:22px; background:#fff; border-bottom:1px solid #e6ece8; }
+.dark .ct-navbar {background:#202b39;border-bottom-color:#364252;}
+.ct-brand {display:inline-flex;align-items:center;gap:10px;min-width:0;flex:none;text-decoration:none;white-space:nowrap;}
+.ct-brand img {height:50px;width:50px;object-fit:contain;flex:none;transition:transform .25s ease;}
+.ct-brand:hover img {transform:rotate(-5deg) scale(1.06);}
+.ct-brand-word {color:#18231d;font-size:clamp(23px,2vw,30px);font-weight:900;letter-spacing:-.065em;line-height:1;}
+.dark .ct-brand-word {color:#fff;}
+.ct-brand-word span {color:#19be55;}
+.ct-desktop-nav { display:flex; align-items:center;justify-content:flex-end;flex:1;min-width:0;gap:2px; list-style:none; }
+.ct-desktop-nav > li {position:relative;flex:none;}
+.ct-nav-link {display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 10px;border-radius:10px;white-space:nowrap;color:#27392d;font-size:11px;font-weight:800;text-decoration:none;transition:color .2s,background .2s,transform .2s;}
+.dark .ct-nav-link {color:#e2ebe4;}
+.ct-nav-link:hover,.ct-nav-link:focus-visible {color:#12853c;background:#e9f8ee;}
+.dark .ct-nav-link:hover,.dark .ct-nav-link:focus-visible {color:#4ade80;background:#243d30;}
+.ct-nav-link.is-current {color:#12853c;background:#eaf8ed;}
+.dark .ct-nav-link.is-current {color:#4ade80;background:#203a2c;}
+.ct-nav-link.ct-icon-link {min-width:38px;font-size:16px;padding:6px 8px;}
+.ct-nav-link.ct-login-entry {background:#17aa4c;color:#fff;padding:9px 13px;margin-left:2px;box-shadow:0 5px 16px rgba(23,170,76,.18);}
+.ct-nav-link.ct-login-entry:hover {background:#12813a;color:#fff;transform:translateY(-1px);}
+.ct-menu-toggle {background:transparent;border:0;cursor:pointer;font-family:inherit;}
+.ct-menu-pop,.ct-profile-dropdown {position:absolute;right:0;top:calc(100% + 8px);width:230px;padding:8px;border-radius:14px;border:1px solid #dce7dd;background:#fff;box-shadow:0 18px 38px rgba(0,0,0,.17);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(5px);transition:opacity .2s,transform .2s,visibility .2s;z-index:99999;}
+.dark .ct-menu-pop,.dark .ct-profile-dropdown {background:#253342;border-color:#445263;}
+.ct-menu-parent:hover .ct-menu-pop,.ct-menu-parent:focus-within .ct-menu-pop,#btn-perfil-desktop:hover .ct-profile-dropdown,#btn-perfil-desktop:focus-within .ct-profile-dropdown {opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);}
+.ct-menu-pop a,.ct-profile-dropdown > a,.ct-profile-dropdown > button {display:flex;align-items:center;gap:9px;width:100%;padding:11px 12px;border-radius:8px;color:#334638;font-size:12px;font-weight:600;text-decoration:none;text-align:left;transition:background .18s,color .18s;}
+.dark .ct-menu-pop a,.dark .ct-profile-dropdown > a,.dark .ct-profile-dropdown > button {color:#e0eae4;}
+.ct-menu-pop a:hover,.ct-profile-dropdown > a:hover,.ct-profile-dropdown > button:hover {background:#ecf8ef;color:#10813b;}
+.dark .ct-menu-pop a:hover,.dark .ct-profile-dropdown > a:hover,.dark .ct-profile-dropdown > button:hover {background:#344b3d;color:#7ae6a0;}
+.ct-profile-dropdown .ct-menu-detail {padding:10px 12px 12px;border-bottom:1px solid var(--ct-line);margin-bottom:5px;}
+.ct-profile-dropdown .ct-menu-detail p {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ct-profile-dropdown .ct-menu-detail p:first-child {font-size:12px;color:var(--ct-ink);font-weight:800;}
+.ct-profile-dropdown .ct-menu-detail p:nth-child(2) {font-size:11px;color:var(--ct-sub);margin-top:2px;}
+.ct-profile-dropdown .ct-danger {color:#e05252!important;}
+.ct-user-chip {display:inline-flex;align-items:center;gap:6px;padding:4px 8px;min-height:40px;max-width:125px;border:0;border-radius:12px;background:#f1f8f3;color:#274c33;font:700 12px 'Poppins',sans-serif;cursor:pointer;}
+.dark .ct-user-chip{background:#233c2e;color:#d4fce0;}
+.ct-user-chip #avatar-inicial {display:grid;place-items:center;background:#22c55e;color:#06351b;width:30px;height:30px;border-radius:50%;flex:none;}
+.ct-user-chip #nav-username {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ct-nav-utility {display:flex;gap:6px;align-items:center;flex:none;}
+.ct-mobile-menu {border:1px solid #cce4d3; background:#f0f9f2; color:#107936; border-radius:12px; min-width:86px;padding:0 13px;height:44px;align-items:center;justify-content:center;gap:9px;cursor:pointer;font:800 12px 'Poppins',sans-serif;display:none;transition:transform .2s,background .2s;}
+.ct-menu-hamburger{font-size:19px;line-height:1;}
+.ct-mobile-menu:hover {background:#dcfce7;transform:translateY(-1px);}
+.dark .ct-mobile-menu {background:#203b2b;border-color:#3d6a4c;color:#63ed92;}
+.ct-clock-action {width:39px;height:39px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:#18a74a;font-size:20px;border-radius:10px;cursor:pointer;transition:background .2s,transform .2s;}
+.ct-clock-action:hover {background:rgba(34,197,94,.1);transform:rotate(-20deg);}
+.ct-mobile-drawer-content {display:none;}
+@media(max-width:1499px){
+ .ct-desktop-nav{display:none!important;}
+ .ct-mobile-menu{display:inline-flex!important;}
+ .ct-clock-action{display:none!important;}
+ .ct-mobile-drawer-content{display:block!important;}
+}
+@media(min-width:1500px){.ct-desktop-nav{display:flex!important;} .ct-mobile-drawer-content{display:none!important;} }
+@media(max-width:600px){
+ .ct-navbar{min-height:64px;padding:9px 15px;gap:9px;}
+ .ct-topbar{justify-content:center;text-align:center;padding:7px 12px;}
+ .ct-top-social{display:none;}
+ .ct-brand{gap:6px;}.ct-brand img{width:40px;height:40px;}.ct-brand-word{font-size:24px;}
+}
+/* En móviles y pantallas de portátil, el menú lateral SIEMPRE enseña la navegación. */
+#sidebar-panel {scrollbar-width:thin;scrollbar-color:#427956 #111;}
+#sidebar-panel a:focus-visible,#sidebar-panel button:focus-visible{outline:2px solid #4ade80;outline-offset:2px;}
+/* Login: proporciones compactas y jerarquía de lectura */
+.ct-login-main {padding:clamp(18px,2.8vw,35px) clamp(14px,3vw,42px) clamp(26px,3.3vw,46px);}
+.ct-login-layout {width:min(100%,1120px);margin:0 auto;display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1fr);border:1px solid var(--ct-line);border-radius:26px;overflow:hidden;background:var(--ct-pane);box-shadow:var(--ct-lift);}
+.ct-login-hero {position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;gap:24px;padding:clamp(29px,3.6vw,53px);min-width:0;overflow:hidden;background:var(--ct-hero);color:var(--ct-hero-ink);}
+.ct-login-hero::before {content:"";position:absolute;z-index:-1;right:-100px;top:-75px;width:340px;height:340px;border:1px solid var(--ct-hero-line);border-radius:50%;box-shadow:0 0 0 55px rgba(34,197,94,.055),0 0 0 110px rgba(34,197,94,.025);}
+.ct-hero-eyebrow {display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#19743e;}
+.dark .ct-hero-eyebrow{color:#91f3b2;}
+.ct-hero-eyebrow span{width:24px;height:2px;background:currentColor;border-radius:5px;}
+.ct-hero-icon {display:grid;place-items:center;width:60px;height:60px;margin:22px 0 14px;border:1px solid var(--ct-hero-line);border-radius:18px;background:rgba(255,255,255,.36);box-shadow:0 12px 22px rgba(15,78,33,.08);font-size:24px;color:#0c903e;}
+.dark .ct-hero-icon{background:rgba(255,255,255,.09);color:#65ef9b;}
+.ct-hero-title {font-weight:900;letter-spacing:-.055em;line-height:1.15;font-size:clamp(28px,3.3vw,42px);max-width:460px;color:var(--ct-hero-ink);}
+.ct-hero-title span{color:#16a34a;}
+.dark .ct-hero-title span{color:#5ae28a;}
+.ct-hero-copy{font-size:13px;line-height:1.78;color:var(--ct-hero-sub);margin-top:16px;max-width:430px;font-weight:500;}
+.ct-hero-highlights{display:grid;gap:11px;margin-top:27px;}
+.ct-hero-highlight{display:flex;align-items:center;gap:12px;padding:12px 13px;border:1px solid var(--ct-hero-line);border-radius:13px;background:rgba(255,255,255,.35);font-size:12px;font-weight:700;color:var(--ct-hero-ink);transition:transform .2s ease,background .2s ease;}
+.dark .ct-hero-highlight{background:rgba(255,255,255,.05);}
+.ct-hero-highlight:hover{transform:translateX(4px);background:rgba(255,255,255,.48);}
+.dark .ct-hero-highlight:hover{background:rgba(255,255,255,.10);}
+.ct-hero-highlight i{color:#159a45;font-size:16px;width:21px;text-align:center;}
+.dark .ct-hero-highlight i{color:#5ce98e;}
+.ct-hero-end{padding-top:16px;border-top:1px solid var(--ct-hero-line);font-size:11px;font-weight:600;color:var(--ct-hero-sub);}
+.ct-hero-end a{font-weight:800;color:#107b37;text-decoration:underline;text-underline-offset:3px;}
+.dark .ct-hero-end a{color:#7ef2a3;}
+.ct-login-panel {display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(27px,3.5vw,49px);}
+.ct-form-inner{max-width:430px;width:100%;margin:auto;}
+.ct-form-symbol {display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#e6f8ec;color:#148640;font-size:20px;margin-bottom:17px;}
+.dark .ct-form-symbol{background:#244335;color:#5ee88f;}
+.ct-form-eyebrow{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:#168d3d;margin-bottom:5px;}
+.dark .ct-form-eyebrow{color:#69dfa0;}
+.ct-form-title{font-size:clamp(25px,2.7vw,34px);font-weight:900;letter-spacing:-.055em;line-height:1.16;color:var(--ct-ink);}
+.ct-form-sub{font-size:12.5px;color:var(--ct-sub);margin-top:8px;line-height:1.65;}
+.ct-form-top{margin-bottom:24px;}
+.ct-login-form {display:flex;flex-direction:column;gap:17px;}
+.ct-field-label{display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:var(--ct-ink);}
+.ct-field{position:relative;}
+.ct-field-icon{position:absolute;top:50%;left:15px;transform:translateY(-50%);color:#17a34a;font-size:15px;pointer-events:none;}
+.ct-field input{display:block;width:100%;border:1px solid var(--ct-line);border-radius:13px;background:var(--ct-pane);color:var(--ct-ink);padding:14px 45px 14px 44px;font:500 13px 'Poppins',sans-serif;line-height:1.3;transition:border .18s,box-shadow .18s,background .18s;min-height:49px;}
+.ct-field input::placeholder{color:#94a49b;}
+.dark .ct-field input::placeholder{color:#91a2a0;}
+.ct-field input:hover{border-color:#a4ccb2;}
+.ct-field input:focus{outline:none;border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.13);}
+.ct-field input.border-red-500{border-color:#ef4444;}
+.ct-eye-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:41px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--ct-sub);cursor:pointer;font-size:16px;transition:background .2s,color .2s;}
+.ct-eye-btn:hover{background:var(--ct-soft);color:var(--ct-green);}
+.ct-help-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:1px 0 0;font-size:12px;}
+.ct-help-row label{display:flex;align-items:center;gap:8px;color:var(--ct-sub);font-weight:600;cursor:pointer;}
+.ct-help-row input{width:16px;height:16px;accent-color:#16a34a;}
+.ct-help-row a,.ct-register a{color:#168a3d;font-weight:800;text-decoration:none;}
+.dark .ct-help-row a,.dark .ct-register a{color:#62e894;}
+.ct-help-row a:hover,.ct-register a:hover{text-decoration:underline;text-underline-offset:3px;}
+.ct-primary-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 17px;min-height:50px;border:1px solid transparent;border-radius:13px;background:#169b45;color:white;font:800 13px 'Poppins',sans-serif;box-shadow:0 12px 26px rgba(22,163,74,.18);cursor:pointer;transition:background .2s,box-shadow .2s,transform .2s;}
+.ct-primary-btn:hover:not(:disabled){background:#127735;transform:translateY(-2px);box-shadow:0 14px 28px rgba(22,163,74,.26);}
+.ct-primary-btn:active:not(:disabled){transform:scale(.99);}
+.ct-primary-btn:disabled{opacity:.65;cursor:wait;}
+.ct-secondary-btn{width:100%;min-height:49px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #b6dbc2;border-radius:13px;padding:12px 15px;background:#f1faf3;color:#176c36;font:800 12px 'Poppins',sans-serif;cursor:pointer;transition:background .2s,transform .2s,border .2s;}
+.ct-secondary-btn:hover{background:#e1f6e8;border-color:#74cc8e;transform:translateY(-2px);}
+.dark .ct-secondary-btn{background:#223d2d;border-color:#3f8152;color:#92f5b3;}
+.dark .ct-secondary-btn:hover{background:#2d553e;}
+.ct-register{font-size:12px;text-align:center;color:var(--ct-sub);padding:17px 12px 0;border-top:1px solid var(--ct-line);margin-top:3px;}
+.ct-auth-choice{display:flex;flex-direction:column;gap:12px;text-align:center;}
+.ct-auth-choice p{color:var(--ct-sub);font-size:13px;line-height:1.65;margin-bottom:6px;}
+.ct-auth-choice strong{color:var(--ct-ink);}
+.ct-another-account {align-self:center;margin-top:5px;border:0;background:transparent;font:700 12px 'Poppins',sans-serif;color:var(--ct-sub);cursor:pointer;}
+.ct-another-account:hover{text-decoration:underline;color:var(--ct-green);}
+.ct-error-general{border:1px solid #fecaca;background:#fff1f2;border-radius:12px;color:#b91c1c;padding:12px 14px;margin-bottom:15px;font-size:12px;line-height:1.6;}
+.dark .ct-error-general{background:#421d28;border-color:#80383d;color:#fecaca;}
+.ct-field-error{font-size:11px;color:#dc2626;margin-top:6px;}
+.ct-auth-page #chat-toggle {box-shadow:0 9px 30px rgba(22,163,74,.25);}
+@media(max-width:860px){
+ .ct-login-layout{grid-template-columns:1fr;max-width:540px;}
+ .ct-login-hero{display:none;}
+ .ct-login-panel{padding:clamp(24px,6vw,39px);}
+ .ct-login-main{padding:18px 15px 30px;}
+}
+@media(max-width:430px){
+ .ct-login-layout{border-radius:19px;}
+ .ct-login-panel{padding:25px 19px;}
+ .ct-help-row{align-items:flex-start;}
+}
+@media(prefers-reduced-motion:reduce){
+ .ct-auth-page *,.ct-auth-page *::before,.ct-auth-page *::after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
+}
+
+    
+
+/* Recuperación de contraseñas · presentación exclusiva */
+.ct-recovery-main {width:100%;max-width:1250px;margin:0 auto;padding:clamp(18px,3vw,34px) clamp(14px,3vw,36px) 44px;}
+.ct-recovery-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.94fr);min-height:455px;border:1px solid var(--ct-line);border-radius:26px;overflow:hidden;background:var(--ct-pane);box-shadow:var(--ct-lift);}
+.ct-recovery-hero {background:var(--ct-hero);color:var(--ct-hero-ink);padding:clamp(30px,4.2vw,58px);position:relative;display:flex;flex-direction:column;justify-content:center;gap:18px;overflow:hidden;isolation:isolate;}
+.ct-recovery-hero::before {content:'';width:270px;height:270px;position:absolute;right:-110px;top:-110px;border:1px solid var(--ct-hero-line);border-radius:50%;box-shadow:0 0 0 46px var(--ct-hero-line),0 0 0 95px rgba(74,222,128,.045);z-index:-1;}
+.ct-recovery-kicker {display:inline-flex;align-items:center;gap:9px;color:var(--ct-deep);font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;}
+.dark .ct-recovery-kicker {color:#86efac;}
+.ct-recovery-hero h1 {font-family:Poppins,sans-serif;font-size:clamp(32px,3.4vw,46px);font-weight:900;letter-spacing:-.045em;line-height:1.16;max-width:460px;}
+.ct-recovery-hero h1 span {color:#159e45;}
+.dark .ct-recovery-hero h1 span {color:#4ade80;}
+.ct-recovery-hero p {max-width:420px;color:var(--ct-hero-sub);font-size:14px;line-height:1.7;}
+.ct-recovery-steps {display:grid;gap:12px;margin-top:7px;}
+.ct-recovery-step {display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600;color:var(--ct-hero-ink);}
+.ct-recovery-step i {flex:none;width:34px;height:34px;display:grid;place-items:center;background:rgba(34,197,94,.12);color:#15803d;border:1px solid var(--ct-hero-line);border-radius:11px;font-size:14px;}
+.dark .ct-recovery-step i {color:#86efac;background:rgba(134,239,172,.1);}
+.ct-recovery-panel {padding:clamp(24px,4.3vw,55px);display:flex;align-items:center;justify-content:center;background:var(--ct-pane);}
+.ct-recovery-inner {width:100%;max-width:420px;}
+.ct-recovery-symbol {width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:var(--ct-soft);border:1px solid var(--ct-line);color:var(--ct-green);font-size:22px;margin-bottom:17px;}
+.ct-recovery-inner h2 {font:900 clamp(24px,2.6vw,31px) Poppins,sans-serif;line-height:1.2;letter-spacing:-.03em;color:var(--ct-ink);}
+.ct-recovery-desc {font-size:13px;line-height:1.65;color:var(--ct-sub);margin:11px 0 23px;}
+.ct-recovery-label {display:block;color:var(--ct-ink);font-size:12px;font-weight:800;margin-bottom:9px;}
+.ct-recovery-field {position:relative;}
+.ct-recovery-field > i {position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ct-green);font-size:15px;pointer-events:none;}
+.ct-recovery-input {display:block;width:100%;min-height:49px;border:1.5px solid var(--ct-line);background:var(--ct-page);border-radius:13px;padding:12px 16px 12px 45px;color:var(--ct-ink);font:500 14px Poppins,sans-serif;outline:0;transition:border-color .2s,box-shadow .2s,background .2s;}
+.ct-recovery-input::placeholder {color:#87968b;}
+.ct-recovery-input:focus {border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.13);background:var(--ct-pane);}
+.ct-recovery-input.pass-input {padding-right:50px;}
+.ct-recovery-eye {position:absolute;top:50%;right:8px;transform:translateY(-50%);border:0;background:transparent;width:38px;height:38px;color:var(--ct-sub);cursor:pointer;border-radius:10px;}
+.ct-recovery-eye:hover {color:var(--ct-green);background:var(--ct-soft);}
+.ct-recovery-submit {display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:49px;margin-top:20px;padding:12px 16px;background:#16a34a;color:#fff;border:0;border-radius:13px;font:800 13px Poppins,sans-serif;box-shadow:0 8px 18px rgba(22,163,74,.19);cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;}
+.ct-recovery-submit:hover:not(:disabled) {background:#14873d;transform:translateY(-2px);box-shadow:0 13px 22px rgba(22,163,74,.22);}
+.ct-recovery-submit:disabled {opacity:.63;cursor:wait;}
+.ct-recovery-foot {margin-top:20px;display:flex;justify-content:center;align-items:center;gap:9px;border-top:1px solid var(--ct-line);padding-top:19px;text-align:center;}
+.ct-recovery-foot a {color:var(--ct-green);font:800 12px Poppins,sans-serif;text-decoration:none;}
+.ct-recovery-foot a:hover {text-decoration:underline;}
+.ct-recovery-status {display:flex;align-items:flex-start;gap:10px;border-radius:12px;padding:13px 14px;margin-bottom:17px;font-size:12px;line-height:1.65;}
+.ct-recovery-status i {margin-top:3px;}
+.ct-recovery-status.hidden, .ct-recovery-grid.hidden {display:none !important;}
+.ct-recovery-status.error {background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.ct-recovery-status.success {background:#effcf3;color:#166534;border:1px solid #bbf7d0;}
+.dark .ct-recovery-status.error {background:#3a1c27;color:#fecaca;border-color:#7f1d1d;}
+.dark .ct-recovery-status.success {background:#193c28;color:#bbf7d0;border-color:#277343;}
+.ct-recovery-error-field {font-size:11px;font-weight:600;color:#e11d48;margin:6px 0 0;}
+.ct-recovery-note {font-size:11px;color:var(--ct-sub);margin-top:12px;line-height:1.6;}
+.ct-recovery-grid {display:grid;gap:15px;}
+@media(max-width:825px){.ct-recovery-layout{grid-template-columns:1fr;max-width:560px;margin:auto;}.ct-recovery-hero{padding:23px 28px;gap:10px;}.ct-recovery-hero h1{font-size:25px;}.ct-recovery-hero p{font-size:12px;}.ct-recovery-steps{display:none;}.ct-recovery-panel{padding:27px clamp(19px,5vw,36px);}.ct-recovery-main{padding:17px 13px 27px;}}
+@media(max-width:440px){.ct-recovery-hero{padding:22px;}.ct-recovery-layout{border-radius:19px;}.ct-recovery-hero h1{font-size:23px;}}
+
+</style>
 </head>
 
-<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
+<body class="ct-auth-page bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
 <!-- ======================= HEADER ======================= -->
-<header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
-
-    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
-        <span>
-            Ordene antes de las 16:30 pm, reciba su pedido hoy -
-            <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
-        </span>
-        <span class="flex items-center gap-6 text-white text-sm">
-            <span class="flex items-center gap-4">
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
-            </span>
-            <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
-                <span>esp</span>
-                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-            </span>
-        </span>
-    </p>
-
-    <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
-            <img src="images/logoCasatek.png" alt="Logo Casatek"
-                class="h-14 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
-            <span class="font-['Poppins'] tracking-tight text-4xl font-black">
-                CASA<span class="text-[#22C55E]">TEK</span>
-            </span>
-        </a>
-
-        <div class="flex items-center gap-4 md:gap-8">
-            <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
-                <li class="relative group">
-                    <a href="index.html" class="hover:text-[#22C55E] transition-colors ">INICIO</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="productos.html" class="hover:text-[#22C55E] transition-colors ">PRODUCTOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="estadisticas_precios.html" class="hover:text-[#22C55E] transition-colors">ESTADÍSTICAS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors ">NOSOTROS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors ">CONTÁCTANOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-
-                <!-- MANUALES -->
-                <li class="relative group">
-                    <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
-                        MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                    </button>
-                    <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" download
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
-                        </a>
-                        <a href="manuales/Manual%20de%20usuario.pdf" download
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
-                        </a>
-                    </div>
-                </li>
-
-                 <!-- INICIAR SESIÓN / PERFIL  -->
-                <li class="relative" id="nav-auth-desktop">
-                    <a id="btn-login-desktop" href="iniciarsesion.html"
-                       class="hover:text-[#22C55E] transition-colors ">
-                        INICIAR SESIÓN
+<header class="ct-site-header w-full font-['Poppins'] sticky top-0 z-[9999]">
+<div class="ct-topbar">
+<span>Ordene antes de las 16:30 pm, reciba su pedido hoy · <strong>PEDIDOS AL: 76216837 - 77297541</strong></span>
+<div class="ct-top-social">
+<a aria-label="Facebook Casatek" href="https://www.facebook.com/camarasyalarmaslapaz" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+<a aria-label="YouTube Casatek" href="https://www.youtube.com/@casatek4027" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+<a aria-label="WhatsApp Casatek" href="https://wa.me/59176216837" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+<span class="ct-language">esp <i class="fa-solid fa-chevron-down" style="font-size:9px"></i></span>
+</div>
+</div>
+<nav aria-label="Navegación principal" class="ct-navbar">
+<a aria-label="Casatek - Volver al inicio" class="ct-brand" href="index.html">
+<img alt="Logo de Casatek" height="50" src="images/logoCasatek.png" width="50"/>
+<span class="ct-brand-word">CASA<span>TEK</span></span>
+</a>
+<ul class="ct-desktop-nav">
+<li><a class="ct-nav-link" href="index.html">INICIO</a></li>
+<li><a class="ct-nav-link" href="productos.html">PRODUCTOS</a></li>
+<li><a class="ct-nav-link" href="estadisticas_precios.html">ESTADÍSTICAS</a></li>
+<li><a class="ct-nav-link" href="nosotros.html">NOSOTROS</a></li>
+<li><a class="ct-nav-link" href="contactanos.html">CONTÁCTANOS</a></li>
+<li class="ct-menu-parent">
+<button aria-haspopup="true" class="ct-nav-link ct-menu-toggle" type="button">MANUALES <i class="fa-solid fa-chevron-down" style="font-size:9px"></i></button>
+<div class="ct-menu-pop">
+<a download="" href="manuales/Manual%20t%C3%A9cnico.pdf"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> Manual técnico</a>
+<a download="" href="manuales/Manual%20de%20usuario.pdf"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> Manual de usuario</a>
+</div>
+</li>
+<li id="nav-auth-desktop">
+<a aria-current="page" class="ct-nav-link ct-login-entry is-current" href="iniciarsesion.html" id="btn-login-desktop">INICIAR SESIÓN</a>
+<div class="hidden relative group/perfil" id="btn-perfil-desktop">
+<button aria-label="Abrir menú de perfil" class="ct-user-chip" type="button">
+<span id="avatar-inicial">U</span><span id="nav-username">Usuario</span><i class="fa-solid fa-chevron-down" style="font-size:9px"></i>
+</button>
+<div class="ct-profile-dropdown absolute">
+<div class="ct-menu-detail">
+<p id="dd-nombre">-</p><p id="dd-email">-</p>
+<span class="inline-block text-[10px] mt-1" id="dd-rango"></span>
+</div>
+<button onclick="abrirModalPerfil()" type="button"><i class="fa-solid fa-user-pen"></i> Editar perfil</button>
+<a href="carrito.html"><i class="fa-solid fa-cart-shopping"></i> Mi carrito</a>
+<a href="MisTickets.html"><i class="fa-solid fa-ticket"></i> Mis tickets</a>
+<button class="ct-danger" onclick="cerrarSesion()" type="button"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+</div>
+</div>
+</li>
+<li><a aria-label="Ir al carrito" class="ct-nav-link ct-icon-link" href="carrito.html" title="Mi carrito"><i class="fa-solid fa-cart-shopping"></i></a></li>
+<li><a class="ct-nav-link" href="MisTickets.html" title="Mis tickets"><i class="fa-solid fa-ticket"></i> TICKETS</a></li>
+<li><button aria-label="Cambiar tema" class="ct-nav-link ct-icon-link ct-menu-toggle" id="theme-toggle" title="Cambiar tema" type="button"><i class="fa-solid fa-moon" id="theme-icon"></i></button></li>
+</ul>
+<div class="ct-nav-utility">
+<button aria-label="Ver horarios y contacto" class="ct-clock-action" id="btn-open-sidebar" title="Horarios de atención" type="button"><i class="fa-solid fa-clock-rotate-left"></i></button>
+<button aria-controls="sidebar-panel" aria-label="Abrir menú de navegación" class="ct-mobile-menu" id="btn-open-menu-mobile" type="button"><span aria-hidden="true" class="ct-menu-hamburger">☰</span><span>Menú</span></button>
+</div>
+</nav>
+<!-- El panel lateral original conserva sus IDs y eventos -->
+<div class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300" id="sidebar-overlay"></div>
+<div class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none" id="sidebar-panel">
+<div>
+<div class="flex justify-end">
+<button class="text-red-500 hover:text-red-400 text-xl font-bold transition-colors p-2 focus:outline-none" id="btn-close-sidebar">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<div class="mt-4 flex justify-center">
+<h2 class="text-3xl font-black tracking-widest text-white font-['Poppins']">CASA<span class="text-white/90 font-light">TEK</span></h2>
+</div>
+<!-- Menú mobile -->
+<div class="ct-mobile-drawer-content block md:hidden mt-8 space-y-4 border-b border-gray-800/60 pb-6">
+<h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="index.html">Inicio</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="productos.html">Productos</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="estadisticas_precios.html" id="side-est">Estadísticas</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="nosotros.html">Nosotros</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="contactanos.html">Contáctanos</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="carrito.html">Carrito</a>
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="MisTickets.html">Mis Tickets</a>
+<!-- Manuales mobile -->
+<div class="space-y-2 pt-1">
+<h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Manuales</h3>
+<a class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors" download="" href="manuales/Manual%20t%C3%A9cnico.pdf">
+<i class="fa-solid fa-file-pdf text-red-400"></i> Manual Técnico
                     </a>
-
-                   <!--  Dropdown perfil  -->
-                    <div id="btn-perfil-desktop" class="hidden relative group/perfil">
-                        <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
-                            <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
-                            <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </button>
-
-                        
-                        <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
-
-                          
-                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
-                                <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
-                                <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
-                            </div>
-
-                           
-                            <button onclick="abrirModalPerfil()"
-                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
-                            </button>
-                            <a href="carrito.html"
-                               class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
-                            </a>
-                            <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
-                                <button onclick="cerrarSesion()"
-                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
-                                    <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="relative group">
-                    <a href="carrito.html" class="text-lg hover:text-[#22C55E] transition-colors">
-                        <i class="fa-solid fa-cart-shopping"></i>
+<a class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors" download="" href="manuales/Manual%20de%20usuario.pdf">
+<i class="fa-solid fa-file-pdf text-red-400"></i> Manual de Usuario
                     </a>
-                </li>
-                <li class="relative group">
-                    <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
-
-            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
-                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-            </button>
-            <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </div>
-    </nav>
-
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="sidebar-panel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
-        <div>
-            <div class="flex justify-end">
-                <button id="btn-close-sidebar" class="text-red-500 hover:text-red-400 text-xl font-bold transition-colors p-2 focus:outline-none">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="mt-4 flex justify-center">
-                <h2 class="text-3xl font-black tracking-widest text-white font-['Poppins']">CASA<span class="text-white/90 font-light">TEK</span></h2>
-            </div>
-
-            <!-- Menú mobile -->
-            <div class="block md:hidden mt-8 space-y-4 border-b border-gray-800/60 pb-6">
-                <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
-                <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
-                <a href="productos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Productos</a>
-                <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
-                <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
-                <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
-                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
-
-                <!-- Manuales mobile -->
-                <div class="space-y-2 pt-1">
-                    <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Manuales</h3>
-                    <a href="manuales/Manual%20t%C3%A9cnico.pdf" download
-                       class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
-                        <i class="fa-solid fa-file-pdf text-red-400"></i> Manual Técnico
-                    </a>
-                    <a href="manuales/Manual%20de%20usuario.pdf" download
-                       class="flex items-center gap-2 text-base font-bold text-white hover:text-[#22C55E] transition-colors">
-                        <i class="fa-solid fa-file-pdf text-red-400"></i> Manual de Usuario
-                    </a>
-                </div>
-
-                <div id="mobile-login">
-                    <a href="iniciarsesion.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Iniciar Sesión</a>
-                </div>
-                <div id="mobile-perfil" class="hidden space-y-3">
-                    <div class="flex items-center gap-3 py-2">
-                        <div class="w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-white" id="mobile-avatar">U</div>
-                        <div>
-                            <p class="font-bold text-white text-sm" id="mobile-nombre">-</p>
-                            <p class="text-xs text-gray-400" id="mobile-email">-</p>
-                        </div>
-                    </div>
-                    <button onclick="abrirModalPerfil(); closeSidebarFn();" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Editar perfil</button>
-                    <button onclick="cerrarSesion()" class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors">Cerrar sesión</button>
-                </div>
-
-                <div class="pt-3">
-                    <button id="theme-toggle-mobile" class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors">
-                        <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
-                        <span>Modo Oscuro</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="mt-8 space-y-4">
-                <div class="flex items-center gap-3">
-                    <div class="text-[#22C55E] text-2xl animate-pulse"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h3 class="text-xl font-extrabold tracking-tight">Horarios de trabajo</h3>
-                </div>
-                <div class="space-y-1 font-medium pl-9">
-                    <p class="text-xs text-gray-400">Lunes a Viernes</p>
-                    <p class="text-sm text-gray-200">9:00 - 13:00 y de 14:30 - 19:00</p>
-                </div>
-                <div class="space-y-1 font-medium pt-2 pl-9">
-                    <p class="text-xs text-gray-400">Sábados</p>
-                    <p class="text-sm text-gray-200">9:00 - 13:00</p>
-                </div>
-            </div>
-            <div class="mt-8 space-y-4">
-                <h3 class="text-xl font-extrabold tracking-tight pl-9 md:pl-0">Contactos</h3>
-                <div class="space-y-1 font-medium pl-9">
-                    <p class="text-xs text-gray-400">Linea de Soporte:</p>
-                    <p class="text-sm text-gray-200">76572358</p>
-                </div>
-                <div class="space-y-1 font-medium pt-2 pl-9">
-                    <p class="text-xs text-gray-400">Dirección:</p>
-                    <p class="text-sm text-gray-200 leading-relaxed">Calle Colombia Nro. 218<br>Zona San Pedro, La Paz - Bolivia</p>
-                </div>
-            </div>
-        </div>
-        <div class="mt-8 pt-6 border-t border-gray-800/60 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <span class="w-8 h-[1px] bg-gray-500"></span>
-                <span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Siguenos</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="https://www.facebook.com/camarasyalarmaslapaz" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.youtube.com/@casatek4027" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-youtube"></i></a>
-                <a href="https://wa.me/59176216837" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm"><i class="fa-brands fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </div>
+</div>
+<div id="mobile-login">
+<a class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" href="iniciarsesion.html">Iniciar Sesión</a>
+</div>
+<div class="hidden space-y-3" id="mobile-perfil">
+<div class="flex items-center gap-3 py-2">
+<div class="w-10 h-10 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-white" id="mobile-avatar">U</div>
+<div>
+<p class="font-bold text-white text-sm" id="mobile-nombre">-</p>
+<p class="text-xs text-gray-400" id="mobile-email">-</p>
+</div>
+</div>
+<button class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors" onclick="abrirModalPerfil(); closeSidebarFn();">Editar perfil</button>
+<button class="block text-lg font-bold text-red-400 hover:text-red-300 transition-colors" onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+<div class="pt-3">
+<button class="flex items-center gap-3 text-lg font-bold text-white hover:text-[#22C55E] transition-colors" id="theme-toggle-mobile">
+<i class="fa-solid fa-moon" id="theme-icon-mobile"></i>
+<span>Modo Oscuro</span>
+</button>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<div class="flex items-center gap-3">
+<div class="text-[#22C55E] text-2xl animate-pulse"><i class="fa-solid fa-clock-rotate-left"></i></div>
+<h3 class="text-xl font-extrabold tracking-tight">Horarios de trabajo</h3>
+</div>
+<div class="space-y-1 font-medium pl-9">
+<p class="text-xs text-gray-400">Lunes a Viernes</p>
+<p class="text-sm text-gray-200">9:00 - 13:00 y de 14:30 - 19:00</p>
+</div>
+<div class="space-y-1 font-medium pt-2 pl-9">
+<p class="text-xs text-gray-400">Sábados</p>
+<p class="text-sm text-gray-200">9:00 - 13:00</p>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<h3 class="text-xl font-extrabold tracking-tight pl-9 md:pl-0">Contactos</h3>
+<div class="space-y-1 font-medium pl-9">
+<p class="text-xs text-gray-400">Linea de Soporte:</p>
+<p class="text-sm text-gray-200">76572358</p>
+</div>
+<div class="space-y-1 font-medium pt-2 pl-9">
+<p class="text-xs text-gray-400">Dirección:</p>
+<p class="text-sm text-gray-200 leading-relaxed">Calle Colombia Nro. 218<br/>Zona San Pedro, La Paz - Bolivia</p>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-gray-800/60 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-[1px] bg-gray-500"></span>
+<span class="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Siguenos</span>
+</div>
+<div class="flex items-center gap-3">
+<a class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm" href="https://www.facebook.com/camarasyalarmaslapaz"><i class="fa-brands fa-facebook-f"></i></a>
+<a class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm" href="https://www.youtube.com/@casatek4027"><i class="fa-brands fa-youtube"></i></a>
+<a class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm hover:bg-gray-200 transition-colors shadow-sm" href="https://wa.me/59176216837"><i class="fa-brands fa-whatsapp"></i></a>
+</div>
+</div>
+</div>
+<!-- FIN NAV RESPONSIVO CASATEK -->
 </header>
 
 <div id="modalPerfil"
@@ -605,89 +747,39 @@
     });
 </script>
 
-<main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
-
-<div class="min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-[95vw] min-h-[90vh] grid md:grid-cols-2 overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
-
-        <!-- Panel izquierdo -->
-        <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#111111] via-[#1b803a] to-[#22C55E] p-12 text-white relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-72 h-72 bg-black/20 rounded-full blur-3xl"></div>
-            <div class="relative z-10">
-                <h1 class="text-5xl font-black tracking-tight mb-4">CASA<span class="text-white">TEK</span></h1>
-                <h2 class="text-3xl font-bold mb-6">Recupera el Acceso a tu Cuenta</h2>
-                <p class="text-white/90 leading-relaxed mb-8">
-                    No te preocupes, le pasa a cualquiera. Ingresa tu correo y te enviaremos un enlace seguro para restablecer tu contraseña en minutos.
-                </p>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3"><i class="fa-solid fa-envelope-circle-check text-2xl"></i><span>Enlace enviado a tu correo</span></div>
-                    <div class="flex items-center gap-3"><i class="fa-solid fa-lock text-2xl"></i><span>Proceso 100% seguro</span></div>
-                    <div class="flex items-center gap-3"><i class="fa-solid fa-clock text-2xl"></i><span>Válido por tiempo limitado</span></div>
-                    <div class="flex items-center gap-3"><i class="fa-solid fa-headset text-2xl"></i><span>Soporte disponible si lo necesitas</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Panel derecho: formulario -->
-        <div class="flex flex-col justify-center bg-white dark:bg-gray-800 p-8 md:p-12">
-            <div class="max-w-md w-full mx-auto">
-
-                <div class="text-center mb-8">
-                    <div class="flex justify-center mb-4">
-                        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                            <i class="fa-solid fa-key text-4xl text-[#1b803a]"></i>
-                        </div>
-                    </div>
-                    <h2 class="text-3xl font-black text-gray-900 dark:text-white">Recuperar Contraseña</h2>
-                    <p class="text-gray-500 dark:text-gray-300 mt-3">
-                        Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.
-                    </p>
-                </div>
-
-                <div id="errorDiv" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6 items-start gap-2">
-                    <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                    <span id="errorText"></span>
-                </div>
-
-                <div id="successDiv" class="hidden bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6 items-start gap-2">
-                    <i class="fa-solid fa-circle-check mt-0.5"></i>
-                    <span>¡Listo! Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en unos minutos. Revisa también la carpeta de spam.</span>
-                </div>
-
-                <form id="recuperarForm" class="space-y-6" novalidate>
-
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                            Correo Electrónico
-                        </label>
-                        <div class="relative">
-                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-[#22C55E]"></i>
-                            <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" autocomplete="email"
-                                class="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#22C55E]">
-                        </div>
-                        <p id="err_email" class="text-red-500 text-xs mt-1 hidden"></p>
-                    </div>
-
-                    <button type="submit" id="submitBtn"
-                        class="w-full bg-[#1b803a] hover:bg-[#22C55E] text-white py-3 rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        ENVIAR INSTRUCCIONES
-                    </button>
-
-                    <div class="text-center pt-2">
-                        <a href="iniciarsesion.html" class="text-[#22C55E] font-semibold hover:underline inline-flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-left"></i>
-                            Volver al inicio de sesión
-                        </a>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
+<main class="ct-recovery-main" id="contenido-principal">
+  <div class="ct-recovery-layout">
+    <section class="ct-recovery-hero" aria-label="Cómo recuperar tu cuenta">
+      <span class="ct-recovery-kicker"><i class="fa-solid fa-shield-halved"></i> Recuperación de cuenta</span>
+      <h1>Vuelve a entrar a <span>CASATEK.</span></h1>
+      <p>Si olvidaste tu contraseña, recupera el acceso a tu cuenta con un enlace personal y temporal.</p>
+      <div class="ct-recovery-steps">
+        <div class="ct-recovery-step"><i class="fa-solid fa-envelope"></i> Escribe el correo de tu cuenta.</div>
+        <div class="ct-recovery-step"><i class="fa-solid fa-link"></i> Abre el enlace que recibirás.</div>
+        <div class="ct-recovery-step"><i class="fa-solid fa-lock"></i> Elige tu nueva contraseña.</div>
+      </div>
+    </section>
+    <section class="ct-recovery-panel" aria-labelledby="recovery-title">
+      <div class="ct-recovery-inner">
+        <div class="ct-recovery-symbol" aria-hidden="true"><i class="fa-solid fa-key"></i></div>
+        <h2 id="recovery-title">¿Olvidaste tu contraseña?</h2>
+        <p class="ct-recovery-desc">Escribe tu correo y te enviaremos un enlace para cambiarla.</p>
+        <div id="errorDiv" role="alert" class="ct-recovery-status error hidden"><i class="fa-solid fa-circle-exclamation"></i><span id="errorText"></span></div>
+        <div id="successDiv" role="status" aria-live="polite" class="ct-recovery-status success hidden"><i class="fa-solid fa-circle-check"></i><span>Si ese correo está registrado, recibirás un enlace. Revisa también spam.</span></div>
+        <form id="recuperarForm" novalidate>
+          <label class="ct-recovery-label" for="email">Correo electrónico</label>
+          <div class="ct-recovery-field"><i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <input type="email" id="email" name="email" class="ct-recovery-input" placeholder="correo@ejemplo.com" autocomplete="email" inputmode="email" required aria-describedby="err_email">
+          </div>
+          <p id="err_email" class="ct-recovery-error-field hidden" role="alert"></p>
+          <button type="submit" id="submitBtn" class="ct-recovery-submit"><i class="fa-solid fa-paper-plane"></i> ENVIAR INSTRUCCIONES</button>
+          <p class="ct-recovery-note"><i class="fa-solid fa-clock"></i> El enlace tendrá una duración limitada por seguridad.</p>
+        </form>
+        <div class="ct-recovery-foot"><a href="iniciarsesion.html"><i class="fa-solid fa-arrow-left"></i> Volver al inicio de sesión</a></div>
+      </div>
+    </section>
+  </div>
+</main>
 <script>
 const BTN_TEXTO = '<i class="fa-solid fa-paper-plane"></i> ENVIAR INSTRUCCIONES';
 const ESPERA_SEGUNDOS = 60;   // evita reenviar correos en ráfaga
@@ -800,8 +892,6 @@ document.getElementById('recuperarForm').addEventListener('submit', async functi
 });
 </script>
 
-</main>
-
 <!-- ======================= FOOTER ======================= -->
 <footer class="bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E]">
     <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -866,7 +956,7 @@ document.getElementById('recuperarForm').addEventListener('submit', async functi
 
 <script src="/js/client-nav.js"></script>
 <script>
-// HU-10 / perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
+// Perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
 window.abrirModalPerfil = function () { location.href = 'perfil.html'; };
 (function () {
     let roles = [];

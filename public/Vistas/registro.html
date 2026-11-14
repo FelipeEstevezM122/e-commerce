@@ -35,154 +35,229 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+<style>
+/* CASATEK - PRESENTACIÓN / NAVEGACIÓN (sin cambios de lógica) */
+
+:root{--ct-page:#f4f8f5;--ct-pane:#fff;--ct-ink:#17281e;--ct-sub:#597365;--ct-line:#dce9df;--ct-soft:#edf7ef;--ct-green:#169e47;--ct-deep:#176534;--ct-lift:0 18px 55px rgba(18,64,37,.09);}
+.dark{--ct-page:#101827;--ct-pane:#1e2a39;--ct-ink:#f4faf6;--ct-sub:#aebfb3;--ct-line:#394b43;--ct-soft:#20352a;--ct-green:#22c55e;--ct-deep:#15803d;--ct-lift:0 18px 55px rgba(0,0,0,.25);}
+body.ct-public-page{background:var(--ct-page)!important;color:var(--ct-ink);font-family:'Poppins',sans-serif;}
+.ct-public-page a:focus-visible,.ct-public-page button:focus-visible,.ct-public-page input:focus-visible{outline:2px solid #22c55e;outline-offset:3px;}
+.ct-site-header{position:sticky;top:0;z-index:9999;box-shadow:0 4px 18px rgba(0,0,0,.045)}
+/* Auth logic toggles Tailwind's .hidden state; preserve display:none. */
+.ct-desktop-nav #btn-login-desktop.hidden,.ct-desktop-nav #btn-perfil-desktop.hidden{display:none!important;}
+/* The 8px space before desktop dropdowns remains hoverable. */
+.ct-menu-parent::after,#btn-perfil-desktop::after{content:"";position:absolute;top:100%;left:0;right:0;height:11px;}
+/* All screens below 1500px show the navigation content in the existing drawer. */
+#sidebar-panel .ct-mobile-drawer-content{display:none;}
+@media(max-width:1499px){#sidebar-panel .ct-mobile-drawer-content{display:block!important;}}
+@media(min-width:1500px){#sidebar-panel .ct-mobile-drawer-content{display:none!important;}}
+.ct-desktop-nav .ct-icon-link[aria-current="page"]{background:#d9f7e3;color:#097d31;}
+.dark .ct-desktop-nav .ct-icon-link[aria-current="page"]{background:#224631;color:#6cee9a;}
+.ct-desktop-nav .ct-icon-link{border:1px solid transparent;}
+.ct-desktop-nav .ct-icon-link:hover{border-color:#a9d7b7;}
+.ct-profile-dropdown.absolute{position:absolute;}
+@media(max-width:600px){.ct-mobile-menu{min-width:43px;padding:0 11px;}.ct-mobile-menu span:last-child{display:none;}}
+@media(prefers-reduced-motion:reduce){.ct-public-page *, .ct-public-page *::before,.ct-public-page *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
+
+/* Mismo menú de iniciarsesion.html */
+
+.ct-site-header { position:sticky;top:0;z-index:9999; width:100%; box-shadow:0 4px 18px rgba(0,0,0,.05); }
+.ct-topbar { min-height:34px; padding:6px clamp(14px,2.7vw,42px); display:flex;align-items:center;justify-content:space-between;gap:12px 24px;background:#167c38;color:white;font-size:11px;font-weight:600;line-height:1.5;}
+.ct-topbar strong {color:#fde047;font-weight:800;}
+.ct-top-social { display:flex;align-items:center;gap:14px;white-space:nowrap; }
+.ct-top-social a {color:white;display:inline-flex;align-items:center;justify-content:center;width:22px;height:24px;transition:transform .2s,color .2s;}
+.ct-top-social a:hover {color:#dcfce7;transform:translateY(-2px);}
+.ct-language {margin-left:8px;display:flex;gap:6px;align-items:center;opacity:.9;}
+.ct-navbar { min-height:74px; padding:10px clamp(16px,2.6vw,42px); display:flex;align-items:center;justify-content:space-between;gap:22px; background:#fff; border-bottom:1px solid #e6ece8; }
+.dark .ct-navbar {background:#202b39;border-bottom-color:#364252;}
+.ct-brand {display:inline-flex;align-items:center;gap:10px;min-width:0;flex:none;text-decoration:none;white-space:nowrap;}
+.ct-brand img {height:50px;width:50px;object-fit:contain;flex:none;transition:transform .25s ease;}
+.ct-brand:hover img {transform:rotate(-5deg) scale(1.06);}
+.ct-brand-word {color:#18231d;font-size:clamp(23px,2vw,30px);font-weight:900;letter-spacing:-.065em;line-height:1;}
+.dark .ct-brand-word {color:#fff;}
+.ct-brand-word span {color:#19be55;}
+.ct-desktop-nav { display:flex; align-items:center;justify-content:flex-end;flex:1;min-width:0;gap:2px; list-style:none; }
+.ct-desktop-nav > li {position:relative;flex:none;}
+.ct-nav-link {display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 10px;border-radius:10px;white-space:nowrap;color:#27392d;font-size:11px;font-weight:800;text-decoration:none;transition:color .2s,background .2s,transform .2s;}
+.dark .ct-nav-link {color:#e2ebe4;}
+.ct-nav-link:hover,.ct-nav-link:focus-visible {color:#12853c;background:#e9f8ee;}
+.dark .ct-nav-link:hover,.dark .ct-nav-link:focus-visible {color:#4ade80;background:#243d30;}
+.ct-nav-link.is-current {color:#12853c;background:#eaf8ed;}
+.dark .ct-nav-link.is-current {color:#4ade80;background:#203a2c;}
+.ct-nav-link.ct-icon-link {min-width:38px;font-size:16px;padding:6px 8px;}
+.ct-nav-link.ct-login-entry {background:#17aa4c;color:#fff;padding:9px 13px;margin-left:2px;box-shadow:0 5px 16px rgba(23,170,76,.18);}
+.ct-nav-link.ct-login-entry:hover {background:#12813a;color:#fff;transform:translateY(-1px);}
+.ct-menu-toggle {background:transparent;border:0;cursor:pointer;font-family:inherit;}
+.ct-menu-pop,.ct-profile-dropdown {position:absolute;right:0;top:calc(100% + 8px);width:230px;padding:8px;border-radius:14px;border:1px solid #dce7dd;background:#fff;box-shadow:0 18px 38px rgba(0,0,0,.17);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(5px);transition:opacity .2s,transform .2s,visibility .2s;z-index:99999;}
+.dark .ct-menu-pop,.dark .ct-profile-dropdown {background:#253342;border-color:#445263;}
+.ct-menu-parent:hover .ct-menu-pop,.ct-menu-parent:focus-within .ct-menu-pop,#btn-perfil-desktop:hover .ct-profile-dropdown,#btn-perfil-desktop:focus-within .ct-profile-dropdown {opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);}
+.ct-menu-pop a,.ct-profile-dropdown > a,.ct-profile-dropdown > button {display:flex;align-items:center;gap:9px;width:100%;padding:11px 12px;border-radius:8px;color:#334638;font-size:12px;font-weight:600;text-decoration:none;text-align:left;transition:background .18s,color .18s;}
+.dark .ct-menu-pop a,.dark .ct-profile-dropdown > a,.dark .ct-profile-dropdown > button {color:#e0eae4;}
+.ct-menu-pop a:hover,.ct-profile-dropdown > a:hover,.ct-profile-dropdown > button:hover {background:#ecf8ef;color:#10813b;}
+.dark .ct-menu-pop a:hover,.dark .ct-profile-dropdown > a:hover,.dark .ct-profile-dropdown > button:hover {background:#344b3d;color:#7ae6a0;}
+.ct-profile-dropdown .ct-menu-detail {padding:10px 12px 12px;border-bottom:1px solid var(--ct-line);margin-bottom:5px;}
+.ct-profile-dropdown .ct-menu-detail p {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ct-profile-dropdown .ct-menu-detail p:first-child {font-size:12px;color:var(--ct-ink);font-weight:800;}
+.ct-profile-dropdown .ct-menu-detail p:nth-child(2) {font-size:11px;color:var(--ct-sub);margin-top:2px;}
+.ct-profile-dropdown .ct-danger {color:#e05252!important;}
+.ct-user-chip {display:inline-flex;align-items:center;gap:6px;padding:4px 8px;min-height:40px;max-width:125px;border:0;border-radius:12px;background:#f1f8f3;color:#274c33;font:700 12px 'Poppins',sans-serif;cursor:pointer;}
+.dark .ct-user-chip{background:#233c2e;color:#d4fce0;}
+.ct-user-chip #avatar-inicial {display:grid;place-items:center;background:#22c55e;color:#06351b;width:30px;height:30px;border-radius:50%;flex:none;}
+.ct-user-chip #nav-username {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ct-nav-utility {display:flex;gap:6px;align-items:center;flex:none;}
+.ct-mobile-menu {border:1px solid #cce4d3; background:#f0f9f2; color:#107936; border-radius:12px; min-width:86px;padding:0 13px;height:44px;align-items:center;justify-content:center;gap:9px;cursor:pointer;font:800 12px 'Poppins',sans-serif;display:none;transition:transform .2s,background .2s;}
+.ct-menu-hamburger{font-size:19px;line-height:1;}
+.ct-mobile-menu:hover {background:#dcfce7;transform:translateY(-1px);}
+.dark .ct-mobile-menu {background:#203b2b;border-color:#3d6a4c;color:#63ed92;}
+.ct-clock-action {width:39px;height:39px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:#18a74a;font-size:20px;border-radius:10px;cursor:pointer;transition:background .2s,transform .2s;}
+.ct-clock-action:hover {background:rgba(34,197,94,.1);transform:rotate(-20deg);}
+.ct-mobile-drawer-content {display:none;}
+@media(max-width:1499px){
+ .ct-desktop-nav{display:none!important;}
+ .ct-mobile-menu{display:inline-flex!important;}
+ .ct-clock-action{display:none!important;}
+ .ct-mobile-drawer-content{display:block!important;}
+}
+@media(min-width:1500px){.ct-desktop-nav{display:flex!important;} .ct-mobile-drawer-content{display:none!important;} }
+@media(max-width:600px){
+ .ct-navbar{min-height:64px;padding:9px 15px;gap:9px;}
+ .ct-topbar{justify-content:center;text-align:center;padding:7px 12px;}
+ .ct-top-social{display:none;}
+ .ct-brand{gap:6px;}.ct-brand img{width:40px;height:40px;}.ct-brand-word{font-size:24px;}
+}
+/* En móviles y pantallas de portátil, el menú lateral SIEMPRE enseña la navegación. */
+#sidebar-panel {scrollbar-width:thin;scrollbar-color:#427956 #111;}
+#sidebar-panel a:focus-visible,#sidebar-panel button:focus-visible{outline:2px solid #4ade80;outline-offset:2px;}
+
+
+/* UI/UX global: tarjetas diferenciadas, contraste y controles táctiles */
+.ct-public-page{min-height:100vh;}
+.ct-public-page main{width:100%;}
+.ct-public-page :where(a,button,input){-webkit-tap-highlight-color:transparent;}
+.ct-public-page :where(button,a){transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
+.ct-public-page input{accent-color:#16a34a;}
+.ct-public-page input:focus{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.12);outline:0;}
+.ct-public-page :where(.ct-surface){background:var(--ct-pane);border:1px solid var(--ct-line);box-shadow:var(--ct-lift);}
+.ct-public-page :where(.ct-page-kicker){font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#169648;}
+.dark .ct-public-page :where(.ct-page-kicker){color:#79ed9b;}
+.ct-public-page :where(.ct-page-title){font-size:clamp(29px,3.2vw,42px);line-height:1.13;font-weight:900;letter-spacing:-.045em;color:var(--ct-ink);}
+.ct-public-page :where(.ct-page-sub){color:var(--ct-sub);font-size:13px;line-height:1.75;}
+.ct-public-page :where(.ct-btn-green){border-radius:12px;background:#17a84c;color:white!important;font-weight:800;box-shadow:0 7px 20px rgba(24,154,67,.16);}
+.ct-public-page :where(.ct-btn-green):hover{background:#13833b;transform:translateY(-2px);}
+.ct-public-page :where(.ct-btn-quiet){border:1px solid #a4d6b3;border-radius:12px;background:#f2faf4;color:#177d3d;font-weight:750;}
+.ct-public-page :where(.ct-btn-quiet):hover{background:#ddf7e5;transform:translateY(-2px);}
+.dark .ct-public-page :where(.ct-btn-quiet){background:#223d2d;border-color:#44835a;color:#90f7b0;}
+.ct-public-page :where(.ct-content-entrance){animation:ctEnter .45s ease both;}
+@keyframes ctEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ct-public-page footer{border-top-color:#22c55e;}
+.ct-public-page #sidebar-panel{z-index:99999;}
+.ct-public-page #sidebar-overlay{z-index:99998;}
+.ct-public-page #chat-widget{z-index:9990;}
+
+
+/* Registro: formulario compacto sin altura forzada */
+.ct-register-main{max-width:1240px;margin:0 auto;padding:clamp(15px,2.5vw,32px) 18px 35px;}
+.ct-register-shell{width:100%;max-width:1120px;margin:0 auto;}
+.ct-register-layout{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);border:1px solid var(--ct-line);border-radius:24px;overflow:hidden;box-shadow:var(--ct-lift);background:var(--ct-pane);}
+.ct-register-hero{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:center;gap:18px;min-width:0;padding:clamp(27px,3vw,49px);background:linear-gradient(143deg,#e9f8ee,#c7ecd3);color:#173b27;overflow:hidden;}
+.ct-register-hero::after{content:"";position:absolute;width:360px;height:360px;right:-200px;top:-130px;z-index:-1;border:1px solid rgba(22,163,74,.22);border-radius:50%;box-shadow:0 0 0 55px rgba(34,197,94,.05),0 0 0 110px rgba(34,197,94,.03);}
+.dark .ct-register-hero{background:linear-gradient(145deg,#0e281a,#17552f);color:#eafff0;}
+.ct-register-hero .ct-hero-logo{font-size:clamp(29px,3vw,38px);letter-spacing:-.055em;line-height:1.1;}
+.ct-register-hero .ct-hero-title{font-size:clamp(25px,2.4vw,35px);font-weight:900;line-height:1.2;letter-spacing:-.035em;margin:0;}
+.ct-register-hero .ct-hero-desc{font-size:13px;line-height:1.8;color:#3f6b4f;margin:0;max-width:360px;}
+.dark .ct-register-hero .ct-hero-desc{color:#bfe5ca;}
+.ct-register-hero .ct-benefits{display:grid;gap:12px;margin-top:5px;}
+.ct-register-hero .ct-benefit{display:flex;align-items:center;gap:13px;padding:11px 13px;border:1px solid rgba(25,133,68,.16);border-radius:13px;background:rgba(255,255,255,.46);font-weight:650;color:inherit;font-size:12px;}
+.dark .ct-register-hero .ct-benefit{border-color:rgba(179,245,194,.18);background:rgba(255,255,255,.045);}
+.ct-register-hero .ct-benefit-icon{width:36px;height:36px;border-radius:11px;background:#d6f7e0;display:grid;place-items:center;color:#12843b;flex:none;}
+.dark .ct-register-hero .ct-benefit-icon{background:#25633a;color:#b7f7c7;}
+.ct-register-panel{min-width:0;padding:clamp(23px,3vw,39px);background:var(--ct-pane);}
+.ct-register-inner{max-width:590px;margin:0 auto;display:flex;flex-direction:column;gap:15px;}
+.ct-register-panel .ct-form-heading{color:var(--ct-ink);font-size:28px;line-height:1.2;letter-spacing:-.04em;font-weight:900;}
+.ct-register-panel .ct-form-help{font-size:12px;color:var(--ct-sub);margin-top:6px;}
+.ct-register-panel #rankInfoText{font-size:12px;line-height:1.6;}
+#registerForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:13px;row-gap:15px;}
+#registerForm>div:nth-child(1),#registerForm>div:nth-child(2){grid-column:1/-1;}
+#registerForm>div:nth-child(3),#registerForm>div:nth-child(4){grid-column:span 1;}
+#registerForm>div:nth-child(5),#registerForm>div:nth-child(6){grid-column:span 1;}
+#registerForm>button{grid-column:1/-1;}
+#registerForm label{font-size:11px;letter-spacing:0;font-weight:750;color:var(--ct-ink);margin-bottom:7px;}
+#registerForm input{height:47px;width:100%;border-radius:12px;border-color:var(--ct-line);background:var(--ct-pane);color:var(--ct-ink);font-size:12px;}
+#registerForm input::placeholder{color:#91a39a;}
+.dark #registerForm input::placeholder{color:#7c9689;}
+#registerForm button[type="submit"]{min-height:50px;background:#16a34a;color:#fff;box-shadow:0 10px 22px rgba(22,163,74,.15);border-radius:12px;margin-top:3px;}
+#registerForm button[type="submit"]:hover{background:#13853c;transform:translateY(-2px);}
+#registerForm button[type="button"]{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;}
+#registerForm button[type="button"]:hover{background:var(--ct-soft);}
+.ct-register-panel #errorDiv{border-radius:12px;}
+@media(max-width:860px){.ct-register-layout{grid-template-columns:1fr;max-width:680px;}.ct-register-hero{display:none!important;}}
+@media(max-width:530px){.ct-register-main{padding:15px 12px 28px;}.ct-register-panel{padding:23px 19px;}.ct-register-layout{border-radius:18px;}#registerForm{grid-template-columns:1fr;row-gap:13px;}#registerForm>div{grid-column:1/-1!important;}}
+
+</style>
 </head>
 
-<body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
+<body class="ct-public-page ct-register-page bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
 
 <!-- ======================= HEADER ======================= -->
-<header class="w-full font-['Poppins'] sticky top-0 z-[9999]">
+<header class="ct-site-header w-full font-['Poppins'] sticky top-0 z-[9999]">
+  <div class="ct-topbar">
+    <span>Ordene antes de las 16:30 pm, reciba su pedido hoy · <strong>PEDIDOS AL: 76216837 - 77297541</strong></span>
+    <div class="ct-top-social">
+      <a href="https://www.facebook.com/camarasyalarmaslapaz" aria-label="Facebook Casatek" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="https://www.youtube.com/@casatek4027" aria-label="YouTube Casatek" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <a href="https://wa.me/59176216837" aria-label="WhatsApp Casatek" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      <span class="ct-language">esp <i class="fa-solid fa-chevron-down" style="font-size:9px"></i></span>
+    </div>
+  </div>
 
-    <p class="bg-[#1b803a] text-white text-xs md:text-sm py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2 font-medium tracking-wide text-center md:text-left shadow-inner">
-        <span>
-            Ordene antes de las 16:30 pm, reciba su pedido hoy -
-            <strong class="font-bold text-yellow-300">PEDIDOS AL: 76216837 - 77297541</strong>
-        </span>
-        <span class="flex items-center gap-6 text-white text-sm">
-            <span class="flex items-center gap-4">
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="hover:text-gray-200 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
-            </span>
-            <span class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
-                <span>esp</span>
-                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-            </span>
-        </span>
-    </p>
+  <nav class="ct-navbar" aria-label="Navegación principal">
+    <a href="index.html" class="ct-brand" aria-label="Casatek - Volver al inicio">
+      <img src="images/logoCasatek.png" alt="Logo de Casatek" width="50" height="50">
+      <span class="ct-brand-word">CASA<span>TEK</span></span>
+    </a>
 
-    <nav class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-100 dark:border-gray-700 px-4 md:px-12 py-3 flex justify-between items-center">
-        <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-[#111111] dark:text-white group">
-            <img src="images/logoCasatek.png" alt="Logo Casatek"
-                class="h-14 w-auto object-contain transition-transform group-hover:scale-105 duration-200">
-            <span class="font-['Poppins'] tracking-tight text-4xl font-black">
-                CASA<span class="text-[#22C55E]">TEK</span>
-            </span>
-        </a>
-
-        <div class="flex items-center gap-4 md:gap-8">
-            <ul class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-[#111111] dark:text-gray-200">
-                <li class="relative group">
-                    <a href="index.html" class="hover:text-[#22C55E] transition-colors ">INICIO</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="productos.html" class="hover:text-[#22C55E] transition-colors ">PRODUCTOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="estadisticas_precios.html" class="hover:text-[#22C55E] transition-colors">ESTADÍSTICAS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="nosotros.html" class="hover:text-[#22C55E] transition-colors ">NOSOTROS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-                <li class="relative group">
-                    <a href="contactanos.html" class="hover:text-[#22C55E] transition-colors ">CONTÁCTANOS</a>
-                    <span class="absolute left-0 -bottom-[22px] h-[3px] bg-[#22C55E] rounded-t-full transition-all duration-300 w-0 group-hover:w-full"></span>
-                </li>
-
-                <!-- MANUALES -->
-                <li class="relative group">
-                    <button class="flex items-center gap-1 hover:text-[#22C55E] transition-colors focus:outline-none">
-                        MANUALES <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                    </button>
-                    <div class="absolute left-0 top-[calc(100%+12px)] w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                        <a href="manuales/Manual%20t%C3%A9cnico.pdf" download
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual Técnico
-                        </a>
-                        <a href="manuales/Manual%20de%20usuario.pdf" download
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                            <i class="fa-solid fa-file-pdf text-red-500 w-4"></i> Manual de Usuario
-                        </a>
-                    </div>
-                </li>
-
-                 <!-- INICIAR SESIÓN / PERFIL  -->
-                <li class="relative" id="nav-auth-desktop">
-                    <a id="btn-login-desktop" href="iniciarsesion.html"
-                       class="hover:text-[#22C55E] transition-colors ">
-                        INICIAR SESIÓN
-                    </a>
-
-                   <!--  Dropdown perfil  -->
-                    <div id="btn-perfil-desktop" class="hidden relative group/perfil">
-                        <button class="flex items-center gap-2 hover:text-[#22C55E] transition-colors focus:outline-none">
-                            <div class="w-8 h-8 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-sm font-black" id="avatar-inicial">U</div>
-                            <span id="nav-username" class="max-w-[100px] truncate text-sm">Usuario</span>
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </button>
-
-                        
-                        <div class="absolute right-0 top-[calc(100%+12px)] w-64 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-[9999] py-2 invisible opacity-0 group-hover/perfil:visible group-hover/perfil:opacity-100 transition-all duration-200">
-
-                          
-                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                <p class="font-black text-gray-900 dark:text-white text-sm truncate" id="dd-nombre">-</p>
-                                <p class="text-xs text-gray-400 truncate" id="dd-email">-</p>
-                                <span id="dd-rango" class="mt-1 inline-block text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full"></span>
-                            </div>
-
-                           
-                            <button onclick="abrirModalPerfil()"
-                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-user-pen w-4"></i> Editar perfil
-                            </button>
-                            <a href="carrito.html"
-                               class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-cart-shopping w-4"></i> Mi carrito
-                            </a>
-                            <a href="MisTickets.html"
-                               class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-[#22C55E] transition-colors font-semibold">
-                                <i class="fa-solid fa-ticket w-4"></i> Mis tickets
-                            </a>
-                            <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
-                                <button onclick="cerrarSesion()"
-                                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
-                                    <i class="fa-solid fa-right-from-bracket w-4"></i> Cerrar sesión
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="relative group">
-                    <a href="carrito.html" class="text-lg hover:text-[#22C55E] transition-colors">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                    </a>
-                </li>
-                <li class="relative group">
-                    <a href="MisTickets.html" class="flex items-center gap-2 hover:text-[#22C55E] transition-colors">
-                        <i class="fa-solid fa-ticket text-lg"></i> MIS TICKETS
-                    </a>
-                </li>
-                <li class="relative group">
-                    <button id="theme-toggle" class="text-lg hover:text-[#22C55E] transition-colors">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
-
-            <button id="btn-open-sidebar" class="hidden md:block text-xl text-[#22C55E] hover:text-green-700 focus:outline-none p-2 group">
-                <i class="fa-solid fa-clock-rotate-left transform group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-            </button>
-            <button id="btn-open-menu-mobile" class="block md:hidden text-xl text-gray-800 dark:text-gray-200 hover:text-[#22C55E] focus:outline-none p-2">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+    <ul class="ct-desktop-nav">
+      <li><a href="index.html" class="ct-nav-link">INICIO</a></li>
+      <li><a href="productos.html" class="ct-nav-link">PRODUCTOS</a></li>
+      <li><a href="estadisticas_precios.html" class="ct-nav-link">ESTADÍSTICAS</a></li>
+      <li><a href="nosotros.html" class="ct-nav-link">NOSOTROS</a></li>
+      <li><a href="contactanos.html" class="ct-nav-link">CONTÁCTANOS</a></li>
+      <li class="ct-menu-parent">
+        <button type="button" class="ct-nav-link ct-menu-toggle" aria-haspopup="true">MANUALES <i class="fa-solid fa-chevron-down" style="font-size:9px"></i></button>
+        <div class="ct-menu-pop">
+          <a href="manuales/Manual%20t%C3%A9cnico.pdf" download><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> Manual técnico</a>
+          <a href="manuales/Manual%20de%20usuario.pdf" download><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> Manual de usuario</a>
         </div>
-    </nav>
+      </li>
+      <li id="nav-auth-desktop">
+        <a id="btn-login-desktop" href="iniciarsesion.html" class="ct-nav-link ct-login-entry">INICIAR SESIÓN</a>
+        <div id="btn-perfil-desktop" class="hidden relative group/perfil">
+          <button type="button" class="ct-user-chip" aria-label="Abrir menú de perfil">
+            <span id="avatar-inicial">U</span><span id="nav-username">Usuario</span><i class="fa-solid fa-chevron-down" style="font-size:9px"></i>
+          </button>
+          <div class="ct-profile-dropdown absolute">
+            <div class="ct-menu-detail">
+              <p id="dd-nombre">-</p><p id="dd-email">-</p>
+              <span id="dd-rango" class="inline-block text-[10px] mt-1"></span>
+            </div>
+            <button onclick="abrirModalPerfil()" type="button"><i class="fa-solid fa-user-pen"></i> Editar perfil</button>
+            <a href="carrito.html"><i class="fa-solid fa-cart-shopping"></i> Mi carrito</a>
+            <a href="MisTickets.html"><i class="fa-solid fa-ticket"></i> Mis tickets</a>
+            <button onclick="cerrarSesion()" type="button" class="ct-danger"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+          </div>
+        </div>
+      </li>
+      <li><a href="MisTickets.html" class="ct-nav-link ct-icon-link" aria-label="Mis tickets" title="Mis tickets"><i class="fa-solid fa-ticket"></i></a></li>
+      <li><a href="carrito.html" class="ct-nav-link ct-icon-link" aria-label="Mi carrito" title="Mi carrito"><i class="fa-solid fa-cart-shopping"></i></a></li>
+      <li><button type="button" id="theme-toggle" class="ct-nav-link ct-icon-link ct-menu-toggle" aria-label="Cambiar tema" title="Cambiar tema"><i id="theme-icon" class="fa-solid fa-moon"></i></button></li>
+    </ul>
 
+    <div class="ct-nav-utility">
+      <button type="button" id="btn-open-sidebar" class="ct-clock-action" aria-label="Ver horarios y contacto" title="Horarios de atención"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      <button type="button" id="btn-open-menu-mobile" class="ct-mobile-menu" aria-label="Abrir menú de navegación" aria-controls="sidebar-panel"><span class="ct-menu-hamburger" aria-hidden="true">☰</span><span>Menú</span></button>
+    </div>
+  </nav>
+  <!-- El panel lateral original conserva sus IDs y eventos -->
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden opacity-0 transition-opacity duration-300"></div>
     <div id="sidebar-panel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#111111] text-white z-50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto select-none">
@@ -197,15 +272,15 @@
             </div>
 
             <!-- Menú mobile -->
-            <div class="block md:hidden mt-8 space-y-4 border-b border-gray-800/60 pb-6">
+            <div class="ct-mobile-drawer-content block mt-8 space-y-4 border-b border-gray-800/60 pb-6">
                 <h3 class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">Navegación</h3>
                 <a href="index.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Inicio</a>
                 <a href="productos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Productos</a>
                 <a id="side-est" href="estadisticas_precios.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Estadísticas</a>
                 <a href="nosotros.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Nosotros</a>
                 <a href="contactanos.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Contáctanos</a>
-                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
                 <a href="MisTickets.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Mis Tickets</a>
+                <a href="carrito.html" class="block text-lg font-bold text-white hover:text-[#22C55E] transition-colors">Carrito</a>
 
                 <!-- Manuales mobile -->
                 <div class="space-y-2 pt-1">
@@ -617,36 +692,36 @@
 </script>
 
 <!-- ======================= CONTENIDO ======================= -->
-<main class="pt-32 max-w-14xl mx-auto px-4 sm:px-6 lg:px-8">
+<main class="ct-register-main">
 
-<div class="min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-[95vw] min-h-[90vh] grid md:grid-cols-2 overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
+<div class="ct-register-shell">
+    <div class="ct-register-layout">
 
         <!-- PANEL DE REGISTRO -->
-        <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#111111] via-[#1b803a] to-[#22C55E] p-12 text-white relative overflow-hidden">
+        <div class="ct-register-hero hidden md:flex">
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 left-0 w-72 h-72 bg-black/20 rounded-full blur-3xl"></div>
             <div class="relative z-10">
-                <h1 class="text-5xl font-black tracking-tight mb-4">CASA<span class="text-white">TEK</span></h1>
-                <h2 class="text-3xl font-bold mb-6">Crea tu Cuenta</h2>
-                <p class="text-white/90 leading-relaxed mb-8">
+                <h1 class="ct-hero-logo font-black mb-2">CASA<span class="text-white">TEK</span></h1>
+                <h2 class="ct-hero-title">Crea tu cuenta</h2>
+                <p class="ct-hero-desc">
                     Únete y accede a los mejores productos de seguridad electrónica, telecomunicaciones y automatización.
                 </p>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <div class="ct-benefits">
+                    <div class="ct-benefit">
+                        <div class="ct-benefit-icon">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
                         <span class="text-sm">Acceso a precios especiales</span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <div class="ct-benefit">
+                        <div class="ct-benefit-icon">
                             <i class="fa-solid fa-truck"></i>
                         </div>
                         <span class="text-sm">Seguimiento de pedidos en tiempo real</span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <div class="ct-benefit">
+                        <div class="ct-benefit-icon">
                             <i class="fa-solid fa-star"></i>
                         </div>
                         <span class="text-sm" id="rankBenefitText">Programa de rangos y beneficios — empiezas en Bronce</span>
@@ -655,12 +730,12 @@
             </div>
         </div>
 
-        <div class="flex flex-col justify-center bg-white dark:bg-gray-900 p-8 md:p-12 overflow-y-auto">
-            <div class="max-w-md w-full mx-auto space-y-5">
+        <div class="ct-register-panel">
+            <div class="ct-register-inner">
 
                 <div>
-                    <h2 class="text-3xl font-black text-gray-900 dark:text-white">Crear Cuenta</h2>
-                    <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+                    <h2 class="ct-form-heading">Crear cuenta</h2>
+                    <p class="ct-form-help">
                         ¿Ya tienes cuenta?
                         <a href="iniciarsesion.html" class="text-[#1b803a] font-semibold hover:underline">Inicia sesión</a>
                     </p>
@@ -1068,7 +1143,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
 
 <script src="/js/client-nav.js"></script>
 <script>
-// HU-10 / perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
+// Perfil: "Editar perfil" abre la vista aparte y los admins ven "Cambiar a administrador"
 window.abrirModalPerfil = function () { location.href = 'perfil.html'; };
 (function () {
     let roles = [];
