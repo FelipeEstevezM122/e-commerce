@@ -481,10 +481,15 @@ class AdminController extends Controller
         $validated = $request->validate(['month' => 'nullable|date_format:Y-m']);
         $availableMonths = $this->availableSalesMonths();
         $month = $validated['month'] ?? $availableMonths->first();
-
+        
         if (!$month) {
             return response()->json([
-                'datos' => ['months' => [], 'selected_month' => null, 'report' => null],
+                'datos' => [
+                    'months' => [],
+                    'selected_month' => null,
+                    'report' => null,
+                    'total_sales' => 0,
+                ],
                 'message' => 'No hay ventas registradas.',
             ], Response::HTTP_OK);
         }
