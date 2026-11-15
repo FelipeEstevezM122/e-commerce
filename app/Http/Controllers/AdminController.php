@@ -35,13 +35,17 @@ class AdminController extends Controller
         $wholesalers    = User::whereHas('roles', fn($q) => $q->where('name', 'mayorista'))->count();
         $finalCustomers = User::whereHas('roles', fn($q) => $q->where('name', 'cliente'))->count();
  
+        
         $topProducts = DB::table('order_items')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'delivered')
             ->select('products.id', 'products.name', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sold', 'desc')
             ->limit(5)
             ->get();
+
  
         $salesByMonth = $salesReport['salesByMonth'];
  
