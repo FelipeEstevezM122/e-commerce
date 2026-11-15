@@ -537,16 +537,7 @@ button:disabled {cursor:not-allowed}
         }
     });
 
-    // ---------- Datos de ejemplo para métricas distintas al reporte de ventas ----------
-    const data = {
-        topProducts: [
-            { name: 'Laptop Lenovo IdeaPad 3',      total_sold: 58 },
-            { name: 'Mouse Logitech M170',           total_sold: 47 },
-            { name: 'Monitor Samsung 24" Curvo',     total_sold: 39 },
-            { name: 'Teclado Mecánico Redragon',     total_sold: 31 },
-            { name: 'Audífonos JBL Tune 510BT',      total_sold: 22 }
-        ]
-    };
+
 
     const monthNames = ['', 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -585,6 +576,7 @@ button:disabled {cursor:not-allowed}
             document.getElementById('statTotalOrders').textContent = datos.orders.total;
             document.getElementById('statPendingOrders').textContent = datos.orders.pending;
             document.getElementById('statCompletedOrders').textContent = datos.orders.completed;
+            mostrarProductosMasVendidos(datos.top_products || []);
 
         } catch (error) {
             console.error('Error al cargar estadísticas:', error);
@@ -594,29 +586,45 @@ button:disabled {cursor:not-allowed}
     cargarEstadisticas();
 
     // ---------- Top productos vendidos ----------
-    const topWrap = document.getElementById('topProductsBody');
-    if (!data.topProducts.length) {
-        topWrap.innerHTML = `
-            <div style="text-align:center;padding:36px 0;color:var(--muted)">
-                <i class="fa-solid fa-box-open" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
-                <p style="font-size:13px">Sin ventas registradas</p>
-            </div>`;
-    } else {
+    function mostrarProductosMasVendidos(productos) {
+        const topWrap = document.getElementById('topProductsBody');
+
+        if (!Array.isArray(productos) || productos.length === 0) {
+            topWrap.innerHTML = `
+                <div style="text-align:center;padding:36px 0;color:var(--muted)">
+                    <i class="fa-solid fa-box-open"
+                    style="font-size:32px;display:block;margin-bottom:8px;opacity:.4"></i>
+                    <p style="font-size:13px">Sin ventas registradas</p>
+                </div>`;
+            return;
+        }
+
         const rankStyles = [
             { bg: 'rgba(250,204,21,.15)', color: '#facc15' },
             { bg: 'rgba(156,163,175,.12)', color: '#9ca3af' },
             { bg: 'rgba(251,146,60,.15)', color: '#fb923c' }
         ];
-        topWrap.innerHTML = data.topProducts.map((p, i) => {
-            const s = rankStyles[i] || { bg: 'rgba(255,255,255,.04)', color: '#4b5563' };
+
+        topWrap.innerHTML = productos.map((p, i) => {
+            const s = rankStyles[i] || {
+                bg: 'rgba(255,255,255,.04)',
+                color: '#4b5563'
+            };
+
             return `
                 <div class="top-item">
-                    <div class="top-rank" style="background:${s.bg};color:${s.color}">${i + 1}</div>
-                    <span class="top-name">${p.name}</span>
-                    <span class="top-badge">${p.total_sold} vendidos</span>
+                    <div class="top-rank"
+                        style="background:${s.bg};color:${s.color}">
+                        ${i + 1}
+                    </div>
+                    <span class="top-name">${escapeHtml(p.name)}</span>
+                    <span class="top-badge">
+                        ${Number(p.total_sold)} vendidos
+                    </span>
                 </div>`;
         }).join('');
     }
+
 
     const salesWrap = document.getElementById('salesByMonthBody');
     const exportSalesPdfButton = document.getElementById('exportSalesPdf');
