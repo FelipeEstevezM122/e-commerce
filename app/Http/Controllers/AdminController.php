@@ -361,7 +361,24 @@ class AdminController extends Controller
             'status' => 'required|in:pending,paid,shipped,delivered,cancelled'
         ]);
  
-        $order->update(['status' => $request->status]);
+        try {
+            $order->update(['status' => $request->status]);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+
+            report($e);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'No se pudo actualizar el estado del pedido. Revisa los registros del servidor.'
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            return redirect()->back()->with(
+                'error',
+                'No se pudo actualizar el estado del pedido.'
+            );
+        }
  
         if ($request->wantsJson()) {
             return response()->json(['datos' => $order, 'message' => 'Estado actualizado'], Response::HTTP_OK);
