@@ -72,7 +72,6 @@ class OrderController extends Controller
                 'quantity' => $productItems->sum('quantity'),
             ])
             ->values();
-        $products = Product::whereIn('id', $items->pluck('product_id'))->get()->keyBy('id');
 
         DB::beginTransaction();
         try {
@@ -89,6 +88,13 @@ class OrderController extends Controller
                     ));
                 }
             }
+
+            // Bloquear los productos mientras se comprueba y reserva el stock
+            $products = Product::whereIn('id', $items->pluck('product_id'))
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
 
             $total = 0;
             $orderItemsData = [];
