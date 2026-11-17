@@ -1,607 +1,2042 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel de Pedidos - Casatek</title>
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FAVICON CASATEK: PC, Android y Apple -->
+    <link rel="icon" href="/images/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
-<script src="/js/admin-guard.js"></script>
+    <!-- iPhone y iPad -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
-<style>
-    * { box-sizing: border-box; }
-    body, html { background:#060d0a !important; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+    <!-- Android y aplicaciones web -->
+    <link rel="manifest" href="/images/site.webmanifest">
 
-    :root {
-        --green:#22C55E; --green-dark:#15803d;
-        --bg:#060d0a; --card:#111f16; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
-        --text:#f3f4f6; --muted:#6b7280;
-    }
+    <!-- Color del navegador en dispositivos compatibles -->
+    <meta name="theme-color" content="#0d1620">
 
-    /* ===================== HEADER ===================== */
-    #adminHeader {
-        background:rgba(6,13,10,.95); backdrop-filter:blur(16px);
-        border-bottom:1px solid var(--border);
-        position:sticky; top:0; z-index:100;
-        padding:0 28px; height:64px;
-        display:flex; align-items:center; justify-content:space-between; gap:16px;
-    }
-    .ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
-    .ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
-    .ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
-    .ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
-    .ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
-    .ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
-    .ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
-    .ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-    .ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
-    .ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
-    .ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
-    .ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; text-decoration:none; }
-    .ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
-    .ah-hamburger { display:none; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:16px; transition:all .18s; flex-shrink:0; }
-    .ah-hamburger:hover { color:var(--green); border-color:var(--border); }
-    #mobileNav { display:none; flex-direction:column; gap:4px; background:rgba(6,13,10,.98); border-bottom:1px solid var(--border); padding:12px 16px; }
-    #mobileNav a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; }
-    #mobileNav a:hover, #mobileNav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
-    @media(max-width:900px) { .ah-nav { display:none; } .ah-hamburger { display:flex; } .ah-logo-badge { display:none; } }
-    @media(max-width:480px) { #adminHeader { padding:0 14px; height:58px; } .ah-user-name { display:none; } }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Pedidos - Casatek</title>
 
-    /* ===================== PANEL DE PEDIDOS ===================== */
-    #ordersPage { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); }
-    #main { padding:32px 28px 48px; max-width:1400px; margin:0 auto; }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
-    .section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
-    .section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.15; }
+    <script src="/js/admin-guard.js"></script>
 
-    .mini-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
-    .mini-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
-    .mini-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
-    .mini-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-    .mini-val { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff; line-height:1.1; }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    .status-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
-    .s-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:var(--muted); background:rgba(255,255,255,.03); text-decoration:none; transition:all .15s; white-space:nowrap; cursor:pointer; }
-    .s-tab:hover { color:#fff; border-color:rgba(255,255,255,.2); }
-    .s-tab.active { color:#fff; }
-    .s-tab.t-all.active      { background:rgba(255,255,255,.1);  border-color:rgba(255,255,255,.2); }
-    .s-tab.t-pending.active  { background:rgba(250,204,21,.12);  border-color:rgba(250,204,21,.3);  color:#facc15; }
-    .s-tab.t-paid.active     { background:rgba(96,165,250,.12);  border-color:rgba(96,165,250,.3);  color:#60a5fa; }
-    .s-tab.t-shipped.active  { background:rgba(168,85,247,.12);  border-color:rgba(168,85,247,.3);  color:#c084fc; }
-    .s-tab.t-delivered.active{ background:rgba(34,197,94,.12);   border-color:rgba(34,197,94,.3);   color:#4ade80; }
-    .s-tab.t-cancelled.active{ background:rgba(239,68,68,.12);   border-color:rgba(239,68,68,.3);   color:#f87171; }
+        body,
+        html {
+            background: #060d0a !important;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+        }
 
-    .panel { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
-    .panel-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-    .panel-head h2 { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
-    table { width:100%; border-collapse:collapse; }
-    thead tr { background:rgba(0,0,0,.3); }
-    th { padding:12px 18px; text-align:left; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
-    tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; }
-    tbody tr:hover { background:rgba(255,255,255,.025); }
-    td { padding:14px 18px; font-size:13px; color:#d1d5db; }
+        :root {
+            --green: #22C55E;
+            --green-dark: #15803d;
+            --bg: #060d0a;
+            --card: #111f16;
+            --border: rgba(34, 197, 94, .12);
+            --border-h: rgba(34, 197, 94, .35);
+            --text: #f3f4f6;
+            --muted: #6b7280;
+        }
 
-    .status-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
-    .s-pending   { background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); color:#facc15; }
-    .s-paid      { background:rgba(96,165,250,.12); border:1px solid rgba(96,165,250,.3); color:#60a5fa; }
-    .s-shipped   { background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.3); color:#c084fc; }
-    .s-delivered { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#4ade80; }
-    .s-cancelled { background:rgba(239,68,68,.12);  border:1px solid rgba(239,68,68,.3);  color:#f87171; }
+        /* ===================== HEADER ===================== */
+        #adminHeader {
+            background: rgba(6, 13, 10, .95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
 
-    .status-form { display:flex; align-items:center; gap:6px; }
-    .status-select { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:5px 10px; font-size:11px; font-weight:600; color:#e5e7eb; font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; transition:border-color .15s; }
-    .status-select:focus { border-color:var(--green); }
-    .status-select option { background:#1f2937; }
-    .update-btn { background:var(--green-dark); border:none; border-radius:8px; padding:5px 10px; color:#fff; font-size:11px; font-weight:700; cursor:pointer; transition:background .15s; white-space:nowrap; }
-    .update-btn:hover { background:var(--green); }
+        .ah-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
 
-    .locked-status { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); font-style:italic; }
-    .locked-status i { font-size:10px; opacity:.6; }
+        .ah-logo-dot {
+            width: 9px;
+            height: 9px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(34, 197, 94, .6);
+            animation: pulse-dot 2.5s ease-in-out infinite;
+        }
 
-    .pag { display:flex; align-items:center; justify-content:center; gap:6px; padding:16px; flex-wrap:wrap; border-top:1px solid var(--border); }
-    .pag-btn { display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px; border-radius:9px; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,.1); color:#9ca3af; background:rgba(255,255,255,.04); text-decoration:none; transition:all .15s; cursor:pointer; }
-    .pag-btn:hover { border-color:var(--green); color:var(--green); }
-    .pag-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
-    .pag-btn.disabled { opacity:.3; pointer-events:none; }
+        @keyframes pulse-dot {
 
-    .empty-state { text-align:center; padding:56px 20px; color:var(--muted); }
-    .empty-state i { font-size:40px; opacity:.3; display:block; margin-bottom:12px; }
+            0%,
+            100% {
+                box-shadow: 0 0 6px rgba(34, 197, 94, .5)
+            }
 
-    .alert-success { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25); color:#4ade80; padding:12px 16px; border-radius:12px; margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:8px; }
-    .alert-error   { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; padding:12px 16px; border-radius:12px; margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:8px; }
+            50% {
+                box-shadow: 0 0 14px rgba(34, 197, 94, .9)
+            }
+        }
 
-    .fade-up { animation:fadeUp .4s ease both; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-    .delay-1{animation-delay:.07s} .delay-2{animation-delay:.14s}
-    .delay-3{animation-delay:.21s} .delay-4{animation-delay:.28s}
+        .ah-logo-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            color: #fff;
+        }
 
-    @media(max-width:1100px) { .mini-stats { grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:768px) {
-        #main { padding:20px 16px 40px; }
-        .mini-stats { grid-template-columns:1fr 1fr; }
-        th.hide-sm, td.hide-sm { display:none; }
-    }
+        .ah-logo-badge {
+            background: rgba(34, 197, 94, .15);
+            border: 1px solid var(--border-h);
+            color: var(--green);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
 
-/* CASATEK · Ajustes UI/UX exclusivos de presentación */
-/* NAVEGACIÓN */
-#adminHeader {height:74px;padding:0 clamp(18px,3.1vw,46px);background:rgba(15,25,35,.96);border-bottom:1px solid #2b3b49;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 5px 25px rgba(0,0,0,.10)}
-.ah-logo {display:inline-flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
-.ah-logo-dot {width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12)}
-.ah-logo-name {font:800 22px 'Syne',sans-serif;color:#fff;letter-spacing:-.065em}
-.ah-logo-name .brand-tek{color:var(--green)}
-.ah-logo-badge {background:rgba(34,197,94,.11);color:#a7f3be;border:1px solid rgba(34,197,94,.3);font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:7px}
-.ah-nav {display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
-.ah-nav a {display:inline-flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;color:#b9c6d1;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s,transform .2s}
-.ah-nav a i {font-size:13px}
-.ah-nav a:hover {color:#eafff1;background:#243b36;transform:translateY(-1px)}
-.ah-nav a.active {background:rgba(34,197,94,.16);color:#80efa7;box-shadow:inset 0 0 0 1px rgba(34,197,94,.25)}
-.ah-actions {display:flex;align-items:center;gap:10px;flex-shrink:0}
-.ah-user {display:flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid #334b4a;background:#1c3031;border-radius:22px}
-.ah-avatar {width:33px;height:33px;border-radius:12px;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;color:#6dea97;font-size:15px}
-.ah-user-name {font-size:12px;font-weight:800;color:#ecfff2}
-.ah-btn-logout {display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #42505a;color:#e0e9f0;background:rgba(255,255,255,.03);padding:10px 14px;font-size:12px;font-weight:800;border-radius:11px;cursor:pointer;text-decoration:none;transition:all .2s}
-.ah-btn-logout:hover {border-color:rgba(248,113,113,.6);background:rgba(248,113,113,.1);color:#ffc3c3;transform:translateY(-1px)}
-.ah-hamburger {display:none;width:42px;height:42px;border-radius:11px;align-items:center;justify-content:center;background:#21323f;color:#f7fafc;border:1px solid #39505d;font-size:18px;cursor:pointer;transition:background .2s}
-.ah-hamburger:hover {background:#2a463e;color:#86efac}
-#mobileNav {display:none;flex-direction:column;gap:5px;background:#152330;padding:14px 18px 18px;border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:99;box-shadow:0 18px 35px rgba(0,0,0,.24)}
-#mobileNav a {display:flex;align-items:center;gap:13px;text-decoration:none;color:#ccd8e0;border:1px solid transparent;padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px;transition:all .2s}
-#mobileNav a i {width:20px;text-align:center}
-#mobileNav a:hover,#mobileNav a.active {color:#9ef8bc;background:#234337;border-color:#345a4c}
+        .ah-nav {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .ah-nav a {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all .18s;
+            white-space: nowrap;
+        }
+
+        .ah-nav a:hover,
+        .ah-nav a.active {
+            color: var(--green);
+            background: rgba(34, 197, 94, .08);
+            border-color: var(--border);
+        }
+
+        .ah-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .ah-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 5px;
+            background: rgba(34, 197, 94, .07);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+        }
+
+        .ah-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, .18);
+            border: 1px solid var(--border-h);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--green);
+            font-size: 13px;
+        }
+
+        .ah-user-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #d1fae5;
+        }
+
+        .ah-btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all .18s;
+            font-family: 'DM Sans', sans-serif;
+            text-decoration: none;
+        }
+
+        .ah-btn-logout:hover {
+            border-color: rgba(239, 68, 68, .4);
+            color: #f87171;
+            background: rgba(239, 68, 68, .07);
+        }
+
+        .ah-hamburger {
+            display: none;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all .18s;
+            flex-shrink: 0;
+        }
+
+        .ah-hamburger:hover {
+            color: var(--green);
+            border-color: var(--border);
+        }
+
+        #mobileNav {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(6, 13, 10, .98);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+        }
+
+        #mobileNav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all .18s;
+        }
+
+        #mobileNav a:hover,
+        #mobileNav a.active {
+            color: var(--green);
+            background: rgba(34, 197, 94, .08);
+            border-color: var(--border);
+        }
+
+        @media(max-width:900px) {
+            .ah-nav {
+                display: none;
+            }
+
+            .ah-hamburger {
+                display: flex;
+            }
+
+            .ah-logo-badge {
+                display: none;
+            }
+        }
+
+        @media(max-width:480px) {
+            #adminHeader {
+                padding: 0 14px;
+                height: 58px;
+            }
+
+            .ah-user-name {
+                display: none;
+            }
+        }
+
+        /* ===================== PANEL DE PEDIDOS ===================== */
+        #ordersPage {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        #main {
+            padding: 32px 28px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+        }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .mini-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mini-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .mini-label {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+        }
+
+        .mini-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .status-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .s-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: var(--muted);
+            background: rgba(255, 255, 255, .03);
+            text-decoration: none;
+            transition: all .15s;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .s-tab:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, .2);
+        }
+
+        .s-tab.active {
+            color: #fff;
+        }
+
+        .s-tab.t-all.active {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .2);
+        }
+
+        .s-tab.t-pending.active {
+            background: rgba(250, 204, 21, .12);
+            border-color: rgba(250, 204, 21, .3);
+            color: #facc15;
+        }
+
+        .s-tab.t-paid.active {
+            background: rgba(96, 165, 250, .12);
+            border-color: rgba(96, 165, 250, .3);
+            color: #60a5fa;
+        }
+
+        .s-tab.t-shipped.active {
+            background: rgba(168, 85, 247, .12);
+            border-color: rgba(168, 85, 247, .3);
+            color: #c084fc;
+        }
+
+        .s-tab.t-delivered.active {
+            background: rgba(34, 197, 94, .12);
+            border-color: rgba(34, 197, 94, .3);
+            color: #4ade80;
+        }
+
+        .s-tab.t-cancelled.active {
+            background: rgba(239, 68, 68, .12);
+            border-color: rgba(239, 68, 68, .3);
+            color: #f87171;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .panel-head {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: rgba(0, 0, 0, .3);
+        }
+
+        th {
+            padding: 12px 18px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            transition: background .15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, .025);
+        }
+
+        td {
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .s-pending {
+            background: rgba(250, 204, 21, .12);
+            border: 1px solid rgba(250, 204, 21, .3);
+            color: #facc15;
+        }
+
+        .s-paid {
+            background: rgba(96, 165, 250, .12);
+            border: 1px solid rgba(96, 165, 250, .3);
+            color: #60a5fa;
+        }
+
+        .s-shipped {
+            background: rgba(168, 85, 247, .12);
+            border: 1px solid rgba(168, 85, 247, .3);
+            color: #c084fc;
+        }
+
+        .s-delivered {
+            background: rgba(34, 197, 94, .12);
+            border: 1px solid rgba(34, 197, 94, .3);
+            color: #4ade80;
+        }
+
+        .s-cancelled {
+            background: rgba(239, 68, 68, .12);
+            border: 1px solid rgba(239, 68, 68, .3);
+            color: #f87171;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-select {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #e5e7eb;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            cursor: pointer;
+            transition: border-color .15s;
+        }
+
+        .status-select:focus {
+            border-color: var(--green);
+        }
+
+        .status-select option {
+            background: #1f2937;
+        }
+
+        .update-btn {
+            background: var(--green-dark);
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+
+        .update-btn:hover {
+            background: var(--green);
+        }
+
+        .locked-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .locked-status i {
+            font-size: 10px;
+            opacity: .6;
+        }
+
+        .pag {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--border);
+        }
+
+        .pag-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: #9ca3af;
+            background: rgba(255, 255, 255, .04);
+            text-decoration: none;
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .pag-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .pag-btn.active {
+            background: var(--green);
+            color: #fff;
+            border-color: var(--green);
+        }
+
+        .pag-btn.disabled {
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 56px 20px;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            opacity: .3;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, .1);
+            border: 1px solid rgba(34, 197, 94, .25);
+            color: #4ade80;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, .1);
+            border: 1px solid rgba(239, 68, 68, .25);
+            color: #f87171;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fade-up {
+            animation: fadeUp .4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .delay-1 {
+            animation-delay: .07s
+        }
+
+        .delay-2 {
+            animation-delay: .14s
+        }
+
+        .delay-3 {
+            animation-delay: .21s
+        }
+
+        .delay-4 {
+            animation-delay: .28s
+        }
+
+        @media(max-width:1100px) {
+            .mini-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width:768px) {
+            #main {
+                padding: 20px 16px 40px;
+            }
+
+            .mini-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            th.hide-sm,
+            td.hide-sm {
+                display: none;
+            }
+        }
+
+        /* CASATEK · Ajustes UI/UX exclusivos de presentación */
+        /* NAVEGACIÓN */
+        #adminHeader {
+            height: 74px;
+            padding: 0 clamp(18px, 3.1vw, 46px);
+            background: rgba(15, 25, 35, .96);
+            border-bottom: 1px solid #2b3b49;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .10)
+        }
+
+        .ah-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            text-decoration: none;
+            flex-shrink: 0
+        }
+
+        .ah-logo-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 0 5px rgba(34, 197, 94, .12)
+        }
+
+        .ah-logo-name {
+            font: 800 22px 'Syne', sans-serif;
+            color: #fff;
+            letter-spacing: -.065em
+        }
+
+        .ah-logo-name .brand-tek {
+            color: var(--green)
+        }
+
+        .ah-logo-badge {
+            background: rgba(34, 197, 94, .11);
+            color: #a7f3be;
+            border: 1px solid rgba(34, 197, 94, .3);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            padding: 5px 9px;
+            border-radius: 7px
+        }
+
+        .ah-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .ah-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 11px;
+            border-radius: 11px;
+            color: #b9c6d1;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: color .2s, background .2s, transform .2s
+        }
+
+        .ah-nav a i {
+            font-size: 13px
+        }
+
+        .ah-nav a:hover {
+            color: #eafff1;
+            background: #243b36;
+            transform: translateY(-1px)
+        }
+
+        .ah-nav a.active {
+            background: rgba(34, 197, 94, .16);
+            color: #80efa7;
+            box-shadow: inset 0 0 0 1px rgba(34, 197, 94, .25)
+        }
+
+        .ah-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0
+        }
+
+        .ah-user {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 13px 5px 5px;
+            border: 1px solid #334b4a;
+            background: #1c3031;
+            border-radius: 22px
+        }
+
+        .ah-avatar {
+            width: 33px;
+            height: 33px;
+            border-radius: 12px;
+            background: rgba(34, 197, 94, .18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6dea97;
+            font-size: 15px
+        }
+
+        .ah-user-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ecfff2
+        }
+
+        .ah-btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid #42505a;
+            color: #e0e9f0;
+            background: rgba(255, 255, 255, .03);
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 11px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s
+        }
+
+        .ah-btn-logout:hover {
+            border-color: rgba(248, 113, 113, .6);
+            background: rgba(248, 113, 113, .1);
+            color: #ffc3c3;
+            transform: translateY(-1px)
+        }
+
+        .ah-hamburger {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            align-items: center;
+            justify-content: center;
+            background: #21323f;
+            color: #f7fafc;
+            border: 1px solid #39505d;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background .2s
+        }
+
+        .ah-hamburger:hover {
+            background: #2a463e;
+            color: #86efac
+        }
+
+        #mobileNav {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: #152330;
+            padding: 14px 18px 18px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, .24)
+        }
+
+        #mobileNav a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            text-decoration: none;
+            color: #ccd8e0;
+            border: 1px solid transparent;
+            padding: 12px 14px;
+            border-radius: 11px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all .2s
+        }
+
+        #mobileNav a i {
+            width: 20px;
+            text-align: center
+        }
+
+        #mobileNav a:hover,
+        #mobileNav a.active {
+            color: #9ef8bc;
+            background: #234337;
+            border-color: #345a4c
+        }
 
 
 
-:root{--green:#22C55E;--green-dark:#15803d;--bg:#0d1620;--surface:#121f2b;--card:#172431;--card-soft:#1d2d3b;--border:#304252;--border-h:#357357;--text:#f3f7fb;--muted:#aebfcc}
-html,body{background:#0d1620!important;color:#f3f7fb;font-family:'DM Sans',system-ui,sans-serif;line-height:1.48;-webkit-font-smoothing:antialiased}
-body{min-width:0}
-button,input,select,textarea{font-family:'DM Sans',sans-serif}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #86efac;outline-offset:3px}
-::selection{background:rgba(34,197,94,.25);color:#fff}
-#productsPage,#ordersPage{background:radial-gradient(circle at 90% 0,rgba(34,197,94,.065),transparent 32%),linear-gradient(#0f1a25,#0d1620 48%,#0b141d);min-height:calc(100vh - 74px)}
-#main{max-width:1530px;padding:25px clamp(17px,3.1vw,46px) 42px;margin-inline:auto}
-.section-title,.section-heading h2,.panel-head h2,.mini-val,.ah-logo-name{font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:-.024em}
-.section-title{font-size:clamp(24px,2.05vw,30px);line-height:1.17}
-.section-label{font-size:11px;letter-spacing:.085em;color:#81eca5}
-#productsPage .mini-stats,#ordersPage .mini-stats{gap:13px;margin:18px 0}
-.mini-card{min-width:0;padding:17px 18px;background:linear-gradient(145deg,#1b2b39,#172431);border:1px solid #354855;border-radius:15px;min-height:99px;box-shadow:0 8px 19px rgba(0,0,0,.10);transition:transform .22s,border-color .22s}
-.mini-card:hover{transform:translateY(-3px);border-color:#487c65}
-.mini-icon{width:42px;height:42px;border-radius:11px}
-.mini-label{font-size:11.5px;letter-spacing:.015em;text-transform:none;font-weight:700;color:#afc0ce;margin-bottom:3px}
-.mini-val{font-size:27px;color:#f7fafc;line-height:1.15;font-variant-numeric:tabular-nums}
-.panel,.search-wrap{background:#172632;border:1px solid #344958;border-radius:17px;box-shadow:0 12px 30px rgba(2,10,17,.12)}
-.panel-head{padding:16px 19px;gap:12px;flex-wrap:wrap;border-bottom:1px solid #344958}
-.panel-head h2{font-size:16px;color:#f6fbfe}
-.panel-head span,#panelCount,#tableCount{color:#bdcbd4!important;font-size:12px!important}
-.panel table{width:100%;border-collapse:collapse}
-.panel thead tr{background:#203341}
-.panel th{color:#c1d0da;font-weight:800;letter-spacing:.025em;font-size:11px;padding:13px 14px}
-.panel td{color:#e2edf3;font-size:12.5px;padding:13px 14px;border-bottom:1px solid #304452}
-.panel tbody tr:hover{background:#203641}
-.panel .p-name{font-size:13px;color:#f6f9fc}
-.panel .p-sku{color:#b3c3cf}
-.status-badge{padding:5px 9px;font-size:10.5px;text-transform:none;letter-spacing:.01em}
-.pag{padding:15px 16px;gap:7px;border-top:1px solid #354a59}
-.pag-btn{background:#233645;border:1px solid #425968;color:#d7e4ed;border-radius:9px;min-height:36px;min-width:36px;font-weight:800}
-.pag-btn:hover:not(.disabled){border-color:#70d892;color:#b1f7c8;background:#294539}
-.pag-btn.active{background:#22C55E;color:#092d18;border-color:#22C55E}
-.pag-btn.disabled{opacity:.45}
-.ah-logo-name{font-size:22px;letter-spacing:-.055em}
-.ah-logo-badge{font-size:10px}
-.ah-btn-logout{color:#ffd0d0;border-color:#754149;background:#35232c}
-.ah-btn-logout:hover{color:#fff;border-color:#e66573;background:#723640}
-.ah-hamburger{min-height:42px}
-@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
-@media(min-width:1131px){.ah-nav{display:flex}.ah-hamburger{display:none}}
-@media(max-width:760px){#main{padding:17px 13px 30px}.mini-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-card{padding:13px;gap:10px;min-height:88px}.mini-icon{width:36px;height:36px}.mini-label{font-size:10.5px}.mini-val{font-size:23px}.panel-head{padding:14px}.panel th,.panel td{padding:11px 12px}#adminHeader{height:64px;padding:0 14px}#mobileNav{top:64px}.ah-user-name,.ah-logo-badge{display:none}.ah-logo-name{font-size:20px}}
-@media(max-width:380px){.mini-stats{gap:8px}.mini-card{padding:11px;gap:7px}.mini-val{font-size:21px}.ah-user{display:none}}
-@media(prefers-reduced-motion:reduce){.mini-card,.pag-btn{transition:none!important}}
+        :root {
+            --green: #22C55E;
+            --green-dark: #15803d;
+            --bg: #0d1620;
+            --surface: #121f2b;
+            --card: #172431;
+            --card-soft: #1d2d3b;
+            --border: #304252;
+            --border-h: #357357;
+            --text: #f3f7fb;
+            --muted: #aebfcc
+        }
+
+        html,
+        body {
+            background: #0d1620 !important;
+            color: #f3f7fb;
+            font-family: 'DM Sans', system-ui, sans-serif;
+            line-height: 1.48;
+            -webkit-font-smoothing: antialiased
+        }
+
+        body {
+            min-width: 0
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'DM Sans', sans-serif
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #86efac;
+            outline-offset: 3px
+        }
+
+        ::selection {
+            background: rgba(34, 197, 94, .25);
+            color: #fff
+        }
+
+        #productsPage,
+        #ordersPage {
+            background: radial-gradient(circle at 90% 0, rgba(34, 197, 94, .065), transparent 32%), linear-gradient(#0f1a25, #0d1620 48%, #0b141d);
+            min-height: calc(100vh - 74px)
+        }
+
+        #main {
+            max-width: 1530px;
+            padding: 25px clamp(17px, 3.1vw, 46px) 42px;
+            margin-inline: auto
+        }
+
+        .section-title,
+        .section-heading h2,
+        .panel-head h2,
+        .mini-val,
+        .ah-logo-name {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 800;
+            letter-spacing: -.024em
+        }
+
+        .section-title {
+            font-size: clamp(24px, 2.05vw, 30px);
+            line-height: 1.17
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: .085em;
+            color: #81eca5
+        }
+
+        #productsPage .mini-stats,
+        #ordersPage .mini-stats {
+            gap: 13px;
+            margin: 18px 0
+        }
+
+        .mini-card {
+            min-width: 0;
+            padding: 17px 18px;
+            background: linear-gradient(145deg, #1b2b39, #172431);
+            border: 1px solid #354855;
+            border-radius: 15px;
+            min-height: 99px;
+            box-shadow: 0 8px 19px rgba(0, 0, 0, .10);
+            transition: transform .22s, border-color .22s
+        }
+
+        .mini-card:hover {
+            transform: translateY(-3px);
+            border-color: #487c65
+        }
+
+        .mini-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px
+        }
+
+        .mini-label {
+            font-size: 11.5px;
+            letter-spacing: .015em;
+            text-transform: none;
+            font-weight: 700;
+            color: #afc0ce;
+            margin-bottom: 3px
+        }
+
+        .mini-val {
+            font-size: 27px;
+            color: #f7fafc;
+            line-height: 1.15;
+            font-variant-numeric: tabular-nums
+        }
+
+        .panel,
+        .search-wrap {
+            background: #172632;
+            border: 1px solid #344958;
+            border-radius: 17px;
+            box-shadow: 0 12px 30px rgba(2, 10, 17, .12)
+        }
+
+        .panel-head {
+            padding: 16px 19px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #344958
+        }
+
+        .panel-head h2 {
+            font-size: 16px;
+            color: #f6fbfe
+        }
+
+        .panel-head span,
+        #panelCount,
+        #tableCount {
+            color: #bdcbd4 !important;
+            font-size: 12px !important
+        }
+
+        .panel table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .panel thead tr {
+            background: #203341
+        }
+
+        .panel th {
+            color: #c1d0da;
+            font-weight: 800;
+            letter-spacing: .025em;
+            font-size: 11px;
+            padding: 13px 14px
+        }
+
+        .panel td {
+            color: #e2edf3;
+            font-size: 12.5px;
+            padding: 13px 14px;
+            border-bottom: 1px solid #304452
+        }
+
+        .panel tbody tr:hover {
+            background: #203641
+        }
+
+        .panel .p-name {
+            font-size: 13px;
+            color: #f6f9fc
+        }
+
+        .panel .p-sku {
+            color: #b3c3cf
+        }
+
+        .status-badge {
+            padding: 5px 9px;
+            font-size: 10.5px;
+            text-transform: none;
+            letter-spacing: .01em
+        }
+
+        .pag {
+            padding: 15px 16px;
+            gap: 7px;
+            border-top: 1px solid #354a59
+        }
+
+        .pag-btn {
+            background: #233645;
+            border: 1px solid #425968;
+            color: #d7e4ed;
+            border-radius: 9px;
+            min-height: 36px;
+            min-width: 36px;
+            font-weight: 800
+        }
+
+        .pag-btn:hover:not(.disabled) {
+            border-color: #70d892;
+            color: #b1f7c8;
+            background: #294539
+        }
+
+        .pag-btn.active {
+            background: #22C55E;
+            color: #092d18;
+            border-color: #22C55E
+        }
+
+        .pag-btn.disabled {
+            opacity: .45
+        }
+
+        .ah-logo-name {
+            font-size: 22px;
+            letter-spacing: -.055em
+        }
+
+        .ah-logo-badge {
+            font-size: 10px
+        }
+
+        .ah-btn-logout {
+            color: #ffd0d0;
+            border-color: #754149;
+            background: #35232c
+        }
+
+        .ah-btn-logout:hover {
+            color: #fff;
+            border-color: #e66573;
+            background: #723640
+        }
+
+        .ah-hamburger {
+            min-height: 42px
+        }
+
+        @media(max-width:1130px) {
+            .ah-nav {
+                display: none
+            }
+
+            .ah-hamburger {
+                display: flex
+            }
+        }
+
+        @media(min-width:1131px) {
+            .ah-nav {
+                display: flex
+            }
+
+            .ah-hamburger {
+                display: none
+            }
+        }
+
+        @media(max-width:760px) {
+            #main {
+                padding: 17px 13px 30px
+            }
+
+            .mini-stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .mini-card {
+                padding: 13px;
+                gap: 10px;
+                min-height: 88px
+            }
+
+            .mini-icon {
+                width: 36px;
+                height: 36px
+            }
+
+            .mini-label {
+                font-size: 10.5px
+            }
+
+            .mini-val {
+                font-size: 23px
+            }
+
+            .panel-head {
+                padding: 14px
+            }
+
+            .panel th,
+            .panel td {
+                padding: 11px 12px
+            }
+
+            #adminHeader {
+                height: 64px;
+                padding: 0 14px
+            }
+
+            #mobileNav {
+                top: 64px
+            }
+
+            .ah-user-name,
+            .ah-logo-badge {
+                display: none
+            }
+
+            .ah-logo-name {
+                font-size: 20px
+            }
+        }
+
+        @media(max-width:380px) {
+            .mini-stats {
+                gap: 8px
+            }
+
+            .mini-card {
+                padding: 11px;
+                gap: 7px
+            }
+
+            .mini-val {
+                font-size: 21px
+            }
+
+            .ah-user {
+                display: none
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .mini-card,
+            .pag-btn {
+                transition: none !important
+            }
+        }
 
 
-#ordersPage .admin-page-intro{background:linear-gradient(108deg,#18362b,#182b3b);border:1px solid #385747;border-radius:18px;padding:19px 22px;margin-bottom:5px}
-#ordersPage .admin-page-intro .section-label{margin-bottom:5px}
-#ordersPage .admin-page-intro p:last-child{font-size:12.5px;color:#bed0cf;line-height:1.55;margin-top:7px}
-#ordersPage .status-tabs{gap:7px;margin:0 0 15px}
-#ordersPage .s-tab{background:#213341;border:1px solid #3c5160;color:#c5d3dc;border-radius:10px;padding:9px 12px;min-height:38px;font-weight:700;font-size:12px;transition:transform .2s,background .2s}
-#ordersPage .s-tab:hover{transform:translateY(-1px);color:#f5f8fb;background:#294455}
-#ordersPage .s-tab.active{font-weight:800}
-#ordersPage .status-form{gap:7px;align-items:center}
-#ordersPage .status-select{background:#223746;border:1px solid #4d6372;min-height:34px;color:#f2f7fa;border-radius:9px;padding:6px 7px;font-size:11px;min-width:120px}
-#ordersPage .status-select option{background:#1d2d3b}
-#ordersPage .update-btn{background:#168c48;color:#fff;border:1px solid #39ac69;border-radius:9px;padding:7px 10px;min-height:34px;font-weight:800;transition:background .18s,transform .18s}
-#ordersPage .update-btn:hover{background:#22C55E;color:#082a16;transform:translateY(-1px)}
-#ordersPage td:nth-child(7) .update-btn{background:#1d4ed8;border-color:#4d7cf0;color:#fff}
-#ordersPage td:nth-child(7) .update-btn:hover{background:#2563eb;color:#fff}
-#ordersPage .locked-status{color:#bbcbd7;font-size:11.5px;font-style:normal}
-#ordersPage .status-badge{font-weight:800}
-#ordersPage .alert-success,#ordersPage .alert-error{font-size:12.5px}
-#ordersPage td:nth-child(2) p{max-width:260px;overflow-wrap:anywhere}
-.admin-table-hint{padding:10px 17px 0;color:#a8bac7;font-size:11px;display:none}
-@media(max-width:1050px){#ordersPage .admin-table-hint{display:block}}
-@media(max-width:600px){#ordersPage .admin-page-intro{padding:16px;border-radius:14px}#ordersPage .s-tab{font-size:11px;padding:8px 10px}#ordersPage .status-form{flex-wrap:wrap}}
+        #ordersPage .admin-page-intro {
+            background: linear-gradient(108deg, #18362b, #182b3b);
+            border: 1px solid #385747;
+            border-radius: 18px;
+            padding: 19px 22px;
+            margin-bottom: 5px
+        }
+
+        #ordersPage .admin-page-intro .section-label {
+            margin-bottom: 5px
+        }
+
+        #ordersPage .admin-page-intro p:last-child {
+            font-size: 12.5px;
+            color: #bed0cf;
+            line-height: 1.55;
+            margin-top: 7px
+        }
+
+        #ordersPage .status-tabs {
+            gap: 7px;
+            margin: 0 0 15px
+        }
+
+        #ordersPage .s-tab {
+            background: #213341;
+            border: 1px solid #3c5160;
+            color: #c5d3dc;
+            border-radius: 10px;
+            padding: 9px 12px;
+            min-height: 38px;
+            font-weight: 700;
+            font-size: 12px;
+            transition: transform .2s, background .2s
+        }
+
+        #ordersPage .s-tab:hover {
+            transform: translateY(-1px);
+            color: #f5f8fb;
+            background: #294455
+        }
+
+        #ordersPage .s-tab.active {
+            font-weight: 800
+        }
+
+        #ordersPage .status-form {
+            gap: 7px;
+            align-items: center
+        }
+
+        #ordersPage .status-select {
+            background: #223746;
+            border: 1px solid #4d6372;
+            min-height: 34px;
+            color: #f2f7fa;
+            border-radius: 9px;
+            padding: 6px 7px;
+            font-size: 11px;
+            min-width: 120px
+        }
+
+        #ordersPage .status-select option {
+            background: #1d2d3b
+        }
+
+        #ordersPage .update-btn {
+            background: #168c48;
+            color: #fff;
+            border: 1px solid #39ac69;
+            border-radius: 9px;
+            padding: 7px 10px;
+            min-height: 34px;
+            font-weight: 800;
+            transition: background .18s, transform .18s
+        }
+
+        #ordersPage .update-btn:hover {
+            background: #22C55E;
+            color: #082a16;
+            transform: translateY(-1px)
+        }
+
+        #ordersPage td:nth-child(7) .update-btn {
+            background: #1d4ed8;
+            border-color: #4d7cf0;
+            color: #fff
+        }
+
+        #ordersPage td:nth-child(7) .update-btn:hover {
+            background: #2563eb;
+            color: #fff
+        }
+
+        #ordersPage .locked-status {
+            color: #bbcbd7;
+            font-size: 11.5px;
+            font-style: normal
+        }
+
+        #ordersPage .status-badge {
+            font-weight: 800
+        }
+
+        #ordersPage .alert-success,
+        #ordersPage .alert-error {
+            font-size: 12.5px
+        }
+
+        #ordersPage td:nth-child(2) p {
+            max-width: 260px;
+            overflow-wrap: anywhere
+        }
+
+        .admin-table-hint {
+            padding: 10px 17px 0;
+            color: #a8bac7;
+            font-size: 11px;
+            display: none
+        }
+
+        @media(max-width:1050px) {
+            #ordersPage .admin-table-hint {
+                display: block
+            }
+        }
+
+        @media(max-width:600px) {
+            #ordersPage .admin-page-intro {
+                padding: 16px;
+                border-radius: 14px
+            }
+
+            #ordersPage .s-tab {
+                font-size: 11px;
+                padding: 8px 10px
+            }
+
+            #ordersPage .status-form {
+                flex-wrap: wrap
+            }
+        }
 
 
-/* Buscador y filtros automáticos, exclusivamente en la interfaz */
-#ordersPage .order-filters{background:#172632;border:1px solid #344958;border-radius:16px;padding:17px 19px;margin:0 0 16px}
-#ordersPage .order-filters-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:13px;color:#e9f5fc;font-size:14px;font-weight:800}
-#ordersPage .order-filters-heading small{color:#aebfcc;font-size:11px;font-weight:500}
-#ordersPage .order-filters-grid{display:grid;grid-template-columns:minmax(250px,1fr) minmax(170px,230px) auto;gap:12px;align-items:end}
-#ordersPage .order-field{display:flex;flex-direction:column;gap:7px;min-width:0}
-#ordersPage .order-field label{font-size:11px;font-weight:800;color:#c1d0da}
-#ordersPage .order-input{width:100%;height:43px;border:1px solid #496071;background:#203442;color:#f4f9fc;border-radius:10px;padding:0 13px;font-size:12.5px;outline:none;color-scheme:dark}
-#ordersPage .order-input::placeholder{color:#9aafbd}
-#ordersPage .order-input:focus{border-color:#66d78d;box-shadow:0 0 0 3px rgba(34,197,94,.13)}
-#ordersPage .order-clear{height:43px;padding:0 16px;border-radius:10px;background:#293d4b;border:1px solid #4d6473;color:#e5eef4;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
-#ordersPage .order-clear:hover{background:#354e5d;border-color:#79a4b6}
-#ordersPage .order-filter-result{font-size:11.5px;color:#aebfcc;margin:10px 0 0}
-#ordersPage .status-tabs .s-tab{font-family:'DM Sans',sans-serif;outline-offset:3px}
-#ordersPage .status-tabs .s-tab:focus-visible{outline:2px solid #86efac}
-#ordersPage .s-tab.t-all.active{background:#37566a;border-color:#7693a4;color:#fff}
-#ordersPage .s-tab.t-pending.active{background:#51431e;border-color:#b89431;color:#ffe18a}
-#ordersPage .s-tab.t-paid.active{background:#1d4165;border-color:#458aca;color:#a9d9ff}
-#ordersPage .s-tab.t-shipped.active{background:#45315e;border-color:#9562ca;color:#e0c3ff}
-#ordersPage .s-tab.t-delivered.active{background:#1b5136;border-color:#3eaf6e;color:#a2f3c0}
-#ordersPage .s-tab.t-cancelled.active{background:#572d37;border-color:#c56c79;color:#ffc0c7}
-@media(max-width:780px){#ordersPage .order-filters-grid{grid-template-columns:1fr 1fr}#ordersPage .order-field:first-child{grid-column:1/-1}#ordersPage .order-clear{width:100%}}
-@media(max-width:490px){#ordersPage .order-filters-grid{grid-template-columns:1fr}#ordersPage .order-field:first-child{grid-column:auto}#ordersPage .order-filters{padding:14px}}
+        /* Buscador y filtros automáticos, exclusivamente en la interfaz */
+        #ordersPage .order-filters {
+            background: #172632;
+            border: 1px solid #344958;
+            border-radius: 16px;
+            padding: 17px 19px;
+            margin: 0 0 16px
+        }
 
-/* Rango de fechas y pestañas centradas */
-#ordersPage .order-filters-grid{grid-template-columns:minmax(220px,1.6fr) minmax(145px,.75fr) minmax(145px,.75fr) auto;gap:12px;align-items:end}
-#ordersPage .status-tabs{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;width:100%;margin:0 auto 18px}
-#ordersPage .status-tabs .s-tab{display:inline-flex;justify-content:center;align-items:center;min-height:44px;padding:10px 17px;text-align:center}
-@media(max-width:1050px){#ordersPage .order-filters-grid{grid-template-columns:repeat(3,minmax(0,1fr))}#ordersPage .order-clear{grid-column:1/-1;justify-self:center;min-width:190px}}
-@media(max-width:700px){#ordersPage .order-filters-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ordersPage .order-field:first-child{grid-column:1/-1}#ordersPage .order-clear{grid-column:1/-1;width:100%}#ordersPage .status-tabs .s-tab{flex:1 1 145px;padding:10px 12px}}
-@media(max-width:400px){#ordersPage .order-filters-grid{grid-template-columns:1fr}#ordersPage .order-field:first-child{grid-column:auto}#ordersPage .status-tabs .s-tab{flex:1 1 125px}}
-</style>
+        #ordersPage .order-filters-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 13px;
+            color: #e9f5fc;
+            font-size: 14px;
+            font-weight: 800
+        }
+
+        #ordersPage .order-filters-heading small {
+            color: #aebfcc;
+            font-size: 11px;
+            font-weight: 500
+        }
+
+        #ordersPage .order-filters-grid {
+            display: grid;
+            grid-template-columns: minmax(250px, 1fr) minmax(170px, 230px) auto;
+            gap: 12px;
+            align-items: end
+        }
+
+        #ordersPage .order-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0
+        }
+
+        #ordersPage .order-field label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #c1d0da
+        }
+
+        #ordersPage .order-input {
+            width: 100%;
+            height: 43px;
+            border: 1px solid #496071;
+            background: #203442;
+            color: #f4f9fc;
+            border-radius: 10px;
+            padding: 0 13px;
+            font-size: 12.5px;
+            outline: none;
+            color-scheme: dark
+        }
+
+        #ordersPage .order-input::placeholder {
+            color: #9aafbd
+        }
+
+        #ordersPage .order-input:focus {
+            border-color: #66d78d;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, .13)
+        }
+
+        #ordersPage .order-clear {
+            height: 43px;
+            padding: 0 16px;
+            border-radius: 10px;
+            background: #293d4b;
+            border: 1px solid #4d6473;
+            color: #e5eef4;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        #ordersPage .order-clear:hover {
+            background: #354e5d;
+            border-color: #79a4b6
+        }
+
+        #ordersPage .order-filter-result {
+            font-size: 11.5px;
+            color: #aebfcc;
+            margin: 10px 0 0
+        }
+
+        #ordersPage .status-tabs .s-tab {
+            font-family: 'DM Sans', sans-serif;
+            outline-offset: 3px
+        }
+
+        #ordersPage .status-tabs .s-tab:focus-visible {
+            outline: 2px solid #86efac
+        }
+
+        #ordersPage .s-tab.t-all.active {
+            background: #37566a;
+            border-color: #7693a4;
+            color: #fff
+        }
+
+        #ordersPage .s-tab.t-pending.active {
+            background: #51431e;
+            border-color: #b89431;
+            color: #ffe18a
+        }
+
+        #ordersPage .s-tab.t-paid.active {
+            background: #1d4165;
+            border-color: #458aca;
+            color: #a9d9ff
+        }
+
+        #ordersPage .s-tab.t-shipped.active {
+            background: #45315e;
+            border-color: #9562ca;
+            color: #e0c3ff
+        }
+
+        #ordersPage .s-tab.t-delivered.active {
+            background: #1b5136;
+            border-color: #3eaf6e;
+            color: #a2f3c0
+        }
+
+        #ordersPage .s-tab.t-cancelled.active {
+            background: #572d37;
+            border-color: #c56c79;
+            color: #ffc0c7
+        }
+
+        @media(max-width:780px) {
+            #ordersPage .order-filters-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            #ordersPage .order-field:first-child {
+                grid-column: 1/-1
+            }
+
+            #ordersPage .order-clear {
+                width: 100%
+            }
+        }
+
+        @media(max-width:490px) {
+            #ordersPage .order-filters-grid {
+                grid-template-columns: 1fr
+            }
+
+            #ordersPage .order-field:first-child {
+                grid-column: auto
+            }
+
+            #ordersPage .order-filters {
+                padding: 14px
+            }
+        }
+
+        /* Rango de fechas y pestañas centradas */
+        #ordersPage .order-filters-grid {
+            grid-template-columns: minmax(220px, 1.6fr) minmax(145px, .75fr) minmax(145px, .75fr) auto;
+            gap: 12px;
+            align-items: end
+        }
+
+        #ordersPage .status-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            margin: 0 auto 18px
+        }
+
+        #ordersPage .status-tabs .s-tab {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 44px;
+            padding: 10px 17px;
+            text-align: center
+        }
+
+        @media(max-width:1050px) {
+            #ordersPage .order-filters-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+
+            #ordersPage .order-clear {
+                grid-column: 1/-1;
+                justify-self: center;
+                min-width: 190px
+            }
+        }
+
+        @media(max-width:700px) {
+            #ordersPage .order-filters-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            #ordersPage .order-field:first-child {
+                grid-column: 1/-1
+            }
+
+            #ordersPage .order-clear {
+                grid-column: 1/-1;
+                width: 100%
+            }
+
+            #ordersPage .status-tabs .s-tab {
+                flex: 1 1 145px;
+                padding: 10px 12px
+            }
+        }
+
+        @media(max-width:400px) {
+            #ordersPage .order-filters-grid {
+                grid-template-columns: 1fr
+            }
+
+            #ordersPage .order-field:first-child {
+                grid-column: auto
+            }
+
+            #ordersPage .status-tabs .s-tab {
+                flex: 1 1 125px
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- ===================== HEADER ===================== -->
-<header id="adminHeader">
-    <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
-        <span class="ah-logo-dot" aria-hidden="true"></span>
-        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
-        <span class="ah-logo-badge">Administración</span>
-    </a>
-    <nav class="ah-nav" aria-label="Navegación administrativa">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
+    <!-- ===================== HEADER ===================== -->
+    <header id="adminHeader">
+        <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
+            <span class="ah-logo-dot" aria-hidden="true"></span>
+            <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
+            <span class="ah-logo-badge">Administración</span>
+        </a>
+        <nav class="ah-nav" aria-label="Navegación administrativa">
+            <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
+            <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+            <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i>
+                Pedidos</a>
+            <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+            <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+            <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+        </nav>
+        <div class="ah-actions">
+            <div class="ah-user" title="Sesión de administrador">
+                <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                <span class="ah-user-name">Admin</span>
+            </div>
+            <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;"
+                aria-label="Cerrar sesión">
+                <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
+            </button>
+            <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
+                <i class="fa-solid fa-bars" id="hambIcon"></i>
+            </button>
+        </div>
+    </header>
+    <nav id="mobileNav" aria-label="Menú administrativo móvil">
+        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
         <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i>
+            Pedidos</a>
         <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Precios</a>
+        <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
         <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
-    <div class="ah-actions">
-        <div class="ah-user" title="Sesión de administrador">
-            <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
-            <span class="ah-user-name">Admin</span>
-        </div>
-        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
-            <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
-        </button>
-        <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
-            <i class="fa-solid fa-bars" id="hambIcon"></i>
-        </button>
+
+    <!-- ===================== PANEL DE PEDIDOS ===================== -->
+    <div id="ordersPage">
+        <main id="main">
+
+            <div class="fade-up admin-page-intro">
+                <p class="section-label"><i class="fa-solid fa-clipboard-list mr-1"></i> Gestión</p>
+                <h1 class="section-title">Panel de <span style="color:var(--green)">Pedidos</span></h1>
+                <p>Consulta tus pedidos y actualiza su estado cuando corresponda. Selecciona una pestaña para filtrar el
+                    listado.</p>
+            </div>
+
+            <div class="mini-stats">
+                <div class="mini-card fade-up delay-1">
+                    <div class="mini-icon" style="background:rgba(255,255,255,.06)">
+                        <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
+                    </div>
+                    <div>
+                        <p class="mini-label">Total</p>
+                        <p class="mini-val" id="statTotal">0</p>
+                    </div>
+                </div>
+                <div class="mini-card fade-up delay-2">
+                    <div class="mini-icon" style="background:rgba(250,204,21,.15)">
+                        <i class="fa-solid fa-clock" style="color:#facc15"></i>
+                    </div>
+                    <div>
+                        <p class="mini-label">Pendientes</p>
+                        <p class="mini-val" id="statPending">0</p>
+                    </div>
+                </div>
+                <div class="mini-card fade-up delay-3">
+                    <div class="mini-icon" style="background:rgba(168,85,247,.15)">
+                        <i class="fa-solid fa-truck" style="color:#c084fc"></i>
+                    </div>
+                    <div>
+                        <p class="mini-label">Enviados</p>
+                        <p class="mini-val" id="statShipped">0</p>
+                    </div>
+                </div>
+                <div class="mini-card fade-up delay-4">
+                    <div class="mini-icon" style="background:rgba(34,197,94,.15)">
+                        <i class="fa-solid fa-circle-check" style="color:#22C55E"></i>
+                    </div>
+                    <div>
+                        <p class="mini-label">Entregados</p>
+                        <p class="mini-val" id="statDelivered">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-success" id="successAlert" style="display:none">
+                <i class="fa-solid fa-circle-check"></i> <span id="successMsg"></span>
+            </div>
+            <div class="alert-error" id="errorAlert" style="display:none">
+                <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorMsg"></span>
+            </div>
+
+
+            <section class="order-filters" aria-label="Búsqueda de pedidos">
+                <div class="order-filters-heading"><span><i class="fa-solid fa-magnifying-glass"
+                            style="color:#6ee7a0"></i> Buscar y filtrar pedidos</span><small>Resultados automáticos ·
+                        sin botón Buscar</small></div>
+                <div class="order-filters-grid">
+                    <div class="order-field"><label for="orderSearchInput">N.º de pedido, cliente o correo</label><input
+                            class="order-input" type="search" id="orderSearchInput"
+                            placeholder="Escribe un número, nombre o correo" autocomplete="off"></div>
+                    <div class="order-field"><label for="orderDateFrom">Desde</label><input class="order-input"
+                            type="date" id="orderDateFrom"></div>
+                    <div class="order-field"><label for="orderDateTo">Hasta</label><input class="order-input"
+                            type="date" id="orderDateTo"></div>
+                    <button type="button" class="order-clear" id="clearOrderFilters"><i
+                            class="fa-solid fa-rotate-left"></i> Limpiar filtros</button>
+                </div>
+                <p class="order-filter-result" id="orderFilterResult" role="status" aria-live="polite">Mostrando todos
+                    los pedidos disponibles.</p>
+            </section>
+            <div class="status-tabs" id="statusTabs"></div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <h2><i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i> Lista de Pedidos</h2>
+                    <span style="font-size:11px;color:var(--muted)" id="tableCount">0 pedidos</span>
+                </div>
+
+                <p class="admin-table-hint"><i class="fa-solid fa-arrows-left-right"></i> Desliza la tabla
+                    horizontalmente para ver todas las columnas.</p>
+                <div style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nº Pedido</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th class="hide-sm">Pago</th>
+                                <th>Estado</th>
+                                <th>Cambiar Estado</th>
+                                <th>Ticket</th>
+                                <th class="hide-sm">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="pag" id="pagination"></div>
+            </div>
+
+        </main>
     </div>
-</header>
-<nav id="mobileNav" aria-label="Menú administrativo móvil">
-    <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
-    <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-    <a href="orders_admin.html" class="active" aria-current="page"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-    <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="estadisticas_precios_admin.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
-    <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
-</nav>
 
-<!-- ===================== PANEL DE PEDIDOS ===================== -->
-<div id="ordersPage">
-    <main id="main">
+    <script>
+        // ---------- Menú móvil (header) ----------
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const icon = document.getElementById('hambIcon');
+            const open = nav.style.display === 'flex';
+            nav.style.display = open ? 'none' : 'flex';
+            icon.className = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+        }
 
-        <div class="fade-up admin-page-intro">
-            <p class="section-label"><i class="fa-solid fa-clipboard-list mr-1"></i> Gestión</p>
-            <h1 class="section-title">Panel de <span style="color:var(--green)">Pedidos</span></h1>
-            <p>Consulta tus pedidos y actualiza su estado cuando corresponda. Selecciona una pestaña para filtrar el listado.</p>
-        </div>
+        const token = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token']
+            .map(key => localStorage.getItem(key))
+            .find(Boolean)
+            ?.replace(/^"|"$/g, '');
+        const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            }[character]));
+        }
 
-        <div class="mini-stats">
-            <div class="mini-card fade-up delay-1">
-                <div class="mini-icon" style="background:rgba(255,255,255,.06)">
-                    <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Total</p>
-                    <p class="mini-val" id="statTotal">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-2">
-                <div class="mini-icon" style="background:rgba(250,204,21,.15)">
-                    <i class="fa-solid fa-clock" style="color:#facc15"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Pendientes</p>
-                    <p class="mini-val" id="statPending">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-3">
-                <div class="mini-icon" style="background:rgba(168,85,247,.15)">
-                    <i class="fa-solid fa-truck" style="color:#c084fc"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Enviados</p>
-                    <p class="mini-val" id="statShipped">0</p>
-                </div>
-            </div>
-            <div class="mini-card fade-up delay-4">
-                <div class="mini-icon" style="background:rgba(34,197,94,.15)">
-                    <i class="fa-solid fa-circle-check" style="color:#22C55E"></i>
-                </div>
-                <div>
-                    <p class="mini-label">Entregados</p>
-                    <p class="mini-val" id="statDelivered">0</p>
-                </div>
-            </div>
-        </div>
+        const STATUS_MAP = {
+            pending: { cls: 's-pending', label: 'Pendiente' },
+            paid: { cls: 's-paid', label: 'Pagado' },
+            shipped: { cls: 's-shipped', label: 'Enviado' },
+            delivered: { cls: 's-delivered', label: 'Entregado' },
+            cancelled: { cls: 's-cancelled', label: 'Cancelado' }
+        };
+        const TABS = [
+            { val: 'pending', icon: 'fa-clock', cls: 't-pending', label: 'Pendientes' },
+            { val: 'paid', icon: 'fa-credit-card', cls: 't-paid', label: 'Pagados' },
+            { val: 'shipped', icon: 'fa-truck', cls: 't-shipped', label: 'Enviados' },
+            { val: 'delivered', icon: 'fa-circle-check', cls: 't-delivered', label: 'Entregados' },
+            { val: 'cancelled', icon: 'fa-ban', cls: 't-cancelled', label: 'Cancelados' }
+        ];
 
-        <div class="alert-success" id="successAlert" style="display:none">
-            <i class="fa-solid fa-circle-check"></i> <span id="successMsg"></span>
-        </div>
-        <div class="alert-error" id="errorAlert" style="display:none">
-            <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorMsg"></span>
-        </div>
+        let orders = [];
 
-
-        <section class="order-filters" aria-label="Búsqueda de pedidos">
-            <div class="order-filters-heading"><span><i class="fa-solid fa-magnifying-glass" style="color:#6ee7a0"></i> Buscar y filtrar pedidos</span><small>Resultados automáticos · sin botón Buscar</small></div>
-            <div class="order-filters-grid">
-                <div class="order-field"><label for="orderSearchInput">N.º de pedido, cliente o correo</label><input class="order-input" type="search" id="orderSearchInput" placeholder="Escribe un número, nombre o correo" autocomplete="off"></div>
-                <div class="order-field"><label for="orderDateFrom">Desde</label><input class="order-input" type="date" id="orderDateFrom"></div>
-                <div class="order-field"><label for="orderDateTo">Hasta</label><input class="order-input" type="date" id="orderDateTo"></div>
-                <button type="button" class="order-clear" id="clearOrderFilters"><i class="fa-solid fa-rotate-left"></i> Limpiar filtros</button>
-            </div>
-            <p class="order-filter-result" id="orderFilterResult" role="status" aria-live="polite">Mostrando todos los pedidos disponibles.</p>
-        </section>
-        <div class="status-tabs" id="statusTabs"></div>
-
-        <div class="panel">
-            <div class="panel-head">
-                <h2><i class="fa-solid fa-clipboard-list" style="color:#c084fc"></i> Lista de Pedidos</h2>
-                <span style="font-size:11px;color:var(--muted)" id="tableCount">0 pedidos</span>
-            </div>
-
-            <p class="admin-table-hint"><i class="fa-solid fa-arrows-left-right"></i> Desliza la tabla horizontalmente para ver todas las columnas.</p>
-            <div style="overflow-x:auto">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nº Pedido</th>
-                            <th>Cliente</th>
-                            <th>Total</th>
-                            <th class="hide-sm">Pago</th>
-                            <th>Estado</th>
-                            <th>Cambiar Estado</th>
-                            <th>Ticket</th>
-                            <th class="hide-sm">Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersBody"></tbody>
-                </table>
-            </div>
-
-            <div class="pag" id="pagination"></div>
-        </div>
-
-    </main>
-</div>
-
-<script>
-    // ---------- Menú móvil (header) ----------
-    function toggleMobileNav() {
-        const nav  = document.getElementById('mobileNav');
-        const icon = document.getElementById('hambIcon');
-        const open = nav.style.display === 'flex';
-        nav.style.display = open ? 'none' : 'flex';
-        icon.className    = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
-    }
-
-    const token = ['token', 'auth_token', 'access_token', 'authToken', 'admin_token']
-        .map(key => localStorage.getItem(key))
-        .find(Boolean)
-        ?.replace(/^"|"$/g, '');
-    const authHeaders = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token };
-    function escapeHtml(value) {
-        return String(value ?? '').replace(/[&<>"']/g, character => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;',
-        }[character]));
-    }
-
-    const STATUS_MAP = {
-        pending:   { cls: 's-pending',   label: 'Pendiente' },
-        paid:      { cls: 's-paid',      label: 'Pagado' },
-        shipped:   { cls: 's-shipped',   label: 'Enviado' },
-        delivered: { cls: 's-delivered', label: 'Entregado' },
-        cancelled: { cls: 's-cancelled', label: 'Cancelado' }
-    };
-    const TABS = [
-        { val: 'pending',   icon: 'fa-clock',        cls: 't-pending',   label: 'Pendientes' },
-        { val: 'paid',      icon: 'fa-credit-card',  cls: 't-paid',      label: 'Pagados' },
-        { val: 'shipped',   icon: 'fa-truck',        cls: 't-shipped',   label: 'Enviados' },
-        { val: 'delivered', icon: 'fa-circle-check', cls: 't-delivered', label: 'Entregados' },
-        { val: 'cancelled', icon: 'fa-ban',          cls: 't-cancelled', label: 'Cancelados' }
-    ];
-
-    let orders = [];
-
-    let currentStatus = null;
-    let currentPage = 1;
-    const perPage = 5;
-    let orderSearchText = '';
-    let orderDateFrom = '';
-     let orderDateTo = '';
-    function normalizeOrderSearch(value) {
-        return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-    }
-    function getFilteredOrders() {
-        return orders.filter(order => {
-            if (currentStatus && order.status !== currentStatus) return false;
-            if (orderSearchText) {
-                const text = normalizeOrderSearch([order.order_number, order.id, order.user?.name, order.user?.email].join(' '));
-                if (!text.includes(orderSearchText)) return false;
-            }
-            if (orderDateFrom || orderDateTo) {
-                 const d = new Date(order.created_at);
-                 if (Number.isNaN(d.getTime())) return false;
-                 const date = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
-                 if (orderDateFrom && date < orderDateFrom) return false;
-                 if (orderDateTo && date > orderDateTo) return false;
-             }
-            return true;
+        let currentStatus = null;
+        let currentPage = 1;
+        const perPage = 5;
+        let orderSearchText = '';
+        let orderDateFrom = '';
+        let orderDateTo = '';
+        function normalizeOrderSearch(value) {
+            return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+        function getFilteredOrders() {
+            return orders.filter(order => {
+                if (currentStatus && order.status !== currentStatus) return false;
+                if (orderSearchText) {
+                    const text = normalizeOrderSearch([order.order_number, order.id, order.user?.name, order.user?.email].join(' '));
+                    if (!text.includes(orderSearchText)) return false;
+                }
+                if (orderDateFrom || orderDateTo) {
+                    const d = new Date(order.created_at);
+                    if (Number.isNaN(d.getTime())) return false;
+                    const date = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+                    if (orderDateFrom && date < orderDateFrom) return false;
+                    if (orderDateTo && date > orderDateTo) return false;
+                }
+                return true;
+            });
+        }
+        document.getElementById('orderSearchInput').addEventListener('input', event => {
+            orderSearchText = normalizeOrderSearch(event.target.value);
+            currentPage = 1;
+            renderTable();
         });
-    }
-    document.getElementById('orderSearchInput').addEventListener('input', event => {
-        orderSearchText = normalizeOrderSearch(event.target.value);
-        currentPage = 1;
-        renderTable();
-    });
-    document.getElementById('orderDateFrom').addEventListener('change', event => {
-         orderDateFrom = event.target.value;
-         currentPage = 1;
-         renderTable();
-     });
-     document.getElementById('orderDateTo').addEventListener('change', event => {
-         orderDateTo = event.target.value;
-         currentPage = 1;
-         renderTable();
-     });
-    document.getElementById('clearOrderFilters').addEventListener('click', () => {
-        document.getElementById('orderSearchInput').value = '';
-        document.getElementById('orderDateFrom').value = '';
-         document.getElementById('orderDateTo').value = '';
-        orderSearchText = '';
-        orderDateFrom = '';
-         orderDateTo = '';
-        currentPage = 1;
-        renderTable();
-    });
+        document.getElementById('orderDateFrom').addEventListener('change', event => {
+            orderDateFrom = event.target.value;
+            currentPage = 1;
+            renderTable();
+        });
+        document.getElementById('orderDateTo').addEventListener('change', event => {
+            orderDateTo = event.target.value;
+            currentPage = 1;
+            renderTable();
+        });
+        document.getElementById('clearOrderFilters').addEventListener('click', () => {
+            document.getElementById('orderSearchInput').value = '';
+            document.getElementById('orderDateFrom').value = '';
+            document.getElementById('orderDateTo').value = '';
+            orderSearchText = '';
+            orderDateFrom = '';
+            orderDateTo = '';
+            currentPage = 1;
+            renderTable();
+        });
 
 
-    function formatBs(n) { return 'Bs. ' + Number(n).toFixed(2); }
-    function formatDate(iso) {
-        const d = new Date(iso);
-        const date = d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const time = d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false });
-        return { date, time };
-    }
+        function formatBs(n) { return 'Bs. ' + Number(n).toFixed(2); }
+        function formatDate(iso) {
+            const d = new Date(iso);
+            const date = d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const time = d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false });
+            return { date, time };
+        }
 
-    function renderStats() {
-        document.getElementById('statTotal').textContent = orders.length;
-        document.getElementById('statPending').textContent = orders.filter(o => o.status === 'pending').length;
-        document.getElementById('statShipped').textContent = orders.filter(o => o.status === 'shipped').length;
-        document.getElementById('statDelivered').textContent = orders.filter(o => o.status === 'delivered').length;
-    }
+        function renderStats() {
+            document.getElementById('statTotal').textContent = orders.length;
+            document.getElementById('statPending').textContent = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('statShipped').textContent = orders.filter(o => o.status === 'shipped').length;
+            document.getElementById('statDelivered').textContent = orders.filter(o => o.status === 'delivered').length;
+        }
 
-    function renderTabs() {
-        const wrap = document.getElementById('statusTabs');
-        let html = `<button type="button" class="s-tab t-all ${!currentStatus ? 'active' : ''}" aria-pressed="${!currentStatus}" onclick="setStatus(null)">
+        function renderTabs() {
+            const wrap = document.getElementById('statusTabs');
+            let html = `<button type="button" class="s-tab t-all ${!currentStatus ? 'active' : ''}" aria-pressed="${!currentStatus}" onclick="setStatus(null)">
             <i class="fa-solid fa-border-all"></i> Todos
             <span style="background:rgba(255,255,255,.1);padding:1px 7px;border-radius:10px;font-size:10px">${orders.length}</span>
         </button>`;
-        html += TABS.map(t => `
+            html += TABS.map(t => `
             <button type="button" class="s-tab ${t.cls} ${currentStatus === t.val ? 'active' : ''}" aria-pressed="${currentStatus === t.val}" onclick="setStatus('${t.val}')">
                 <i class="fa-solid ${t.icon}"></i> ${t.label}
             </button>`).join('');
-        wrap.innerHTML = html;
-    }
+            wrap.innerHTML = html;
+        }
 
-    function setStatus(val) {
-        currentStatus = val;
-        currentPage = 1;
-        renderAll();
-    }
-
-    async function updateStatus(orderId, newStatus) {
-        const order = orders.find(o => o.id === orderId);
-        if (!order) return;
-        try {
-            const response = await fetch(`/api/admin/orders/${orderId}/status`, {
-                method: 'PATCH',
-                headers: { ...authHeaders, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus }),
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'No se pudo actualizar el pedido.');
-            order.status = result.datos?.status || newStatus;
-            showAlert('success', `Pedido ${order.order_number} actualizado a "${STATUS_MAP[order.status].label}".`);
+        function setStatus(val) {
+            currentStatus = val;
+            currentPage = 1;
             renderAll();
-        } catch (error) {
-            showAlert('error', error.message);
         }
-    }
 
-    async function downloadTicket(ticket, button) {
-        button.disabled = true;
-        try {
-            const response = await fetch(`/api/tickets/${ticket.id}/download`, {
-                headers: { ...authHeaders, 'Accept': 'application/pdf' },
-            });
-            if (!response.ok) throw new Error('No se pudo descargar el ticket (HTTP ' + response.status + ').');
-            const url = URL.createObjectURL(await response.blob());
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${ticket.ticket_number}.pdf`;
-            link.click();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-        } catch (error) {
-            showAlert('error', error.message);
-        } finally {
-            button.disabled = false;
+        async function updateStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            try {
+                const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus }),
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'No se pudo actualizar el pedido.');
+                order.status = result.datos?.status || newStatus;
+                showAlert('success', `Pedido ${order.order_number} actualizado a "${STATUS_MAP[order.status].label}".`);
+                renderAll();
+            } catch (error) {
+                showAlert('error', error.message);
+            }
         }
-    }
 
-    function showAlert(type, msg) {
-        const success = document.getElementById('successAlert');
-        const error = document.getElementById('errorAlert');
-        success.style.display = 'none';
-        error.style.display = 'none';
-        if (type === 'success') {
-            document.getElementById('successMsg').textContent = msg;
-            success.style.display = 'flex';
-        } else {
-            document.getElementById('errorMsg').textContent = msg;
-            error.style.display = 'flex';
+        async function downloadTicket(ticket, button) {
+            button.disabled = true;
+            try {
+                const response = await fetch(`/api/tickets/${ticket.id}/download`, {
+                    headers: { ...authHeaders, 'Accept': 'application/pdf' },
+                });
+                if (!response.ok) throw new Error('No se pudo descargar el ticket (HTTP ' + response.status + ').');
+                const url = URL.createObjectURL(await response.blob());
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${ticket.ticket_number}.pdf`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            } catch (error) {
+                showAlert('error', error.message);
+            } finally {
+                button.disabled = false;
+            }
         }
-    }
 
-    function renderTable() {
-        const filtered = getFilteredOrders();
-        document.getElementById('orderFilterResult').textContent = `${filtered.length} ${filtered.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}${(currentStatus || orderSearchText || orderDateFrom || orderDateTo) ? ' con los filtros seleccionados' : ' en total'}.`;
-        document.getElementById('tableCount').textContent = `${filtered.length} pedidos`;
+        function showAlert(type, msg) {
+            const success = document.getElementById('successAlert');
+            const error = document.getElementById('errorAlert');
+            success.style.display = 'none';
+            error.style.display = 'none';
+            if (type === 'success') {
+                document.getElementById('successMsg').textContent = msg;
+                success.style.display = 'flex';
+            } else {
+                document.getElementById('errorMsg').textContent = msg;
+                error.style.display = 'flex';
+            }
+        }
 
-        const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-        if (currentPage > totalPages) currentPage = totalPages;
-        const pageItems = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+        function renderTable() {
+            const filtered = getFilteredOrders();
+            document.getElementById('orderFilterResult').textContent = `${filtered.length} ${filtered.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}${(currentStatus || orderSearchText || orderDateFrom || orderDateTo) ? ' con los filtros seleccionados' : ' en total'}.`;
+            document.getElementById('tableCount').textContent = `${filtered.length} pedidos`;
 
-        const body = document.getElementById('ordersBody');
-        if (!pageItems.length) {
-            body.innerHTML = `
+            const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+            if (currentPage > totalPages) currentPage = totalPages;
+            const pageItems = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+            const body = document.getElementById('ordersBody');
+            if (!pageItems.length) {
+                body.innerHTML = `
                 <tr><td colspan="8">
                     <div class="empty-state">
                         <i class="fa-solid fa-clipboard"></i>
                         <p>No se encontraron pedidos</p>
                     </div>
                 </td></tr>`;
-        } else {
-            body.innerHTML = pageItems.map(order => {
-                const s = STATUS_MAP[order.status];
-                const locked = ['delivered', 'cancelled'].includes(order.status);
-                const { date, time } = formatDate(order.created_at);
-                const statusCell = locked
-                    ? `<span class="locked-status"><i class="fa-solid fa-lock"></i> ${order.status === 'delivered' ? 'Entregado' : 'Cancelado'}</span>`
-                    : `<div class="status-form">
+            } else {
+                body.innerHTML = pageItems.map(order => {
+                    const s = STATUS_MAP[order.status];
+                    const locked = ['delivered', 'cancelled'].includes(order.status);
+                    const { date, time } = formatDate(order.created_at);
+                    const statusCell = locked
+                        ? `<span class="locked-status"><i class="fa-solid fa-lock"></i> ${order.status === 'delivered' ? 'Entregado' : 'Cancelado'}</span>`
+                        : `<div class="status-form">
                         <select class="status-select" id="sel-${order.id}">
                             ${Object.entries(STATUS_MAP).map(([val, m]) => `<option value="${val}" ${order.status === val ? 'selected' : ''}>${m.label}</option>`).join('')}
                         </select>
@@ -609,11 +2044,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
                             <i class="fa-solid fa-check"></i>
                         </button>
                     </div>`;
-                const ticketCell = order.status === 'paid' && order.ticket
-                    ? `<button type="button" class="update-btn" onclick="downloadTicket(orders.find(o => o.id === ${order.id}).ticket, this)"><i class="fa-solid fa-download"></i> ${escapeHtml(order.ticket.ticket_number)}</button>`
-                    : '<span style="color:var(--muted);font-size:12px">Disponible cuando esté pagado</span>';
+                    const ticketCell = order.status === 'paid' && order.ticket
+                        ? `<button type="button" class="update-btn" onclick="downloadTicket(orders.find(o => o.id === ${order.id}).ticket, this)"><i class="fa-solid fa-download"></i> ${escapeHtml(order.ticket.ticket_number)}</button>`
+                        : '<span style="color:var(--muted);font-size:12px">Disponible cuando esté pagado</span>';
 
-                return `
+                    return `
                     <tr>
                         <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">${escapeHtml(order.order_number)}</td>
                         <td>
@@ -627,66 +2062,67 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
                         <td>${ticketCell}</td>
                         <td class="hide-sm" style="font-size:11px;color:var(--muted)">${date}<br><span style="font-size:10px">${time}</span></td>
                     </tr>`;
-            }).join('');
+                }).join('');
+            }
+
+            renderPagination(totalPages);
         }
 
-        renderPagination(totalPages);
-    }
+        function renderPagination(totalPages) {
+            const wrap = document.getElementById('pagination');
+            if (totalPages <= 1) { wrap.innerHTML = ''; return; }
 
-    function renderPagination(totalPages) {
-        const wrap = document.getElementById('pagination');
-        if (totalPages <= 1) { wrap.innerHTML = ''; return; }
-
-        let html = `<span class="pag-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goPage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></span>`;
-        for (let p = 1; p <= totalPages; p++) {
-            html += `<span class="pag-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</span>`;
+            let html = `<span class="pag-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goPage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></span>`;
+            for (let p = 1; p <= totalPages; p++) {
+                html += `<span class="pag-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</span>`;
+            }
+            html += `<span class="pag-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goPage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></span>`;
+            wrap.innerHTML = html;
         }
-        html += `<span class="pag-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goPage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></span>`;
-        wrap.innerHTML = html;
-    }
 
-    function goPage(p) {
-        currentPage = p;
-        renderTable();
-    }
-
-    function renderAll() {
-        renderStats();
-        renderTabs();
-        renderTable();
-    }
-
-    async function loadOrders() {
-        if (!token) {
-            window.location.href = '/iniciarsesion';
-            return;
+        function goPage(p) {
+            currentPage = p;
+            renderTable();
         }
-        try {
-            let pageNumber = 1;
-            let lastPage = 1;
-            do {
-                const response = await fetch(`/api/admin/orders?page=${pageNumber}`, { headers: authHeaders });
-                if (response.status === 401 || response.status === 403) {
-                    window.location.href = '/iniciarsesion';
-                    return;
-                }
-                if (!response.ok) throw new Error('No se pudieron cargar los pedidos (HTTP ' + response.status + ').');
-                const payload = await response.json();
-                const page = payload.datos;
-                if (!page || !Array.isArray(page.data)) throw new Error('La respuesta de pedidos no tiene el formato esperado.');
-                orders.push(...page.data);
-                pageNumber = page.current_page + 1;
-                lastPage = page.last_page;
-            } while (pageNumber <= lastPage);
-            renderAll();
-        } catch (error) {
-            showAlert('error', error.message || 'Error de conexión al cargar pedidos.');
-        }
-    }
 
-    renderAll();
-    loadOrders();
-</script>
-<script src="/js/admin-logout.js"></script>
+        function renderAll() {
+            renderStats();
+            renderTabs();
+            renderTable();
+        }
+
+        async function loadOrders() {
+            if (!token) {
+                window.location.href = '/iniciarsesion';
+                return;
+            }
+            try {
+                let pageNumber = 1;
+                let lastPage = 1;
+                do {
+                    const response = await fetch(`/api/admin/orders?page=${pageNumber}`, { headers: authHeaders });
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = '/iniciarsesion';
+                        return;
+                    }
+                    if (!response.ok) throw new Error('No se pudieron cargar los pedidos (HTTP ' + response.status + ').');
+                    const payload = await response.json();
+                    const page = payload.datos;
+                    if (!page || !Array.isArray(page.data)) throw new Error('La respuesta de pedidos no tiene el formato esperado.');
+                    orders.push(...page.data);
+                    pageNumber = page.current_page + 1;
+                    lastPage = page.last_page;
+                } while (pageNumber <= lastPage);
+                renderAll();
+            } catch (error) {
+                showAlert('error', error.message || 'Error de conexión al cargar pedidos.');
+            }
+        }
+
+        renderAll();
+        loadOrders();
+    </script>
+    <script src="/js/admin-logout.js"></script>
 </body>
+
 </html>

@@ -1,420 +1,2368 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Estadísticas de Precios - Admin - Casatek</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="/js/admin-guard.js"></script>
-<style>
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body, html { background:#060d0a !important; font-family:'DM Sans',sans-serif; overflow-x:hidden; color:#f3f4f6; }
-    :root { --green:#22C55E; --bg:#060d0a; --card:#111f16; --card2:#0b1710; --input:#0b1710; --border:rgba(34,197,94,.12); --border-h:rgba(34,197,94,.35);
-             --text:#f3f4f6; --muted:#8b95a1; --up:#4ade80; --down:#f87171; --notice:#fbbf24; --live-bg:linear-gradient(135deg,#12261a,#0d1a12); --shadow:none;
-             --title:'Syne',sans-serif; --body:'DM Sans',sans-serif; }
+  <meta charset="UTF-8">
+
+  <!-- FAVICON CASATEK: PC, Android y Apple -->
+  <link rel="icon" href="/images/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+
+  <!-- iPhone y iPad -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+  <!-- Android y aplicaciones web -->
+  <link rel="manifest" href="/images/site.webmanifest">
+
+  <!-- Color del navegador en dispositivos compatibles -->
+  <meta name="theme-color" content="#0d1620">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadísticas de Precios - Admin - Casatek</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="/js/admin-guard.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body,
+    html {
+      background: #060d0a !important;
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      color: #f3f4f6;
+    }
+
+    :root {
+      --green: #22C55E;
+      --bg: #060d0a;
+      --card: #111f16;
+      --card2: #0b1710;
+      --input: #0b1710;
+      --border: rgba(34, 197, 94, .12);
+      --border-h: rgba(34, 197, 94, .35);
+      --text: #f3f4f6;
+      --muted: #8b95a1;
+      --up: #4ade80;
+      --down: #f87171;
+      --notice: #fbbf24;
+      --live-bg: linear-gradient(135deg, #12261a, #0d1a12);
+      --shadow: none;
+      --title: 'Syne', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+
     /* ===================== HEADER ===================== */
     #adminHeader {
-        background:rgba(6,13,10,.95); backdrop-filter:blur(16px);
-        border-bottom:1px solid var(--border);
-        position:sticky; top:0; z-index:100;
-        padding:0 28px; height:64px;
-        display:flex; align-items:center; justify-content:space-between; gap:16px;
+      background: rgba(6, 13, 10, .95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
-    .ah-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
-    .ah-logo-dot { width:9px; height:9px; background:var(--green); border-radius:50%; box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse-dot 2.5s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{box-shadow:0 0 6px rgba(34,197,94,.5)} 50%{box-shadow:0 0 14px rgba(34,197,94,.9)} }
-    .ah-logo-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#fff; }
-    .ah-logo-badge { background:rgba(34,197,94,.15); border:1px solid var(--border-h); color:var(--green); font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
 
-    .ah-nav { display:flex; align-items:center; gap:2px; flex:1; justify-content:center; }
-    .ah-nav a { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
-    .ah-nav a:hover, .ah-nav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+    .ah-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
 
-    .ah-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-    .ah-user { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:rgba(34,197,94,.07); border:1px solid var(--border); border-radius:30px; }
-    .ah-avatar { width:32px; height:32px; border-radius:50%; background:rgba(34,197,94,.18); border:1px solid var(--border-h); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:13px; }
-    .ah-user-name { font-size:12px; font-weight:700; color:#d1fae5; }
-    .ah-btn-logout { display:flex; align-items:center; gap:7px; padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); font-size:12px; font-weight:700; border-radius:10px; cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; text-decoration:none; }
-    .ah-btn-logout:hover { border-color:rgba(239,68,68,.4); color:#f87171; background:rgba(239,68,68,.07); }
-    .ah-hamburger { display:none; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:16px; transition:all .18s; flex-shrink:0; }
-    .ah-hamburger:hover { color:var(--green); border-color:var(--border); }
+    .ah-logo-dot {
+      width: 9px;
+      height: 9px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(34, 197, 94, .6);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
 
-    #mobileNav { display:none; flex-direction:column; gap:4px; background:rgba(6,13,10,.98); border-bottom:1px solid var(--border); padding:12px 16px; }
-    #mobileNav a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; border:1px solid transparent; transition:all .18s; }
-    #mobileNav a:hover, #mobileNav a.active { color:var(--green); background:rgba(34,197,94,.08); border-color:var(--border); }
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 6px rgba(34, 197, 94, .5)
+      }
+
+      50% {
+        box-shadow: 0 0 14px rgba(34, 197, 94, .9)
+      }
+    }
+
+    .ah-logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .ah-logo-badge {
+      background: rgba(34, 197, 94, .15);
+      border: 1px solid var(--border-h);
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .ah-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .ah-nav a {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+
+    .ah-nav a:hover,
+    .ah-nav a.active {
+      color: var(--green);
+      background: rgba(34, 197, 94, .08);
+      border-color: var(--border);
+    }
+
+    .ah-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .ah-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px 5px 5px;
+      background: rgba(34, 197, 94, .07);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+    }
+
+    .ah-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, .18);
+      border: 1px solid var(--border-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-size: 13px;
+    }
+
+    .ah-user-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #d1fae5;
+    }
+
+    .ah-btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .18s;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+    }
+
+    .ah-btn-logout:hover {
+      border-color: rgba(239, 68, 68, .4);
+      color: #f87171;
+      background: rgba(239, 68, 68, .07);
+    }
+
+    .ah-hamburger {
+      display: none;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all .18s;
+      flex-shrink: 0;
+    }
+
+    .ah-hamburger:hover {
+      color: var(--green);
+      border-color: var(--border);
+    }
+
+    #mobileNav {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(6, 13, 10, .98);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    #mobileNav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all .18s;
+    }
+
+    #mobileNav a:hover,
+    #mobileNav a.active {
+      color: var(--green);
+      background: rgba(34, 197, 94, .08);
+      border-color: var(--border);
+    }
 
 
     /* Paginación del historial: compatible con tema claro y oscuro */
-    .recent-pagination { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
-    .recent-pagination[hidden] { display:none !important; }
-    .recent-page-info { color:var(--muted); font-size:12px; font-weight:600; }
-    .recent-page-actions { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .recent-page-btn { min-width:36px; min-height:36px; padding:7px 11px; border:1px solid var(--border); border-radius:9px; background:var(--card2); color:var(--text); font:600 12px var(--body); cursor:pointer; transition:background-color .15s,border-color .15s,color .15s; }
-    .recent-page-btn:hover:not(:disabled) { border-color:var(--green); color:var(--green); }
-    .recent-page-btn:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-    .recent-page-btn:disabled { opacity:.4; cursor:not-allowed; }
-    .recent-page-btn[aria-current="page"] { background:var(--green); color:#08150b; border-color:var(--green); }
-    .recent-page-ellipsis { color:var(--muted); padding:0 3px; }
-    @media(max-width:520px) { .recent-pagination { justify-content:center; } .recent-page-info { text-align:center; width:100%; } }
+    .recent-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
 
-    @media(max-width:900px) { .ah-nav { display:none; } .ah-hamburger { display:flex; } .ah-logo-badge { display:none; } }
-    @media(max-width:480px) { #adminHeader { padding:0 14px; height:58px; } .ah-user-name { display:none; } }
+    .recent-pagination[hidden] {
+      display: none !important;
+    }
 
-    .wrap { max-width:1180px; margin:0 auto; padding:28px 20px 60px; display:flex; flex-direction:column; gap:20px; }
-    .top-bar { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
-    .section-label { font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
-    .section-title { font-family:var(--title); font-size:28px; font-weight:800; color:var(--text); line-height:1.15; }
-    .section-title .g { color:var(--green); }
-    .sub { margin-top:6px; font-size:14px; color:var(--muted); max-width:560px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:20px; box-shadow:var(--shadow); }
-    .card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
-    .card-title { font-family:var(--title); font-size:17px; font-weight:800; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-    .card-head .card-title { margin-bottom:2px; }
-    .muted-s { font-size:12px; color:var(--muted); }
-    .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
-    .seg { display:inline-flex; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:3px; }
-    .seg button { border:0; background:transparent; color:var(--muted); font:600 13px var(--body); padding:7px 14px; border-radius:9px; cursor:pointer; transition:all .18s; }
-    .seg button:hover { color:var(--green); }
-    .seg button.active { background:var(--green); color:#fff; }
-    select, input[type=number] { background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 12px; font:500 13px var(--body); max-width:100%; }
-    select:focus, input:focus, .seg button:focus-visible { outline:2px solid var(--green); outline-offset:1px; }
-    #productSel { min-width:220px; }
+    .recent-page-info {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .recent-page-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .recent-page-btn {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--card2);
+      color: var(--text);
+      font: 600 12px var(--body);
+      cursor: pointer;
+      transition: background-color .15s, border-color .15s, color .15s;
+    }
+
+    .recent-page-btn:hover:not(:disabled) {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .recent-page-btn:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 2px;
+    }
+
+    .recent-page-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .recent-page-btn[aria-current="page"] {
+      background: var(--green);
+      color: #08150b;
+      border-color: var(--green);
+    }
+
+    .recent-page-ellipsis {
+      color: var(--muted);
+      padding: 0 3px;
+    }
+
+    @media(max-width:520px) {
+      .recent-pagination {
+        justify-content: center;
+      }
+
+      .recent-page-info {
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    @media(max-width:900px) {
+      .ah-nav {
+        display: none;
+      }
+
+      .ah-hamburger {
+        display: flex;
+      }
+
+      .ah-logo-badge {
+        display: none;
+      }
+    }
+
+    @media(max-width:480px) {
+      #adminHeader {
+        padding: 0 14px;
+        height: 58px;
+      }
+
+      .ah-user-name {
+        display: none;
+      }
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: var(--title);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .section-title .g {
+      color: var(--green);
+    }
+
+    .sub {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-family: var(--title);
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-head .card-title {
+      margin-bottom: 2px;
+    }
+
+    .muted-s {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .up {
+      color: var(--up);
+    }
+
+    .down {
+      color: var(--down);
+    }
+
+    .flat {
+      color: var(--muted);
+    }
+
+    .seg {
+      display: inline-flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3px;
+    }
+
+    .seg button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: 600 13px var(--body);
+      padding: 7px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .seg button:hover {
+      color: var(--green);
+    }
+
+    .seg button.active {
+      background: var(--green);
+      color: #fff;
+    }
+
+    select,
+    input[type=number] {
+      background: var(--input);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font: 500 13px var(--body);
+      max-width: 100%;
+    }
+
+    select:focus,
+    input:focus,
+    .seg button:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 1px;
+    }
+
+    #productSel {
+      min-width: 220px;
+    }
+
     /* dolar en vivo */
-    .live { border-color:var(--border-h); background:var(--live-bg); }
-    .live-head, .live-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .live-title { font-weight:700; font-size:14px; color:var(--text); display:flex; align-items:center; gap:8px; }
-    .live-dot { width:10px; height:10px; border-radius:50%; background:var(--green); animation:pulse 1.8s infinite; }
-    .live-dot.stale { background:#f59e0b; animation:none; }
-    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)} 70%{box-shadow:0 0 0 9px rgba(34,197,94,0)} 100%{box-shadow:0 0 0 0 rgba(34,197,94,0)} }
-    .live-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:14px 0; }
-    .rate { background:var(--card2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
-    .rate-lbl { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-    .rate-val { font-family:var(--title); font-size:30px; font-weight:800; color:var(--text); }
-    .rate-val.sm { font-size:22px; color:var(--green); margin-top:6px; }
-    .conv-row { display:flex; gap:8px; } .conv-row input { width:90px; }
-    .trend { font-size:12px; font-weight:700; color:var(--muted); } .trend.up { color:var(--up); } .trend.down { color:var(--down); }
+    .live {
+      border-color: var(--border-h);
+      background: var(--live-bg);
+    }
+
+    .live-head,
+    .live-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .live-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.8s infinite;
+    }
+
+    .live-dot.stale {
+      background: #f59e0b;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, .6)
+      }
+
+      70% {
+        box-shadow: 0 0 0 9px rgba(34, 197, 94, 0)
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0)
+      }
+    }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .rate {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .rate-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .rate-val {
+      font-family: var(--title);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .rate-val.sm {
+      font-size: 22px;
+      color: var(--green);
+      margin-top: 6px;
+    }
+
+    .conv-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .conv-row input {
+      width: 90px;
+    }
+
+    .trend {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .trend.up {
+      color: var(--up);
+    }
+
+    .trend.down {
+      color: var(--down);
+    }
+
     /* avisos */
-    .notice { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:13px; background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.35); color:var(--notice); }
-    .notice.err { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.35); color:var(--down); }
+    .notice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      background: rgba(245, 158, 11, .12);
+      border: 1px solid rgba(245, 158, 11, .35);
+      color: var(--notice);
+    }
+
+    .notice.err {
+      background: rgba(239, 68, 68, .1);
+      border-color: rgba(239, 68, 68, .35);
+      color: var(--down);
+    }
+
     /* kpis */
-    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-    .kpi-lbl { font-size:12px; font-weight:700; color:var(--muted); display:flex; gap:6px; align-items:center; margin-bottom:6px; }
-    .kpi-val { font-family:var(--title); font-size:30px; font-weight:800; color:var(--text); } .slash { color:var(--muted); }
-    .chart-box { position:relative; height:320px; } .chart-box.short { height:240px; }
-    .mini { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
-    .mini .val { font-family:var(--title); font-size:18px; font-weight:800; color:var(--text); }
-    .mini .val.up { color:var(--up); } .mini .val.down { color:var(--down); }
-    .note-sim { margin-top:10px; }
-    .two { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .rank { list-style:none; display:flex; flex-direction:column; gap:8px; }
-    .rank li { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--card2); border-radius:12px; }
-    .rank .pos { width:24px; height:24px; border-radius:50%; background:var(--border); color:var(--green); font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .rank .nm { flex:1; min-width:0; font-size:13px; font-weight:600; color:var(--text); } .rank .nm small { display:block; font-weight:400; color:var(--muted); font-size:11px; }
-    .rank .empty, td.empty { color:var(--muted); font-size:13px; justify-content:center; text-align:center; }
-    .chip { font-size:12px; font-weight:800; padding:3px 10px; border-radius:20px; white-space:nowrap; }
-    .chip.up { background:rgba(34,197,94,.14); } .chip.down { background:rgba(239,68,68,.14); } .chip.flat { background:var(--card2); }
-    .table-wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
-    td { padding:11px 10px; border-bottom:1px solid var(--border); color:var(--text); }
-    .fade-up { animation:fadeUp .4s ease both; } @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
-    @media(max-width:900px){ .live-grid,.two{grid-template-columns:1fr} .kpis{grid-template-columns:1fr 1fr} }
-    @media(max-width:520px){ .kpis{grid-template-columns:1fr} .mini{grid-template-columns:1fr} .section-title{font-size:23px} .chart-box{height:260px} .seg{width:100%} .seg button{flex:1;padding:7px 4px} #productSel{min-width:0;width:100%} }
-    @media (prefers-reduced-motion:reduce){ .fade-up,.live-dot{animation:none} }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .kpi-lbl {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .kpi-val {
+      font-family: var(--title);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .slash {
+      color: var(--muted);
+    }
+
+    .chart-box {
+      position: relative;
+      height: 320px;
+    }
+
+    .chart-box.short {
+      height: 240px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .mini .val {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .mini .val.up {
+      color: var(--up);
+    }
+
+    .mini .val.down {
+      color: var(--down);
+    }
+
+    .note-sim {
+      margin-top: 10px;
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .rank {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rank li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--card2);
+      border-radius: 12px;
+    }
+
+    .rank .pos {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--green);
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank .nm {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .rank .nm small {
+      display: block;
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .rank .empty,
+    td.empty {
+      color: var(--muted);
+      font-size: 13px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .chip.up {
+      background: rgba(34, 197, 94, .14);
+    }
+
+    .chip.down {
+      background: rgba(239, 68, 68, .14);
+    }
+
+    .chip.flat {
+      background: var(--card2);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .fade-up {
+      animation: fadeUp .4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @media(max-width:900px) {
+
+      .live-grid,
+      .two {
+        grid-template-columns: 1fr
+      }
+
+      .kpis {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:520px) {
+      .kpis {
+        grid-template-columns: 1fr
+      }
+
+      .mini {
+        grid-template-columns: 1fr
+      }
+
+      .section-title {
+        font-size: 23px
+      }
+
+      .chart-box {
+        height: 260px
+      }
+
+      .seg {
+        width: 100%
+      }
+
+      .seg button {
+        flex: 1;
+        padding: 7px 4px
+      }
+
+      #productSel {
+        min-width: 0;
+        width: 100%
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .fade-up,
+      .live-dot {
+        animation: none
+      }
+    }
 
 
 
-#adminHeader {height:74px;padding:0 clamp(18px,3.1vw,46px);background:rgba(15,25,35,.96);border-bottom:1px solid #2b3b49;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 5px 25px rgba(0,0,0,.10)}
-.ah-logo {display:inline-flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
-.ah-logo-dot {width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12)}
-.ah-logo-name {font:800 22px 'Syne',sans-serif;color:#fff;letter-spacing:-.065em}
-.ah-logo-name .brand-tek{color:var(--green)}
-.ah-logo-badge {background:rgba(34,197,94,.11);color:#a7f3be;border:1px solid rgba(34,197,94,.3);font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:7px}
-.ah-nav {display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
-.ah-nav a {display:inline-flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;color:#b9c6d1;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:color .2s,background .2s,transform .2s}
-.ah-nav a i {font-size:13px}
-.ah-nav a:hover {color:#eafff1;background:#243b36;transform:translateY(-1px)}
-.ah-nav a.active {background:rgba(34,197,94,.16);color:#80efa7;box-shadow:inset 0 0 0 1px rgba(34,197,94,.25)}
-.ah-actions {display:flex;align-items:center;gap:10px;flex-shrink:0}
-.ah-user {display:flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid #334b4a;background:#1c3031;border-radius:22px}
-.ah-avatar {width:33px;height:33px;border-radius:12px;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center;color:#6dea97;font-size:15px}
-.ah-user-name {font-size:12px;font-weight:800;color:#ecfff2}
-.ah-btn-logout {display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #42505a;color:#e0e9f0;background:rgba(255,255,255,.03);padding:10px 14px;font-size:12px;font-weight:800;border-radius:11px;cursor:pointer;text-decoration:none;transition:all .2s}
-.ah-btn-logout:hover {border-color:rgba(248,113,113,.6);background:rgba(248,113,113,.1);color:#ffc3c3;transform:translateY(-1px)}
-.ah-hamburger {display:none;width:42px;height:42px;border-radius:11px;align-items:center;justify-content:center;background:#21323f;color:#f7fafc;border:1px solid #39505d;font-size:18px;cursor:pointer;transition:background .2s}
-.ah-hamburger:hover {background:#2a463e;color:#86efac}
-#mobileNav {display:none;flex-direction:column;gap:5px;background:#152330;padding:14px 18px 18px;border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:99;box-shadow:0 18px 35px rgba(0,0,0,.24)}
-#mobileNav a {display:flex;align-items:center;gap:13px;text-decoration:none;color:#ccd8e0;border:1px solid transparent;padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px;transition:all .2s}
-#mobileNav a i {width:20px;text-align:center}
-#mobileNav a:hover,#mobileNav a.active {color:#9ef8bc;background:#234337;border-color:#345a4c}
+    #adminHeader {
+      height: 74px;
+      padding: 0 clamp(18px, 3.1vw, 46px);
+      background: rgba(15, 25, 35, .96);
+      border-bottom: 1px solid #2b3b49;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, .10)
+    }
+
+    .ah-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      flex-shrink: 0
+    }
+
+    .ah-logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, .12)
+    }
+
+    .ah-logo-name {
+      font: 800 22px 'Syne', sans-serif;
+      color: #fff;
+      letter-spacing: -.065em
+    }
+
+    .ah-logo-name .brand-tek {
+      color: var(--green)
+    }
+
+    .ah-logo-badge {
+      background: rgba(34, 197, 94, .11);
+      color: #a7f3be;
+      border: 1px solid rgba(34, 197, 94, .3);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      padding: 5px 9px;
+      border-radius: 7px
+    }
+
+    .ah-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 0
+    }
+
+    .ah-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 11px;
+      border-radius: 11px;
+      color: #b9c6d1;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color .2s, background .2s, transform .2s
+    }
+
+    .ah-nav a i {
+      font-size: 13px
+    }
+
+    .ah-nav a:hover {
+      color: #eafff1;
+      background: #243b36;
+      transform: translateY(-1px)
+    }
+
+    .ah-nav a.active {
+      background: rgba(34, 197, 94, .16);
+      color: #80efa7;
+      box-shadow: inset 0 0 0 1px rgba(34, 197, 94, .25)
+    }
+
+    .ah-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .ah-user {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 5px 13px 5px 5px;
+      border: 1px solid #334b4a;
+      background: #1c3031;
+      border-radius: 22px
+    }
+
+    .ah-avatar {
+      width: 33px;
+      height: 33px;
+      border-radius: 12px;
+      background: rgba(34, 197, 94, .18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6dea97;
+      font-size: 15px
+    }
+
+    .ah-user-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #ecfff2
+    }
+
+    .ah-btn-logout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid #42505a;
+      color: #e0e9f0;
+      background: rgba(255, 255, 255, .03);
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 11px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s
+    }
+
+    .ah-btn-logout:hover {
+      border-color: rgba(248, 113, 113, .6);
+      background: rgba(248, 113, 113, .1);
+      color: #ffc3c3;
+      transform: translateY(-1px)
+    }
+
+    .ah-hamburger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      align-items: center;
+      justify-content: center;
+      background: #21323f;
+      color: #f7fafc;
+      border: 1px solid #39505d;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background .2s
+    }
+
+    .ah-hamburger:hover {
+      background: #2a463e;
+      color: #86efac
+    }
+
+    #mobileNav {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: #152330;
+      padding: 14px 18px 18px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 70px;
+      z-index: 99;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, .24)
+    }
+
+    #mobileNav a {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      text-decoration: none;
+      color: #ccd8e0;
+      border: 1px solid transparent;
+      padding: 12px 14px;
+      border-radius: 11px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all .2s
+    }
+
+    #mobileNav a i {
+      width: 20px;
+      text-align: center
+    }
+
+    #mobileNav a:hover,
+    #mobileNav a.active {
+      color: #9ef8bc;
+      background: #234337;
+      border-color: #345a4c
+    }
 
 
 
-/* ===========================================================
+    /* ===========================================================
    CASATEK · Sistema visual admin, compatible con Dashboard.
    Solo CSS de presentación. No altera scripts ni endpoints.
    =========================================================== */
-*,*::before,*::after{box-sizing:border-box}
-:root {--green:#22c55e;--green-dark:#15803d;--bg:#0d1620;--card:#192936;--card2:#142531;--input:#182b38;--border:#344a58;--border-h:#55776b;--text:#eef5f9;--muted:#b0c3cf;--up:#4ade80;--down:#fca5a5;--notice:#fcd34d;--shadow:0 12px 30px rgba(0,0,0,.10);color-scheme:dark}
-html,body {background:#0d1620!important;color:#eef5f9;font-family:'DM Sans',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
-button,input,select{font-family:'DM Sans',sans-serif}
-a,button,select,input{ -webkit-tap-highlight-color:transparent }
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #86efac;outline-offset:3px}
-::selection{background:rgba(34,197,94,.29);color:#fff}
-#adminHeader{height:74px;padding:0 clamp(16px,3vw,46px);background:rgba(15,25,35,.97);border-bottom:1px solid #304657;box-shadow:0 5px 24px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
-.ah-logo-name{font:800 22px 'DM Sans',sans-serif;letter-spacing:-.055em}
-.ah-logo-name .brand-tek{color:#22c55e}
-.ah-logo-dot{width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 0 5px rgba(34,197,94,.12);animation:none}
-.ah-logo-badge{border-radius:8px;background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.27);color:#a7f3be;font-size:10px;padding:5px 9px}
-.ah-nav{min-width:0;gap:4px}
-.ah-nav a{font:700 12.5px 'DM Sans',sans-serif;color:#c3d2dc;padding:10px 11px;border-radius:10px;transition:color .2s,background .2s,transform .2s}
-.ah-nav a:hover{color:#e9fff1;background:#244138;transform:translateY(-1px)}
-.ah-nav a.active{background:rgba(34,197,94,.14);color:#80efa7;border:1px solid rgba(34,197,94,.27)}
-.ah-actions{gap:9px}
-.ah-user{background:#1c3037;border:1px solid #35534e;border-radius:22px;padding:5px 12px 5px 5px}
-.ah-avatar{background:rgba(34,197,94,.18);color:#8ff2b2;width:34px;height:34px;border-radius:11px}
-.ah-user-name{color:#eafff0}
-.ah-btn-logout{border:1px solid #4d5864;color:#e4ecf2;background:rgba(255,255,255,.035);border-radius:11px;padding:10px 14px;font-size:12px}
-.ah-btn-logout:hover{border-color:#ef8585;background:rgba(239,68,68,.1);color:#fecaca}
-.ah-hamburger{width:43px;height:43px;border-radius:11px;background:#233744;border-color:#3c5867;color:#fff}
-#mobileNav{background:#152430;border-bottom:1px solid #344858;padding:14px 18px;position:sticky;top:73px;z-index:98;box-shadow:0 19px 30px rgba(0,0,0,.2)}
-#mobileNav a{font:700 14px 'DM Sans',sans-serif;padding:11px 13px;border-radius:10px;color:#d4dfe7}
-#mobileNav a:hover,#mobileNav a.active{color:#a3f6bd;background:#254337;border:1px solid #385a4a}
-#ticketsPage,#usersPage{background:linear-gradient(180deg,#101d29 0%,#0d1620 60%)!important;min-height:calc(100vh - 74px);color:#edf5fa}
-#main{max-width:1530px;margin:auto;padding:25px clamp(16px,3vw,46px) 46px}
-.section-title{font:800 clamp(25px,2.5vw,31px)/1.18 'DM Sans',sans-serif;letter-spacing:-.028em;color:#f8fbfd}
-.section-label{font:800 11px 'DM Sans',sans-serif;color:#75e69b;letter-spacing:.09em;margin-bottom:6px}
-.admin-page-intro{background:linear-gradient(110deg,#18362d,#18323b);border:1px solid #375c4f;border-radius:19px;padding:22px 25px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:13px 24px;box-shadow:0 15px 30px rgba(0,0,0,.1)}
-.admin-page-intro p.admin-desc{color:#c4d4d9;font:500 13px/1.65 'DM Sans',sans-serif;margin-top:8px;max-width:700px}
-.admin-intro-actions{display:flex;gap:10px;flex-wrap:wrap}
-.admin-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 14px;border-radius:11px;text-decoration:none;white-space:nowrap;font:800 12px 'DM Sans',sans-serif;transition:transform .2s,background .2s}
-.admin-link:hover{transform:translateY(-2px)}
-.admin-link-primary{background:#22c55e;color:#082d18}
-.admin-link-primary:hover{background:#4ade80}
-.admin-link-secondary{background:#244256;border:1px solid #496679;color:#edf6fb}
-.admin-link-secondary:hover{background:#31546b}
-.mini-stats{gap:14px;margin:17px 0 18px}
-.mini-card{border:1px solid #344b5a;border-radius:16px;padding:16px 19px;min-height:104px;background:linear-gradient(145deg,#1b2d3b,#172835);box-shadow:0 12px 24px rgba(0,0,0,.08);transition:transform .2s,border-color .2s}
-.mini-card:hover{transform:translateY(-3px);border-color:#5a8976}
-.mini-icon{width:43px;height:43px;border-radius:12px}
-.mini-label{font:700 12px 'DM Sans',sans-serif;text-transform:none;letter-spacing:0;color:#c1d0d8}
-.mini-val{font:800 29px 'DM Sans',sans-serif;letter-spacing:-.025em;margin-top:3px}
-.panel{border:1px solid #354e5c;background:#182935;border-radius:18px;box-shadow:0 15px 32px rgba(0,0,0,.12)}
-.panel-head{padding:15px 19px;border-color:#344958;gap:12px;flex-wrap:wrap}
-.panel-head h2{font:800 16px 'DM Sans',sans-serif;letter-spacing:-.01em;display:flex;gap:10px;align-items:center}
-.panel-head>span{color:#c2d0d9!important;font-size:12px!important}
-.panel-head h2 i{border-radius:9px;background:#284738;padding:9px;color:#86efac!important}
-table{min-width:760px;border-collapse:separate;border-spacing:0}
-thead tr{background:#213543}
-th{font:800 11px 'DM Sans',sans-serif;letter-spacing:.025em;color:#b5c9d6;padding:11px 15px;border-bottom:1px solid #395163}
-td{font:500 12.5px/1.5 'DM Sans',sans-serif;color:#e4edf4;padding:12px 15px;border-bottom:1px solid #304554}
-tbody tr:hover{background:#213846}
-.pag{background:#162633;border-color:#364a59;padding:13px;gap:7px}
-.pag-btn{border:1px solid #465f70;color:#d5e4ed;background:#233947;border-radius:9px;min-width:36px;min-height:36px;font-weight:800;transition:background .2s,transform .2s,border-color .2s}
-.pag-btn:hover{background:#304c5f;transform:translateY(-1px);border-color:#75dc9b}
-.pag-btn.active{background:#22c55e;color:#082d17;border-color:#22c55e}
-.pag-btn.disabled{opacity:.38;pointer-events:none}
-.empty-state{padding:35px 20px;color:#b5c4ce}
-.empty-state i{font-size:32px;opacity:.6;color:#8bbda2}
-.empty-state p{color:#b7c8d3;font-size:13px}
-.alert-error{color:#fecaca;background:rgba(239,68,68,.10);border-color:#8a4750;margin:0 0 15px}
-.alert-success{color:#bbf7d0;background:rgba(34,197,94,.10);border-color:#34795a}
-.status-badge{font-size:11px;letter-spacing:0;border-radius:9px}
-.update-btn,.s-btn{background:#22c55e;color:#082b16;border:1px solid #36cc6e;border-radius:10px;min-height:34px;padding:7px 11px;font:800 12px 'DM Sans',sans-serif;transition:background .2s,transform .2s}
-.update-btn:hover,.s-btn:hover{background:#4ade80;transform:translateY(-1px)}
-.btn-cancel,.s-clear{background:#293b49;color:#e7f0f5;border-color:#536475;border-radius:10px}
-.btn-cancel:hover,.s-clear:hover{background:#354958;color:#fff}
-.btn-confirm-del{background:#dc4545;color:#fff;border-radius:10px}
-.btn-confirm-del:hover{background:#b91c1c}
-.act-view{background:rgba(59,130,246,.14);color:#93c5fd;border:1px solid #396295}
-.act-view:hover{background:rgba(59,130,246,.25)}
-.act-del{background:rgba(239,68,68,.13);color:#fda4af;border:1px solid #884b52}
-.act-del:hover{background:rgba(239,68,68,.25)}
-.act-btn{width:36px;height:36px;border-radius:10px}
-.admin-table-hint{display:none;padding:9px 17px;color:#adbdc8;font-size:11.5px}
-.admin-table-hint i{color:#86efac;margin-right:5px}
-@media(max-width:1320px){.ah-nav a{font-size:11.5px;padding:9px 8px;gap:6px}}
-@media(max-width:1130px){.ah-nav{display:none}.ah-hamburger{display:flex}}
-@media(max-width:1050px){.admin-table-hint{display:block}}
-@media(max-width:640px){#adminHeader{height:64px}#mobileNav{top:63px}#main{padding:17px 15px 30px}.admin-page-intro{padding:18px 17px;border-radius:15px}.admin-page-intro p.admin-desc{font-size:12px}.admin-intro-actions{width:100%}.admin-intro-actions .admin-link{flex:1}.section-title{font-size:26px}.mini-stats{gap:10px}.mini-card{padding:13px;min-height:88px}.mini-val{font-size:25px}.ah-user{padding:4px}.ah-user-name,.hidden-xs{display:none}.ah-btn-logout{min-width:39px;padding:10px}.panel-head{padding:13px 15px}.panel-head h2{font-size:14px}}
-@media(max-width:390px){.ah-logo-badge{display:none}.ah-logo-name{font-size:19px}.ah-hamburger{width:39px;height:39px}.ah-avatar{width:30px;height:30px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box
+    }
+
+    :root {
+      --green: #22c55e;
+      --green-dark: #15803d;
+      --bg: #0d1620;
+      --card: #192936;
+      --card2: #142531;
+      --input: #182b38;
+      --border: #344a58;
+      --border-h: #55776b;
+      --text: #eef5f9;
+      --muted: #b0c3cf;
+      --up: #4ade80;
+      --down: #fca5a5;
+      --notice: #fcd34d;
+      --shadow: 0 12px 30px rgba(0, 0, 0, .10);
+      color-scheme: dark
+    }
+
+    html,
+    body {
+      background: #0d1620 !important;
+      color: #eef5f9;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased
+    }
+
+    button,
+    input,
+    select {
+      font-family: 'DM Sans', sans-serif
+    }
+
+    a,
+    button,
+    select,
+    input {
+      -webkit-tap-highlight-color: transparent
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid #86efac;
+      outline-offset: 3px
+    }
+
+    ::selection {
+      background: rgba(34, 197, 94, .29);
+      color: #fff
+    }
+
+    #adminHeader {
+      height: 74px;
+      padding: 0 clamp(16px, 3vw, 46px);
+      background: rgba(15, 25, 35, .97);
+      border-bottom: 1px solid #304657;
+      box-shadow: 0 5px 24px rgba(0, 0, 0, .1);
+      position: sticky;
+      top: 0;
+      z-index: 100
+    }
+
+    .ah-logo-name {
+      font: 800 22px 'DM Sans', sans-serif;
+      letter-spacing: -.055em
+    }
+
+    .ah-logo-name .brand-tek {
+      color: #22c55e
+    }
+
+    .ah-logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, .12);
+      animation: none
+    }
+
+    .ah-logo-badge {
+      border-radius: 8px;
+      background: rgba(34, 197, 94, .11);
+      border: 1px solid rgba(34, 197, 94, .27);
+      color: #a7f3be;
+      font-size: 10px;
+      padding: 5px 9px
+    }
+
+    .ah-nav {
+      min-width: 0;
+      gap: 4px
+    }
+
+    .ah-nav a {
+      font: 700 12.5px 'DM Sans', sans-serif;
+      color: #c3d2dc;
+      padding: 10px 11px;
+      border-radius: 10px;
+      transition: color .2s, background .2s, transform .2s
+    }
+
+    .ah-nav a:hover {
+      color: #e9fff1;
+      background: #244138;
+      transform: translateY(-1px)
+    }
+
+    .ah-nav a.active {
+      background: rgba(34, 197, 94, .14);
+      color: #80efa7;
+      border: 1px solid rgba(34, 197, 94, .27)
+    }
+
+    .ah-actions {
+      gap: 9px
+    }
+
+    .ah-user {
+      background: #1c3037;
+      border: 1px solid #35534e;
+      border-radius: 22px;
+      padding: 5px 12px 5px 5px
+    }
+
+    .ah-avatar {
+      background: rgba(34, 197, 94, .18);
+      color: #8ff2b2;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px
+    }
+
+    .ah-user-name {
+      color: #eafff0
+    }
+
+    .ah-btn-logout {
+      border: 1px solid #4d5864;
+      color: #e4ecf2;
+      background: rgba(255, 255, 255, .035);
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-size: 12px
+    }
+
+    .ah-btn-logout:hover {
+      border-color: #ef8585;
+      background: rgba(239, 68, 68, .1);
+      color: #fecaca
+    }
+
+    .ah-hamburger {
+      width: 43px;
+      height: 43px;
+      border-radius: 11px;
+      background: #233744;
+      border-color: #3c5867;
+      color: #fff
+    }
+
+    #mobileNav {
+      background: #152430;
+      border-bottom: 1px solid #344858;
+      padding: 14px 18px;
+      position: sticky;
+      top: 73px;
+      z-index: 98;
+      box-shadow: 0 19px 30px rgba(0, 0, 0, .2)
+    }
+
+    #mobileNav a {
+      font: 700 14px 'DM Sans', sans-serif;
+      padding: 11px 13px;
+      border-radius: 10px;
+      color: #d4dfe7
+    }
+
+    #mobileNav a:hover,
+    #mobileNav a.active {
+      color: #a3f6bd;
+      background: #254337;
+      border: 1px solid #385a4a
+    }
+
+    #ticketsPage,
+    #usersPage {
+      background: linear-gradient(180deg, #101d29 0%, #0d1620 60%) !important;
+      min-height: calc(100vh - 74px);
+      color: #edf5fa
+    }
+
+    #main {
+      max-width: 1530px;
+      margin: auto;
+      padding: 25px clamp(16px, 3vw, 46px) 46px
+    }
+
+    .section-title {
+      font: 800 clamp(25px, 2.5vw, 31px)/1.18 'DM Sans', sans-serif;
+      letter-spacing: -.028em;
+      color: #f8fbfd
+    }
+
+    .section-label {
+      font: 800 11px 'DM Sans', sans-serif;
+      color: #75e69b;
+      letter-spacing: .09em;
+      margin-bottom: 6px
+    }
+
+    .admin-page-intro {
+      background: linear-gradient(110deg, #18362d, #18323b);
+      border: 1px solid #375c4f;
+      border-radius: 19px;
+      padding: 22px 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 13px 24px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, .1)
+    }
+
+    .admin-page-intro p.admin-desc {
+      color: #c4d4d9;
+      font: 500 13px/1.65 'DM Sans', sans-serif;
+      margin-top: 8px;
+      max-width: 700px
+    }
+
+    .admin-intro-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .admin-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 41px;
+      padding: 10px 14px;
+      border-radius: 11px;
+      text-decoration: none;
+      white-space: nowrap;
+      font: 800 12px 'DM Sans', sans-serif;
+      transition: transform .2s, background .2s
+    }
+
+    .admin-link:hover {
+      transform: translateY(-2px)
+    }
+
+    .admin-link-primary {
+      background: #22c55e;
+      color: #082d18
+    }
+
+    .admin-link-primary:hover {
+      background: #4ade80
+    }
+
+    .admin-link-secondary {
+      background: #244256;
+      border: 1px solid #496679;
+      color: #edf6fb
+    }
+
+    .admin-link-secondary:hover {
+      background: #31546b
+    }
+
+    .mini-stats {
+      gap: 14px;
+      margin: 17px 0 18px
+    }
+
+    .mini-card {
+      border: 1px solid #344b5a;
+      border-radius: 16px;
+      padding: 16px 19px;
+      min-height: 104px;
+      background: linear-gradient(145deg, #1b2d3b, #172835);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, .08);
+      transition: transform .2s, border-color .2s
+    }
+
+    .mini-card:hover {
+      transform: translateY(-3px);
+      border-color: #5a8976
+    }
+
+    .mini-icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 12px
+    }
+
+    .mini-label {
+      font: 700 12px 'DM Sans', sans-serif;
+      text-transform: none;
+      letter-spacing: 0;
+      color: #c1d0d8
+    }
+
+    .mini-val {
+      font: 800 29px 'DM Sans', sans-serif;
+      letter-spacing: -.025em;
+      margin-top: 3px
+    }
+
+    .panel {
+      border: 1px solid #354e5c;
+      background: #182935;
+      border-radius: 18px;
+      box-shadow: 0 15px 32px rgba(0, 0, 0, .12)
+    }
+
+    .panel-head {
+      padding: 15px 19px;
+      border-color: #344958;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .panel-head h2 {
+      font: 800 16px 'DM Sans', sans-serif;
+      letter-spacing: -.01em;
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .panel-head>span {
+      color: #c2d0d9 !important;
+      font-size: 12px !important
+    }
+
+    .panel-head h2 i {
+      border-radius: 9px;
+      background: #284738;
+      padding: 9px;
+      color: #86efac !important
+    }
+
+    table {
+      min-width: 760px;
+      border-collapse: separate;
+      border-spacing: 0
+    }
+
+    thead tr {
+      background: #213543
+    }
+
+    th {
+      font: 800 11px 'DM Sans', sans-serif;
+      letter-spacing: .025em;
+      color: #b5c9d6;
+      padding: 11px 15px;
+      border-bottom: 1px solid #395163
+    }
+
+    td {
+      font: 500 12.5px/1.5 'DM Sans', sans-serif;
+      color: #e4edf4;
+      padding: 12px 15px;
+      border-bottom: 1px solid #304554
+    }
+
+    tbody tr:hover {
+      background: #213846
+    }
+
+    .pag {
+      background: #162633;
+      border-color: #364a59;
+      padding: 13px;
+      gap: 7px
+    }
+
+    .pag-btn {
+      border: 1px solid #465f70;
+      color: #d5e4ed;
+      background: #233947;
+      border-radius: 9px;
+      min-width: 36px;
+      min-height: 36px;
+      font-weight: 800;
+      transition: background .2s, transform .2s, border-color .2s
+    }
+
+    .pag-btn:hover {
+      background: #304c5f;
+      transform: translateY(-1px);
+      border-color: #75dc9b
+    }
+
+    .pag-btn.active {
+      background: #22c55e;
+      color: #082d17;
+      border-color: #22c55e
+    }
+
+    .pag-btn.disabled {
+      opacity: .38;
+      pointer-events: none
+    }
+
+    .empty-state {
+      padding: 35px 20px;
+      color: #b5c4ce
+    }
+
+    .empty-state i {
+      font-size: 32px;
+      opacity: .6;
+      color: #8bbda2
+    }
+
+    .empty-state p {
+      color: #b7c8d3;
+      font-size: 13px
+    }
+
+    .alert-error {
+      color: #fecaca;
+      background: rgba(239, 68, 68, .10);
+      border-color: #8a4750;
+      margin: 0 0 15px
+    }
+
+    .alert-success {
+      color: #bbf7d0;
+      background: rgba(34, 197, 94, .10);
+      border-color: #34795a
+    }
+
+    .status-badge {
+      font-size: 11px;
+      letter-spacing: 0;
+      border-radius: 9px
+    }
+
+    .update-btn,
+    .s-btn {
+      background: #22c55e;
+      color: #082b16;
+      border: 1px solid #36cc6e;
+      border-radius: 10px;
+      min-height: 34px;
+      padding: 7px 11px;
+      font: 800 12px 'DM Sans', sans-serif;
+      transition: background .2s, transform .2s
+    }
+
+    .update-btn:hover,
+    .s-btn:hover {
+      background: #4ade80;
+      transform: translateY(-1px)
+    }
+
+    .btn-cancel,
+    .s-clear {
+      background: #293b49;
+      color: #e7f0f5;
+      border-color: #536475;
+      border-radius: 10px
+    }
+
+    .btn-cancel:hover,
+    .s-clear:hover {
+      background: #354958;
+      color: #fff
+    }
+
+    .btn-confirm-del {
+      background: #dc4545;
+      color: #fff;
+      border-radius: 10px
+    }
+
+    .btn-confirm-del:hover {
+      background: #b91c1c
+    }
+
+    .act-view {
+      background: rgba(59, 130, 246, .14);
+      color: #93c5fd;
+      border: 1px solid #396295
+    }
+
+    .act-view:hover {
+      background: rgba(59, 130, 246, .25)
+    }
+
+    .act-del {
+      background: rgba(239, 68, 68, .13);
+      color: #fda4af;
+      border: 1px solid #884b52
+    }
+
+    .act-del:hover {
+      background: rgba(239, 68, 68, .25)
+    }
+
+    .act-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px
+    }
+
+    .admin-table-hint {
+      display: none;
+      padding: 9px 17px;
+      color: #adbdc8;
+      font-size: 11.5px
+    }
+
+    .admin-table-hint i {
+      color: #86efac;
+      margin-right: 5px
+    }
+
+    @media(max-width:1320px) {
+      .ah-nav a {
+        font-size: 11.5px;
+        padding: 9px 8px;
+        gap: 6px
+      }
+    }
+
+    @media(max-width:1130px) {
+      .ah-nav {
+        display: none
+      }
+
+      .ah-hamburger {
+        display: flex
+      }
+    }
+
+    @media(max-width:1050px) {
+      .admin-table-hint {
+        display: block
+      }
+    }
+
+    @media(max-width:640px) {
+      #adminHeader {
+        height: 64px
+      }
+
+      #mobileNav {
+        top: 63px
+      }
+
+      #main {
+        padding: 17px 15px 30px
+      }
+
+      .admin-page-intro {
+        padding: 18px 17px;
+        border-radius: 15px
+      }
+
+      .admin-page-intro p.admin-desc {
+        font-size: 12px
+      }
+
+      .admin-intro-actions {
+        width: 100%
+      }
+
+      .admin-intro-actions .admin-link {
+        flex: 1
+      }
+
+      .section-title {
+        font-size: 26px
+      }
+
+      .mini-stats {
+        gap: 10px
+      }
+
+      .mini-card {
+        padding: 13px;
+        min-height: 88px
+      }
+
+      .mini-val {
+        font-size: 25px
+      }
+
+      .ah-user {
+        padding: 4px
+      }
+
+      .ah-user-name,
+      .hidden-xs {
+        display: none
+      }
+
+      .ah-btn-logout {
+        min-width: 39px;
+        padding: 10px
+      }
+
+      .panel-head {
+        padding: 13px 15px
+      }
+
+      .panel-head h2 {
+        font-size: 14px
+      }
+    }
+
+    @media(max-width:390px) {
+      .ah-logo-badge {
+        display: none
+      }
+
+      .ah-logo-name {
+        font-size: 19px
+      }
+
+      .ah-hamburger {
+        width: 39px;
+        height: 39px
+      }
+
+      .ah-avatar {
+        width: 30px;
+        height: 30px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+      *:before,
+      *:after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important
+      }
+    }
 
 
-html,body{background:#0d1620!important}
-.wrap{max-width:1530px;margin:0 auto;padding:24px clamp(16px,3vw,46px) 42px;gap:16px}
-.top-bar{background:linear-gradient(110deg,#19362d,#1a3440);border:1px solid #3b5b50;border-radius:18px;padding:21px 24px;align-items:center;margin-bottom:0}
-.top-bar .section-title{font-size:clamp(24px,2.5vw,30px)}
-.top-bar .sub{color:#cad8df;font-size:13px;max-width:660px}
-.top-bar .seg{background:#192e3a;border:1px solid #476071;padding:4px}
-.top-bar .seg button{border-radius:9px;font-size:12px;padding:10px 12px;color:#c5d6e1}
-.top-bar .seg button.active{background:#22c55e;color:#082d17}
-.card{background:#192a37;border:1px solid #354e60;border-radius:16px;padding:17px 19px;box-shadow:0 11px 26px rgba(0,0,0,.1)}
-.card-title{font:800 16px 'DM Sans',sans-serif;letter-spacing:-.012em}
-.muted-s{font-size:12px;color:#b6c8d5}
-.kpis{gap:13px}
-.kpi{padding:16px 18px;border-top:3px solid #42654c}
-.kpi-lbl{font-size:12px;color:#c9d8e1}
-.kpi-val{font:800 28px 'DM Sans',sans-serif;letter-spacing:-.025em}
-.chart-box{height:300px}.chart-box.short{height:225px}
-.live{background:linear-gradient(120deg,#16362d,#1a3440);border-color:#3c7158}
-.live-grid{gap:12px;margin:12px 0}
-.rate{background:#122633;border:1px solid #375163;border-radius:13px;padding:12px 16px}
-.rate-lbl{color:#c0d2df;font-size:11px}
-.rate-val{font:800 26px 'DM Sans',sans-serif;letter-spacing:-.025em}
-.rate-val.sm{font-size:23px}
-.rank li{background:#132633;border:1px solid #36505d;padding:10px 11px}
-.rank .nm{font-size:12.5px}
-.rank .pos{background:#23433a;color:#92f2b1}
-.chip{border-radius:8px}
-.seg button.active{color:#082d17}
-select,input[type=number]{background:#122734;border-color:#486578;border-radius:10px;color:#e7f1f6;min-height:40px}
-.recent-pagination{padding-top:15px}
-.recent-page-btn{background:#263d4c;border-color:#496776;color:#eaf4f9}
-.recent-page-btn[aria-current="page"]{color:#072a16}
-.table-wrap{border-radius:12px;scrollbar-color:#557b8a transparent}
-.table-wrap table{min-width:720px}
-.table-wrap th{font-size:11px;border-color:#395362;background:#1d3442}
-.table-wrap td{font-size:12.5px;border-color:#395060}
-#simBanner,#errBox,#loading{margin:0}
-#listRises,#listDrops{min-height:40px}
-@media(max-width:900px){.live-grid{grid-template-columns:1fr 1fr}.live-grid .rate:last-child{grid-column:span 2}.two{grid-template-columns:1fr}}
-@media(max-width:640px){.top-bar{padding:17px 15px}.top-bar .seg{width:100%}.top-bar .seg button{flex:1;padding:9px 4px}.card{padding:14px}.live-grid{grid-template-columns:1fr}.live-grid .rate:last-child{grid-column:auto}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi-val{font-size:25px}.two{grid-template-columns:1fr}.chart-box{height:260px}.chart-box.short{height:210px}}
+    html,
+    body {
+      background: #0d1620 !important
+    }
 
-</style>
+    .wrap {
+      max-width: 1530px;
+      margin: 0 auto;
+      padding: 24px clamp(16px, 3vw, 46px) 42px;
+      gap: 16px
+    }
+
+    .top-bar {
+      background: linear-gradient(110deg, #19362d, #1a3440);
+      border: 1px solid #3b5b50;
+      border-radius: 18px;
+      padding: 21px 24px;
+      align-items: center;
+      margin-bottom: 0
+    }
+
+    .top-bar .section-title {
+      font-size: clamp(24px, 2.5vw, 30px)
+    }
+
+    .top-bar .sub {
+      color: #cad8df;
+      font-size: 13px;
+      max-width: 660px
+    }
+
+    .top-bar .seg {
+      background: #192e3a;
+      border: 1px solid #476071;
+      padding: 4px
+    }
+
+    .top-bar .seg button {
+      border-radius: 9px;
+      font-size: 12px;
+      padding: 10px 12px;
+      color: #c5d6e1
+    }
+
+    .top-bar .seg button.active {
+      background: #22c55e;
+      color: #082d17
+    }
+
+    .card {
+      background: #192a37;
+      border: 1px solid #354e60;
+      border-radius: 16px;
+      padding: 17px 19px;
+      box-shadow: 0 11px 26px rgba(0, 0, 0, .1)
+    }
+
+    .card-title {
+      font: 800 16px 'DM Sans', sans-serif;
+      letter-spacing: -.012em
+    }
+
+    .muted-s {
+      font-size: 12px;
+      color: #b6c8d5
+    }
+
+    .kpis {
+      gap: 13px
+    }
+
+    .kpi {
+      padding: 16px 18px;
+      border-top: 3px solid #42654c
+    }
+
+    .kpi-lbl {
+      font-size: 12px;
+      color: #c9d8e1
+    }
+
+    .kpi-val {
+      font: 800 28px 'DM Sans', sans-serif;
+      letter-spacing: -.025em
+    }
+
+    .chart-box {
+      height: 300px
+    }
+
+    .chart-box.short {
+      height: 225px
+    }
+
+    .live {
+      background: linear-gradient(120deg, #16362d, #1a3440);
+      border-color: #3c7158
+    }
+
+    .live-grid {
+      gap: 12px;
+      margin: 12px 0
+    }
+
+    .rate {
+      background: #122633;
+      border: 1px solid #375163;
+      border-radius: 13px;
+      padding: 12px 16px
+    }
+
+    .rate-lbl {
+      color: #c0d2df;
+      font-size: 11px
+    }
+
+    .rate-val {
+      font: 800 26px 'DM Sans', sans-serif;
+      letter-spacing: -.025em
+    }
+
+    .rate-val.sm {
+      font-size: 23px
+    }
+
+    .rank li {
+      background: #132633;
+      border: 1px solid #36505d;
+      padding: 10px 11px
+    }
+
+    .rank .nm {
+      font-size: 12.5px
+    }
+
+    .rank .pos {
+      background: #23433a;
+      color: #92f2b1
+    }
+
+    .chip {
+      border-radius: 8px
+    }
+
+    .seg button.active {
+      color: #082d17
+    }
+
+    select,
+    input[type=number] {
+      background: #122734;
+      border-color: #486578;
+      border-radius: 10px;
+      color: #e7f1f6;
+      min-height: 40px
+    }
+
+    .recent-pagination {
+      padding-top: 15px
+    }
+
+    .recent-page-btn {
+      background: #263d4c;
+      border-color: #496776;
+      color: #eaf4f9
+    }
+
+    .recent-page-btn[aria-current="page"] {
+      color: #072a16
+    }
+
+    .table-wrap {
+      border-radius: 12px;
+      scrollbar-color: #557b8a transparent
+    }
+
+    .table-wrap table {
+      min-width: 720px
+    }
+
+    .table-wrap th {
+      font-size: 11px;
+      border-color: #395362;
+      background: #1d3442
+    }
+
+    .table-wrap td {
+      font-size: 12.5px;
+      border-color: #395060
+    }
+
+    #simBanner,
+    #errBox,
+    #loading {
+      margin: 0
+    }
+
+    #listRises,
+    #listDrops {
+      min-height: 40px
+    }
+
+    @media(max-width:900px) {
+      .live-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .live-grid .rate:last-child {
+        grid-column: span 2
+      }
+
+      .two {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:640px) {
+      .top-bar {
+        padding: 17px 15px
+      }
+
+      .top-bar .seg {
+        width: 100%
+      }
+
+      .top-bar .seg button {
+        flex: 1;
+        padding: 9px 4px
+      }
+
+      .card {
+        padding: 14px
+      }
+
+      .live-grid {
+        grid-template-columns: 1fr
+      }
+
+      .live-grid .rate:last-child {
+        grid-column: auto
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+
+      .kpi-val {
+        font-size: 25px
+      }
+
+      .two {
+        grid-template-columns: 1fr
+      }
+
+      .chart-box {
+        height: 260px
+      }
+
+      .chart-box.short {
+        height: 210px
+      }
+    }
+  
+    /* Identidad de sesión visible y estable en el extremo derecho */
+    #adminHeader .ah-actions { margin-left: auto; }
+    #adminHeader .ah-user { flex-shrink: 0; white-space: nowrap; text-decoration:none; cursor:pointer; transition: background .2s, border-color .2s; }
+    #adminHeader .ah-user:hover, #adminHeader .ah-user:focus-visible { background:rgba(34,197,94,.18); border-color:var(--green); }
+    #adminHeader .ah-user-name { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+
+
+    /* Búsqueda y paginación de cambios de precio */
+    .recent-toolbar { display:flex; flex-direction:column; align-items:stretch; gap:16px; margin-bottom:18px; }
+    .recent-toolbar .card-title { margin-bottom:0; }
+    .recent-filters { display:grid; grid-template-columns:minmax(220px, 1.5fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(145px, .7fr); align-items:end; gap:12px; }
+    .recent-filter-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .recent-filter-field > span { color:var(--muted); font-size:11px; font-weight:700; }
+    .recent-date-input { width:100%; min-height:42px; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 11px; font:500 13px var(--body); color-scheme:dark; }
+    .recent-date-input:focus-visible { outline:2px solid var(--green); outline-offset:1px; }
+    .recent-search-label { display:flex; align-items:center; gap:9px; min-width:min(300px, 100%); padding:0 12px; border:1px solid var(--border); background:var(--input); border-radius:10px; color:var(--muted); }
+    .recent-search-label:focus-within { outline:2px solid var(--green); outline-offset:1px; }
+    .recent-search-label input { border:0; outline:0; background:transparent; color:var(--text); font:500 13px var(--body); min-width:0; width:100%; padding:10px 0; }
+    .recent-search-label input::placeholder { color:var(--muted); }
+    .recent-filters select { font:500 12px var(--body); padding:10px; width:100%; min-height:42px; }
+    @media(max-width:1050px) { .recent-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:640px) { .recent-filters { grid-template-columns:1fr; } .recent-search-label { min-width:0; } }
+  </style>
 </head>
+
 <body>
-<header id="adminHeader">
+  <header id="adminHeader">
     <a href="#" class="ah-logo" aria-label="Casatek, panel de administración">
-        <span class="ah-logo-dot" aria-hidden="true"></span>
-        <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
-        <span class="ah-logo-badge">Administración</span>
+      <span class="ah-logo-dot" aria-hidden="true"></span>
+      <span class="ah-logo-name">CASA<span class="brand-tek">TEK</span></span>
+      <span class="ah-logo-badge">Administración</span>
     </a>
     <nav class="ah-nav" aria-label="Navegación administrativa">
-        <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
-        <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
-        <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
-        <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-        <a href="estadisticas_precios_admin.html" class="active" aria-current="page"><i class="fa-solid fa-chart-line"></i> Precios</a>
-        <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
+      <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio</a>
+      <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
+      <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+      <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
+      <a href="estadisticas_precios_admin.html" class="active" aria-current="page"><i
+          class="fa-solid fa-chart-line"></i> Precios</a>
+      <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
     </nav>
     <div class="ah-actions">
-        <div class="ah-user" title="Sesión de administrador">
-            <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
-            <span class="ah-user-name">Admin</span>
-        </div>
-        <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
-            <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
-        </button>
-        <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
-            <i class="fa-solid fa-bars" id="hambIcon"></i>
-        </button>
+      <a class="ah-user" href="/perfil_admin.html" title="Ver mi perfil" aria-label="Ir a mi perfil">
+        <div class="ah-avatar"><i class="fa-solid fa-circle-user"></i></div>
+        <span class="ah-user-name">Mi perfil</span>
+      </a>
+      <button type="button" class="ah-btn-logout" onclick="confirmarSalir(); return false;" aria-label="Cerrar sesión">
+        <i class="fa-solid fa-right-from-bracket"></i><span class="hidden-xs">Salir</span>
+      </button>
+      <button type="button" class="ah-hamburger" onclick="toggleMobileNav()" aria-label="Abrir o cerrar menú">
+        <i class="fa-solid fa-bars" id="hambIcon"></i>
+      </button>
     </div>
-</header>
-<nav id="mobileNav" aria-label="Menú administrativo móvil">
+  </header>
+  <nav id="mobileNav" aria-label="Menú administrativo móvil">
     <a href="dashboard_admin.html"><i class="fa-solid fa-gauge-high"></i> Inicio del panel</a>
     <a href="productos_lista_admin.html"><i class="fa-solid fa-box"></i> Productos</a>
     <a href="orders_admin.html"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
     <a href="tickets_admin.html"><i class="fa-solid fa-ticket"></i> Tickets</a>
-    <a href="estadisticas_precios_admin.html" class="active" aria-current="page"><i class="fa-solid fa-chart-line"></i> Estadísticas de precios</a>
+    <a href="estadisticas_precios_admin.html" class="active" aria-current="page"><i class="fa-solid fa-chart-line"></i>
+      Estadísticas de precios</a>
     <a href="users_admin.html"><i class="fa-solid fa-users"></i> Usuarios</a>
-</nav>
+  </nav>
 
 
-<div class="wrap">
-  <div class="top-bar fade-up">
-    <div>
-      <p class="section-label"><i class="fa-solid fa-chart-line"></i> Análisis de precios</p>
-      <h1 class="section-title">Estadísticas de <span class="g">variación de precios</span></h1>
-      <p class="sub">Revisa quién modificó los precios, cuándo cambiaron y cómo evolucionaron.</p>
-    </div>
-    <div class="seg" role="group" aria-label="Período">
-      <button data-days="7">7 días</button><button data-days="30" class="active">30 días</button>
-      <button data-days="90">90 días</button><button data-days="365">1 año</button>
-    </div>
-  </div>
-
-  <!-- ============ DÓLAR EN TIEMPO REAL ============
-       CONEXIÓN API: los datos vienen de GET /api/exchange-rate (backend -> DolarApi Bolivia). -->
-  <section class="card live fade-up" aria-label="Precio del dólar en Bolivia">
-    <div class="live-head">
-      <div class="live-title"><span id="liveDot" class="live-dot"></span> Dólar en Bolivia · <b>en vivo</b></div>
-      <span id="usdAge" class="muted-s">Cargando…</span>
-    </div>
-    <div class="live-grid">
-      <div class="rate"><p class="rate-lbl">Dólar paralelo (venta)</p><p class="rate-val">Bs <span id="usdParallel">—</span></p><p class="muted-s">Compra: Bs <span id="usdParallelBuy">—</span></p></div>
-      <div class="rate"><p class="rate-lbl">Dólar oficial BCB (venta)</p><p class="rate-val">Bs <span id="usdOfficial">—</span></p><p class="muted-s">Compra: Bs <span id="usdOfficialBuy">—</span></p></div>
-      <div class="rate conv">
-        <p class="rate-lbl">Convertidor rápido</p>
-        <div class="conv-row"><input id="convAmount" type="number" min="0" value="100" aria-label="Monto"><select id="convDir" aria-label="Dirección"><option value="usd2bob">USD → Bs</option><option value="bob2usd">Bs → USD</option></select></div>
-        <p class="rate-val sm" id="convResult">—</p>
+  <div class="wrap">
+    <div class="top-bar fade-up">
+      <div>
+        <p class="section-label"><i class="fa-solid fa-chart-line"></i> Análisis de precios</p>
+        <h1 class="section-title">Estadísticas de <span class="g">variación de precios</span></h1>
+        <p class="sub">Revisa quién modificó los precios, cuándo cambiaron y cómo evolucionaron.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Período">
+        <button data-days="7">7 días</button><button data-days="30" class="active">30 días</button>
+        <button data-days="90">90 días</button><button data-days="365">1 año</button>
       </div>
     </div>
-    <div class="live-foot"><span id="usdTrend" class="trend">—</span><span id="usdSource" class="muted-s"></span></div>
-  </section>
 
-  <div id="simBanner" class="notice" style="display:none"><i class="fa-solid fa-flask"></i><span><b>Datos de ejemplo.</b> Todavía no hay cambios de precio registrados; al editar el precio de un producto, el historial real aparecerá aquí.</span></div>
-  <div id="errBox" class="notice err" style="display:none"><i class="fa-solid fa-circle-exclamation"></i><span>No se pudieron cargar las estadísticas. Intenta de nuevo en unos segundos.</span></div>
-  <div id="loading" class="notice" style="display:none"><i class="fa-solid fa-spinner fa-spin"></i><span>Cargando estadísticas…</span></div>
+    <!-- ============ DÓLAR EN TIEMPO REAL ============
+       CONEXIÓN API: los datos vienen de GET /api/exchange-rate (backend -> DolarApi Bolivia). -->
+    <section class="card live fade-up" aria-label="Precio del dólar en Bolivia">
+      <div class="live-head">
+        <div class="live-title"><span id="liveDot" class="live-dot"></span> Dólar en Bolivia · <b>en vivo</b></div>
+        <span id="usdAge" class="muted-s">Cargando…</span>
+      </div>
+      <div class="live-grid">
+        <div class="rate">
+          <p class="rate-lbl">Dólar paralelo (venta)</p>
+          <p class="rate-val">Bs <span id="usdParallel">—</span></p>
+          <p class="muted-s">Compra: Bs <span id="usdParallelBuy">—</span></p>
+        </div>
+        <div class="rate">
+          <p class="rate-lbl">Dólar oficial BCB (venta)</p>
+          <p class="rate-val">Bs <span id="usdOfficial">—</span></p>
+          <p class="muted-s">Compra: Bs <span id="usdOfficialBuy">—</span></p>
+        </div>
+        <div class="rate conv">
+          <p class="rate-lbl">Convertidor rápido</p>
+          <div class="conv-row"><input id="convAmount" type="number" min="0" value="100" aria-label="Monto"><select
+              id="convDir" aria-label="Dirección">
+              <option value="usd2bob">USD → Bs</option>
+              <option value="bob2usd">Bs → USD</option>
+            </select></div>
+          <p class="rate-val sm" id="convResult">—</p>
+        </div>
+      </div>
+      <div class="live-foot"><span id="usdTrend" class="trend">—</span><span id="usdSource" class="muted-s"></span>
+      </div>
+    </section>
 
-  <div class="kpis fade-up">
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-rotate"></i> Cambios de precio</p><p class="kpi-val" id="kChanges">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-box"></i> Productos afectados</p><p class="kpi-val" id="kProducts">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-percent"></i> Variación promedio</p><p class="kpi-val" id="kAvg">—</p></div>
-    <div class="card kpi"><p class="kpi-lbl"><i class="fa-solid fa-arrow-trend-up up"></i> Subidas / <i class="fa-solid fa-arrow-trend-down down"></i> Bajadas</p><p class="kpi-val"><span class="up" id="kRises">—</span> <span class="slash">/</span> <span class="down" id="kDrops">—</span></p></div>
-  </div>
+    <div id="simBanner" class="notice" style="display:none"><i class="fa-solid fa-flask"></i><span><b>Datos de
+          ejemplo.</b> Todavía no hay cambios de precio registrados; al editar el precio de un producto, el historial
+        real aparecerá aquí.</span></div>
+    <div id="errBox" class="notice err" style="display:none"><i class="fa-solid fa-circle-exclamation"></i><span>No se
+        pudieron cargar las estadísticas. Intenta de nuevo en unos segundos.</span></div>
+    <div id="loading" class="notice" style="display:none"><i class="fa-solid fa-spinner fa-spin"></i><span>Cargando
+        estadísticas…</span></div>
 
-  <!-- ============ GRÁFICA DE PICOS POR PRODUCTO ============
+    <div class="kpis fade-up">
+      <div class="card kpi">
+        <p class="kpi-lbl"><i class="fa-solid fa-rotate"></i> Cambios de precio</p>
+        <p class="kpi-val" id="kChanges">—</p>
+      </div>
+      <div class="card kpi">
+        <p class="kpi-lbl"><i class="fa-solid fa-box"></i> Productos afectados</p>
+        <p class="kpi-val" id="kProducts">—</p>
+      </div>
+      <div class="card kpi">
+        <p class="kpi-lbl"><i class="fa-solid fa-percent"></i> Variación promedio</p>
+        <p class="kpi-val" id="kAvg">—</p>
+      </div>
+      <div class="card kpi">
+        <p class="kpi-lbl"><i class="fa-solid fa-arrow-trend-up up"></i> Subidas / <i
+            class="fa-solid fa-arrow-trend-down down"></i> Bajadas</p>
+        <p class="kpi-val"><span class="up" id="kRises">—</span> <span class="slash">/</span> <span class="down"
+            id="kDrops">—</span></p>
+      </div>
+    </div>
+
+    <!-- ============ GRÁFICA DE PICOS POR PRODUCTO ============
        CONEXIÓN BD: GET /api/price-stats/products/<built-in function id> lee product_price_history. -->
-  <section class="card fade-up">
-    <div class="card-head">
-      <div><h2 class="card-title">Evolución del precio de un producto</h2><p class="muted-s">Cada pico es un cambio de precio. <span class="up">●</span> máximo · <span class="down">●</span> mínimo</p></div>
-      <select id="productSel" aria-label="Producto"></select>
-    </div>
-    <div class="chart-box"><canvas id="chartTimeline"></canvas></div>
-    <div class="mini">
-      <div><p class="muted-s">Precio máximo</p><p class="val up" id="tlMax">—</p></div>
-      <div><p class="muted-s">Precio mínimo</p><p class="val down" id="tlMin">—</p></div>
-      <div><p class="muted-s">Variación del período</p><p class="val" id="tlVar">—</p></div>
-    </div>
-    <p id="tlNote" class="muted-s note-sim" style="display:none"><i class="fa-solid fa-flask"></i> Línea de ejemplo: este producto aún no tiene historial.</p>
-  </section>
+    <section class="card fade-up">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">Evolución del precio de un producto</h2>
+          <p class="muted-s">Cada pico es un cambio de precio. <span class="up">●</span> máximo · <span
+              class="down">●</span> mínimo</p>
+        </div>
+        <select id="productSel" aria-label="Producto"></select>
+      </div>
+      <div class="chart-box"><canvas id="chartTimeline"></canvas></div>
+      <div class="mini">
+        <div>
+          <p class="muted-s">Precio máximo</p>
+          <p class="val up" id="tlMax">—</p>
+        </div>
+        <div>
+          <p class="muted-s">Precio mínimo</p>
+          <p class="val down" id="tlMin">—</p>
+        </div>
+        <div>
+          <p class="muted-s">Variación del período</p>
+          <p class="val" id="tlVar">—</p>
+        </div>
+      </div>
+      <p id="tlNote" class="muted-s note-sim" style="display:none"><i class="fa-solid fa-flask"></i> Línea de ejemplo:
+        este producto aún no tiene historial.</p>
+    </section>
 
-  <section class="card fade-up">
-    <div class="card-head"><div><h2 class="card-title">Picos del mercado por día</h2><p class="muted-s">Variación porcentual promedio de todos los precios que cambiaron cada día.</p></div></div>
-    <div class="chart-box short"><canvas id="chartDaily"></canvas></div>
-  </section>
+    <section class="card fade-up">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">Picos del mercado por día</h2>
+          <p class="muted-s">Variación porcentual promedio de todos los precios que cambiaron cada día.</p>
+        </div>
+      </div>
+      <div class="chart-box short"><canvas id="chartDaily"></canvas></div>
+    </section>
 
-  <div class="two fade-up">
-    <section class="card"><h2 class="card-title"><i class="fa-solid fa-arrow-trend-up up"></i> Mayores subidas</h2><ol class="rank" id="listRises"></ol></section>
-    <section class="card"><h2 class="card-title"><i class="fa-solid fa-arrow-trend-down down"></i> Mayores bajadas</h2><ol class="rank" id="listDrops"></ol></section>
+    <div class="two fade-up">
+      <section class="card">
+        <h2 class="card-title"><i class="fa-solid fa-arrow-trend-up up"></i> Mayores subidas</h2>
+        <ol class="rank" id="listRises"></ol>
+      </section>
+      <section class="card">
+        <h2 class="card-title"><i class="fa-solid fa-arrow-trend-down down"></i> Mayores bajadas</h2>
+        <ol class="rank" id="listDrops"></ol>
+      </section>
+    </div>
+
+    <section class="card fade-up">
+      <div class="recent-toolbar">
+        <h2 class="card-title">Últimos cambios de precio</h2>
+        <div class="recent-filters">
+          <label class="recent-filter-field" for="recentSearch"><span>Buscar producto o usuario</span><span class="recent-search-label"><i class="fa-solid fa-magnifying-glass"></i><input id="recentSearch" type="search" placeholder="Nombre del producto o responsable" autocomplete="off" aria-label="Buscar producto o usuario"></span></label>
+          <label class="recent-filter-field" for="recentDate"><span>Filtrar por fecha</span><input id="recentDate" class="recent-date-input" type="date" aria-label="Filtrar cambios por fecha"></label>
+          <label class="recent-filter-field" for="recentDirection"><span>Tipo de variación</span><select id="recentDirection" aria-label="Filtrar por variación"><option value="all">Todas las variaciones</option><option value="up">Subidas</option><option value="down">Bajadas</option><option value="flat">Sin cambio</option></select></label>
+          <label class="recent-filter-field" for="recentPageSize"><span>Registros por página</span><select id="recentPageSize" aria-label="Cambios por página"><option value="5">5 por página</option><option value="10" selected>10 por página</option><option value="20">20 por página</option><option value="50">50 por página</option></select></label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Antes</th>
+              <th>Ahora</th>
+              <th>Variación</th>
+              <th>Registrado por</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+      <nav id="recentPagination" class="recent-pagination" aria-label="Paginación de últimos cambios de precio" hidden>
+        <span id="recentPageInfo" class="recent-page-info" role="status" aria-live="polite"></span>
+        <div id="recentPageActions" class="recent-page-actions"></div>
+      </nav>
+    </section>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="/js/price-stats.js"></script>
 
-  <section class="card fade-up">
-    <h2 class="card-title">Últimos cambios de precio</h2>
-    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Antes</th><th>Ahora</th><th>Variación</th><th>Registrado por</th></tr></thead><tbody id="recentBody"></tbody></table></div>
-    <nav id="recentPagination" class="recent-pagination" aria-label="Paginación de últimos cambios de precio" hidden>
-      <span id="recentPageInfo" class="recent-page-info" role="status" aria-live="polite"></span>
-      <div id="recentPageActions" class="recent-page-actions"></div>
-    </nav>
-  </section>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="/js/price-stats.js"></script>
-
-<script>
+  <script>
     function toggleMobileNav() {
-        const nav = document.getElementById('mobileNav'), icon = document.getElementById('hambIcon');
-        const open = nav.style.display === 'flex';
-        nav.style.display = open ? 'none' : 'flex';
-        icon.className = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+      const nav = document.getElementById('mobileNav'), icon = document.getElementById('hambIcon');
+      const open = nav.style.display === 'flex';
+      nav.style.display = open ? 'none' : 'flex';
+      icon.className = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
     }
     function confirmarSalir() {
-        fetch('/api/logout', { method:'POST', headers:{ Accept:'application/json', Authorization:'Bearer ' + (localStorage.getItem('token')||'') } }).catch(()=>{}).finally(() => {
-            ['token','roles','user','role','usuario'].forEach(k => localStorage.removeItem(k)); window.location.href = '/iniciarsesion.html';
-        });
+      fetch('/api/logout', { method: 'POST', headers: { Accept: 'application/json', Authorization: 'Bearer ' + (localStorage.getItem('token') || '') } }).catch(() => { }).finally(() => {
+        ['token', 'roles', 'user', 'role', 'usuario'].forEach(k => localStorage.removeItem(k)); window.location.href = '/iniciarsesion.html';
+      });
     }
-    PriceStats.init({ admin:true, theme:{ line:'#22C55E', fill:'rgba(34,197,94,.12)', up:'#4ade80', down:'#f87171', muted:'#8b95a1', grid:'rgba(255,255,255,.06)', tipBg:'#0b1710', tipText:'#f3f4f6' } });
-</script>
+    PriceStats.init({ admin: true, theme: { line: '#22C55E', fill: 'rgba(34,197,94,.12)', up: '#4ade80', down: '#f87171', muted: '#8b95a1', grid: 'rgba(255,255,255,.06)', tipBg: '#0b1710', tipText: '#f3f4f6' } });
+  </script>
+
+  <script>
+    // Nombre del administrador autenticado; no se muestra un "Admin" fijo.
+    (function () {
+      const label = document.querySelector('#adminHeader .ah-user-name');
+      if (!label) return;
+      const keys = ['user', 'usuario', 'authUser', 'currentUser'];
+      function extract(value) {
+        if (!value || typeof value !== 'object') return '';
+        const user = value.user || value.usuario || value.data || value;
+        if (!user || typeof user !== 'object') return '';
+        return [user.nombre, user.name, user.username, user.nombres, user.first_name]
+          .find(v => typeof v === 'string' && v.trim()) || '';
+      }
+      for (const storage of [localStorage, sessionStorage]) {
+        for (const key of keys) {
+          try {
+            const raw = storage.getItem(key);
+            if (!raw) continue;
+            const name = extract(JSON.parse(raw));
+            if (name) { label.textContent = name.trim().split(/\s+/)[0]; return; }
+          } catch (e) { /* Datos ausentes o con formato diferente */ }
+        }
+      }
+      label.textContent = 'Mi perfil';
+    })();
+  </script>
+
+  <script>
+    // Filtra y pagina las filas que price-stats.js dibuja en la tabla.
+    (function () {
+      const body = document.getElementById('recentBody');
+      const search = document.getElementById('recentSearch');
+      const direction = document.getElementById('recentDirection');
+      const date = document.getElementById('recentDate');
+      const size = document.getElementById('recentPageSize');
+      const pagination = document.getElementById('recentPagination');
+      const info = document.getElementById('recentPageInfo');
+      const actions = document.getElementById('recentPageActions');
+      if (!body || !search || !direction || !date || !size || !pagination || !info || !actions) return;
+      let page = 1;
+      const normalize = text => (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      function render() {
+        const rows = Array.from(body.querySelectorAll(':scope > tr'));
+        const q = normalize(search.value.trim());
+        const filter = direction.value;
+        const selectedDate = date.value;
+        const months = { ene:1, feb:2, mar:3, abr:4, may:5, jun:6, jul:7, ago:8, sep:9, oct:10, nov:11, dic:12 };
+        function matchesDate(value) {
+          if (!selectedDate) return true;
+          const text = normalize(value).trim();
+          const iso = text.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (iso) return `${iso[1]}-${iso[2].padStart(2,'0')}-${iso[3].padStart(2,'0')}` === selectedDate;
+          const latin = text.match(/(\d{1,2})[\s/-]+([a-z]{3,}|\d{1,2})[\s/-]+(\d{4})/);
+          if (!latin) return false;
+          const month = /^\d+$/.test(latin[2]) ? Number(latin[2]) : months[latin[2].slice(0,3)];
+          return month ? `${latin[3]}-${String(month).padStart(2,'0')}-${latin[1].padStart(2,'0')}` === selectedDate : false;
+        }
+        const matched = rows.filter(row => {
+          const cells = row.querySelectorAll('td');
+          if (!cells.length) return true; // Conservar mensajes de estado.
+          if (q && !normalize((cells[1]?.textContent || '') + ' ' + (cells[5]?.textContent || '')).includes(q)) return false;
+          if (!matchesDate(cells[0]?.textContent || '')) return false;
+          if (filter === 'all') return true;
+          const change = normalize(cells[4]?.textContent || '');
+          const classes = (cells[4]?.className || '') + ' ' + (cells[4]?.firstElementChild?.className || '');
+          const positive = /(^|\s)(up|positive)(\s|$)/.test(classes) || /^\s*\+/.test(change) || /▲|↑/.test(change);
+          const negative = /(^|\s)(down|negative)(\s|$)/.test(classes) || /^\s*[-−]/.test(change) || /▼|↓/.test(change);
+          return filter === 'up' ? positive : filter === 'down' ? negative : !positive && !negative;
+        });
+        const perPage = Number(size.value) || 10;
+        const totalPages = Math.max(1, Math.ceil(matched.length / perPage));
+        page = Math.min(page, totalPages);
+        const visible = new Set(matched.slice((page - 1) * perPage, page * perPage));
+        rows.forEach(row => { row.hidden = !visible.has(row); row.style.display = visible.has(row) ? '' : 'none'; });
+        const hasData = rows.some(row => row.querySelector('td'));
+        pagination.hidden = !hasData || (matched.length <= perPage && !q && !selectedDate && filter === 'all');
+        info.textContent = matched.length ? `Mostrando ${(page - 1) * perPage + 1}–${Math.min(page * perPage, matched.length)} de ${matched.length} cambios` : 'No se encontraron cambios';
+        actions.replaceChildren();
+        function button(label, target, disabled, current) {
+          const el = document.createElement('button');
+          el.type = 'button'; el.className = 'recent-page-btn'; el.textContent = label;
+          el.disabled = disabled;
+          if (current) el.setAttribute('aria-current', 'page');
+          el.addEventListener('click', () => { page = target; render(); });
+          actions.appendChild(el);
+        }
+        button('‹', Math.max(1, page - 1), page === 1);
+        const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+        const end = Math.min(totalPages, start + 4);
+        for (let n = start; n <= end; n++) button(String(n), n, false, n === page);
+        button('›', Math.min(totalPages, page + 1), page === totalPages);
+      }
+      [search, date, direction, size].forEach(control => control.addEventListener(control === search ? 'input' : 'change', () => { page = 1; render(); }));
+      const observer = new MutationObserver(() => { page = 1; render(); });
+      observer.observe(body, { childList: true });
+      render();
+    })();
+  </script>
+
 </body>
+
 </html>
