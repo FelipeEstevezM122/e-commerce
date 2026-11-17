@@ -2441,6 +2441,26 @@
             outline-offset: 2px;
         }
     </style>
+<style id="recent-client-filters">
+    .recent-toolbar { display:flex; flex-direction:column; align-items:stretch; gap:16px; margin-bottom:18px; }
+    .recent-toolbar .card-title { margin-bottom:0; }
+    .recent-filters { display:grid; grid-template-columns:minmax(220px, 1.5fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(145px, .7fr); align-items:end; gap:12px; }
+    .recent-filter-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .recent-filter-field > span { color:var(--muted); font-size:11px; font-weight:700; }
+    .recent-date-input { width:100%; min-height:42px; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 11px; font:500 13px var(--body); color-scheme:dark; }
+    .recent-date-input:focus-visible { outline:2px solid var(--green); outline-offset:1px; }
+    .recent-search-label { display:flex; align-items:center; gap:9px; min-width:min(300px, 100%); padding:0 12px; border:1px solid var(--border); background:var(--input); border-radius:10px; color:var(--muted); }
+    .recent-search-label:focus-within { outline:2px solid var(--green); outline-offset:1px; }
+    .recent-search-label input { border:0; outline:0; background:transparent; color:var(--text); font:500 13px var(--body); min-width:0; width:100%; padding:10px 0; }
+    .recent-search-label input::placeholder { color:var(--muted); }
+    .recent-filters select { font:500 12px var(--body); padding:10px; width:100%; min-height:42px; }
+    @media(max-width:1050px) { .recent-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:640px) { .recent-filters { grid-template-columns:1fr; } .recent-search-label { min-width:0; } }
+    .dark .recent-date-input { color-scheme:dark; }
+    :root:not(.dark) .recent-date-input { color-scheme:light; }
+
+    #ultimos-cambios .recent-filters { margin-bottom:18px; }
+</style>
 </head>
 
 <body class="bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 overflow-x-hidden">
@@ -2984,6 +3004,12 @@
                     <span class="section-side-note"><i class="fa-solid fa-table-list" aria-hidden="true"></i> Registro
                         histórico</span>
                 </div>
+                <div class="recent-filters" role="group" aria-label="Buscar y filtrar últimos cambios de precio">
+                    <label class="recent-filter-field" for="recentSearch"><span>Buscar producto</span><span class="recent-search-label"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="recentSearch" type="search" placeholder="Nombre del producto" autocomplete="off" aria-label="Buscar producto"></span></label>
+                    <label class="recent-filter-field" for="recentDate"><span>Filtrar por fecha</span><input id="recentDate" class="recent-date-input" type="date" aria-label="Filtrar cambios por fecha"></label>
+                    <label class="recent-filter-field" for="recentDirection"><span>Tipo de variación</span><select id="recentDirection" aria-label="Filtrar por variación"><option value="all">Todas las variaciones</option><option value="up">Subidas</option><option value="down">Bajadas</option><option value="flat">Sin cambio</option></select></label>
+                    <label class="recent-filter-field" for="recentPageSize"><span>Registros por página</span><select id="recentPageSize" aria-label="Cambios por página"><option value="5">5 por página</option><option value="10" selected>10 por página</option><option value="20">20 por página</option><option value="50">50 por página</option></select></label>
+                </div>
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -3438,6 +3464,77 @@
             if (mob) mob.insertAdjacentHTML('beforeend', '<a href="/dashboard_admin.html" class="block text-lg font-bold text-[#22C55E]">Cambiar a administrador</a>');
         })();
     </script>
+  <script>
+    // Filtra y pagina las filas que price-stats.js dibuja en la tabla.
+    (function () {
+      const body = document.getElementById('recentBody');
+      const search = document.getElementById('recentSearch');
+      const direction = document.getElementById('recentDirection');
+      const date = document.getElementById('recentDate');
+      const size = document.getElementById('recentPageSize');
+      const pagination = document.getElementById('recentPagination');
+      const info = document.getElementById('recentPageInfo');
+      const actions = document.getElementById('recentPageActions');
+      if (!body || !search || !direction || !date || !size || !pagination || !info || !actions) return;
+      let page = 1;
+      const normalize = text => (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      function render() {
+        const rows = Array.from(body.querySelectorAll(':scope > tr'));
+        const q = normalize(search.value.trim());
+        const filter = direction.value;
+        const selectedDate = date.value;
+        const months = { ene:1, feb:2, mar:3, abr:4, may:5, jun:6, jul:7, ago:8, sep:9, oct:10, nov:11, dic:12 };
+        function matchesDate(value) {
+          if (!selectedDate) return true;
+          const text = normalize(value).trim();
+          const iso = text.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (iso) return `${iso[1]}-${iso[2].padStart(2,'0')}-${iso[3].padStart(2,'0')}` === selectedDate;
+          const latin = text.match(/(\d{1,2})[\s/-]+([a-z]{3,}|\d{1,2})[\s/-]+(\d{4})/);
+          if (!latin) return false;
+          const month = /^\d+$/.test(latin[2]) ? Number(latin[2]) : months[latin[2].slice(0,3)];
+          return month ? `${latin[3]}-${String(month).padStart(2,'0')}-${latin[1].padStart(2,'0')}` === selectedDate : false;
+        }
+        const matched = rows.filter(row => {
+          const cells = row.querySelectorAll('td');
+          if (!cells.length) return true; // Conservar mensajes de estado.
+          if (q && !normalize((cells[1]?.textContent || '')).includes(q)) return false;
+          if (!matchesDate(cells[0]?.textContent || '')) return false;
+          if (filter === 'all') return true;
+          const change = normalize(cells[4]?.textContent || '');
+          const classes = (cells[4]?.className || '') + ' ' + (cells[4]?.firstElementChild?.className || '');
+          const positive = /(^|\s)(up|positive)(\s|$)/.test(classes) || /^\s*\+/.test(change) || /▲|↑/.test(change);
+          const negative = /(^|\s)(down|negative)(\s|$)/.test(classes) || /^\s*[-−]/.test(change) || /▼|↓/.test(change);
+          return filter === 'up' ? positive : filter === 'down' ? negative : !positive && !negative;
+        });
+        const perPage = Number(size.value) || 10;
+        const totalPages = Math.max(1, Math.ceil(matched.length / perPage));
+        page = Math.min(page, totalPages);
+        const visible = new Set(matched.slice((page - 1) * perPage, page * perPage));
+        rows.forEach(row => { row.hidden = !visible.has(row); row.style.display = visible.has(row) ? '' : 'none'; });
+        const hasData = rows.some(row => row.querySelectorAll('td').length >= 5);
+        pagination.hidden = !hasData || (matched.length <= perPage && !q && !selectedDate && filter === 'all');
+        info.textContent = matched.length ? `Mostrando ${(page - 1) * perPage + 1}–${Math.min(page * perPage, matched.length)} de ${matched.length} cambios` : 'No se encontraron cambios';
+        actions.replaceChildren();
+        function button(label, target, disabled, current) {
+          const el = document.createElement('button');
+          el.type = 'button'; el.className = 'recent-page-btn'; el.textContent = label;
+          el.disabled = disabled;
+          if (current) el.setAttribute('aria-current', 'page');
+          el.addEventListener('click', () => { page = target; render(); });
+          actions.appendChild(el);
+        }
+        button('‹', Math.max(1, page - 1), page === 1);
+        const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+        const end = Math.min(totalPages, start + 4);
+        for (let n = start; n <= end; n++) button(String(n), n, false, n === page);
+        button('›', Math.min(totalPages, page + 1), page === totalPages);
+      }
+      [search, date, direction, size].forEach(control => control.addEventListener(control === search ? 'input' : 'change', () => { page = 1; render(); }));
+      const observer = new MutationObserver(() => { page = 1; render(); });
+      observer.observe(body, { childList: true });
+      render();
+    })();
+  </script>
 </body>
 
 </html>
