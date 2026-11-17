@@ -2738,58 +2738,145 @@
         }
 
         async function comprar() {
-            const carrito = getCarrito();
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            if (!getToken() || !user) { window.location.href = 'iniciarsesion.html?redirect=carrito.html'; return; }
-            if (carrito.length === 0) {
-                showToast('Tu carrito está vacío. Agrega productos primero.', 'error');
-                return;
-            }
+            
+            let reservaEnProceso = false;
 
-            const btn = document.getElementById('btn-comprar');
-            btn.disabled = true;
-            try {
-                const response = await fetch(API_BASE + '/orders', {
-                    method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({
-                        payment_method: 'qr',
-                        items: carrito.map(item => ({
-                            product_id: Number(item.id),
-                            quantity: Number(item.cantidad),
-                        })),
-                    }),
-                });
+            async function comprar(event) {
+                event.preventDefault();
 
-                const result = await response.json();
-                if (response.status === 401) {
-                    sesionExpirada();
+                if (reservaEnProceso) return;
+
+                const formulario = document.getElementById('formPagoPresencial');
+
+                if (!formulario.reportValidity()) return;
+
+                const nombre = document.getElementById('buyerName').value.trim();
+                const ci = document.getElementById('buyerCi').value.trim();
+                const telefono = document.getElementById('buyerPhone').value.trim().replace(/[\s-]/g, '');
+
+                if (nombre.length < 3 || nombre.length > 150) {
+                    showToast('Ingresa un nombre válido.', 'error');
                     return;
                 }
-                if (!response.ok) {
-                    const validationErrors = result.errors
-                        ? Object.values(result.errors).flat().join('\n')
-                        : result.message;
-                    throw new Error(validationErrors || 'No se pudo crear el pedido.');
+
+                if (ci.length < 4 || ci.length > 30) {
+                    showToast('Ingresa un CI válido.', 'error');
+                    return;
                 }
 
-                const order = result.datos;
-                saveCarrito([]);
-                try {
-                    const serverCart = await fetch(API_BASE + '/cart/clear', {
-                        method: 'DELETE',
-                        headers: authHeaders(),
-                    });
-                    if (!serverCart.ok) throw new Error('No se pudo vaciar el carrito remoto.');
-                } catch (cleanupError) {
-                    console.warn('El pedido se creó, pero no se pudo sincronizar el carrito remoto.', cleanupError);
+                if (!/^\+?[0-9]{7,15}$/.test(telefono)) {
+                    showToast('Ingresa un número de celular válido.', 'error');
+                    return;
                 }
-                // Se eliminó la vista de pedidos del usuario.
-                window.location.href = '/carrito.html';
-            } catch (error) {
-                showToast(error.message || 'No se pudo completar la compra.', 'error');
-                btn.disabled = false;
+
+                if (!getToken()) {
+                    window.location.href = 'iniciarsesion.html?redirect=carrito.html';
+                    return;
+                }
+
+                const carrito = getCarrito();
+
+                if (!carrito.length) {
+                    showToast('Tu carrito está vacío.', 'error');
+                    return;
+                }
+
+                const btn = document.getElementById('btnConfirmarReserva');
+                const textoOriginal = btn.innerHTML;
+
+                reservaEnProceso = true;
+                btn.disabled = true;
+                btn.innerHTML = 'Procesando reserva...';
+
+                try {
+                    const response = await fetch(API_BASE + '/orders', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({
+                            payment_method: 'efectivo',
+                            buyer_name: nombre,
+                            buyer_ci: ci,
+                            buyer_phone: telefono,
+                            items: carrito.map(item => ({
+                                product_id: Number(item.id),
+                                quantity: Number(item.cantidad)
+                            }))
+                        })
+                    });
+
+                    const result = await response.json().catch(() => ({}));
+
+                    if (response.status === 401) {
+                        sesionExpirada();
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        const errores = result.errors
+                            ? Object.values(result.errors).flat().join('\n')
+                            : result.message;
+
+                        throw new Error(errores || 'No se pudo crear la reserva.');
+                    }
+
+                    const pedido = result.datos;
+
+                    let carritoRemotoLimpio = false;
+
+                    try {
+                        const limpieza = await fetch(API_BASE + '/cart/clear', {
+                            method: 'DELETE',
+                            headers: authHeaders()
+                        });
+
+                        if (!limpieza.ok) {
+                            throw new Error('No se pudo limpiar el carrito remoto.');
+                        }
+
+                        carritoRemotoLimpio = true;
+                    } catch (error) {
+                        console.warn('Reserva creada, pero falló la limpieza del carrito:', error);
+                    }
+
+                    saveCarrito([]);
+
+                    document.getElementById('cart-list').replaceChildren();
+
+                    mostrarVacio();
+                    recalcular();
+
+                    formulario.reset();
+                    cerrarPagoPresencial();
+
+                    alert(
+                        '¡Reserva creada correctamente!\n\n' +
+                        'Número de pedido: ' + pedido.order_number + '\n' +
+                        'Tienes 24 horas para realizar el pago presencial.\n\n' +
+                        'Presenta este número cuando visites CASATEK.'
+                    );
+
+                    if (!carritoRemotoLimpio) {
+                        showToast(
+                            'La reserva fue creada, pero no se pudo sincronizar el carrito. No vuelvas a reservar los mismos productos.',
+                            'error'
+                        );
+                    }
+
+                } catch (error) {
+                    console.error('Error al crear la reserva:', error);
+
+                    showToast(
+                        escapeHtml(error.message || 'No se pudo crear la reserva.'),
+                        'error'
+                    );
+
+                } finally {
+                    reservaEnProceso = false;
+                    btn.disabled = false;
+                    btn.innerHTML = textoOriginal;
+                }
             }
+
         }
 
         function mostrarVacio() {
@@ -2885,7 +2972,7 @@
             }
             recalcular();
         }
-
+        
         document.addEventListener('DOMContentLoaded', function () {
             cargarCarrito();
 
@@ -2936,6 +3023,9 @@
             document.getElementById('modalQR').addEventListener('click', function (e) {
                 if (e.target === this) cerrarQR();
             });
+
+            document.getElementById('formPagoPresencial')
+                .addEventListener('submit', comprar);
         });
     </script>
     <script>
