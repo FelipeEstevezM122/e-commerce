@@ -109,10 +109,26 @@ class TicketController extends Controller
     {
         // La ruta también exige auth:sanctum y middleware admin en routes/api.php.
         $this->authorize('viewAll', Ticket::class);
-
+        
         $tickets = Ticket::query()
-            ->whereHas('order', fn ($q) => $q->where('status', 'paid'))
-            ->with(['order.user', 'order.items.product.brand', 'order.billingInfo'])
+            ->whereHas('order', function ($q) {
+                $q->whereIn('status', [
+                    'paid',
+                    'shipped',
+                    'delivered'
+                ])
+                ->orWhere(function ($reserva) {
+                    $reserva->where('status', 'pending')
+                        ->where('payment_method', 'efectivo')
+                        ->whereNotNull('expires_at')
+                        ->where('expires_at', '>', now());
+                });
+            })
+            ->with([
+                'order.user',
+                'order.items.product.brand',
+                'order.billingInfo'
+            ])
             ->orderByDesc('issued_at')
             ->orderByDesc('id')
             ->paginate(15);
