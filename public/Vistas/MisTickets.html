@@ -2136,10 +2136,23 @@
             <td class="py-3 text-right font-black text-gray-900 dark:text-white whitespace-nowrap">Bs. ${fmt(i.precio * i.cantidad)}</td>
         </tr>`).join('');
 
+            const esReserva = t.status === 'pending' &&
+                            t.paymentMethod === 'efectivo';
+
+            const estados = {
+                pending: 'Pendiente de pago',
+                paid: 'Pagado',
+                shipped: 'Enviado',
+                delivered: 'Entregado',
+                cancelled: 'Cancelado'
+            };
+
+            const estadoTexto = estados[t.status] || 'Desconocido';
+
             li.innerHTML = `
         <div class="bg-[#111827] text-white px-6 py-4 flex flex-wrap justify-between items-center gap-2">
             <div>
-                <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase">Ticket</p>
+                <p class="text-[10px] font-extrabold text-[#22C55E] tracking-[.18em] uppercase">${esReserva ? 'Comprobante de reserva' : 'Ticket'}</p>
                 <p class="font-black text-lg">${escapeHtml(t.ticketNumber)}</p>
             </div>
             <p class="text-xs text-gray-300"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(formatoFecha(t.fecha))}</p>
@@ -2154,8 +2167,41 @@
                 <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Dirección</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.address)}</dd></div>
                 <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">NIT</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.nit)}</dd></div>
                 <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Pedido</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.orderNumber)}</dd></div>
-                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Estado</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(t.status)}</dd></div>
+                <div class="flex justify-between sm:block"><dt class="text-gray-500 dark:text-gray-400 text-xs">Estado</dt><dd class="font-bold text-gray-800 dark:text-white">${escapeHtml(estadoTexto)}</dd></div>
             </dl>
+
+            ${t.ci !== '—' ? `
+                <div class="mt-3 text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">CI:</span>
+                    <strong class="text-gray-800 dark:text-white">
+                        ${escapeHtml(t.ci)}
+                    </strong>
+                </div>
+            ` : ''}
+
+            ${esReserva ? `
+                <div class="mt-5 rounded-xl border border-yellow-300
+                            bg-yellow-50 dark:bg-yellow-900/20 p-4">
+
+                    <p class="font-black text-yellow-800 dark:text-yellow-300">
+                        <i class="fa-solid fa-clock mr-2"></i>
+                        Reserva pendiente de pago
+                    </p>
+
+                    <p class="mt-2 text-sm text-yellow-800 dark:text-yellow-200">
+                        Fecha límite:
+                        <strong>${escapeHtml(formatoFecha(t.expiresAt))}</strong>
+                    </p>
+
+                    <p class="mt-2 text-xs text-yellow-700 dark:text-yellow-200">
+                        Presenta este comprobante y tu CI en CASATEK.
+                        Este documento no acredita un pago realizado.
+                        Si no se confirma el pago dentro del plazo,
+                        la reserva vencerá.
+                    </p>
+                </div>
+            ` : ''}
+
         </div>
 
         <div class="ticket-divider mx-6"></div>
@@ -2211,13 +2257,16 @@
                 ticketNumber: t.ticket_number || ('Ticket #' + t.id),
                 fecha: t.issued_at ?? t.created_at ?? t.fecha,
                 userId: order.user_id ?? t.user_id ?? user.id,
-                nombre: order.user?.name ?? t.user?.name ?? user.name,
+                nombre: order.buyer_name || order.user?.name || t.user?.name || user.name,
                 email: order.user?.email ?? t.user?.email ?? user.email,
-                phone: order.user?.phone ?? '—',
+                phone: order.buyer_phone || order.user?.phone || '—',
+                ci: order.buyer_ci || '—',
                 address: order.billing_info?.address ?? '—',
                 nit: order.billing_info?.nit ?? '—',
                 orderNumber: order.order_number ?? '—',
-                status: order.status ?? 'paid',
+                status: order.status ?? 'unknown',
+                paymentMethod: order.payment_method ?? null,
+                expiresAt: order.expires_at ?? null,
                 items,
                 total: parseFloat(order.total ?? t.total ?? items.reduce((a, i) => a + i.precio * i.cantidad, 0)),
             };
