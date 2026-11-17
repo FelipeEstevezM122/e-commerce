@@ -23,21 +23,60 @@
     @php($order = $ticket->order)
     @php($billing = $order->billingInfo)
     <header class="header">
-        <h1>CASATEK · Ticket de compra</h1>
+        <h1>
+            CASATEK ·
+            @if($order->status === 'pending' && $order->payment_method === 'efectivo')
+                Comprobante de reserva
+            @else
+                Ticket de compra
+            @endif
+        </h1>
         <p class="muted">Comprobante {{ $ticket->ticket_number }}</p>
     </header>
 
     <section class="details">
         <strong>Pedido:</strong> {{ $order->order_number }}<br>
+        <strong>Comprobante:</strong> {{ $ticket->ticket_number }}<br>
         <strong>Fecha:</strong> {{ $ticket->issued_at->format('d/m/Y H:i') }}<br>
-        <strong>Estado:</strong> {{ ucfirst($order->status) }}<br>
-        <strong>Forma de pago:</strong> {{ ucfirst($order->payment_method) }}
+
+        <strong>Estado:</strong>
+        @switch($order->status)
+            @case('pending') Pendiente de pago @break
+            @case('paid') Pagado @break
+            @case('shipped') Enviado @break
+            @case('delivered') Entregado @break
+            @case('cancelled') Cancelado @break
+            @default {{ ucfirst($order->status) }}
+        @endswitch
+        <br>
+
+        <strong>Forma de pago:</strong>
+        {{ $order->payment_method === 'efectivo' ? 'Efectivo en tienda' : ucfirst($order->payment_method) }}
+
+        @if($order->payment_method === 'efectivo' && $order->expires_at)
+            <br>
+            <strong>Vencimiento:</strong>
+            {{ $order->expires_at->format('d/m/Y H:i') }}
+        @endif
     </section>
 
     <h2>Datos del cliente</h2>
     <div class="details">
-        <strong>Nombre:</strong> {{ $order->user->name }}<br>
+        <strong>Nombre:</strong>
+        {{ $order->buyer_name ?: $order->user->name }}<br>
+
+        @if($order->buyer_ci)
+            <strong>CI:</strong> {{ $order->buyer_ci }}<br>
+        @endif
+
         <strong>Correo:</strong> {{ $order->user->email }}<br>
+
+        @if($order->buyer_phone)
+            <strong>Teléfono:</strong> {{ $order->buyer_phone }}<br>
+        @elseif($order->user->phone)
+            <strong>Teléfono:</strong> {{ $order->user->phone }}<br>
+        @endif
+
         @if($order->user->phone)
             <strong>Teléfono:</strong> {{ $order->user->phone }}<br>
         @endif
@@ -83,8 +122,21 @@
     </table>
 
     <p class="total">Total: Bs. {{ number_format($order->total, 2) }}</p>
-    @if($order->status === 'pending')
-        <p class="notice">Pedido pendiente de confirmación de pago. Este comprobante no confirma que el pago haya sido recibido.</p>
+    @if($order->status === 'pending' && $order->payment_method === 'efectivo')
+        <p class="notice">
+            <strong>RESERVA PENDIENTE DE PAGO</strong><br>
+            Este documento no acredita un pago realizado.<br>
+            Presenta tu número de reserva y tu CI en CASATEK.<br>
+            La reserva tiene una duración máxima de 24 horas.
+            Si el pago no es confirmado dentro del plazo,
+            la reserva será cancelada y los productos
+            volverán a estar disponibles.
+        </p>
+    @elseif($order->status === 'pending')
+        <p class="notice">
+            Pedido pendiente de confirmación de pago.
+            Este comprobante no acredita un pago realizado.
+        </p>
     @endif
 </body>
 </html>
