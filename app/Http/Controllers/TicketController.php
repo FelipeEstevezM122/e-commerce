@@ -22,9 +22,27 @@ class TicketController extends Controller
     {
         $this->authorize('viewAny', Ticket::class);
 
-        $tickets = Ticket::whereHas('order', fn($q) => $q
-                ->where('user_id', $request->user()->id)
-                ->where('status', 'paid'))
+        $tickets = Ticket::whereHas('order', function ($q) use ($request) {
+                $q->where('user_id', $request->user()->id)
+                ->where(function ($query) {
+
+                    // Tickets de compras confirmadas
+                    $query->whereIn('status', [
+                        'paid',
+                        'shipped',
+                        'delivered'
+                    ])
+
+                    // Comprobantes de reservas presenciales vigentes
+                    ->orWhere(function ($reserva) {
+                        $reserva->where('status', 'pending')
+                            ->where('payment_method', 'efectivo')
+                            ->whereNotNull('expires_at')
+                            ->where('expires_at', '>', now());
+                    });
+
+                });
+            })
             ->with('order.user', 'order.billingInfo', 'order.items.product.brand')
             ->orderBy('issued_at', 'desc')
             ->paginate(15);
