@@ -14,11 +14,33 @@ class TicketPolicy
     }
 
     // ¿Puede ver este ticket específico?
+    
     public function view(User $user, Ticket $ticket): bool
     {
-        // Solo los pedidos pagados tienen tickets visibles para su dueño o para un admin.
-        return $ticket->order->status === 'paid'
-            && ($user->id === $ticket->order->user_id || $user->isAdmin());
+        $order = $ticket->order;
+
+        // Solo el propietario o un administrador puede consultar el ticket
+        if (!$order || ($user->id !== $order->user_id && !$user->isAdmin())) {
+            return false;
+        }
+
+        // Permitir tickets de pedidos pagados, enviados y entregados
+        if (in_array($order->status, ['paid', 'shipped', 'delivered'], true)) {
+            return true;
+        }
+
+        // Permitir comprobantes de reservas presenciales vigentes
+        if (
+            $order->status === 'pending' &&
+            $order->payment_method === 'efectivo' &&
+            $order->expires_at !== null &&
+            now()->lt($order->expires_at)
+        ) {
+            return true;
+        }
+
+        // Bloquear reservas vencidas y pedidos cancelados
+        return false;
     }
 
     // ¿Puede ver todos los tickets? (solo admin)
