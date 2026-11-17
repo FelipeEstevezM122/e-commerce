@@ -2075,6 +2075,23 @@
                     const s = STATUS_MAP[order.status];
                     const locked = ['delivered', 'cancelled'].includes(order.status);
                     const { date, time } = formatDate(order.created_at);
+                    const esPresencial = order.payment_method === 'efectivo';
+
+                    const mostrarVencimiento = esPresencial &&
+                        order.status === 'pending';
+
+                    const vencimientoMs = order.expires_at
+                        ? Date.parse(order.expires_at)
+                        : NaN;
+
+                    const fechaLimite = Number.isFinite(vencimientoMs)
+                        ? formatDate(order.expires_at)
+                        : null;
+
+                    const reservaVencida = mostrarVencimiento &&
+                        fechaLimite !== null &&
+                        Date.now() >= vencimientoMs;
+
                     const statusCell = locked
                         ? `<span class="locked-status"><i class="fa-solid fa-lock"></i> ${order.status === 'delivered' ? 'Entregado' : 'Cancelado'}</span>`
                         : `<div class="status-form">
@@ -2096,12 +2113,57 @@
                     return `
                     <tr>
                         <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">${escapeHtml(order.order_number)}</td>
-                        <td>
-                            <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">${escapeHtml(order.user?.name || '—')}</p>
-                            <p style="font-size:11px;color:var(--muted);margin:2px 0 0">${escapeHtml(order.user?.email || '')}</p>
-                        </td>
+                        
+                    <td>
+                        <p style="font-weight:600;color:#e5e7eb;font-size:13px;margin:0">
+                            ${escapeHtml(order.buyer_name || order.user?.name || '—')}
+                        </p>
+
+                        <p style="font-size:11px;color:var(--muted);margin:2px 0 0">
+                            ${escapeHtml(order.user?.email || '')}
+                        </p>
+
+                        ${order.buyer_ci ? `
+                            <p style="font-size:11px;color:#d1d5db;margin:4px 0 0">
+                                <strong>CI:</strong> ${escapeHtml(order.buyer_ci)}
+                            </p>
+                        ` : ''}
+
+                        ${order.buyer_phone ? `
+                            <p style="font-size:11px;color:#d1d5db;margin:3px 0 0">
+                                <strong>Celular:</strong> ${escapeHtml(order.buyer_phone)}
+                            </p>
+                        ` : ''}
+                    </td>
+
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(order.total)}</td>
-                        <td class="hide-sm" style="font-size:12px;text-transform:capitalize;color:#d1d5db">${escapeHtml(order.payment_method || '—')}</td>
+                        
+                        <td class="hide-sm" style="font-size:12px;color:#d1d5db">
+
+                            <strong>
+                                ${esPresencial
+                                    ? 'Efectivo en tienda'
+                                    : escapeHtml(order.payment_method || '—')}
+                            </strong>
+
+                            ${mostrarVencimiento ? `
+                                <div style="
+                                    margin-top:6px;
+                                    font-size:11px;
+                                    color:${reservaVencida ? '#f87171' : '#facc15'};
+                                ">
+                                    <i class="fa-solid fa-clock"></i>
+
+                                    ${fechaLimite
+                                        ? `${reservaVencida ? 'Vencida:' : 'Vence:'}
+                                        ${escapeHtml(fechaLimite.date)}
+                                        ${escapeHtml(fechaLimite.time)}`
+                                        : 'Sin fecha de vencimiento registrada'}
+                                </div>
+                            ` : ''}
+
+                        </td>
+
                         <td><span class="status-badge ${s.cls}">${s.label}</span></td>
                         <td>${statusCell}</td>
                         <td>${ticketCell}</td>
