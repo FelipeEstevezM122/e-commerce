@@ -2023,7 +2023,7 @@
                                 <i class="fa-solid fa-border-all" style="color:#9ca3af"></i>
                             </div>
                             <div>
-                                <p class="mini-label">Tickets pagados</p>
+                                <p class="mini-label">Comprobantes disponibles</p>
                                 <p class="mini-val" id="statTotal">0</p>
                             </div>
                         </div>
@@ -2251,6 +2251,19 @@
                     const { date, time } = formatDate(ticket.created_at);
                     const itemsHtml = `<ul class="items-list">${ticket.items.map(i => `<li><span>${Number(i.quantity)} ×</span> ${escapeHtml(i.product?.name || 'Producto')}</li>`).join('')}</ul>`;
 
+                    const estados = {
+                        pending:   { texto: 'Pendiente de pago', clase: 's-pending' },
+                        paid:      { texto: 'Pagado', clase: 's-delivered' },
+                        shipped:   { texto: 'Enviado', clase: 's-delivered' },
+                        delivered: { texto: 'Entregado', clase: 's-delivered' },
+                        cancelled: { texto: 'Cancelado', clase: 's-cancelled' }
+                    };
+
+                    const estado = estados[ticket.status] || {
+                        texto: 'Desconocido',
+                        clase: 's-pending'
+                    };
+
                     return `
                     <tr>
                         <td style="font-weight:700;color:#fff;font-family:monospace;font-size:12px">#${escapeHtml(ticket.ticket_number)}</td>
@@ -2260,7 +2273,11 @@
                         </td>
                         <td class="hide-sm">${itemsHtml}</td>
                         <td style="color:var(--green);font-weight:800;white-space:nowrap">${formatBs(ticket.total)}</td>
-                        <td><span class="status-badge s-paid">Pagado</span></td>
+                        <td>
+                            <span class="status-badge ${estado.clase}">
+                                ${estado.texto}
+                            </span>
+                        </td>
                         <td><button type="button" class="update-btn" onclick="downloadTicket(tickets.find(t => t.id === ${ticket.id}), this)"><i class="fa-solid fa-download"></i> PDF</button></td>
                         <td class="hide-sm" style="font-size:11px;color:var(--muted)">${date}<br><span style="font-size:10px">${time}</span></td>
                     </tr>`;
@@ -2317,7 +2334,7 @@
                             user: order.user || {},
                             items: order.items || [],
                             total: order.total || 0,
-                            status: 'paid',
+                            status: order.status || 'unknown',
                             created_at: ticket.issued_at || ticket.created_at,
                         };
                     }));
