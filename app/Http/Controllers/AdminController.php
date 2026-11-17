@@ -355,14 +355,82 @@ class AdminController extends Controller
         return view('admin.orders', compact('orders'));
     }
  
+    
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|in:pending,paid,shipped,delivered,cancelled'
         ]);
- 
+
         try {
-            $order->update(['status' => $request->status]);
+            DB::transaction(function () use ($request, $order) {
+
+                // Bloquear el pedido mientras se actualiza
+                $pedido = Order::whereKey($order->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $nuevoEstado = $request->input('status');
+
+                // Evitar cambios innecesarios
+                if ($pedido->status === $nuevoEstado) {
+                    return;
+                }
+
+                // Los pedidos finalizados no pueden modificarse
+                if (in_array($pedido->status, ['delivered', 'cancelled'], true)) {
+                    abort(409, 'Este pedido ya está finalizado.');
+                }
+
+                // Validaciones para reservas presenciales
+                if ($pedido->payment_method === 'efectivo') {
+
+                    $transiciones = [
+                        'pending' => ['paid', 'cancelled'],
+                        'paid' => ['delivered']
+                    ];
+
+                    $permitidos = $transiciones[$pedido->status] ?? [];
+
+                    if (!in_array($nuevoEstado, $permitidos, true)) {
+                        abort(409, 'Cambio de estado no permitido para esta reserva.');
+                    }
+
+                    // No aceptar pagos de reservas vencidas
+                    if (
+                        $pedido->status === 'pending' &&
+                        $nuevoEstado === 'paid' &&
+                        (
+                            !$pedido->expires_at ||
+                            now()->greaterThanOrEqualTo($pedido->expires_at)
+                        )
+                    ) {
+                        abort(409, 'La reserva ha vencido. No se puede confirmar el pago.');
+                    }
+                }
+
+                $cambios = [
+                    'status' => $nuevoEstado
+                ];
+
+                // Registrar cuándo se recibió el pago
+                if ($nuevoEstado === 'paid') {
+                    $cambios['paid_at'] = now();
+                }
+
+                // Registrar cuándo se entregó el pedido
+                if ($nuevoEstado === 'delivered') {
+                    $cambios['delivered_at'] = now();
+                }
+
+                // Registrar cancelaciones
+                if ($nuevoEstado === 'cancelled') {
+                    $cambios['cancelled_at'] = now();
+                    $cambios['cancellation_reason'] = 'Cancelación administrativa';
+                }
+
+                $pedido->update($cambios);
+            });
 
         } catch (\Illuminate\Database\QueryException $e) {
 
@@ -370,7 +438,7 @@ class AdminController extends Controller
 
             if ($request->wantsJson()) {
                 return response()->json([
-                    'message' => 'No se pudo actualizar el estado del pedido. Revisa los registros del servidor.'
+                    'message' => 'No se pudo actualizar el estado del pedido.'
                 ], Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
@@ -379,14 +447,22 @@ class AdminController extends Controller
                 'No se pudo actualizar el estado del pedido.'
             );
         }
- 
+
+        $order->refresh();
+
         if ($request->wantsJson()) {
-            return response()->json(['datos' => $order, 'message' => 'Estado actualizado'], Response::HTTP_OK);
+            return response()->json([
+                'datos' => $order,
+                'message' => 'Estado actualizado correctamente'
+            ], Response::HTTP_OK);
         }
- 
-        return redirect()->back()->with('success', 'Estado del pedido actualizado');
+
+        return redirect()->back()->with(
+            'success',
+            'Estado del pedido actualizado'
+        );
     }
- 
+    
     public function salesReport(Request $request)
     {
         $request->validate(['period' => 'nullable|in:day,week,month,year']);
