@@ -50,6 +50,12 @@ class OrderController extends Controller
             'items.*.product_id'   => 'required|exists:products,id',
             'items.*.quantity'     => 'required|integer|min:1',
             'payment_method'       => 'required|string|in:transferencia,efectivo,qr,deposito',
+            'buyer_name'  => 'required_if:payment_method,efectivo|string|min:3|max:150',
+            'buyer_ci'    => 'required_if:payment_method,efectivo|string|min:4|max:30',
+            'buyer_phone' => [
+                'required_if:payment_method,efectivo',
+                'regex:/^\+?[0-9]{7,15}$/'
+            ],
             'billing_info_id'      => 'nullable|exists:billing_info,id',
             'billing.address'      => 'nullable|string|max:500',
             'billing.nit'          => 'nullable|string|max:20',
@@ -103,12 +109,23 @@ class OrderController extends Controller
                 ];
             }
 
+            
             $order = $user->orders()->create([
-                'billing_info_id' => $billing?->id,
-                'order_number'    => Order::generateOrderNumber(),
-                'total'           => $total,
-                'status'          => 'pending',
-                'payment_method'  => $request->payment_method,
+                'billing_info_id'    => $billing?->id,
+                'order_number'       => Order::generateOrderNumber(),
+                'total'              => $total,
+                'status'             => 'pending',
+                'payment_method'     => $request->payment_method,
+
+                // Datos del comprador
+                'buyer_name'         => $request->buyer_name,
+                'buyer_ci'           => $request->buyer_ci,
+                'buyer_phone'        => $request->buyer_phone,
+
+                // Vencimiento de la reserva presencial
+                'expires_at'         => $request->payment_method === 'efectivo'
+                                        ? now()->addHours(24)
+                                        : null,
             ]);
 
             foreach ($orderItemsData as $item) {
