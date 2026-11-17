@@ -11,6 +11,7 @@ class Order extends Model
 {
     use HasFactory;
 
+    
     protected $fillable = [
         'user_id',
         'billing_info_id',
@@ -18,7 +19,23 @@ class Order extends Model
         'total',
         'status',
         'payment_method',
+        'buyer_name',
+        'buyer_ci',
+        'buyer_phone',
+        'expires_at',
+        'paid_at',
+        'delivered_at',
+        'cancelled_at',
+        'cancellation_reason',
     ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'paid_at' => 'datetime',
+        'delivered_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+    ];
+
 
     // el pedido pertenece a un usuario
     public function user(){
