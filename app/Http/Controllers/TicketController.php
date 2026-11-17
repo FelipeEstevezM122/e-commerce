@@ -71,24 +71,34 @@ class TicketController extends Controller
             ->download($ticket->ticket_number . '.pdf');
     }
 
+    
     public function showByOrder(Request $request, Order $order)
     {
+        // Verificar que el usuario pueda consultar este pedido
         $this->authorize('view', $order);
 
-        if ($order->status !== 'paid') {
-            return response()->json(['message' => 'El ticket estará disponible cuando el pedido esté pagado.'], Response::HTTP_NOT_FOUND);
+        // Buscar el ticket asociado al pedido
+        $ticket = $order->ticket;
+
+        if (!$ticket) {
+            return response()->json([
+                'message' => 'Este pedido aún no tiene ticket'
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        $ticket = $order->ticket;
-        if (!$ticket) {
-            return response()->json(['message' => 'Este pedido aún no tiene ticket'], Response::HTTP_NOT_FOUND);
-        }
+        // Verificar los permisos y la vigencia del ticket
+        $this->authorize('view', $ticket);
 
         return response()->json([
-            'datos'   => $ticket->load('order.user', 'order.items.product.brand', 'order.billingInfo'),
+            'datos' => $ticket->load(
+                'order.user',
+                'order.items.product.brand',
+                'order.billingInfo'
+            ),
             'message' => 'Ticket del pedido'
         ], Response::HTTP_OK);
     }
+
 
     /**
      * Listado administrativo de comprobantes pagados.
