@@ -1965,6 +1965,178 @@
                 </div>
             </div>
         </div>
+
+        <!-- MODAL DE PAGO PRESENCIAL -->
+        <div id="modalPagoPresencial"
+             class="hidden fixed inset-0 z-[9999] bg-black/70 overflow-y-auto p-4"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="tituloPagoPresencial">
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl
+                        w-full max-w-lg mx-auto my-10 overflow-hidden">
+
+                <!-- Encabezado -->
+                <div class="bg-[#1b803a] text-white px-6 py-5
+                            flex items-center justify-between">
+
+                    <div>
+                        <h2 id="tituloPagoPresencial"
+                            class="text-xl font-black">
+                            Pago presencial
+                        </h2>
+
+                        <p class="text-sm text-green-100 mt-1">
+                            Reserva tus productos en CASATEK
+                        </p>
+                    </div>
+
+                    <button id="btnCerrarPagoPresencial"
+                            type="button"
+                            class="text-white text-xl"
+                            aria-label="Cerrar formulario">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Formulario -->
+                <form id="formPagoPresencial"
+                      class="p-6 space-y-5"
+                      onsubmit="return false;">
+
+                    <div>
+                        <label for="buyerName"
+                               class="block text-sm font-bold mb-2
+                                      text-gray-700 dark:text-gray-200">
+                            Nombre completo
+                        </label>
+
+                        <input type="text"
+                               id="buyerName"
+                               name="buyer_name"
+                               required
+                               minlength="3"
+                               maxlength="150"
+                               autocomplete="name"
+                               placeholder="Ej. Juan Pérez"
+                               class="w-full px-4 py-3 rounded-xl border
+                                      border-gray-300 dark:border-gray-600
+                                      bg-white dark:bg-gray-700
+                                      text-gray-800 dark:text-white
+                                      focus:outline-none focus:ring-2
+                                      focus:ring-green-500">
+                    </div>
+
+                    <div>
+                        <label for="buyerCi"
+                               class="block text-sm font-bold mb-2
+                                      text-gray-700 dark:text-gray-200">
+                            Cédula de identidad (CI)
+                        </label>
+
+                        <input type="text"
+                               id="buyerCi"
+                               name="buyer_ci"
+                               required
+                               minlength="4"
+                               maxlength="30"
+                               placeholder="Ej. 12345678 LP"
+                               class="w-full px-4 py-3 rounded-xl border
+                                      border-gray-300 dark:border-gray-600
+                                      bg-white dark:bg-gray-700
+                                      text-gray-800 dark:text-white
+                                      focus:outline-none focus:ring-2
+                                      focus:ring-green-500">
+                    </div>
+
+                    <div>
+                        <label for="buyerPhone"
+                               class="block text-sm font-bold mb-2
+                                      text-gray-700 dark:text-gray-200">
+                            Número de celular
+                        </label>
+
+                        <input type="tel"
+                               id="buyerPhone"
+                               name="buyer_phone"
+                               required
+                               minlength="7"
+                               maxlength="16"
+                               inputmode="tel"
+                               autocomplete="tel"
+                               placeholder="Ej. 71234567"
+                               class="w-full px-4 py-3 rounded-xl border
+                                      border-gray-300 dark:border-gray-600
+                                      bg-white dark:bg-gray-700
+                                      text-gray-800 dark:text-white
+                                      focus:outline-none focus:ring-2
+                                      focus:ring-green-500">
+                    </div>
+
+                    <!-- Método de pago -->
+                    <div class="bg-green-50 dark:bg-green-900/20
+                                border border-green-200 dark:border-green-800
+                                rounded-xl p-4">
+
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-money-bill-wave
+                                      text-[#22C55E] text-xl"></i>
+
+                            <div>
+                                <p class="font-bold text-gray-800 dark:text-white">
+                                    Efectivo en tienda
+                                </p>
+
+                                <p class="text-xs text-gray-500 dark:text-gray-300">
+                                    Paga cuando visites CASATEK.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aviso de vencimiento -->
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20
+                                border border-yellow-200 dark:border-yellow-800
+                                rounded-xl p-4">
+
+                        <p class="text-sm font-bold text-yellow-800
+                                  dark:text-yellow-300">
+                            <i class="fa-solid fa-clock mr-2"></i>
+                            Reserva válida por 24 horas
+                        </p>
+
+                        <p class="text-xs text-yellow-700
+                                  dark:text-yellow-200 mt-2">
+                            Los productos quedarán reservados durante 24 horas.
+                            Si el administrador no confirma el pago antes
+                            del vencimiento, la reserva se cancelará y
+                            el stock volverá a estar disponible.
+                        </p>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="flex gap-3 pt-2">
+
+                        <button id="btnCancelarPagoPresencial"
+                                type="button"
+                                class="flex-1 py-3 rounded-xl
+                                       bg-gray-200 dark:bg-gray-700
+                                       text-gray-800 dark:text-white font-bold">
+                            Cancelar
+                        </button>
+
+                        <button id="btnConfirmarReserva"
+                                type="submit"
+                                class="flex-1 py-3 rounded-xl
+                                       bg-[#22C55E] hover:bg-green-600
+                                       text-white font-bold transition-colors">
+                            <i class="fa-solid fa-ticket mr-2"></i>
+                            Reservar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
 
     <!-- BURBUJA DE CHAT -->
