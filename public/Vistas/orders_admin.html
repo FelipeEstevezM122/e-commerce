@@ -1861,6 +1861,30 @@
             delivered: { cls: 's-delivered', label: 'Entregado' },
             cancelled: { cls: 's-cancelled', label: 'Cancelado' }
         };
+
+        function estadosPermitidos(order) {
+        // Conservar las opciones actuales para otros métodos de pago
+        if (order.payment_method !== 'efectivo') {
+            return Object.keys(STATUS_MAP);
+        }
+
+        if (order.status === 'pending') {
+            const vencimiento = Date.parse(order.expires_at || '');
+
+            const vigente = Number.isFinite(vencimiento) &&
+                            Date.now() < vencimiento;
+
+            return vigente
+                ? ['pending', 'paid', 'cancelled']
+                : ['pending', 'cancelled'];
+        }
+
+        if (order.status === 'paid') {
+            return ['paid', 'delivered'];
+        }
+
+        return [order.status];
+    }
         const TABS = [
             { val: 'pending', icon: 'fa-clock', cls: 't-pending', label: 'Pendientes' },
             { val: 'paid', icon: 'fa-credit-card', cls: 't-paid', label: 'Pagados' },
@@ -1961,6 +1985,23 @@
         async function updateStatus(orderId, newStatus) {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
+
+            if (order.status === newStatus) {
+                showAlert('error', 'Selecciona un estado diferente.');
+                return;
+            }
+
+            if (order.payment_method === 'efectivo') {
+                const mensajes = {
+                    paid: '¿Confirmas que recibiste el pago presencial de este pedido?',
+                    delivered: '¿Confirmas que el producto fue entregado al cliente?',
+                    cancelled: '¿Deseas cancelar esta reserva? El stock será devuelto.'
+                };
+
+                if (mensajes[newStatus] && !confirm(mensajes[newStatus])) {
+                    return;
+                }
+            }
             try {
                 const response = await fetch(`/api/admin/orders/${orderId}/status`, {
                     method: 'PATCH',
@@ -2038,7 +2079,11 @@
                         ? `<span class="locked-status"><i class="fa-solid fa-lock"></i> ${order.status === 'delivered' ? 'Entregado' : 'Cancelado'}</span>`
                         : `<div class="status-form">
                         <select class="status-select" id="sel-${order.id}">
-                            ${Object.entries(STATUS_MAP).map(([val, m]) => `<option value="${val}" ${order.status === val ? 'selected' : ''}>${m.label}</option>`).join('')}
+                            ${estadosPermitidos(order).map(val => `
+                                <option value="${val}" ${order.status === val ? 'selected' : ''}>
+                                    ${STATUS_MAP[val].label}
+                                </option>
+                            `).join('')}
                         </select>
                         <button type="button" class="update-btn" onclick="updateStatus(${order.id}, document.getElementById('sel-${order.id}').value)">
                             <i class="fa-solid fa-check"></i>
