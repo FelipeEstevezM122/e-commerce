@@ -2635,6 +2635,34 @@
             document.getElementById('modalQR').classList.remove('open');
         }
 
+        // Abrir formulario de pago presencial
+        function abrirPagoPresencial() {
+            const carrito = getCarrito();
+
+            if (!getToken()) {
+                window.location.href = 'iniciarsesion.html?redirect=carrito.html';
+                return;
+            }
+
+            if (carrito.length === 0) {
+                showToast('Tu carrito está vacío.', 'error');
+                return;
+            }
+
+            const modal = document.getElementById('modalPagoPresencial');
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+
+            document.getElementById('buyerName').focus();
+        }
+
+        // Cerrar formulario de pago presencial
+        function cerrarPagoPresencial() {
+            document.getElementById('modalPagoPresencial').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
         async function buscarItemBD(productId) {
             const res = await fetch(API_BASE + '/cart', { headers: authHeaders() });
             if (res.status === 401) { sesionExpirada(); return null; }
@@ -2878,7 +2906,29 @@
                 }
             });
 
-            document.getElementById('btn-comprar').addEventListener('click', comprar);
+            document.getElementById('btn-comprar').addEventListener('click', abrirPagoPresencial);
+            // Cerrar formulario con los botones
+            document.getElementById('btnCerrarPagoPresencial')
+                .addEventListener('click', cerrarPagoPresencial);
+
+            document.getElementById('btnCancelarPagoPresencial')
+                .addEventListener('click', cerrarPagoPresencial);
+
+            // Cerrar al hacer clic fuera del formulario
+            document.getElementById('modalPagoPresencial')
+                .addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        cerrarPagoPresencial();
+                    }
+                });
+
+            // Cerrar con la tecla Escape
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    cerrarPagoPresencial();
+                }
+            });
+            
             document.getElementById('btn-pagar-todo').addEventListener('click', () => abrirQR('todo'));
             document.getElementById('btn-pagar-todo-resumen').addEventListener('click', () => abrirQR('todo'));
             document.getElementById('btn-cerrar-qr-header').addEventListener('click', cerrarQR);
