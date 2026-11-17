@@ -1879,9 +1879,9 @@
                             </div>
                         </div>
 
-                        <button id="btn-comprar" class="btn-checkout mb-3">
-                            <i class="fa-solid fa-bag-shopping text-sm pointer-events-none"></i>
-                            <span class="pointer-events-none">Comprar</span>
+                        <button id="btn-comprar" class="btn-checkout mb-3" type="button">
+                            <i class="fa-solid fa-ticket text-sm pointer-events-none"></i>
+                            <span class="pointer-events-none">Reservar para pago presencial</span>
                         </button>
 
                         <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3" style="background:#003087;">
@@ -2558,9 +2558,6 @@
             document.getElementById('total-todos').textContent = fmt(subtotal);
             document.getElementById('items-counter').textContent =
                 count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
-            const wrap = document.getElementById('btn-pagar-todo-wrap');
-            if (count > 0) wrap.classList.remove('hidden');
-            else wrap.classList.add('hidden');
         }
 
         function crc16(str) {
@@ -2720,7 +2717,6 @@
                     const emptyState = document.getElementById('empty-state');
                     emptyState.classList.remove('hidden');
                     emptyState.classList.add('flex');
-                    document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
                 }
 
                 if (!getToken()) return;
@@ -2882,7 +2878,6 @@
             const emptyState = document.getElementById('empty-state');
             emptyState.classList.remove('hidden');
             emptyState.classList.add('flex'); // Se necesita para forzar el flex que sobrescriba el hidden base
-            document.getElementById('btn-pagar-todo-wrap').classList.add('hidden');
         }
 
         function crearArticulo(item, index) {
@@ -2983,13 +2978,6 @@
                 if (action === 'qty-menos') cambiarQty(id, -1);
                 if (action === 'qty-mas') cambiarQty(id, 1);
                 if (action === 'eliminar-item') eliminar(id);
-                if (action === 'pagar-item') {
-                    const row = document.querySelector('.product-row[data-id="' + id + '"]');
-                    const nombre = row.dataset.nombre;
-                    const precio = parseFloat(row.dataset.precio);
-                    const qty = parseInt(document.getElementById('qty-' + id).textContent);
-                    abrirQR({ nombre, precio, cantidad: qty });
-                }
             });
 
             document.getElementById('btn-comprar').addEventListener('click', abrirPagoPresencial);
@@ -3015,8 +3003,6 @@
                 }
             });
             
-            document.getElementById('btn-pagar-todo').addEventListener('click', () => abrirQR('todo'));
-            document.getElementById('btn-pagar-todo-resumen').addEventListener('click', () => abrirQR('todo'));
             document.getElementById('btn-cerrar-qr-header').addEventListener('click', cerrarQR);
             document.getElementById('btn-cerrar-qr-footer').addEventListener('click', cerrarQR);
             document.getElementById('modalQR').addEventListener('click', function (e) {
