@@ -1460,6 +1460,50 @@
             }
         }
     </style>
+    <style>
+
+/* === CASATEK: historial compacto + filtros + detalle === */
+.ct-ticket-tools{display:grid;grid-template-columns:minmax(190px,1.4fr) minmax(135px,.8fr) minmax(135px,.8fr) auto;gap:10px;align-items:end;margin-bottom:12px}
+.ct-ticket-field{min-width:0}.ct-ticket-field label{display:block;margin-bottom:5px;font-size:11px;font-weight:800;color:var(--ct-sub)}
+.ct-ticket-input-wrap{position:relative}.ct-ticket-input-wrap>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#16a34a;font-size:12px;pointer-events:none}
+.ct-ticket-field input{display:block;width:100%;min-height:43px;border:1px solid var(--ct-line);border-radius:11px;background:var(--ct-pane);color:var(--ct-ink);padding:9px 12px;font:600 12px 'Poppins',sans-serif;outline:0}
+.ct-ticket-field input[type=search]{padding-left:35px}.ct-ticket-field input:focus{border-color:#20bc61;box-shadow:0 0 0 3px rgba(34,197,94,.13)}
+.ct-ticket-clear{height:43px;padding:0 13px;border-radius:11px;border:1px solid var(--ct-line);color:var(--ct-ink);font-size:12px;font-weight:800;background:var(--ct-soft);white-space:nowrap}
+.ct-ticket-clear:hover{border-color:#22c55e;transform:translateY(-1px)}
+.ct-ticket-feedback{color:var(--ct-sub);font-size:11px;margin:0 0 11px}
+.ct-tickets-content .ct-ticket-list{gap:10px}
+.ct-tickets-content .ticket-card.ct-ticket-compact{display:flex;align-items:center;gap:14px;padding:15px 17px;min-width:0;border-radius:14px;background:var(--ct-pane)}
+.ct-tickets-content .ticket-card.ct-ticket-compact::before,.ct-tickets-content .ticket-card.ct-ticket-compact::after{display:none}
+.ct-ticket-mark{flex:none;width:43px;height:43px;border-radius:12px;display:grid;place-items:center;background:var(--ct-soft);color:var(--ct-green);font-size:18px}
+.ct-ticket-overview{flex:1;min-width:0}.ct-ticket-code{color:var(--ct-ink);font-size:13px;font-weight:900;overflow-wrap:anywhere;line-height:1.35}
+.ct-ticket-meta{display:flex;flex-wrap:wrap;gap:5px 13px;align-items:center;font-size:11px;color:var(--ct-sub);margin-top:5px}
+.ct-ticket-meta i{font-size:10px;margin-right:4px}.ct-ticket-status{display:inline-flex;align-items:center;padding:4px 8px;font-weight:800;font-size:10px;border-radius:20px;background:#e7f7ee;color:#116b37;white-space:nowrap}
+.ct-ticket-status.pending{background:#fff5da;color:#92530d}.ct-ticket-status.cancelled{background:#fee8e8;color:#a51c25}
+.dark .ct-ticket-status{background:#204a32;color:#a2eabb}.dark .ct-ticket-status.pending{background:#4b391e;color:#ffe19a}.dark .ct-ticket-status.cancelled{background:#552a32;color:#fecaca}
+.ct-ticket-side{display:flex;gap:13px;align-items:center;flex:none}.ct-ticket-amount{font-size:15px;font-weight:900;color:var(--ct-ink);white-space:nowrap}
+.ct-ticket-view{display:inline-flex;gap:7px;align-items:center;justify-content:center;min-height:38px;padding:9px 12px;color:#fff;background:#13883c;border:1px solid #13883c;border-radius:10px;font-size:11px;font-weight:800;white-space:nowrap}
+.ct-ticket-view:hover{background:#0c6c30;box-shadow:0 6px 17px rgba(34,197,94,.22);transform:translateY(-1px)}
+.ct-ticket-pagination{display:flex;justify-content:center;gap:7px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.ct-ticket-pagination button{min-width:35px;height:35px;padding:0 10px;border:1px solid var(--ct-line);background:var(--ct-pane);color:var(--ct-ink);font-size:12px;font-weight:800;border-radius:9px}
+.ct-ticket-pagination button:hover:not(:disabled),.ct-ticket-pagination button.active{background:#15803d;color:white;border-color:#15803d}
+.ct-ticket-pagination button:disabled{opacity:.4;cursor:not-allowed}
+.ct-ticket-no-results{padding:28px 14px;text-align:center;border:1px dashed var(--ct-line);background:var(--ct-soft);color:var(--ct-sub);border-radius:14px;font-size:12px}
+.ct-ticket-modal{position:fixed;inset:0;z-index:100010;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(7,19,14,.7);backdrop-filter:blur(5px)}
+.ct-ticket-modal.open{display:flex;animation:ctTicketFade .2s ease both}
+.ct-ticket-dialog{width:min(760px,100%);max-height:min(88vh,900px);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(34,197,94,.42);border-radius:19px;background:var(--ct-pane);box-shadow:0 25px 80px rgba(0,0,0,.3);animation:ctTicketUp .25s ease both}
+.ct-ticket-dialog-head{padding:15px 20px;background:linear-gradient(110deg,#126a34,#16a34a);color:white;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ct-ticket-dialog-head h2{font:800 16px 'Poppins',sans-serif}.ct-ticket-dialog-head p{font-size:11px;opacity:.85}
+.ct-ticket-modal-close{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.16);color:white;font-size:17px}
+.ct-ticket-modal-close:hover{background:rgba(255,255,255,.3);transform:rotate(90deg)}
+.ct-ticket-dialog-body{overflow-y:auto;overscroll-behavior:contain;padding:15px;background:var(--ct-page)}
+.ct-ticket-dialog-body .ticket-card{animation:none!important;box-shadow:none!important;transform:none!important;margin:0}
+.ct-ticket-dialog-body .ticket-card::before,.ct-ticket-dialog-body .ticket-card::after{display:none!important}
+.ct-ticket-dialog-body .ticket-card table{min-width:480px}
+@keyframes ctTicketFade{from{opacity:0}to{opacity:1}}@keyframes ctTicketUp{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+@media(max-width:1050px){.ct-ticket-tools{grid-template-columns:1fr 1fr}.ct-ticket-field:first-child{grid-column:span 2}.ct-ticket-clear{align-self:end}}
+@media(max-width:620px){.ct-ticket-tools{grid-template-columns:1fr 1fr;gap:8px}.ct-ticket-field:first-child{grid-column:span 2}.ct-ticket-clear{grid-column:span 2}.ct-tickets-content .ticket-card.ct-ticket-compact{padding:13px;flex-wrap:wrap;gap:9px}.ct-ticket-mark{width:36px;height:36px}.ct-ticket-overview{flex:1 1 calc(100% - 55px)}.ct-ticket-side{justify-content:space-between;width:100%;padding-left:45px}.ct-ticket-dialog-body{padding:8px}.ct-ticket-dialog-body .ticket-card>div{padding-left:14px;padding-right:14px}.ct-ticket-modal{padding:8px}.ct-ticket-dialog{max-height:94vh}.ct-ticket-dialog-head{padding:12px 14px}}
+@media(prefers-reduced-motion:reduce){.ct-ticket-modal.open,.ct-ticket-dialog{animation:none!important}}
+    </style>
 </head>
 
 <body
@@ -1832,7 +1876,16 @@
                         </div>
 
                         <p id="tickets-error" class="hidden ct-tickets-error" role="alert"></p>
+<div class="ct-ticket-tools" role="search" aria-label="Buscar y filtrar tickets">
+                            <div class="ct-ticket-field"><label for="ticket-search">Buscar comprobante</label><div class="ct-ticket-input-wrap"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" id="ticket-search" placeholder="N.º de ticket o pedido..." autocomplete="off"></div></div>
+                            <div class="ct-ticket-field"><label for="ticket-from">Desde</label><input id="ticket-from" type="date"></div>
+                            <div class="ct-ticket-field"><label for="ticket-to">Hasta</label><input id="ticket-to" type="date"></div>
+                            <button id="ticket-clear" class="ct-ticket-clear" type="button"><i class="fa-solid fa-rotate-left mr-1"></i> Limpiar filtros</button>
+                        </div>
+                        <p id="ticket-feedback" class="ct-ticket-feedback" role="status" aria-live="polite"></p>
                         <ol id="tickets-list" class="ct-ticket-list list-none"></ol>
+                        <div id="ticket-no-results" class="ct-ticket-no-results hidden"><i class="fa-solid fa-magnifying-glass mr-1"></i> No se encontraron tickets con esos filtros.</div>
+                        <nav id="ticket-pagination" class="ct-ticket-pagination" aria-label="Páginas de tickets"></nav>
 
                         <article id="empty-state" class="hidden ct-tickets-empty">
                             <div class="ct-empty-symbol"><i class="fa-solid fa-ticket" aria-hidden="true"></i></div>
@@ -1851,14 +1904,65 @@
         </main>
     </div>
 
-    <footer class="bg-[#111111] text-white pt-10 pb-8 border-t-4 border-[#22C55E] w-full">
-        <div class="w-full max-w-[1440px] mx-auto px-4 md:px-12 text-center space-y-2">
-            <a href="index.html" class="text-2xl font-black tracking-tight">CASA<span
-                    class="text-[#22C55E]">TEK</span></a>
-            <p class="text-xs text-gray-400">Calle Colombia Nro. 218, Zona San Pedro, La Paz - Bolivia · 76216837 -
-                77297541 · casatekbolivia@gmail.com</p>
-            <p class="text-xs text-gray-500">&copy; <span id="footer-year"></span> Casatek Bolivia. Todos los derechos
-                reservados.</p>
+    <footer class="w-full bg-[#111111] text-white pt-16 pb-8 border-t-4 border-[#22C55E] mt-auto">
+        <div class="max-w-[1440px] mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="space-y-4">
+                <a href="index.html" class="text-2xl font-black tracking-tight flex items-center gap-2">
+                    CASA<span class="text-[#22C55E]">TEK</span>
+                </a>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Expertos en soluciones de seguridad electrónica, automatización y redes. Comprometidos con la
+                    protección y eficiencia de tu hogar y empresa.
+                </p>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Navegación</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                    <li><a href="productos.html" class="hover:text-white transition-colors">Catálogo de Productos</a>
+                    </li>
+                    <li><a href="estadisticas_precios.html" class="hover:text-white transition-colors">Estadísticas de
+                            Precios</a></li>
+                    <li><a href="nosotros.html" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
+                    <li><a href="contactanos.html" class="hover:text-white transition-colors">Contáctanos</a></li>
+                </ul>
+            </div>
+            <div class="space-y-4 text-sm">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Soporte</h4>
+                <ul class="space-y-3 text-gray-400">
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-location-dot mt-1"></i>
+                        <span>Calle Colombia Nro. 218, Zona San Pedro, La Paz - Bolivia</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>76216837 - 77297541</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>casatekbolivia@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-sm font-bold tracking-widest uppercase text-[#22C55E]">Síguenos</h4>
+                <p class="text-xs text-gray-400">Mantente al tanto de las últimas novedades en tecnología.</p>
+                <div class="flex gap-4">
+                    <a href="https://www.facebook.com/camarasyalarmaslapaz"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"
+                        target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.youtube.com/@casatek4027"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"
+                        target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://wa.me/59176216837"
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#22C55E] transition-all"
+                        target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div
+            class="max-w-[1440px] mx-auto px-4 md:px-12 mt-12 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+            <p>&copy; <span id="footer-year"></span> Casatek Bolivia. Todos los derechos reservados.</p>
         </div>
     </footer>
 
@@ -2084,6 +2188,13 @@
         });
     </script>
 
+<div id="ticket-detail-modal" class="ct-ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticket-detail-title" aria-hidden="true">
+        <div class="ct-ticket-dialog">
+            <div class="ct-ticket-dialog-head"><div><h2 id="ticket-detail-title"><i class="fa-solid fa-receipt mr-2"></i>Detalle del comprobante</h2><p>Información completa y descarga del ticket</p></div><button id="ticket-detail-close" class="ct-ticket-modal-close" type="button" aria-label="Cerrar detalle"><i class="fa-solid fa-xmark"></i></button></div>
+            <div id="ticket-detail-body" class="ct-ticket-dialog-body"></div>
+        </div>
+    </div>
+
     <script>
         const CART_KEY = 'casatek_carrito';
 
@@ -2234,6 +2345,7 @@
         </div>`;
             const download = document.createElement('a');
             download.href = '#';
+            download.dataset.ticketNumber = t.ticketNumber.replace(/[^\w-]/g, '_');
             download.className = 'mx-6 mb-6 inline-flex items-center gap-2 rounded-xl bg-[#22C55E] px-5 py-3 text-sm font-black text-white hover:bg-green-700';
             download.innerHTML = '<i class="fa-solid fa-download"></i> Descargar PDF';
             download.addEventListener('click', event => {
@@ -2283,7 +2395,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `${button.closest('li').querySelector('.font-black.text-lg').textContent}.pdf`;
+                link.download = `${button.dataset.ticketNumber || 'ticket'}.pdf`;
                 link.click();
                 URL.revokeObjectURL(url);
             } catch (error) {
@@ -2294,9 +2406,93 @@
             }
         }
 
+        // Historial compacto: se conserva el detalle original en una ventana separada.
+        let ticketsDisponibles = [];
+        let paginaTicket = 1;
+        const TICKETS_POR_PAGINA = 6;
+        let focoDetalleAnterior = null;
+
+        function estadoTicket(t) {
+            return ({ pending: 'Pendiente de pago', paid: 'Pagado', shipped: 'Enviado', delivered: 'Entregado', cancelled: 'Cancelado' })[t.status] || 'En proceso';
+        }
+        function fechaFiltroTicket(valor) {
+            const d = new Date(valor);
+            if (!Number.isFinite(d.getTime())) return '';
+            const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+            return local.toISOString().slice(0, 10);
+        }
+        function abrirDetalleTicket(ticket) {
+            focoDetalleAnterior = document.activeElement;
+            const modal = document.getElementById('ticket-detail-modal');
+            const body = document.getElementById('ticket-detail-body');
+            body.replaceChildren(crearTicket(ticket, 0));
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('ticket-detail-close').focus();
+        }
+        function cerrarDetalleTicket() {
+            const modal = document.getElementById('ticket-detail-modal');
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.getElementById('ticket-detail-body').replaceChildren();
+            document.body.style.overflow = '';
+            if (focoDetalleAnterior?.isConnected) focoDetalleAnterior.focus();
+        }
+        function crearTicketCompacto(t) {
+            const li = document.createElement('li');
+            li.className = 'ticket-card ct-ticket-compact';
+            const unidades = t.items.reduce((n, x) => n + x.cantidad, 0);
+            const claseEstado = ['pending','cancelled'].includes(t.status) ? t.status : '';
+            li.innerHTML = `
+                <span class="ct-ticket-mark" aria-hidden="true"><i class="fa-solid fa-receipt"></i></span>
+                <div class="ct-ticket-overview">
+                    <p class="ct-ticket-code">${escapeHtml(t.ticketNumber)}</p>
+                    <div class="ct-ticket-meta">
+                        <span><i class="fa-regular fa-calendar"></i>${escapeHtml(formatoFecha(t.fecha))}</span>
+                        <span><i class="fa-solid fa-box"></i>${unidades} ${unidades === 1 ? 'unidad' : 'unidades'}</span>
+                        <span class="ct-ticket-status ${claseEstado}">${escapeHtml(estadoTicket(t))}</span>
+                    </div>
+                </div>
+                <div class="ct-ticket-side"><span class="ct-ticket-amount">Bs. ${fmt(t.total)}</span><button class="ct-ticket-view" type="button"><i class="fa-regular fa-eye"></i> Ver detalle</button></div>`;
+            li.querySelector('button').addEventListener('click', () => abrirDetalleTicket(t));
+            return li;
+        }
+        function dibujarHistorialTickets() {
+            const texto = document.getElementById('ticket-search').value.trim().toLocaleLowerCase('es');
+            const desde = document.getElementById('ticket-from').value;
+            const hasta = document.getElementById('ticket-to').value;
+            const filtrados = ticketsDisponibles.filter(t => {
+                const matchTexto = !texto || [t.ticketNumber, t.orderNumber].some(v => String(v || '').toLocaleLowerCase('es').includes(texto));
+                const dia = fechaFiltroTicket(t.fecha);
+                return matchTexto && (!desde || (dia && dia >= desde)) && (!hasta || (dia && dia <= hasta));
+            });
+            const paginas = Math.max(1, Math.ceil(filtrados.length / TICKETS_POR_PAGINA));
+            paginaTicket = Math.min(Math.max(1, paginaTicket), paginas);
+            const visibles = filtrados.slice((paginaTicket - 1) * TICKETS_POR_PAGINA, paginaTicket * TICKETS_POR_PAGINA);
+            document.getElementById('tickets-list').replaceChildren(...visibles.map(crearTicketCompacto));
+            document.getElementById('tickets-counter').textContent = ticketsDisponibles.length + (ticketsDisponibles.length === 1 ? ' ticket' : ' tickets');
+            document.getElementById('ticket-feedback').textContent = ticketsDisponibles.length ? `Mostrando ${filtrados.length} de ${ticketsDisponibles.length} tickets${filtrados.length ? ` · Página ${paginaTicket} de ${paginas}` : ''}` : '';
+            document.getElementById('empty-state').classList.toggle('hidden', ticketsDisponibles.length !== 0);
+            document.getElementById('ticket-no-results').classList.toggle('hidden', !ticketsDisponibles.length || filtrados.length !== 0);
+            const nav = document.getElementById('ticket-pagination');
+            nav.replaceChildren();
+            if (paginas <= 1 || !filtrados.length) return;
+            function boton(etiqueta, pagina, deshabilitado, activo, descripcion) {
+                const b = document.createElement('button');
+                b.type = 'button'; b.textContent = etiqueta; b.disabled = deshabilitado;
+                b.classList.toggle('active', !!activo);
+                b.setAttribute('aria-label', descripcion);
+                if (activo) b.setAttribute('aria-current', 'page');
+                b.addEventListener('click', () => { paginaTicket = pagina; dibujarHistorialTickets(); document.getElementById('ct-history-title').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+                nav.appendChild(b);
+            }
+            boton('‹', paginaTicket - 1, paginaTicket === 1, false, 'Página anterior');
+            for (let p = Math.max(1, paginaTicket - 2); p <= Math.min(paginas, paginaTicket + 2); p++) boton(String(p), p, false, p === paginaTicket, 'Página ' + p);
+            boton('›', paginaTicket + 1, paginaTicket === paginas, false, 'Página siguiente');
+        }
         async function cargarTickets() {
             let tickets = [];
-
             try {
                 let pageNumber = 1;
                 let lastPage = 1;
@@ -2314,30 +2510,38 @@
                     const paginated = data.datos;
                     if (!Array.isArray(paginated?.data)) throw new Error('La respuesta de tickets no tiene el formato esperado.');
                     tickets.push(...paginated.data.map(normalizarApi));
-                    pageNumber = paginated.current_page + 1;
-                    lastPage = paginated.last_page;
+                    pageNumber = Number(paginated.current_page) + 1;
+                    lastPage = Number(paginated.last_page);
                 } while (pageNumber <= lastPage);
             } catch (error) {
                 document.getElementById('tickets-error').textContent = error.message || 'Error de conexión al cargar tus tickets.';
                 document.getElementById('tickets-error').classList.remove('hidden');
+                return;
             }
-
-            tickets = tickets.filter(t => String(t.userId) === String(user.id))
+            ticketsDisponibles = tickets.filter(t => String(t.userId) === String(user.id))
                 .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-            const lista = document.getElementById('tickets-list');
-            lista.innerHTML = '';
-            document.getElementById('tickets-counter').textContent =
-                tickets.length + ' ticket' + (tickets.length !== 1 ? 's' : '');
-
-            if (tickets.length === 0) document.getElementById('empty-state').classList.remove('hidden');
-            else tickets.forEach((t, i) => lista.appendChild(crearTicket(t, i)));
+            dibujarHistorialTickets();
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             if (!user) return;
             pintarUsuario();
             cargarTickets();
+            ['ticket-search','ticket-from','ticket-to'].forEach(id => document.getElementById(id).addEventListener('input', () => { paginaTicket = 1; dibujarHistorialTickets(); }));
+            document.getElementById('ticket-clear').addEventListener('click', () => { ['ticket-search','ticket-from','ticket-to'].forEach(id => document.getElementById(id).value = ''); paginaTicket = 1; dibujarHistorialTickets(); });
+            document.getElementById('ticket-detail-close').addEventListener('click', cerrarDetalleTicket);
+            document.getElementById('ticket-detail-modal').addEventListener('click', e => { if (e.target.id === 'ticket-detail-modal') cerrarDetalleTicket(); });
+            document.addEventListener('keydown', e => {
+                const modal = document.getElementById('ticket-detail-modal');
+                if (!modal.classList.contains('open')) return;
+                if (e.key === 'Escape') cerrarDetalleTicket();
+                if (e.key === 'Tab') {
+                    const focusables = Array.from(modal.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled)')).filter(el => el.getClientRects().length);
+                    const first = focusables[0], last = focusables.at(-1);
+                    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                }
+            });
             document.getElementById('footer-year').textContent = new Date().getFullYear();
         });
     </script>

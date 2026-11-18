@@ -2048,6 +2048,36 @@
     @media(max-width:1050px) { .recent-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media(max-width:640px) { .recent-filters { grid-template-columns:1fr; } .recent-search-label { min-width:0; } }
   </style>
+
+  <style id="ct-product-picker-styles">
+    /* Selector visual del administrador; el select original se conserva para price-stats.js */
+    .ct-product-picker { width: min(100%, 360px); min-width: 235px; position: relative; flex: 0 1 360px; font-family: 'DM Sans', sans-serif; }
+    .ct-picker-caption { display:block; font-size: 10px; font-weight:800; letter-spacing:.075em; color:#b3c9d5; text-transform:uppercase; margin:0 0 7px 2px; }
+    .ct-picker-native { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:0!important; border:0!important; opacity:0!important; pointer-events:none!important; overflow:hidden; }
+    .ct-picker-trigger { display:flex; align-items:center; gap:10px; width:100%; min-height:46px; padding:8px 12px; background:#132936; border:1px solid #527282; border-radius:12px; color:#f2f9fc; cursor:pointer; text-align:left; transition:border-color .18s,box-shadow .18s,background .18s; }
+    .ct-picker-trigger:hover,.ct-product-picker.is-open .ct-picker-trigger {border-color:#40d987; background:#17333d; box-shadow:0 0 0 3px rgba(34,197,94,.10);}
+    .ct-picker-trigger:focus-visible {outline:2px solid #86efac; outline-offset:3px;}
+    .ct-picker-leading {display:grid; place-items:center; flex:none; width:29px;height:29px;border-radius:9px;background:rgba(34,197,94,.14);color:#73ed9e;}
+    .ct-picker-value {font-size:12.5px; font-weight:700; line-height:1.35; flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .ct-picker-chevron {font-size:11px; color:#a9beca;transition:transform .18s;}
+    .ct-product-picker.is-open .ct-picker-chevron {transform:rotate(180deg);}
+    .ct-picker-menu {position:absolute;z-index:500;top:calc(100% + 7px);right:0;width:max(100%, min(410px, 85vw));max-width:calc(100vw - 32px);padding:11px; background:#152633;border:1px solid #476476;border-radius:15px;box-shadow:0 22px 50px rgba(0,0,0,.4);animation:ctPickerIn .16s ease-out;}
+    .ct-picker-menu[hidden] {display:none!important;}
+    @keyframes ctPickerIn {from {opacity:0;transform:translateY(-5px);}to {opacity:1;transform:translateY(0);}}
+    .ct-picker-searchbox {display:flex;align-items:center;gap:9px;min-height:43px;padding:0 12px;background:#0e202d;border:1px solid #3d5869;border-radius:10px;color:#7beba2;}
+    .ct-picker-searchbox:focus-within {border-color:#4ade80;box-shadow:0 0 0 3px rgba(34,197,94,.1);}
+    .ct-picker-searchbox input {background:transparent!important;border:0!important;outline:none!important;color:#effcf4!important;font:500 12px 'DM Sans',sans-serif;width:100%;min-width:0;height:40px;box-shadow:none!important;}
+    .ct-picker-searchbox input::placeholder {color:#9cb1bf;}
+    .ct-picker-count {font-size:11px;color:#afc6d1;padding:11px 5px 7px;}
+    .ct-picker-options {max-height:250px;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#507e70 #172b37;scrollbar-width:thin;display:grid;gap:3px;}
+    .ct-picker-option {display:flex;align-items:center;gap:10px;width:100%;min-height:41px;padding:9px 11px;background:transparent;color:#e1eef4;text-align:left;border:1px solid transparent;border-radius:9px;font:600 12px/1.4 'DM Sans',sans-serif;cursor:pointer;overflow-wrap:anywhere;}
+    .ct-picker-option:hover,.ct-picker-option:focus-visible {background:#244436;border-color:#376f53;outline:none;}
+    .ct-picker-option[aria-selected="true"] {background:#1c4937;border-color:#389e63;color:#baffd0;}
+    .ct-picker-option i {width:14px;flex:none;color:#75eca0;font-size:11px;}
+    .ct-picker-empty {padding:22px 10px;text-align:center;color:#b4c8d4;font-size:12px;}
+    @media(max-width:720px) {.ct-product-picker{width:100%;min-width:0;flex:1 1 100%;}.ct-picker-menu{width:100%;right:0;}.ct-picker-options{max-height:220px;}}
+    @media(prefers-reduced-motion:reduce) {.ct-picker-menu{animation:none;}.ct-picker-chevron,.ct-picker-trigger{transition:none;}}
+  </style>
 </head>
 
 <body>
@@ -2173,7 +2203,23 @@
           <p class="muted-s">Cada pico es un cambio de precio. <span class="up">●</span> máximo · <span
               class="down">●</span> mínimo</p>
         </div>
-        <select id="productSel" aria-label="Producto"></select>
+        <div class="ct-product-picker" id="ctProductPicker">
+          <span class="ct-picker-caption">Seleccionar producto</span>
+          <button class="ct-picker-trigger" type="button" id="ctProductTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="ctProductMenu">
+            <span class="ct-picker-leading"><i class="fa-solid fa-box-open" aria-hidden="true"></i></span>
+            <span class="ct-picker-value" id="ctProductValue">Cargando productos...</span>
+            <i class="fa-solid fa-chevron-down ct-picker-chevron" aria-hidden="true"></i>
+          </button>
+          <div class="ct-picker-menu" id="ctProductMenu" hidden>
+            <label class="ct-picker-searchbox">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <input id="ctProductSearch" type="search" autocomplete="off" placeholder="Buscar producto por nombre..." aria-label="Buscar producto">
+            </label>
+            <div class="ct-picker-count" id="ctProductCount">Selecciona un producto</div>
+            <div class="ct-picker-options" role="listbox" id="ctProductOptions" aria-label="Productos disponibles"></div>
+          </div>
+          <select id="productSel" class="ct-picker-native" aria-label="Producto"></select>
+        </div>
       </div>
       <div class="chart-box"><canvas id="chartTimeline"></canvas></div>
       <div class="mini">
@@ -2363,6 +2409,71 @@
     })();
   </script>
 
+
+  <script id="ct-product-picker-script">
+    // Selector buscable: mantiene intacto #productSel para el código de estadísticas.
+    (() => {
+      const native = document.getElementById('productSel');
+      const root = document.getElementById('ctProductPicker');
+      const trigger = document.getElementById('ctProductTrigger');
+      const menu = document.getElementById('ctProductMenu');
+      const search = document.getElementById('ctProductSearch');
+      const list = document.getElementById('ctProductOptions');
+      const value = document.getElementById('ctProductValue');
+      const count = document.getElementById('ctProductCount');
+      if (!native || !root || !trigger || !menu || !search || !list) return;
+      const normalize = str => String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').trim();
+      let opened = false;
+      let lastSignature = '';
+      const getOptions = () => Array.from(native.options).filter(o => !o.disabled && o.value !== '');
+      function sync() {
+        const selected = native.selectedOptions[0];
+        value.textContent = selected?.textContent?.trim() || 'Selecciona un producto';
+        trigger.title = value.textContent;
+      }
+      function render() {
+        const all = getOptions();
+        const found = all.filter(o => normalize(o.textContent).includes(normalize(search.value)));
+        count.textContent = `${found.length} de ${all.length} productos`;
+        list.replaceChildren();
+        if (!found.length) {
+          const empty = document.createElement('div'); empty.className = 'ct-picker-empty';
+          empty.textContent = all.length ? 'No se encontraron productos.' : 'No hay productos disponibles.';
+          list.appendChild(empty); return;
+        }
+        const frag = document.createDocumentFragment();
+        found.forEach(o => {
+          const button = document.createElement('button');
+          button.type = 'button';button.className = 'ct-picker-option';button.setAttribute('role','option');
+          button.setAttribute('aria-selected', String(native.value === o.value));
+          const ico = document.createElement('i');ico.className = native.value === o.value ? 'fa-solid fa-check' : 'fa-solid fa-box';ico.setAttribute('aria-hidden','true');
+          const name = document.createElement('span');name.textContent = o.textContent;
+          button.append(ico,name);
+          button.addEventListener('click', () => {
+            native.value = o.value;
+            native.dispatchEvent(new Event('change', {bubbles:true}));
+            sync();close();trigger.focus();
+          });
+          frag.appendChild(button);
+        });
+        list.appendChild(frag);
+      }
+      function open() { if (opened) return;opened=true;root.classList.add('is-open');menu.hidden=false;trigger.setAttribute('aria-expanded','true');search.value='';render();search.focus(); }
+      function close() { if (!opened) return;opened=false;root.classList.remove('is-open');menu.hidden=true;trigger.setAttribute('aria-expanded','false'); }
+      trigger.addEventListener('click',()=>opened?close():open());
+      search.addEventListener('input',render);
+      search.addEventListener('keydown',e => {if(e.key==='ArrowDown'){e.preventDefault();list.querySelector('.ct-picker-option')?.focus();}if(e.key==='Enter'){e.preventDefault();list.querySelector('.ct-picker-option')?.click();}});
+      list.addEventListener('keydown',e => {if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const buttons=Array.from(list.querySelectorAll('.ct-picker-option'));const index=buttons.indexOf(document.activeElement);buttons[Math.min(buttons.length-1,Math.max(0,index+(e.key==='ArrowDown'?1:-1)))]?.focus();}});
+      root.addEventListener('keydown',e=>{if(e.key==='Escape'){close();trigger.focus();}});
+      document.addEventListener('pointerdown',e=>{if(!root.contains(e.target))close();});
+      native.addEventListener('change',()=>{sync();if(opened)render();});
+      const refresh = () => {sync();if(opened)render();};
+      new MutationObserver(refresh).observe(native,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['selected','disabled','value']});
+      // El script externo también puede cambiar el valor sin lanzar 'change'.
+      setInterval(()=>{const signature = native.value + '|' + native.options.length;if(signature !== lastSignature){lastSignature=signature;refresh();}},650);
+      sync();
+    })();
+  </script>
 </body>
 
 </html>

@@ -1752,7 +1752,6 @@
                         </div>
                         <div class="ct-help-row">
                             <label for="remember"><input type="checkbox" id="remember"> Recordarme</label>
-                            <a href="recuperar_contrasena.html">¿Olvidaste tu contraseña?</a>
                         </div>
                         <button type="submit" id="submitBtn" class="ct-primary-btn"><i
                                 class="fa-solid fa-right-to-bracket"></i> INICIAR SESIÓN</button>
@@ -1877,6 +1876,12 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             cargarRecordado();
+            // Si deja de marcar «Recordarme», se descarta el correo recordado.
+            document.getElementById('remember').addEventListener('change', function () {
+                if (!this.checked) {
+                    try { localStorage.removeItem(REMEMBER_KEY); } catch (_) {}
+                }
+            });
             redirigirSiHaySesion();
         });
 

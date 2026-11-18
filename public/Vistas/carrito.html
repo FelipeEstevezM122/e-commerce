@@ -1413,6 +1413,142 @@
             }
         }
     </style>
+
+    <style>
+      /* CASATEK · Carrito y reserva premium, adaptable a tema */
+      .ct-cart-items .product-row {position:relative; isolation:isolate; border:1px solid var(--ct-line); overflow:hidden;
+        box-shadow:0 8px 28px rgba(18,70,38,.065); transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+      .ct-cart-items .product-row::before {content:"";pointer-events:none;position:absolute;inset:0;border-radius:inherit;
+        background:linear-gradient(115deg,transparent 24%,rgba(34,197,94,.12) 49%,transparent 73%);
+        opacity:0;transition:opacity .3s;z-index:-1}
+      .ct-cart-items .product-row:hover {border-color:rgba(34,197,94,.65);box-shadow:0 0 0 1px rgba(34,197,94,.15),0 14px 38px rgba(23,133,62,.14);transform:translateY(-2px)}
+      .ct-cart-items .product-row:hover::before {opacity:1}
+      .dark .ct-cart-items .product-row:hover {box-shadow:0 0 0 1px rgba(74,222,128,.2),0 12px 30px rgba(0,0,0,.25),0 0 22px rgba(34,197,94,.10)}
+      .ct-cart-items .product-row [data-action='eliminar-item'] {background:#fff1f2!important;color:#dc2626!important;
+        border:1px solid #fecdd3!important;border-radius:12px;transition:transform .2s,box-shadow .2s,background .2s}
+      .ct-cart-items .product-row [data-action='eliminar-item']:hover {background:#dc2626!important;color:white!important;
+        border-color:#dc2626!important;transform:rotate(-7deg) scale(1.08);box-shadow:0 6px 18px rgba(220,38,38,.27)}
+      .dark .ct-cart-items .product-row [data-action='eliminar-item'] {background:#451e29!important;color:#fda4af!important;border-color:#853647!important}
+      .dark .ct-cart-items .product-row [data-action='eliminar-item']:hover {background:#dc2626!important;color:#fff!important}
+      .ct-stock-indicator {display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;
+        background:#eaf8ef;color:#166534;font:700 11px 'Poppins',sans-serif;border:1px solid #bce9ca;margin-top:9px}
+      .dark .ct-stock-indicator {background:#1d402e;color:#a7f3c3;border-color:#36664a}
+      .ct-stock-indicator.unknown {color:#66756b;background:#f1f5f2;border-color:#dee8df}
+      .dark .ct-stock-indicator.unknown {color:#bbc8bf;background:#2b3641;border-color:#43534b}
+      .ct-stock-indicator.low {color:#9a5600;background:#fff6dd;border-color:#f3d78b}
+      .dark .ct-stock-indicator.low {color:#fcd34d;background:#493a1d;border-color:#7e6430}
+      .ct-cart-items .qty-wrap button:disabled {opacity:.37;cursor:not-allowed;transform:none!important}
+      .ct-cart-items .qty-wrap button:not(:disabled):hover {color:#15803d;background:#dcfce7}
+      .ct-cart-items .qty-wrap {box-shadow:0 2px 9px rgba(0,0,0,.035)}
+      .ct-reservation-note {display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;
+        background:#edf9f1;color:#135d31;border:1px solid #bde9cb;margin-bottom:19px;font-size:12px}
+      .ct-reservation-note>i {font-size:19px;line-height:1.4;color:#17994d}
+      .ct-reservation-note strong {display:block;font-weight:800;margin-bottom:3px}
+      .ct-reservation-note p {line-height:1.6;color:#447b54}
+      .dark .ct-reservation-note {background:#193c2c;color:#bbf7d0;border-color:#35714e}
+      .dark .ct-reservation-note p {color:#a9cdb7}
+      .ct-summary-terms {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:21px;padding-top:19px;border-top:1px solid var(--ct-line)}
+      .ct-summary-terms>div {display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font:600 10px/1.4 'Poppins',sans-serif;color:var(--ct-sub)}
+      .ct-summary-terms i {font-size:16px;color:var(--ct-green)}
+      #modalPagoPresencial {z-index:100002;backdrop-filter:blur(7px);background:rgba(8,20,14,.66);align-items:center;justify-content:center;overflow-y:auto}
+      #modalPagoPresencial:not(.hidden) {display:flex;animation:ctModalFade .22s ease}
+      #modalPagoPresencial > div {width:min(100%,610px);margin:auto;flex:none;max-height:calc(100dvh - 32px);overflow-y:auto;
+        border:1px solid rgba(34,197,94,.47);box-shadow:0 26px 80px rgba(0,0,0,.30),0 0 26px rgba(34,197,94,.13);
+        border-radius:24px;animation:ctModalLift .3s cubic-bezier(.2,.8,.2,1);background:var(--ct-pane)}
+      #modalPagoPresencial > div > div:first-child {background:linear-gradient(120deg,#126831,#199a4d,#116d36);padding:21px 27px}
+      #tituloPagoPresencial {font-size:22px;letter-spacing:-.04em}
+      #formPagoPresencial {padding:24px 27px;display:grid;grid-template-columns:1fr 1fr;gap:15px 16px}
+      #formPagoPresencial > div:first-child {grid-column:1/-1}
+      #formPagoPresencial > div:nth-child(n+4) {grid-column:1/-1}
+      #formPagoPresencial label {font-size:12px;font-weight:800;color:var(--ct-ink);margin-bottom:7px}
+      #formPagoPresencial input {height:48px;width:100%;background:var(--ct-pane);color:var(--ct-ink);
+        border:1px solid var(--ct-line);border-radius:13px;outline:0;transition:border .2s,box-shadow .2s,transform .2s}
+      #formPagoPresencial input::placeholder {color:#93a398;opacity:1;font-size:12px}
+      .dark #formPagoPresencial input::placeholder {color:#9daea4}
+      #formPagoPresencial input:focus {border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.14),0 0 21px rgba(34,197,94,.18)}
+      #formPagoPresencial input:invalid:not(:placeholder-shown) {border-color:#ef9999}
+      #formPagoPresencial > div:nth-last-child(2),#formPagoPresencial > div:nth-last-child(3) {border-radius:14px}
+      #formPagoPresencial button {min-height:47px;transition:transform .2s,box-shadow .2s,filter .2s}
+      #formPagoPresencial button:hover:not(:disabled) {transform:translateY(-2px);box-shadow:0 7px 22px rgba(22,163,74,.20)}
+      #btnConfirmarReserva {background:linear-gradient(110deg,#16a34a,#22c55e);box-shadow:0 6px 18px rgba(34,197,94,.18)}
+      #btnCerrarPagoPresencial {width:38px;height:38px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.12);transition:transform .18s,background .18s}
+      #btnCerrarPagoPresencial:hover {background:rgba(255,255,255,.26);transform:rotate(90deg)}
+      @keyframes ctModalLift {from {opacity:0;transform:translateY(16px) scale(.975)}to{opacity:1;transform:translateY(0) scale(1)}}
+      @keyframes ctModalFade {from{opacity:0}to{opacity:1}}
+      @media(max-width:560px) {#formPagoPresencial {display:flex;flex-direction:column;padding:18px;gap:15px}
+        #modalPagoPresencial > div {max-height:calc(100dvh - 20px);border-radius:18px}
+        #modalPagoPresencial > div > div:first-child {padding:18px}}
+      @media(prefers-reduced-motion:reduce) {#modalPagoPresencial:not(.hidden),#modalPagoPresencial > div {animation:none!important}}
+    </style>
+
+<style>
+/* CASATEK · Reserva 2.0 y vaciado masivo - tema claro / oscuro */
+.ct-cart-header-actions {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.ct-clear-cart {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:8px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff5f5;color:#b91c1c;font:750 11px Poppins,sans-serif;transition:all .2s}
+.ct-clear-cart:hover:not(:disabled) {background:#dc2626;color:white;border-color:#dc2626;transform:translateY(-2px);box-shadow:0 7px 18px rgba(220,38,38,.2)}
+.ct-clear-cart:disabled {opacity:.45;cursor:not-allowed}
+.dark .ct-clear-cart {background:#431e28;border-color:#87414b;color:#fda4af}
+.dark .ct-clear-cart:hover:not(:disabled) {background:#dc2626;color:#fff}
+.ct-cart-aside #btn-comprar {background:linear-gradient(115deg,#119b46,#1fc968)!important;color:#fff!important;border:1px solid #20bd5a;box-shadow:0 9px 22px rgba(19,153,69,.25)}
+.ct-cart-aside #btn-comprar:hover:not(:disabled) {background:linear-gradient(115deg,#087936,#17a74c)!important;box-shadow:0 12px 27px rgba(17,144,61,.32);transform:translateY(-2px)}
+.ct-cart-aside .ct-continue-shopping {display:flex;align-items:center;justify-content:center;gap:8px;min-height:49px;width:100%;padding:11px 15px;border-radius:13px;background:#f0f4f8;color:#334155;border:1px solid #d8e1e9;text-decoration:none;font:800 12px Poppins,sans-serif;transition:all .2s}
+.ct-cart-aside .ct-continue-shopping:hover {background:#e2e8f0;border-color:#9baebd;color:#0f172a;transform:translateY(-2px);box-shadow:0 8px 16px rgba(51,65,85,.09)}
+.dark .ct-cart-aside .ct-continue-shopping {background:#2b3747;color:#e2e8f0;border-color:#4a5a6e}
+.dark .ct-cart-aside .ct-continue-shopping:hover {background:#394a5f;color:white;border-color:#64748b}
+#modalPagoPresencial {background:rgba(5,19,12,.70);backdrop-filter:blur(10px);padding:16px;overflow-y:auto;z-index:100002}
+#modalPagoPresencial:not(.hidden) {display:flex;align-items:center;justify-content:center;animation:ctModalFade .2s ease}
+#modalPagoPresencial .ct-booking-dialog {width:min(100%,650px);max-height:calc(100dvh - 32px);overflow-y:auto;margin:auto;flex:none;isolation:isolate;background:var(--ct-pane);border:1px solid rgba(34,197,94,.40);border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.34),0 0 0 4px rgba(34,197,94,.07),0 0 32px rgba(34,197,94,.13);animation:ctModalLift .3s cubic-bezier(.22,.8,.2,1);scrollbar-width:thin;scrollbar-color:#9ccfad transparent}
+#modalPagoPresencial .ct-booking-header {display:flex;gap:16px;position:relative;align-items:flex-start;padding:25px 58px 25px 28px;background:linear-gradient(120deg,#0c6935,#15984b 68%,#13a955);color:white}
+.ct-booking-icon {height:52px;width:52px;flex:none;display:grid;place-items:center;border-radius:17px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.17);font-size:23px}
+.ct-booking-heading {min-width:0}.ct-booking-eyebrow {display:inline-flex;align-items:center;gap:6px;color:#d0ffe0;font:800 10px Poppins,sans-serif;letter-spacing:.11em}
+#tituloPagoPresencial {font:900 clamp(19px,3vw,25px)/1.22 Poppins,sans-serif;letter-spacing:-.04em;margin:7px 0 7px}.ct-booking-heading p {font:500 12px/1.65 Poppins,sans-serif;color:#e2fbea}
+#modalPagoPresencial #btnCerrarPagoPresencial {position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.17);display:grid;place-items:center;color:#fff;border:1px solid rgba(255,255,255,.2)}
+#modalPagoPresencial #btnCerrarPagoPresencial:hover {background:rgba(255,255,255,.3);transform:rotate(90deg)}
+#modalPagoPresencial #formPagoPresencial.ct-booking-form {display:block;padding:23px 28px 25px;background:var(--ct-pane)}
+.ct-booking-section-heading {display:flex;gap:10px;align-items:center;margin-bottom:17px;color:var(--ct-ink)}.ct-booking-section-icon {flex:none;width:34px;height:34px;display:grid;place-items:center;color:#15803d;background:#e7f8ee;border:1px solid #bee7cb;border-radius:11px}
+.dark .ct-booking-section-icon {color:#86efac;background:#21432f;border-color:#37664b}
+.ct-booking-section-heading>div {flex:1;min-width:0}.ct-booking-section-heading strong {display:block;font:850 13px Poppins,sans-serif}.ct-booking-section-heading small {display:block;color:var(--ct-sub);font:500 10px/1.5 Poppins,sans-serif;margin-top:2px}
+.ct-booking-step {font:800 10px Poppins,sans-serif;color:var(--ct-sub);background:var(--ct-soft);border:1px solid var(--ct-line);border-radius:30px;padding:5px 9px;white-space:nowrap}
+.ct-booking-fields {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ct-booking-field {min-width:0}.ct-booking-field-wide {grid-column:1/-1}
+#formPagoPresencial .ct-booking-field label {display:block;color:var(--ct-ink);font:750 11px Poppins,sans-serif;margin-bottom:8px}
+.ct-booking-field label span {color:#16a34a}
+.ct-booking-control {display:flex;position:relative;align-items:center;background:var(--ct-pane);border:1.4px solid var(--ct-line);border-radius:13px;box-shadow:0 2px 9px rgba(20,60,30,.035);transition:all .22s}
+.ct-booking-control>i {position:absolute;left:15px;color:#7d9585;font-size:14px;pointer-events:none;transition:color .2s}
+#formPagoPresencial .ct-booking-control input {height:48px;width:100%;padding:0 13px 0 42px;border:0!important;box-shadow:none!important;outline:0;border-radius:13px;background:transparent;color:var(--ct-ink);font:600 12px Poppins,sans-serif;min-width:0}
+#formPagoPresencial .ct-booking-control input::placeholder {color:#8fa499;opacity:1;font:450 11px Poppins,sans-serif}
+.dark #formPagoPresencial .ct-booking-control input::placeholder {color:#b1bcb4}
+.ct-booking-control:focus-within {border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.13),0 0 19px rgba(34,197,94,.16);transform:translateY(-1px)}.ct-booking-control:focus-within>i {color:#16a34a}
+.ct-booking-second-heading {margin-top:22px;margin-bottom:13px;padding-top:17px;border-top:1px solid var(--ct-line)}
+.ct-booking-info-grid {display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.ct-booking-info {display:flex;align-items:flex-start;gap:10px;padding:13px;border-radius:13px;min-width:0}
+.ct-booking-info-icon {flex:none;display:grid;place-items:center;width:31px;height:31px;border-radius:10px;font-size:14px}
+.ct-booking-info strong {display:block;font:800 11px Poppins,sans-serif;margin:1px 0 4px}.ct-booking-info small {display:block;font:500 10px/1.55 Poppins,sans-serif}
+.ct-booking-payment {border:1px solid #bfe9ce;background:#f0fbf4;color:#176c36}.ct-booking-payment .ct-booking-info-icon {background:#d8f6e3;color:#13853e}
+.ct-booking-payment small {color:#4e8060}.dark .ct-booking-payment {background:#1d3b2b;border-color:#356448;color:#baf4cc}.dark .ct-booking-payment .ct-booking-info-icon {background:#2b523a;color:#86efac}.dark .ct-booking-payment small {color:#b1d3bc}
+.ct-booking-time {border:1px solid #f1dda7;background:#fffbef;color:#966010}.ct-booking-time .ct-booking-info-icon {background:#fff0c7;color:#a16207}
+.ct-booking-time small {color:#98723d}.dark .ct-booking-time {background:#41341e;border-color:#776034;color:#f8cf83}.dark .ct-booking-time .ct-booking-info-icon {background:#5d4825;color:#fcd34d}.dark .ct-booking-time small {color:#e9cda3}
+.ct-booking-footer {margin-top:19px;padding-top:15px;border-top:1px solid var(--ct-line)}.ct-booking-security {display:flex;gap:7px;align-items:center;color:var(--ct-sub);font:500 10px Poppins,sans-serif;margin-bottom:13px}.ct-booking-security i {color:#16a34a}
+.ct-booking-buttons {display:grid;grid-template-columns:.9fr 1.2fr;gap:11px}.ct-booking-buttons button {min-height:47px;border-radius:12px;font:800 12px Poppins,sans-serif;transition:all .2s}
+#formPagoPresencial #btnCancelarPagoPresencial {background:var(--ct-soft);border:1px solid var(--ct-line);color:var(--ct-ink)}
+#formPagoPresencial #btnCancelarPagoPresencial:hover {background:#e0e9e3;box-shadow:none;transform:translateY(-2px)}.dark #formPagoPresencial #btnCancelarPagoPresencial:hover {background:#34493e}
+#formPagoPresencial #btnConfirmarReserva {background:linear-gradient(105deg,#0c8b3d,#1acb65);color:white;border:1px solid #22bf64;box-shadow:0 8px 19px rgba(18,151,65,.22);display:flex;align-items:center;justify-content:center;gap:9px}
+#formPagoPresencial #btnConfirmarReserva:hover:not(:disabled) {background:linear-gradient(105deg,#087735,#12ab51);box-shadow:0 11px 25px rgba(18,151,65,.29);transform:translateY(-2px)}
+#formPagoPresencial #btnConfirmarReserva:disabled {opacity:.58;cursor:wait}.ct-booking-arrow {font-size:10px;transition:transform .2s}#btnConfirmarReserva:hover .ct-booking-arrow {transform:translateX(3px)}
+.ct-clear-overlay {position:fixed;inset:0;z-index:100004;padding:18px;background:rgba(8,14,12,.72);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.ct-clear-overlay:not(.hidden) {display:flex;animation:ctModalFade .2s ease}.ct-clear-dialog {width:min(100%,450px);background:var(--ct-pane);color:var(--ct-ink);border:1px solid var(--ct-line);border-radius:22px;box-shadow:0 22px 70px rgba(0,0,0,.3);padding:27px;text-align:center;animation:ctModalLift .25s ease}
+.ct-clear-big-icon {display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:#fee2e2;color:#dc2626;font-size:23px;margin:0 auto 15px}.dark .ct-clear-big-icon {background:#4e2229;color:#fda4af}
+.ct-clear-dialog h2 {font:900 19px Poppins,sans-serif;margin-bottom:9px}.ct-clear-dialog p {font:500 12px/1.75 Poppins,sans-serif;color:var(--ct-sub)}
+.ct-clear-buttons {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:23px}.ct-clear-buttons button {min-height:44px;border-radius:12px;font:800 11px Poppins,sans-serif;transition:all .2s}
+.ct-clear-no {background:var(--ct-soft);color:var(--ct-ink);border:1px solid var(--ct-line)}.ct-clear-no:hover {transform:translateY(-2px)}
+.ct-clear-yes {background:#dc2626;color:#fff;border:1px solid #b91c1c}.ct-clear-yes:hover:not(:disabled) {background:#b91c1c;transform:translateY(-2px);box-shadow:0 6px 18px rgba(220,38,38,.25)}.ct-clear-yes:disabled {opacity:.55;cursor:wait}
+@media(max-width:620px) {.ct-cart-header-actions {width:100%;justify-content:space-between}.ct-cart-header-actions>* {flex:1}.ct-cart-header-actions .ct-cart-add-more {min-width:145px}
+#modalPagoPresencial .ct-booking-header {padding:20px 50px 19px 18px;gap:11px}.ct-booking-icon {width:43px;height:43px;font-size:19px;border-radius:13px}
+#modalPagoPresencial #formPagoPresencial.ct-booking-form {padding:18px}.ct-booking-fields {grid-template-columns:1fr;gap:12px}.ct-booking-info-grid {grid-template-columns:1fr;gap:8px}.ct-booking-second-heading {margin-top:16px}
+.ct-booking-buttons {grid-template-columns:1fr 1fr}.ct-booking-buttons button {font-size:10px}.ct-booking-section-heading small {font-size:9px}}
+@media(max-width:390px) {.ct-clear-buttons {grid-template-columns:1fr}.ct-booking-buttons {grid-template-columns:1fr}.ct-cart-header-actions {flex-direction:column}.ct-cart-header-actions>* {width:100%}}
+@media(prefers-reduced-motion:reduce) {.ct-clear-overlay:not(.hidden),.ct-clear-dialog,#modalPagoPresencial .ct-booking-dialog {animation:none!important}}
+</style>
 </head>
 
 <body
@@ -1749,9 +1885,14 @@
                                 0 productos en tu carrito
                             </p>
                         </div>
-                        <a href="productos.html" class="ct-cart-add-more" title="Ver más productos">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir productos
-                        </a>
+                        <div class="ct-cart-header-actions">
+                            <button id="btn-vaciar-carrito" type="button" class="ct-clear-cart" aria-label="Vaciar todos los productos del carrito">
+                                <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Vaciar carrito
+                            </button>
+                            <a href="productos.html" class="ct-cart-add-more" title="Ver más productos">
+                                <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir productos
+                            </a>
+                        </div>
                     </div>
 
                     <ol class="space-y-4 list-none w-full shrink-0" id="cart-list" aria-label="Lista de productos"></ol>
@@ -1773,8 +1914,7 @@
                         </div>
                     </article>
 
-                    <p class="ct-cart-help"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Puedes cambiar la
-                        cantidad o quitar productos antes de comprar.</p>
+                    <p class="ct-cart-help"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Puedes ajustar cantidades o quitar productos antes de reservar. Las unidades se verifican con la tienda.</p>
                 </section>
 
                 <!-- Resumen de la compra -->
@@ -1784,27 +1924,21 @@
                         aria-label="Resumen de compra">
                         <h2
                             class="ct-cart-summary-title text-[10px] font-extrabold text-gray-400 uppercase tracking-[.15em] mb-6">
-                            <i class="fa-solid fa-receipt" aria-hidden="true"></i> Resumen de tu compra
+                            <i class="fa-solid fa-receipt" aria-hidden="true"></i> Resumen de tu reserva
                         </h2>
 
-                        <dl class="space-y-4 mb-6">
+                        <dl class="space-y-3 mb-4">
                             <div class="flex justify-between items-center text-sm">
-                                <dt class="text-gray-500 dark:text-gray-400">Subtotal</dt>
-                                <dd class="font-bold text-gray-800 dark:text-white">Bs. <span id="subtotal">0.00</span>
-                                </dd>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <dt class="text-gray-500 dark:text-gray-400">Envío</dt>
-                                <dd
-                                    class="bg-green-50 dark:bg-green-900/30 text-[#16a34a] dark:text-green-400 border border-[#bbf7d0] dark:border-green-700 text-[11px] font-bold px-2.5 py-0.5 rounded-lg">
-                                    Gratis</dd>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <dt class="text-gray-500 dark:text-gray-400">Impuestos</dt>
-                                <dd class="font-bold text-gray-800 dark:text-white">Bs. 0.00</dd>
+                                <dt class="text-gray-500 dark:text-gray-400">Importe de productos</dt>
+                                <dd class="font-bold text-gray-800 dark:text-white">Bs. <span id="subtotal">0.00</span></dd>
                             </div>
                         </dl>
-
+                        <div class="ct-reservation-note" role="note">
+                            <i class="fa-solid fa-store" aria-hidden="true"></i>
+                            <div><strong>Reserva y paga en tienda</strong>
+                                <p>Confirma tu reserva ahora. El pago se realiza únicamente de forma presencial en CASATEK.</p>
+                            </div>
+                        </div>
                         <div class="border-t border-gray-100 dark:border-gray-700 pt-5 mb-6">
                             <div class="flex justify-between items-end">
                                 <p class="text-base font-black text-gray-800 dark:text-white">Total</p>
@@ -1820,202 +1954,88 @@
                             <span class="pointer-events-none">Reservar</span>
                         </button>
 
-                        <a href="productos.html"
-                            class="mt-1 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
+                        <a href="productos.html" class="ct-continue-shopping">
                             <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
                             Seguir Comprando
                         </a>
 
-                        <p
-                            class="mt-5 flex items-center justify-center gap-2 text-[11px] text-gray-300 dark:text-gray-600">
-                            <i class="fa-solid fa-shield-halved text-[#22C55E]"></i>
-                            Pago 100% seguro y protegido
-                        </p>
-
-                        <ul class="mt-4 grid grid-cols-3 gap-2 text-center list-none">
-                            <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                                <i class="fa-solid fa-truck text-[#22C55E] text-base"></i>Envío gratis
-                            </li>
-                            <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                                <i class="fa-solid fa-rotate-left text-[#22C55E] text-base"></i>Garantía
-                            </li>
-                            <li class="flex flex-col items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
-                                <i class="fa-brands fa-whatsapp text-[#22C55E] text-base"></i>Soporte
-                            </li>
-                        </ul>
+                        <div class="ct-summary-terms">
+                            <div><i class="fa-regular fa-clock"></i><span>Reserva por 24 horas</span></div>
+                            <div><i class="fa-solid fa-location-dot"></i><span>Pago presencial</span></div>
+                            <div><i class="fa-solid fa-headset"></i><span>Soporte Casatek</span></div>
+                        </div>
                     </section>
                 </aside>
             </div>
         </div>
 
-        <!-- MODAL DE PAGO PRESENCIAL -->
-        <div id="modalPagoPresencial"
-             class="hidden fixed inset-0 z-[9999] bg-black/70 overflow-y-auto p-4"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="tituloPagoPresencial">
-
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl
-                        w-full max-w-lg mx-auto my-10 overflow-hidden">
-
-                <!-- Encabezado -->
-                <div class="bg-[#1b803a] text-white px-6 py-5
-                            flex items-center justify-between">
-
-                    <div>
-                        <h2 id="tituloPagoPresencial"
-                            class="text-xl font-black">
-                            Pago presencial
-                        </h2>
-
-                        <p class="text-sm text-green-100 mt-1">
-                            Reserva tus productos en CASATEK
-                        </p>
+        <!-- Reserva presencial: formulario renovado -->
+        <div id="modalPagoPresencial" class="hidden fixed inset-0 z-[9999]" role="dialog" aria-modal="true" aria-labelledby="tituloPagoPresencial">
+            <div class="ct-booking-dialog" tabindex="-1">
+                <header class="ct-booking-header">
+                    <div class="ct-booking-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></div>
+                    <div class="ct-booking-heading">
+                        <span class="ct-booking-eyebrow"><i class="fa-solid fa-circle-check"></i> RESERVA EN TIENDA</span>
+                        <h2 id="tituloPagoPresencial">¡Tu compra, a un paso!</h2>
+                        <p>Completa tus datos y reserva tus productos para recogerlos en CASATEK.</p>
                     </div>
-
-                    <button id="btnCerrarPagoPresencial"
-                            type="button"
-                            class="text-white text-xl"
-                            aria-label="Cerrar formulario">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Formulario -->
-                <form id="formPagoPresencial"
-                      class="p-6 space-y-5">
-
-                    <div>
-                        <label for="buyerName"
-                               class="block text-sm font-bold mb-2
-                                      text-gray-700 dark:text-gray-200">
-                            Nombre completo
-                        </label>
-
-                        <input type="text"
-                               id="buyerName"
-                               name="buyer_name"
-                               required
-                               minlength="3"
-                               maxlength="150"
-                               autocomplete="name"
-                               placeholder="Ej. Juan Pérez"
-                               class="w-full px-4 py-3 rounded-xl border
-                                      border-gray-300 dark:border-gray-600
-                                      bg-white dark:bg-gray-700
-                                      text-gray-800 dark:text-white
-                                      focus:outline-none focus:ring-2
-                                      focus:ring-green-500">
+                    <button id="btnCerrarPagoPresencial" type="button" class="ct-booking-close" aria-label="Cerrar formulario"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <form id="formPagoPresencial" class="ct-booking-form">
+                    <div class="ct-booking-section-heading">
+                        <span class="ct-booking-section-icon"><i class="fa-solid fa-address-card"></i></span>
+                        <div><strong>Datos para tu reserva</strong><small>Así podremos identificarte cuando visites la tienda</small></div>
+                        <span class="ct-booking-step">01 / 02</span>
                     </div>
-
-                    <div>
-                        <label for="buyerCi"
-                               class="block text-sm font-bold mb-2
-                                      text-gray-700 dark:text-gray-200">
-                            Cédula de identidad (CI)
-                        </label>
-
-                        <input type="text"
-                               id="buyerCi"
-                               name="buyer_ci"
-                               required
-                               minlength="4"
-                               maxlength="30"
-                               placeholder="Ej. 12345678 LP"
-                               class="w-full px-4 py-3 rounded-xl border
-                                      border-gray-300 dark:border-gray-600
-                                      bg-white dark:bg-gray-700
-                                      text-gray-800 dark:text-white
-                                      focus:outline-none focus:ring-2
-                                      focus:ring-green-500">
-                    </div>
-
-                    <div>
-                        <label for="buyerPhone"
-                               class="block text-sm font-bold mb-2
-                                      text-gray-700 dark:text-gray-200">
-                            Número de celular
-                        </label>
-
-                        <input type="tel"
-                               id="buyerPhone"
-                               name="buyer_phone"
-                               required
-                               minlength="7"
-                               maxlength="16"
-                               inputmode="tel"
-                               autocomplete="tel"
-                               placeholder="Ej. 71234567"
-                               class="w-full px-4 py-3 rounded-xl border
-                                      border-gray-300 dark:border-gray-600
-                                      bg-white dark:bg-gray-700
-                                      text-gray-800 dark:text-white
-                                      focus:outline-none focus:ring-2
-                                      focus:ring-green-500">
-                    </div>
-
-                    <!-- Método de pago -->
-                    <div class="bg-green-50 dark:bg-green-900/20
-                                border border-green-200 dark:border-green-800
-                                rounded-xl p-4">
-
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-money-bill-wave
-                                      text-[#22C55E] text-xl"></i>
-
-                            <div>
-                                <p class="font-bold text-gray-800 dark:text-white">
-                                    Efectivo en tienda
-                                </p>
-
-                                <p class="text-xs text-gray-500 dark:text-gray-300">
-                                    Paga cuando visites CASATEK.
-                                </p>
+                    <div class="ct-booking-fields">
+                        <div class="ct-booking-field ct-booking-field-wide">
+                            <label for="buyerName">Nombre completo <span>*</span></label>
+                            <div class="ct-booking-control"><i class="fa-regular fa-user" aria-hidden="true"></i>
+                                <input id="buyerName" name="buyer_name" type="text" required minlength="3" maxlength="150" autocomplete="name" placeholder="Ej. María Fernanda Pérez">
+                            </div>
+                        </div>
+                        <div class="ct-booking-field">
+                            <label for="buyerCi">Cédula de identidad <span>*</span></label>
+                            <div class="ct-booking-control"><i class="fa-regular fa-id-card" aria-hidden="true"></i>
+                                <input id="buyerCi" name="buyer_ci" type="text" required minlength="4" maxlength="30" placeholder="Ej. 12345678 LP">
+                            </div>
+                        </div>
+                        <div class="ct-booking-field">
+                            <label for="buyerPhone">Número de celular <span>*</span></label>
+                            <div class="ct-booking-control"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
+                                <input id="buyerPhone" name="buyer_phone" type="tel" required minlength="7" maxlength="16" inputmode="tel" autocomplete="tel" placeholder="Ej. 71234567">
                             </div>
                         </div>
                     </div>
-
-                    <!-- Aviso de vencimiento -->
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20
-                                border border-yellow-200 dark:border-yellow-800
-                                rounded-xl p-4">
-
-                        <p class="text-sm font-bold text-yellow-800
-                                  dark:text-yellow-300">
-                            <i class="fa-solid fa-clock mr-2"></i>
-                            Reserva válida por 24 horas
-                        </p>
-
-                        <p class="text-xs text-yellow-700
-                                  dark:text-yellow-200 mt-2">
-                            Los productos quedarán reservados durante 24 horas.
-                            Si el administrador no confirma el pago antes
-                            del vencimiento, la reserva se cancelará y
-                            el stock volverá a estar disponible.
-                        </p>
+                    <div class="ct-booking-section-heading ct-booking-second-heading">
+                        <span class="ct-booking-section-icon"><i class="fa-solid fa-store"></i></span>
+                        <div><strong>¿Cómo funciona?</strong><small>Reserva en línea y paga presencialmente</small></div>
+                        <span class="ct-booking-step">02 / 02</span>
                     </div>
-
-                    <!-- Botones -->
-                    <div class="flex gap-3 pt-2">
-
-                        <button id="btnCancelarPagoPresencial"
-                                type="button"
-                                class="flex-1 py-3 rounded-xl
-                                       bg-gray-200 dark:bg-gray-700
-                                       text-gray-800 dark:text-white font-bold">
-                            Cancelar
-                        </button>
-
-                        <button id="btnConfirmarReserva"
-                                type="submit"
-                                class="flex-1 py-3 rounded-xl
-                                       bg-[#22C55E] hover:bg-green-600
-                                       text-white font-bold transition-colors">
-                            <i class="fa-solid fa-ticket mr-2"></i>
-                            Reservar
-                        </button>
+                    <div class="ct-booking-info-grid">
+                        <div class="ct-booking-info ct-booking-payment"><span class="ct-booking-info-icon"><i class="fa-solid fa-wallet"></i></span><div><strong>Pago en tienda</strong><small>Paga en efectivo al visitarnos. Sin cobros en línea.</small></div></div>
+                        <div class="ct-booking-info ct-booking-time"><span class="ct-booking-info-icon"><i class="fa-regular fa-clock"></i></span><div><strong>24 horas para pagar</strong><small>Pasado ese plazo, la reserva puede cancelarse y liberarse el stock si no se confirma el pago.</small></div></div>
                     </div>
+                    <footer class="ct-booking-footer">
+                        <div class="ct-booking-security"><i class="fa-solid fa-lock"></i> Tus datos se usan para gestionar esta reserva.</div>
+                        <div class="ct-booking-buttons">
+                            <button id="btnCancelarPagoPresencial" type="button" class="ct-booking-cancel">Volver al carrito</button>
+                            <button id="btnConfirmarReserva" type="submit" class="ct-booking-submit"><i class="fa-solid fa-ticket"></i> Confirmar reserva <i class="fa-solid fa-arrow-right ct-booking-arrow"></i></button>
+                        </div>
+                    </footer>
                 </form>
+            </div>
+        </div>
+        <!-- Confirmación para vaciar el carrito -->
+        <div id="modalVaciarCarrito" class="hidden ct-clear-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloVaciarCarrito">
+            <div class="ct-clear-dialog" tabindex="-1">
+                <span class="ct-clear-big-icon"><i class="fa-solid fa-trash-can"></i></span>
+                <h2 id="tituloVaciarCarrito">¿Vaciar todo tu carrito?</h2>
+                <p>Se quitarán todos los productos seleccionados. Puedes volver a añadirlos desde el catálogo.</p>
+                <div class="ct-clear-buttons">
+                    <button type="button" id="btnCancelarVaciar" class="ct-clear-no">Conservar productos</button>
+                    <button type="button" id="btnConfirmarVaciar" class="ct-clear-yes"><i class="fa-solid fa-trash-can"></i> Sí, vaciar carrito</button>
+                </div>
             </div>
         </div>
     </main>
@@ -2368,6 +2388,109 @@
         const CART_KEY = 'casatek_carrito';
         const API_BASE = '/api';
         let reservaEnProceso = false;
+        const qtySync = new Map();
+        const stockKnown = new Map();
+        const remoteCartIds = new Map();
+        let qtyGeneration = 0;
+        function stockFromProduct(p) {
+            if (!p || typeof p !== 'object') return null;
+            const paths = ['stock','stock_quantity','stockQuantity','available_stock','availableStock','stock_disponible','quantity_available','inventory_quantity'];
+            for (const key of paths) {
+                const value = p[key];
+                if (value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) && Number(value)>=0)
+                    return Math.floor(Number(value));
+            }
+            return null;
+        }
+        function obtenerStock(item) {
+            const id = String(item.id);
+            if (stockKnown.has(id)) return stockKnown.get(id);
+            const n=stockFromProduct(item);
+            if (n!==null) stockKnown.set(id,n);
+            return n;
+        }
+        function pintarCantidad(id) {
+            const item=getCarrito().find(i=>String(i.id)===String(id));
+            if (!item) return;
+            const q=document.getElementById('qty-'+id),price=document.getElementById('price-'+id);
+            if(q) q.textContent=item.cantidad;
+            if(price) price.textContent=fmt(item.precio*item.cantidad);
+            const row=Array.from(document.querySelectorAll('.product-row')).find(r=>r.dataset.id===String(id));
+            const stock=obtenerStock(item);
+            if(row) {
+                const less=row.querySelector('[data-action="qty-menos"]'),more=row.querySelector('[data-action="qty-mas"]');
+                if(less) less.disabled=Number(item.cantidad)<=1;
+                if(more) more.disabled=stock!==null && Number(item.cantidad)>=stock;
+                const hint=row.querySelector('.ct-stock-indicator');
+                if(hint) {
+                    hint.classList.toggle('low',stock!==null && stock<=3);
+                    hint.classList.toggle('unknown',stock===null);
+                    hint.innerHTML=stock===null?'<i class="fa-solid fa-circle-info"></i> Disponibilidad por confirmar':
+                        '<i class="fa-solid fa-box-open"></i> '+stock+' unidad'+(stock===1?'':'es')+' disponible'+(stock===1?'':'s');
+                }
+            }
+            recalcular();
+        }
+        function programarSincronizacion(id) {
+            if (!getToken()) return;
+            let s=qtySync.get(String(id));
+            if (!s) {s={timer:null,running:false,confirmed:null,desired:null};qtySync.set(String(id),s)}
+            const item=getCarrito().find(i=>String(i.id)===String(id));
+            if(!item) return;
+            s.desired=Number(item.cantidad);
+            if(s.confirmed===null) s.confirmed=Number(item.cantidad);
+            clearTimeout(s.timer);
+            s.timer=setTimeout(()=>sincronizarCantidad(String(id)),320);
+        }
+        async function sincronizarCantidad(id) {
+            const s=qtySync.get(id);
+            if(!s||s.running) return;
+            const item=getCarrito().find(i=>String(i.id)===id);
+            if(!item) {qtySync.delete(id);return}
+            if(s.confirmed===s.desired) {qtySync.delete(id);return}
+            s.running=true;
+            const target=s.desired;
+            const generation=qtyGeneration;
+            try {
+                let bdId=remoteCartIds.get(id);
+                if (bdId===undefined) {
+                    const bdItem=await buscarItemBD(id);
+                    if(!bdItem) throw Error('No se encontró este producto en el carrito de la tienda.');
+                    bdId=bdItem.id;remoteCartIds.set(id,bdId);
+                }
+                const r=await fetch(API_BASE+'/cart/items/'+bdId,{method:'PUT',headers:authHeaders(),body:JSON.stringify({quantity:target})});
+                if(r.status===401){sesionExpirada();return}
+                if(!r.ok){const e=await r.json().catch(()=>({}));throw Error(e.message||'No hay suficiente stock o no se pudo actualizar.');}
+                if(generation!==qtyGeneration)return;
+                s.confirmed=target;
+            }catch(e){
+                if(generation!==qtyGeneration)return;
+                const current=getCarrito();const it=current.find(x=>String(x.id)===id);
+                if(it){it.cantidad=s.confirmed;saveCarrito(current);pintarCantidad(id)}
+                s.desired=s.confirmed;
+                showToast(escapeHtml(e.message||'Error al actualizar la cantidad.'),'error');
+            }finally{
+                s.running=false;
+                if(generation===qtyGeneration && qtySync.get(id)===s){
+                    if(s.desired!==s.confirmed) {clearTimeout(s.timer);s.timer=setTimeout(()=>sincronizarCantidad(id),100)}
+                    else qtySync.delete(id);
+                }
+            }
+        }
+        async function confirmarCantidadesPendientes() {
+            const keys=[...qtySync.keys()];
+            for(const id of keys){const s=qtySync.get(id);if(s)clearTimeout(s.timer)}
+            // Esperar operaciones en curso, sin iniciar solicitudes paralelas del mismo ítem.
+            for(const id of keys){
+                for(let attempt=0;attempt<35 && qtySync.has(id);attempt++){
+                    const s=qtySync.get(id);
+                    if(s && !s.running)await sincronizarCantidad(id);
+                    if(qtySync.has(id))await new Promise(resolve=>setTimeout(resolve,80));
+                }
+            }
+            return qtySync.size===0;
+        }
+
 
         // --- SISTEMA DE NOTIFICACIONES ELEGANTES ---
         function showToast(message, type = 'error') {
@@ -2436,6 +2559,7 @@
             document.getElementById('total').textContent = fmt(subtotal);
             document.getElementById('items-counter').textContent =
                 count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
+            actualizarBotonVaciar();
         }
 
         // Abrir formulario de pago presencial
@@ -2473,45 +2597,29 @@
             return data.datos?.items?.find(i => String(i.product_id) === String(productId)) ?? null;
         }
 
-        async function cambiarQty(id, delta) {
-            const carrito = getCarrito();
-            const item = carrito.find(i => String(i.id) === String(id));
-            if (!item) return;
-            const nueva = Math.max(1, item.cantidad + delta);
-            if (nueva === item.cantidad) return;
-
-            if (getToken()) {
-                try {
-                    const bdItem = await buscarItemBD(id);
-                    if (bdItem) {
-                        const r = await fetch(API_BASE + '/cart/items/' + bdItem.id, {
-                            method: 'PUT',
-                            headers: authHeaders(),
-                            body: JSON.stringify({ quantity: nueva }),
-                        });
-                        if (r.status === 401) { sesionExpirada(); return; }
-                        if (!r.ok) {
-                            const e = await r.json().catch(() => ({}));
-                            alert(e.message || 'No se pudo actualizar la cantidad.');
-                            return;
-                        }
-                    }
-                } catch (e) {
-                    alert('Error de conexión.');
-                    return;
-                }
+        function cambiarQty(id, delta) {
+            const carrito=getCarrito();
+            const item=carrito.find(i=>String(i.id)===String(id));
+            if(!item) return;
+            const stock=obtenerStock(item);
+            const desired=Math.max(1,Number(item.cantidad)+delta);
+            if(desired===Number(item.cantidad))return;
+            if(stock!==null && desired>stock){
+                showToast('Solo hay '+stock+' unidades disponibles de este producto.','error');return;
             }
-
-            item.cantidad = nueva;
+            let s=qtySync.get(String(id));
+            if(!s){s={timer:null,running:false,confirmed:Number(item.cantidad),desired:Number(item.cantidad)};qtySync.set(String(id),s)}
+            item.cantidad=desired;
             saveCarrito(carrito);
-            document.getElementById('qty-' + id).textContent = nueva;
-            document.getElementById('price-' + id).textContent = fmt(item.precio * nueva);
-            recalcular();
+            pintarCantidad(id); // respuesta visual inmediata, sin esperar red
+            programarSincronizacion(id);
         }
 
         async function eliminar(id) {
             const row = document.querySelector('.product-row[data-id="' + id + '"]');
             if (!row) return;
+            const sync=qtySync.get(String(id));
+            if(sync){clearTimeout(sync.timer);qtySync.delete(String(id))}
             row.classList.add('removing');
             setTimeout(async () => {
                 row.remove();
@@ -2578,6 +2686,10 @@
                 return;
             }
 
+            if (!(await confirmarCantidadesPendientes())) {
+                showToast('No se pudieron confirmar todas las cantidades. Revisa el carrito antes de reservar.','error');
+                return;
+            }
             const btn = document.getElementById('btnConfirmarReserva');
             const textoOriginal = btn.innerHTML;
 
@@ -2635,6 +2747,9 @@
                     console.warn('Reserva creada, pero falló la limpieza del carrito:', error);
                 }
 
+                qtyGeneration++;
+                for(const s of qtySync.values())clearTimeout(s.timer);
+                qtySync.clear();
                 saveCarrito([]);
 
                 document.getElementById('cart-list').replaceChildren();
@@ -2700,10 +2815,11 @@
                     <span class="text-[10px] font-extrabold text-[#22C55E] uppercase tracking-widest">${escapeHtml(item.marca)}</span>
                     <h2 class="text-base font-black text-gray-900 dark:text-white mt-0.5 leading-tight">${escapeHtml(item.nombre)}</h2>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${escapeHtml(item.descripcion)}</p>
+                    <span class="ct-stock-indicator" aria-live="polite"><i class="fa-solid fa-box-open"></i> Consultando disponibilidad</span>
                 </div>
                 <div class="flex flex-col gap-2 shrink-0">
                     <button data-action="eliminar-item" data-id="${escapeHtml(item.id)}"
-                            title="Eliminar producto"
+                            title="Quitar del carrito" aria-label="Quitar producto del carrito"
                             class="w-9 h-9 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all">
                         <i class="fa-solid fa-trash text-sm" style="pointer-events:none;"></i>
                     </button>
@@ -2739,6 +2855,11 @@
                     const bdItems = data.datos?.items ?? [];
 
                     if (bdItems.length > 0) {
+                        bdItems.forEach(i=>{
+                            remoteCartIds.set(String(i.product_id),i.id);
+                            const stock=stockFromProduct(i.product);
+                            if(stock!==null)stockKnown.set(String(i.product_id),stock);
+                        });
                         saveCarrito(bdItems.map(i => ({
                             id: String(i.product_id),
                             nombre: i.product?.name ?? 'Producto',
@@ -2747,6 +2868,7 @@
                             descripcion: i.product?.description ?? '',
                             img: i.product?.image1 ?? '',
                             cantidad: Number(i.quantity),
+                            stock: stockFromProduct(i.product)
                         })));
                     }
                 } catch (e) { console.warn('No se pudo cargar carrito desde BD:', e); }
@@ -2756,9 +2878,60 @@
             if (carrito.length === 0) {
                 mostrarVacio();
             } else {
-                carrito.forEach((item, i) => lista.appendChild(crearArticulo(item, i)));
+                carrito.forEach((item, i) => {
+                    lista.appendChild(crearArticulo(item, i));
+                    pintarCantidad(String(item.id));
+                });
             }
             recalcular();
+        }
+
+        // Eliminación total: confirmar, sincronizar en el servidor y solo después vaciar la vista.
+        let vaciadoEnProceso=false;
+        function abrirConfirmacionVaciado() {
+            if (vaciadoEnProceso || !getCarrito().length) return;
+            document.getElementById('modalVaciarCarrito').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            document.getElementById('btnCancelarVaciar').focus();
+        }
+        function cerrarConfirmacionVaciado() {
+            if (vaciadoEnProceso) return;
+            document.getElementById('modalVaciarCarrito').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        async function vaciarCarritoCompleto() {
+            if (vaciadoEnProceso || reservaEnProceso) return;
+            vaciadoEnProceso=true;
+            const btn=document.getElementById('btnConfirmarVaciar');
+            const old=btn.innerHTML;
+            btn.disabled=true;
+            btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Vaciando...';
+            try {
+                // Primero confirmar ajustes pendientes, evitando reapariciones por solicitudes tardías.
+                if (!(await confirmarCantidadesPendientes())) throw new Error('No se pudo sincronizar el carrito. Intenta nuevamente.');
+                if (getToken()) {
+                    const res=await fetch(API_BASE+'/cart/clear',{method:'DELETE',headers:authHeaders()});
+                    if (res.status===401){sesionExpirada();return;}
+                    if (!res.ok) throw new Error('No se pudo vaciar el carrito en el servidor. Intenta de nuevo.');
+                }
+                qtyGeneration++;
+                for(const sync of qtySync.values())clearTimeout(sync.timer);
+                qtySync.clear();remoteCartIds.clear();stockKnown.clear();
+                saveCarrito([]);
+                document.getElementById('cart-list').replaceChildren();
+                mostrarVacio();recalcular();actualizarBotonVaciar();
+                document.getElementById('modalVaciarCarrito').classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                showToast('Tu carrito quedó vacío. Puedes seguir explorando el catálogo.','success');
+            } catch(err) {
+                showToast(escapeHtml(err.message||'No se pudo vaciar el carrito.'),'error');
+            } finally {
+                vaciadoEnProceso=false;btn.disabled=false;btn.innerHTML=old;
+            }
+        }
+        function actualizarBotonVaciar() {
+            const btn=document.getElementById('btn-vaciar-carrito');
+            if(btn)btn.disabled=!getCarrito().length;
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -2768,6 +2941,11 @@
                 .addEventListener('submit', comprar);
 
             cargarCarrito();
+            actualizarBotonVaciar();
+            document.getElementById('btn-vaciar-carrito').addEventListener('click',abrirConfirmacionVaciado);
+            document.getElementById('btnCancelarVaciar').addEventListener('click',cerrarConfirmacionVaciado);
+            document.getElementById('btnConfirmarVaciar').addEventListener('click',vaciarCarritoCompleto);
+            document.getElementById('modalVaciarCarrito').addEventListener('click',e=>{if(e.target===e.currentTarget)cerrarConfirmacionVaciado()});
 
             document.getElementById('cart-list').addEventListener('click', function (e) {
                 const btn = e.target.closest('[data-action]');
@@ -2799,6 +2977,7 @@
             // Cerrar con la tecla Escape
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
+                    cerrarConfirmacionVaciado();
                     cerrarPagoPresencial();
                 }
             });
