@@ -152,34 +152,6 @@
         .dark .btn-checkout:hover {
             background: #15803d;
         }
-
-        .modal-qr-wrap {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .modal-qr-wrap.open {
-            display: flex;
-        }
-
-        .modal-qr-box {
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 380px;
-            overflow: hidden;
-        }
-
-        .dark .modal-qr-box {
-            background: #111827;
-        }
     </style>
     <style>
         /* CASATEK - PRESENTACIÓN / NAVEGACIÓN (sin cambios de lógica) */
@@ -982,10 +954,6 @@
             padding: 29px;
         }
 
-        .ct-cart-items #btn-pagar-todo-wrap {
-            margin-top: 3px;
-        }
-
         .ct-cart-aside {
             position: sticky;
             top: 105px;
@@ -1014,15 +982,6 @@
             background: #12823a !important;
         }
 
-        .ct-cart-aside #btn-pagar-todo-resumen {
-            background: #003087 !important;
-            min-height: 48px;
-        }
-
-        .ct-cart-aside #btn-pagar-todo-resumen:hover {
-            background: #124ab7 !important;
-        }
-
         .ct-cart-aside .btn-checkout:focus-visible,
         .ct-cart-items button:focus-visible {
             outline: 3px solid #4ade80;
@@ -1045,10 +1004,6 @@
         .ct-cart-main .qty-wrap button {
             min-width: 36px;
             min-height: 36px;
-        }
-
-        .ct-cart-main .modal-qr-box {
-            border: 1px solid var(--ct-line);
         }
 
         @media(max-width:930px) {
@@ -1249,14 +1204,6 @@
 
         .ct-cart-items .product-row p {
             overflow-wrap: anywhere;
-        }
-
-        .ct-cart-items .product-row [data-action='pagar-item'] {
-            background: #083d9f;
-        }
-
-        .ct-cart-items .product-row [data-action='pagar-item']:hover {
-            background: #0a52c8;
         }
 
         .ct-cart-items .product-row [data-action='eliminar-item'] {
@@ -1826,17 +1773,6 @@
                         </div>
                     </article>
 
-                    <div id="btn-pagar-todo-wrap" class="hidden mt-6 shrink-0">
-                        <button id="btn-pagar-todo"
-                            class="w-full bg-[#003087] hover:bg-blue-900 text-white font-black py-4 rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-lg">
-                            <i class="fa-solid fa-qrcode text-lg pointer-events-none"></i>
-                            <span class="pointer-events-none">Pagar todo el carrito con QR BCP</span>
-                            <span
-                                class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg pointer-events-none">
-                                Bs. <span id="total-todos">0.00</span>
-                            </span>
-                        </button>
-                    </div>
                     <p class="ct-cart-help"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Puedes cambiar la
                         cantidad o quitar productos antes de comprar.</p>
                 </section>
@@ -1884,11 +1820,6 @@
                             <span class="pointer-events-none">Reservar</span>
                         </button>
 
-                        <button id="btn-pagar-todo-resumen" class="btn-checkout mb-3" style="background:#003087;">
-                            <i class="fa-solid fa-qrcode text-sm pointer-events-none"></i>
-                            <span class="pointer-events-none">Pagar todo con QR BCP</span>
-                        </button>
-
                         <a href="productos.html"
                             class="mt-1 block w-full text-center border-2 border-[#1b803a] text-[#1b803a] dark:text-green-400 dark:border-green-600 hover:bg-[#1b803a] dark:hover:bg-green-700 hover:text-white py-3 rounded-2xl text-sm font-bold transition-all duration-200">
                             <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
@@ -1914,55 +1845,6 @@
                         </ul>
                     </section>
                 </aside>
-            </div>
-        </div>
-
-        <!-- MODAL QR -->
-        <div id="modalQR" class="modal-qr-wrap">
-            <div class="modal-qr-box">
-                <div
-                    style="background:#003087; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
-                    <span style="color:white; font-weight:900; font-size:1.2rem; letter-spacing:.05em;">›BCP›</span>
-                    <button id="btn-cerrar-qr-header"
-                        style="background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; padding:4px 8px;">
-                        ✕
-                    </button>
-                </div>
-                <div style="padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem;">
-                    <div
-                        style="width:100%; background:#f9fafb; border-radius:12px; padding:.5rem 1rem; text-align:center;">
-                        <p id="qr-label" style="font-size:11px; color:#9ca3af; font-weight:700; margin:0;"></p>
-                        <p id="qr-producto-nombre"
-                            style="font-size:13px; font-weight:900; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        </p>
-                    </div>
-                    <div id="qr-container"
-                        style="background:white; padding:12px; border-radius:16px; border:1px solid #e5e7eb; min-width:220px; min-height:220px; display:flex; align-items:center; justify-content:center;">
-                    </div>
-                    <div style="text-align:center;">
-                        <p
-                            style="font-size:10px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.1em; margin:0 0 4px;">
-                            Monto a pagar</p>
-                        <p style="font-size:2.2rem; font-weight:900; color:#003087; margin:0;">
-                            Bs. <span id="qr-monto">0.00</span>
-                        </p>
-                    </div>
-                    <div style="width:100%; border-top:1px solid #e5e7eb; padding-top:1rem; text-align:center;">
-                        <p style="font-weight:900; font-size:14px; margin:0 0 2px; color:#111827;">Hugo Camilo Cussi
-                            Suxo</p>
-                        <p style="font-size:12px; color:#9ca3af; margin:0;">No. Cta: 201-52029768-3-02</p>
-                        <p style="font-size:12px; color:#9ca3af; margin:0;">Vencimiento: 06/06/2028</p>
-                    </div>
-                    <div
-                        style="width:100%; background:#eff6ff; border-radius:12px; padding:.75rem; text-align:center; font-size:12px; color:#1d4ed8;">
-                        <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>
-                        Escanea desde tu app bancaria. El monto ya está incluido.
-                    </div>
-                    <button id="btn-cerrar-qr-footer"
-                        style="width:100%; background:#f3f4f6; border:none; border-radius:12px; padding:12px; font-weight:700; font-size:14px; cursor:pointer; color:#374151;">
-                        Cerrar
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -2260,8 +2142,6 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <script>
         function closeSidebarFn() {
             const overlay = document.getElementById('sidebar-overlay');
@@ -2487,20 +2367,20 @@
     <script>
         const CART_KEY = 'casatek_carrito';
         const API_BASE = '/api';
+        let reservaEnProceso = false;
+
         // --- SISTEMA DE NOTIFICACIONES ELEGANTES ---
         function showToast(message, type = 'error') {
             let container = document.getElementById('toast-container');
             if (!container) {
                 container = document.createElement('div');
                 container.id = 'toast-container';
-                // Lo centramos arriba con diseño flotante
                 container.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-[999999] flex flex-col gap-3 pointer-events-none';
                 document.body.appendChild(container);
             }
             const toast = document.createElement('div');
             const isErr = type === 'error';
 
-            // Estilos Tailwind con desenfoque, sombras suaves y borde redondeado
             toast.className = `flex items-center gap-4 px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform transition-all duration-300 translate-y-[-20px] opacity-0 border backdrop-blur-md ${isErr
                 ? 'bg-red-50/95 border-red-200 text-red-600 dark:bg-red-950/90 dark:border-red-800 dark:text-red-400'
                 : 'bg-green-50/95 border-green-200 text-green-600 dark:bg-green-950/90 dark:border-green-800 dark:text-green-400'
@@ -2516,18 +2396,17 @@
 
             container.appendChild(toast);
 
-            // Animación de entrada
             requestAnimationFrame(() => {
                 toast.classList.remove('translate-y-[-20px]', 'opacity-0');
             });
 
-            // Animación de salida (desaparece después de 3.5 segundos)
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
         // -------------------------------------------
+
         function getToken() { return localStorage.getItem('token') || null; }
         function getCarrito() { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } }
         function saveCarrito(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); }
@@ -2555,80 +2434,8 @@
             const count = carrito.reduce((acc, i) => acc + i.cantidad, 0);
             document.getElementById('subtotal').textContent = fmt(subtotal);
             document.getElementById('total').textContent = fmt(subtotal);
-            document.getElementById('total-todos').textContent = fmt(subtotal);
             document.getElementById('items-counter').textContent =
                 count + ' producto' + (count !== 1 ? 's' : '') + ' en tu carrito';
-        }
-
-        function crc16(str) {
-            let crc = 0xFFFF;
-            for (let i = 0; i < str.length; i++) {
-                crc ^= str.charCodeAt(i) << 8;
-                for (let j = 0; j < 8; j++) {
-                    crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
-                }
-            }
-            return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-        }
-
-        function generarStringQR(monto) {
-            const montoStr = parseFloat(monto).toFixed(2);
-            const montoField = '54' + String(montoStr.length).padStart(2, '0') + montoStr;
-            const base = '00020101021132580010bo.com.atc01120428511603030206122015202976830252045999' +
-                '5303068' + montoField +
-                '5802BO5923Hugo Camilo Cussi Suxo6006La Paz6226072220280606193000000021303';
-            return base + '6304' + crc16(base + '6304');
-        }
-
-        function abrirQR(modo) {
-            const carrito = getCarrito();
-            if (carrito.length === 0) {
-                showToast('Tu carrito está vacío. Agrega productos primero.', 'error');
-                return;
-            }
-
-            let monto, label, nombre;
-            if (modo === 'todo') {
-                monto = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-                label = 'Pago total — ' + carrito.length + ' producto' + (carrito.length !== 1 ? 's' : '');
-                nombre = 'Total carrito';
-            } else {
-                monto = modo.precio * modo.cantidad;
-                label = 'Producto individual';
-                nombre = modo.nombre;
-            }
-
-            document.getElementById('qr-monto').textContent = fmt(monto);
-            document.getElementById('qr-label').textContent = label;
-            document.getElementById('qr-producto-nombre').textContent = nombre;
-
-            const container = document.getElementById('qr-container');
-            container.innerHTML = '';
-
-            try {
-                new QRCode(container, {
-                    text: generarStringQR(monto),
-                    width: 220,
-                    height: 220,
-                    correctLevel: QRCode.CorrectLevel.M,
-                });
-            } catch (e) {
-                container.innerHTML = '<p style="color:red;font-size:12px;">Error generando QR</p>';
-                console.error('QR error:', e);
-            }
-
-            const modal = document.getElementById('modalQR');
-            modal.classList.add('open');
-            setTimeout(() => {
-                modal.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }, 100);
-        }
-
-        function cerrarQR() {
-            document.getElementById('modalQR').classList.remove('open');
         }
 
         // Abrir formulario de pago presencial
@@ -2712,7 +2519,6 @@
                 saveCarrito(carrito);
                 recalcular();
 
-                // JS PATCH: Remover hidden Y hacer display flex para que no se arruine el centrado
                 if (carrito.length === 0) {
                     const emptyState = document.getElementById('empty-state');
                     emptyState.classList.remove('hidden');
@@ -2732,152 +2538,146 @@
             }, 280);
         }
 
-        async function comprar() {
-            
-            let reservaEnProceso = false;
+        async function comprar(event) {
+            event.preventDefault();
 
-            async function comprar(event) {
-                event.preventDefault();
+            if (reservaEnProceso) return;
 
-                if (reservaEnProceso) return;
+            const formulario = document.getElementById('formPagoPresencial');
 
-                const formulario = document.getElementById('formPagoPresencial');
+            if (!formulario.reportValidity()) return;
 
-                if (!formulario.reportValidity()) return;
+            const nombre = document.getElementById('buyerName').value.trim();
+            const ci = document.getElementById('buyerCi').value.trim();
+            const telefono = document.getElementById('buyerPhone').value.trim().replace(/[\s-]/g, '');
 
-                const nombre = document.getElementById('buyerName').value.trim();
-                const ci = document.getElementById('buyerCi').value.trim();
-                const telefono = document.getElementById('buyerPhone').value.trim().replace(/[\s-]/g, '');
-
-                if (nombre.length < 3 || nombre.length > 150) {
-                    showToast('Ingresa un nombre válido.', 'error');
-                    return;
-                }
-
-                if (ci.length < 4 || ci.length > 30) {
-                    showToast('Ingresa un CI válido.', 'error');
-                    return;
-                }
-
-                if (!/^\+?[0-9]{7,15}$/.test(telefono)) {
-                    showToast('Ingresa un número de celular válido.', 'error');
-                    return;
-                }
-
-                if (!getToken()) {
-                    window.location.href = 'iniciarsesion.html?redirect=carrito.html';
-                    return;
-                }
-
-                const carrito = getCarrito();
-
-                if (!carrito.length) {
-                    showToast('Tu carrito está vacío.', 'error');
-                    return;
-                }
-
-                const btn = document.getElementById('btnConfirmarReserva');
-                const textoOriginal = btn.innerHTML;
-
-                reservaEnProceso = true;
-                btn.disabled = true;
-                btn.innerHTML = 'Procesando reserva...';
-
-                try {
-                    const response = await fetch(API_BASE + '/orders', {
-                        method: 'POST',
-                        headers: authHeaders(),
-                        body: JSON.stringify({
-                            payment_method: 'efectivo',
-                            buyer_name: nombre,
-                            buyer_ci: ci,
-                            buyer_phone: telefono,
-                            items: carrito.map(item => ({
-                                product_id: Number(item.id),
-                                quantity: Number(item.cantidad)
-                            }))
-                        })
-                    });
-
-                    const result = await response.json().catch(() => ({}));
-
-                    if (response.status === 401) {
-                        sesionExpirada();
-                        return;
-                    }
-
-                    if (!response.ok) {
-                        const errores = result.errors
-                            ? Object.values(result.errors).flat().join('\n')
-                            : result.message;
-
-                        throw new Error(errores || 'No se pudo crear la reserva.');
-                    }
-
-                    const pedido = result.datos;
-
-                    let carritoRemotoLimpio = false;
-
-                    try {
-                        const limpieza = await fetch(API_BASE + '/cart/clear', {
-                            method: 'DELETE',
-                            headers: authHeaders()
-                        });
-
-                        if (!limpieza.ok) {
-                            throw new Error('No se pudo limpiar el carrito remoto.');
-                        }
-
-                        carritoRemotoLimpio = true;
-                    } catch (error) {
-                        console.warn('Reserva creada, pero falló la limpieza del carrito:', error);
-                    }
-
-                    saveCarrito([]);
-
-                    document.getElementById('cart-list').replaceChildren();
-
-                    mostrarVacio();
-                    recalcular();
-
-                    formulario.reset();
-                    cerrarPagoPresencial();
-
-                    alert(
-                        '¡Reserva creada correctamente!\n\n' +
-                        'Número de pedido: ' + pedido.order_number + '\n' +
-                        'Tienes 24 horas para realizar el pago presencial.\n\n' +
-                        'Presenta este número cuando visites CASATEK.'
-                    );
-
-                    if (!carritoRemotoLimpio) {
-                        showToast(
-                            'La reserva fue creada, pero no se pudo sincronizar el carrito. No vuelvas a reservar los mismos productos.',
-                            'error'
-                        );
-                    }
-
-                } catch (error) {
-                    console.error('Error al crear la reserva:', error);
-
-                    showToast(
-                        escapeHtml(error.message || 'No se pudo crear la reserva.'),
-                        'error'
-                    );
-
-                } finally {
-                    reservaEnProceso = false;
-                    btn.disabled = false;
-                    btn.innerHTML = textoOriginal;
-                }
+            if (nombre.length < 3 || nombre.length > 150) {
+                showToast('Ingresa un nombre válido.', 'error');
+                return;
             }
 
+            if (ci.length < 4 || ci.length > 30) {
+                showToast('Ingresa un CI válido.', 'error');
+                return;
+            }
+
+            if (!/^\+?[0-9]{7,15}$/.test(telefono)) {
+                showToast('Ingresa un número de celular válido.', 'error');
+                return;
+            }
+
+            if (!getToken()) {
+                window.location.href = 'iniciarsesion.html?redirect=carrito.html';
+                return;
+            }
+
+            const carrito = getCarrito();
+
+            if (!carrito.length) {
+                showToast('Tu carrito está vacío.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirmarReserva');
+            const textoOriginal = btn.innerHTML;
+
+            reservaEnProceso = true;
+            btn.disabled = true;
+            btn.innerHTML = 'Procesando reserva...';
+
+            try {
+                const response = await fetch(API_BASE + '/orders', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        payment_method: 'efectivo',
+                        buyer_name: nombre,
+                        buyer_ci: ci,
+                        buyer_phone: telefono,
+                        items: carrito.map(item => ({
+                            product_id: Number(item.id),
+                            quantity: Number(item.cantidad)
+                        }))
+                    })
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (response.status === 401) {
+                    sesionExpirada();
+                    return;
+                }
+
+                if (!response.ok) {
+                    const errores = result.errors
+                        ? Object.values(result.errors).flat().join('\n')
+                        : result.message;
+
+                    throw new Error(errores || 'No se pudo crear la reserva.');
+                }
+
+                const pedido = result.datos;
+
+                let carritoRemotoLimpio = false;
+
+                try {
+                    const limpieza = await fetch(API_BASE + '/cart/clear', {
+                        method: 'DELETE',
+                        headers: authHeaders()
+                    });
+
+                    if (!limpieza.ok) {
+                        throw new Error('No se pudo limpiar el carrito remoto.');
+                    }
+
+                    carritoRemotoLimpio = true;
+                } catch (error) {
+                    console.warn('Reserva creada, pero falló la limpieza del carrito:', error);
+                }
+
+                saveCarrito([]);
+
+                document.getElementById('cart-list').replaceChildren();
+
+                mostrarVacio();
+                recalcular();
+
+                formulario.reset();
+                cerrarPagoPresencial();
+
+                alert(
+                    '¡Reserva creada correctamente!\n\n' +
+                    'Número de pedido: ' + pedido.order_number + '\n' +
+                    'Tienes 24 horas para realizar el pago presencial.\n\n' +
+                    'Presenta este número cuando visites CASATEK.'
+                );
+
+                if (!carritoRemotoLimpio) {
+                    showToast(
+                        'La reserva fue creada, pero no se pudo sincronizar el carrito. No vuelvas a reservar los mismos productos.',
+                        'error'
+                    );
+                }
+
+            } catch (error) {
+                console.error('Error al crear la reserva:', error);
+
+                showToast(
+                    escapeHtml(error.message || 'No se pudo crear la reserva.'),
+                    'error'
+                );
+
+            } finally {
+                reservaEnProceso = false;
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
         }
 
         function mostrarVacio() {
             const emptyState = document.getElementById('empty-state');
             emptyState.classList.remove('hidden');
-            emptyState.classList.add('flex'); // Se necesita para forzar el flex que sobrescriba el hidden base
+            emptyState.classList.add('flex');
         }
 
         function crearArticulo(item, index) {
@@ -2902,11 +2702,6 @@
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 leading-relaxed line-clamp-2">${escapeHtml(item.descripcion)}</p>
                 </div>
                 <div class="flex flex-col gap-2 shrink-0">
-                    <button data-action="pagar-item" data-id="${escapeHtml(item.id)}"
-                            title="Pagar este producto con QR"
-                            class="w-9 h-9 bg-[#003087] hover:bg-blue-900 text-white rounded-xl flex items-center justify-center transition-all shadow-sm">
-                        <i class="fa-solid fa-qrcode text-sm" style="pointer-events:none;"></i>
-                    </button>
                     <button data-action="eliminar-item" data-id="${escapeHtml(item.id)}"
                             title="Eliminar producto"
                             class="w-9 h-9 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center justify-center transition-all">
@@ -2943,7 +2738,6 @@
                     const data = await res.json();
                     const bdItems = data.datos?.items ?? [];
 
-                    // SOLUCION: solo sobrescribimos si hay items en el servidor
                     if (bdItems.length > 0) {
                         saveCarrito(bdItems.map(i => ({
                             id: String(i.product_id),
@@ -2966,8 +2760,13 @@
             }
             recalcular();
         }
-        
+
         document.addEventListener('DOMContentLoaded', function () {
+
+            // Registrar primero el formulario de reserva
+            document.getElementById('formPagoPresencial')
+                .addEventListener('submit', comprar);
+
             cargarCarrito();
 
             document.getElementById('cart-list').addEventListener('click', function (e) {
@@ -2981,6 +2780,7 @@
             });
 
             document.getElementById('btn-comprar').addEventListener('click', abrirPagoPresencial);
+
             // Cerrar formulario con los botones
             document.getElementById('btnCerrarPagoPresencial')
                 .addEventListener('click', cerrarPagoPresencial);
@@ -3002,15 +2802,6 @@
                     cerrarPagoPresencial();
                 }
             });
-            
-            document.getElementById('btn-cerrar-qr-header').addEventListener('click', cerrarQR);
-            document.getElementById('btn-cerrar-qr-footer').addEventListener('click', cerrarQR);
-            document.getElementById('modalQR').addEventListener('click', function (e) {
-                if (e.target === this) cerrarQR();
-            });
-
-            document.getElementById('formPagoPresencial')
-                .addEventListener('submit', comprar);
         });
     </script>
     <script>
