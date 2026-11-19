@@ -2119,6 +2119,65 @@
                 transition: none !important
             }
         }
+
+        /* CASATEK · Menús personalizados de categoría y marca */
+        .ct-choice-field { position: relative; }
+        .ct-choice-native { display: none !important; }
+        .ct-choice { position: relative; min-width: 0; }
+        .ct-choice-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; width: 100%; min-height: 45px; padding: 0 13px;
+            border: 1px solid var(--ct-line); border-radius: 12px;
+            color: var(--ct-ink); background: var(--ct-panel); text-align: left;
+            font: 650 12px 'Poppins', sans-serif;
+            cursor: pointer; transition: border-color .18s, box-shadow .18s, background .18s;
+        }
+        .ct-choice-trigger:hover { border-color: #63c985; background: var(--ct-soft); }
+        .ct-choice-trigger:focus-visible,
+        .ct-choice.is-open .ct-choice-trigger {
+            outline: none; border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, .13);
+        }
+        .ct-choice-trigger-content { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .ct-choice-trigger-content > i { color: #179746; flex: none; font-size: 14px; }
+        .ct-choice-current { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .ct-choice-arrow { color: var(--ct-muted); font-size: 10px; flex: none; transition: transform .18s; }
+        .ct-choice.is-open .ct-choice-arrow { transform: rotate(180deg); }
+        .ct-choice.has-value .ct-choice-trigger { border-color: rgba(34,197,94,.55); }
+        .ct-choice-menu {
+            position: absolute; z-index: 80; top: calc(100% + 7px); left: 0; right: 0;
+            min-width: min(245px, calc(100vw - 40px));
+            max-height: min(300px, 45vh); overflow-y: auto; overscroll-behavior: contain;
+            padding: 7px; border: 1px solid var(--ct-line); border-radius: 14px;
+            background: var(--ct-panel); box-shadow: 0 18px 45px rgba(8, 36, 19, .18);
+            scrollbar-width: thin; scrollbar-color: #8ebba0 transparent;
+            animation: ctChoiceIn .16s ease-out both;
+        }
+        .ct-choice-menu[hidden] { display: none !important; }
+        .ct-choice-option {
+            width: 100%; min-height: 38px; display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding: 9px 11px; border: 0; border-radius: 9px;
+            color: var(--ct-ink); background: transparent; text-align: left;
+            font: 550 12px 'Poppins', sans-serif; cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .ct-choice-option span { min-width: 0; overflow-wrap: anywhere; }
+        /* Mostrar el check únicamente en la opción seleccionada. */
+        .ct-choice-option i.fa-check {
+            color: #17a54d; font-size: 12px; flex: none;
+            opacity: 0; visibility: hidden;
+        }
+        .ct-choice-option[aria-selected="true"] i.fa-check {
+            opacity: 1; visibility: visible;
+        }
+        .ct-choice-option:hover, .ct-choice-option:focus-visible {
+            outline: none; background: var(--ct-soft); color: #138642;
+        }
+        .ct-choice-option[aria-selected="true"] { background: rgba(34,197,94,.13); color: #138642; font-weight: 750; }
+        .dark .ct-choice-option:hover, .dark .ct-choice-option:focus-visible,
+        .dark .ct-choice-option[aria-selected="true"] { color: #86efa9; }
+        @keyframes ctChoiceIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { .ct-choice-menu { animation: none; } }
+
     </style>
 </head>
 
@@ -2559,17 +2618,39 @@
                     </button>
                 </div>
                 <div id="filtersPanel" class="catalog-filter-panel">
-                    <div class="catalog-filter-field">
-                        <label for="categorySelect">Categoría</label>
-                        <select id="categorySelect">
+                    <div class="catalog-filter-field ct-choice-field">
+                        <label id="categoryFilterLabel" for="categorySelect">Categoría</label>
+                        <select id="categorySelect" class="ct-choice-native" tabindex="-1" aria-hidden="true">
                             <option value="">Todas las categorías</option>
                         </select>
+                        <div class="ct-choice" data-select="categorySelect">
+                            <button type="button" class="ct-choice-trigger" id="categoryChoiceButton"
+                                aria-haspopup="listbox" aria-expanded="false" aria-controls="categoryChoiceList"
+                                aria-labelledby="categoryFilterLabel categoryChoiceText">
+                                <span class="ct-choice-trigger-content"><i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                                    <span id="categoryChoiceText" class="ct-choice-current">Todas las categorías</span></span>
+                                <i class="fa-solid fa-chevron-down ct-choice-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div id="categoryChoiceList" class="ct-choice-menu" role="listbox"
+                                aria-labelledby="categoryFilterLabel" hidden></div>
+                        </div>
                     </div>
-                    <div class="catalog-filter-field">
-                        <label for="brandSelect">Marca</label>
-                        <select id="brandSelect">
+                    <div class="catalog-filter-field ct-choice-field">
+                        <label id="brandFilterLabel" for="brandSelect">Marca</label>
+                        <select id="brandSelect" class="ct-choice-native" tabindex="-1" aria-hidden="true">
                             <option value="">Todas las marcas</option>
                         </select>
+                        <div class="ct-choice" data-select="brandSelect">
+                            <button type="button" class="ct-choice-trigger" id="brandChoiceButton"
+                                aria-haspopup="listbox" aria-expanded="false" aria-controls="brandChoiceList"
+                                aria-labelledby="brandFilterLabel brandChoiceText">
+                                <span class="ct-choice-trigger-content"><i class="fa-solid fa-tags" aria-hidden="true"></i>
+                                    <span id="brandChoiceText" class="ct-choice-current">Todas las marcas</span></span>
+                                <i class="fa-solid fa-chevron-down ct-choice-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div id="brandChoiceList" class="ct-choice-menu" role="listbox"
+                                aria-labelledby="brandFilterLabel" hidden></div>
+                        </div>
                     </div>
                     <div class="catalog-filter-field catalog-filter-price">
                         <label for="precioMin">Rango de precio <span>(Bs)</span></label>
@@ -2823,7 +2904,102 @@
             [...new Set(PRODUCTOS.map(p => p.marca))].sort().forEach(m => {
                 const o = document.createElement('option'); o.value = m; o.textContent = m; brandSel.appendChild(o);
             });
+            poblarFiltroVisual(catSel);
+            poblarFiltroVisual(brandSel);
         }
+
+        // Menús visuales propios: conservamos los <select> originales como fuente de verdad
+        // para el filtrado, los chips activos y el botón de limpiar.
+        const ctChoices = [...document.querySelectorAll('.ct-choice')];
+        function cerrarFiltrosVisuales(excepto = null) {
+            ctChoices.forEach(choice => {
+                if (choice === excepto) return;
+                choice.classList.remove('is-open');
+                choice.querySelector('.ct-choice-trigger').setAttribute('aria-expanded', 'false');
+                choice.querySelector('.ct-choice-menu').hidden = true;
+            });
+        }
+        function sincronizarFiltroVisual(select) {
+            const choice = document.querySelector(`.ct-choice[data-select="${select.id}"]`);
+            if (!choice) return;
+            choice.classList.toggle('has-value', Boolean(select.value));
+            const selected = select.options[select.selectedIndex];
+            choice.querySelector('.ct-choice-current').textContent = selected?.textContent || select.options[0]?.textContent || '';
+            choice.querySelectorAll('.ct-choice-option').forEach(b => {
+                b.setAttribute('aria-selected', String(b.dataset.value === select.value));
+            });
+        }
+        function poblarFiltroVisual(select) {
+            const choice = document.querySelector(`.ct-choice[data-select="${select.id}"]`);
+            if (!choice) return;
+            const menu = choice.querySelector('.ct-choice-menu');
+            menu.replaceChildren();
+            [...select.options].forEach((option, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'ct-choice-option';
+                button.setAttribute('role', 'option');
+                button.dataset.value = option.value;
+                button.id = `${select.id}-option-${index}`;
+                const label = document.createElement('span');
+                label.textContent = option.textContent;
+                const check = document.createElement('i');
+                check.className = 'fa-solid fa-check';
+                check.setAttribute('aria-hidden', 'true');
+                button.append(label, check);
+                button.addEventListener('click', () => {
+                    select.value = option.value;
+                    sincronizarFiltroVisual(select);
+                    cerrarFiltrosVisuales();
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                    choice.querySelector('.ct-choice-trigger').focus();
+                });
+                menu.appendChild(button);
+            });
+            sincronizarFiltroVisual(select);
+        }
+        ctChoices.forEach(choice => {
+            const trigger = choice.querySelector('.ct-choice-trigger');
+            const menu = choice.querySelector('.ct-choice-menu');
+            trigger.addEventListener('click', () => {
+                const abrir = !choice.classList.contains('is-open');
+                cerrarFiltrosVisuales();
+                if (abrir) {
+                    choice.classList.add('is-open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                    menu.hidden = false;
+                    const actual = menu.querySelector('[aria-selected="true"]');
+                    if (actual) actual.scrollIntoView({ block: 'nearest' });
+                }
+            });
+            trigger.addEventListener('keydown', e => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!choice.classList.contains('is-open')) trigger.click();
+                    const opts = [...menu.querySelectorAll('.ct-choice-option')];
+                    (e.key === 'ArrowUp' ? opts[opts.length - 1] : menu.querySelector('[aria-selected="true"]') || opts[0])?.focus();
+                }
+            });
+            menu.addEventListener('keydown', e => {
+                const opts = [...menu.querySelectorAll('.ct-choice-option')];
+                const i = opts.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    opts[(i + (e.key === 'ArrowDown' ? 1 : -1) + opts.length) % opts.length]?.focus();
+                } else if (e.key === 'Home') { e.preventDefault(); opts[0]?.focus(); }
+                else if (e.key === 'End') { e.preventDefault(); opts[opts.length - 1]?.focus(); }
+                else if (e.key === 'Escape') { e.preventDefault(); cerrarFiltrosVisuales(); trigger.focus(); }
+                else if (e.key === 'Tab') { cerrarFiltrosVisuales(); }
+            });
+        });
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.ct-choice')) cerrarFiltrosVisuales();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') cerrarFiltrosVisuales();
+        });
+        catSel.addEventListener('change', () => sincronizarFiltroVisual(catSel));
+        brandSel.addEventListener('change', () => sincronizarFiltroVisual(brandSel));
 
         async function cargarProductos() {
             const grid = document.getElementById('productGrid');
@@ -2950,6 +3126,8 @@
         }
 
         function renderProductos() {
+            sincronizarFiltroVisual(catSel);
+            sincronizarFiltroVisual(brandSel);
             const grid = document.getElementById('productGrid');
             const full = filtrarProductos();
             const total = full.length;
@@ -3113,6 +3291,7 @@
             document.querySelectorAll('.reco-opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.reco === estado.reco)));
         }
         function cerrarMenus() {
+            cerrarFiltrosVisuales();
             for (const [d, b, c] of [['filterDropdown', 'filterBtn', 'filterChevron'], ['recoDropdown', 'recoBtn', 'recoChevron']]) {
                 document.getElementById(d).classList.remove('open');
                 document.getElementById(b).setAttribute('aria-expanded', 'false');
@@ -3130,7 +3309,14 @@
         }
         document.getElementById('filterBtn').addEventListener('click', e => { e.stopPropagation(); alternarMenu('filterDropdown', 'filterBtn', 'filterChevron'); });
         document.getElementById('recoBtn').addEventListener('click', e => { e.stopPropagation(); alternarMenu('recoDropdown', 'recoBtn', 'recoChevron'); });
-        document.addEventListener('click', e => { if (!e.target.closest('.catalog-popover-anchor')) cerrarMenus(); });
+        // Mantener abiertos los selectores personalizados cuando se hace clic dentro de ellos.
+        // Antes, este listener llamaba a cerrarMenus() en el mismo clic del botón,
+        // por lo que la lista se abría y se cerraba inmediatamente.
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.catalog-popover-anchor') && !e.target.closest('.ct-choice')) {
+                cerrarMenus();
+            }
+        });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarMenus(); });
         document.querySelectorAll('.filter-opt').forEach(btn => {
             btn.addEventListener('click', e => { e.stopPropagation(); estado.orden = btn.dataset.orden; estado.page = 1; sincronizarMenus(); cerrarMenus(); renderProductos(); });
@@ -3151,6 +3337,7 @@
             estado = { q: '', category: '', brand: '', min: null, max: null, orden: 'default', reco: '', page: 1 };
             searchInput.value = ''; clearSearchBtn.hidden = true;
             catSel.value = ''; brandSel.value = ''; minInp.value = ''; maxInp.value = '';
+            sincronizarFiltroVisual(catSel); sincronizarFiltroVisual(brandSel);
             leerRangoPrecio(); sincronizarMenus(); cerrarMenus(); renderProductos();
         });
         sincronizarMenus();
