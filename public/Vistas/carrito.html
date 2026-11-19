@@ -1549,6 +1549,42 @@
 @media(max-width:390px) {.ct-clear-buttons {grid-template-columns:1fr}.ct-booking-buttons {grid-template-columns:1fr}.ct-cart-header-actions {flex-direction:column}.ct-cart-header-actions>* {width:100%}}
 @media(prefers-reduced-motion:reduce) {.ct-clear-overlay:not(.hidden),.ct-clear-dialog,#modalPagoPresencial .ct-booking-dialog {animation:none!important}}
 </style>
+<style>
+
+        /* Confirmación de reserva: diálogo de éxito con foco accesible */
+        .ct-reserve-overlay{position:fixed;inset:0;z-index:100500;display:grid;place-items:center;padding:20px;background:rgba(8,20,14,.72);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+        .ct-reserve-overlay[hidden]{display:none!important}
+        .ct-reserve-card{width:min(100%,490px);max-height:calc(100dvh - 32px);overflow-y:auto;background:#fff;color:#162820;border:1px solid #d9eddf;border-radius:26px;box-shadow:0 32px 90px rgba(0,0,0,.28);padding:32px;position:relative;text-align:center;animation:ctReservePop .3s cubic-bezier(.2,.85,.3,1) both;font-family:'DM Sans',sans-serif}
+        .dark .ct-reserve-card{background:#1d2b29;color:#f0fdf4;border-color:#39594a}
+        .ct-reserve-icon{display:grid;place-items:center;width:76px;height:76px;margin:0 auto 17px;background:linear-gradient(150deg,#dcfce7,#b6f3cd);border:1px solid #91dfab;color:#128342;border-radius:24px;font-size:33px;box-shadow:0 12px 30px rgba(22,163,74,.15)}
+        .ct-reserve-eyebrow{display:block;color:#15803d;letter-spacing:.13em;font-weight:800;font-size:10px;text-transform:uppercase;margin-bottom:8px}
+        .dark .ct-reserve-eyebrow{color:#86efac}
+        .ct-reserve-card h2{font-family:'Poppins',sans-serif;font-size:clamp(22px,4vw,27px);line-height:1.24;font-weight:800;margin:0 0 11px}
+        .ct-reserve-description{font-size:13px;line-height:1.75;color:#557264;margin:0 auto 22px;max-width:365px}
+        .dark .ct-reserve-description{color:#b5d0c1}
+        .ct-reserve-order{padding:17px;border-radius:17px;border:1px dashed #9bdbaf;background:#f2fbf5;text-align:left;margin:0 0 17px}
+        .dark .ct-reserve-order{background:#233a30;border-color:#467e59}
+        .ct-reserve-order-label{display:block;font-size:11px;font-weight:700;color:#557264;margin-bottom:7px}
+        .dark .ct-reserve-order-label{color:#b4d1bf}
+        .ct-reserve-number-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+        #ctReserveNumber{font-size:clamp(18px,4.5vw,23px);letter-spacing:.035em;color:#166534;font-family:'Poppins',sans-serif;font-weight:800;overflow-wrap:anywhere}
+        .dark #ctReserveNumber{color:#86efac}
+        .ct-reserve-copy{border:1px solid #b9dfc2;background:#fff;color:#166534;border-radius:10px;padding:9px 12px;font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+        .dark .ct-reserve-copy{background:#294839;color:#d4ffe2;border-color:#538462}
+        .ct-reserve-info{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:13px;background:#fff9eb;border:1px solid #f6dc9d;border-radius:14px;margin-bottom:20px}
+        .ct-reserve-info i{color:#b5790e;margin-top:2px;font-size:19px}
+        .ct-reserve-info strong{display:block;font-size:12px;color:#74501a;margin-bottom:3px}
+        .ct-reserve-info span{display:block;font-size:12px;line-height:1.6;color:#88662e}
+        .dark .ct-reserve-info{background:#453720;border-color:#755c2b}
+        .dark .ct-reserve-info strong,.dark .ct-reserve-info span{color:#ffdfa2}
+        .ct-reserve-done{width:100%;min-height:48px;border:0;border-radius:13px;background:#168d42;color:white;font:800 13px 'Poppins',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:background .2s,transform .2s}
+        .ct-reserve-done:hover{background:#116c33;transform:translateY(-1px)}
+        .ct-reserve-done:focus-visible,.ct-reserve-copy:focus-visible{outline:3px solid #4ade80;outline-offset:3px}
+        @keyframes ctReservePop{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+        @media(max-width:480px){.ct-reserve-card{padding:25px 20px;border-radius:21px}}
+        @media(prefers-reduced-motion:reduce){.ct-reserve-card{animation:none}.ct-reserve-done{transition:none}}
+
+    </style>
 </head>
 
 <body
@@ -2025,6 +2061,25 @@
                     </footer>
                 </form>
             </div>
+        </div>
+
+        <!-- Mensaje de reserva creada: reemplaza el alert nativo -->
+        <div id="ctReserveSuccess" class="ct-reserve-overlay" role="dialog" aria-modal="true" aria-labelledby="ctReserveTitle" aria-describedby="ctReserveDescription" hidden>
+            <section class="ct-reserve-card" tabindex="-1">
+                <div class="ct-reserve-icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
+                <span class="ct-reserve-eyebrow">Reserva confirmada</span>
+                <h2 id="ctReserveTitle">¡Tu reserva está lista!</h2>
+                <p id="ctReserveDescription" class="ct-reserve-description">Hemos reservado tus productos. Guarda el número de pedido para identificar tu compra al visitar CASATEK.</p>
+                <div class="ct-reserve-order">
+                    <span class="ct-reserve-order-label">Número de pedido</span>
+                    <div class="ct-reserve-number-row">
+                        <strong id="ctReserveNumber"></strong>
+                        <button type="button" class="ct-reserve-copy" id="ctReserveCopy"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copiar</span></button>
+                    </div>
+                </div>
+                <div class="ct-reserve-info"><i class="fa-regular fa-clock" aria-hidden="true"></i><div><strong>Tienes 24 horas para pagar</strong><span>Realiza el pago presencial en CASATEK y presenta tu número de pedido.</span></div></div>
+                <button type="button" class="ct-reserve-done" id="ctReserveDone">Entendido, continuar <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            </section>
         </div>
         <!-- Confirmación para vaciar el carrito -->
         <div id="modalVaciarCarrito" class="hidden ct-clear-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloVaciarCarrito">
@@ -2562,6 +2617,53 @@
             actualizarBotonVaciar();
         }
 
+
+        // Mostrar una confirmación accesible solo después de crear la reserva en el servidor.
+        let ctReservePreviousFocus = null;
+        function mostrarReservaExitosa(numeroPedido) {
+            const modal = document.getElementById('ctReserveSuccess');
+            document.getElementById('ctReserveNumber').textContent = String(numeroPedido ?? '');
+            const copyText = document.querySelector('#ctReserveCopy span');
+            copyText.textContent = 'Copiar';
+            ctReservePreviousFocus = document.activeElement;
+            modal.hidden = false;
+            document.body.classList.add('overflow-hidden');
+            document.getElementById('ctReserveDone').focus();
+        }
+        function cerrarReservaExitosa() {
+            const modal = document.getElementById('ctReserveSuccess');
+            if (modal.hidden) return;
+            modal.hidden = true;
+            document.body.classList.remove('overflow-hidden');
+            if (ctReservePreviousFocus && ctReservePreviousFocus.isConnected) ctReservePreviousFocus.focus();
+        }
+        document.getElementById('ctReserveDone').addEventListener('click', cerrarReservaExitosa);
+        document.getElementById('ctReserveSuccess').addEventListener('keydown', e => {
+            if (e.key === 'Escape') { e.preventDefault(); cerrarReservaExitosa(); }
+            if (e.key === 'Tab') {
+                const controls = [...e.currentTarget.querySelectorAll('button:not([disabled])')];
+                const first = controls[0], last = controls[controls.length - 1];
+                if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();}
+                else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();}
+            }
+        });
+        document.getElementById('ctReserveCopy').addEventListener('click', async () => {
+            const numero = document.getElementById('ctReserveNumber').textContent;
+            try {
+                if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(numero);
+                else {
+                    const input = document.createElement('textarea');
+                    input.value = numero; input.style.position = 'fixed'; input.style.opacity = '0';
+                    document.body.appendChild(input);input.select();
+                    const copied = document.execCommand('copy');input.remove();
+                    if (!copied) throw new Error('No se pudo copiar');
+                }
+                document.querySelector('#ctReserveCopy span').textContent = '¡Copiado!';
+            } catch (error) {
+                showToast('No se pudo copiar. Puedes seleccionar el número manualmente.', 'error');
+            }
+        });
+
         // Abrir formulario de pago presencial
         function abrirPagoPresencial() {
             const carrito = getCarrito();
@@ -2760,12 +2862,7 @@
                 formulario.reset();
                 cerrarPagoPresencial();
 
-                alert(
-                    '¡Reserva creada correctamente!\n\n' +
-                    'Número de pedido: ' + pedido.order_number + '\n' +
-                    'Tienes 24 horas para realizar el pago presencial.\n\n' +
-                    'Presenta este número cuando visites CASATEK.'
-                );
+                mostrarReservaExitosa(pedido.order_number);
 
                 if (!carritoRemotoLimpio) {
                     showToast(
@@ -2976,6 +3073,7 @@
 
             // Cerrar con la tecla Escape
             document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !document.getElementById('ctReserveSuccess').hidden) return;
                 if (e.key === 'Escape') {
                     cerrarConfirmacionVaciado();
                     cerrarPagoPresencial();
