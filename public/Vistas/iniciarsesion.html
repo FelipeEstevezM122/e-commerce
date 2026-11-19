@@ -34,10 +34,6 @@
 
 
     <script>
-        // Se usa el origen actual de la página (en vez de una URL fija como
-        // 'http://localhost:8000') para que coincida siempre, entres por
-        // localhost o por 127.0.0.1. Si ambos no coinciden, el navegador los
-        // trata como dominios distintos y bloquea las peticiones por CORS.
         const API_BASE = window.location.origin;
         const ADMIN_LOGIN_URL = API_BASE + '/login-admin';
     </script>

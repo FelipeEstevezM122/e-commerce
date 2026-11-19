@@ -32,3 +32,9 @@ yarn-error.log
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/framework/testing/*
+
+# Respaldos locales de bases de datos
+/backups/
+
+# Copias temporales de vistas HTML
+/public/Vistas/*backup*.html
