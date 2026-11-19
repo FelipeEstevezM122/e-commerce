@@ -1675,9 +1675,53 @@
             }
         }
     </style>
+<style>
+
+        /* Confirmación administrativa moderna, coherente con el tema oscuro CASATEK */
+        .ct-order-overlay{position:fixed;inset:0;z-index:100500;display:grid;place-items:center;padding:20px;background:rgba(1,8,6,.78);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+        .ct-order-overlay[hidden]{display:none!important}
+        .ct-order-dialog{width:min(100%,475px);max-height:calc(100dvh - 32px);overflow-y:auto;position:relative;border:1px solid #345947;border-radius:23px;background:linear-gradient(160deg,#1c302a 0%,#111e1b 53%,#111b1a 100%);padding:30px;box-shadow:0 30px 95px rgba(0,0,0,.6);animation:ctOrderIn .28s cubic-bezier(.2,.85,.3,1) both;color:#ecfff1;text-align:left}
+        .ct-order-icon{width:61px;height:61px;border-radius:18px;background:#234938;border:1px solid #3c8156;color:#78eaa1;display:grid;place-items:center;font-size:25px;margin-bottom:18px}
+        .ct-order-icon.danger{background:#442728;color:#ff9292;border-color:#814147}
+        .ct-order-icon.delivery{background:#30284b;color:#c5adff;border-color:#57478a}
+        .ct-order-tag{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:#7cdda0;display:block;margin-bottom:8px}
+        .ct-order-dialog h2{font:800 clamp(21px,4.5vw,25px)/1.25 'Syne',sans-serif;margin:0 0 11px;color:white}
+        .ct-order-dialog p{margin:0;color:#b0c6b8;font-size:13px;line-height:1.75}
+        .ct-order-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #325143;background:#1c3329;border-radius:13px;padding:13px 15px;margin:20px 0 23px}
+        .ct-order-summary span{font-size:11px;color:#9ab6a3}
+        #ctOrderNumber{font:800 13px 'DM Sans',sans-serif;color:#c0fbd2;overflow-wrap:anywhere;text-align:right}
+        .ct-order-actions{display:flex;gap:10px;justify-content:flex-end}
+        .ct-order-actions button{font:800 12px 'DM Sans',sans-serif;min-height:44px;padding:12px 18px;border-radius:11px;cursor:pointer;border:1px solid #486254;transition:background .2s,transform .2s}
+        #ctOrderCancel{color:#d2e2d6;background:#24362e}
+        #ctOrderCancel:hover{background:#304638}
+        #ctOrderAccept{background:#23b45d;border-color:#23b45d;color:#072515;display:flex;align-items:center;justify-content:center;gap:8px}
+        #ctOrderAccept:hover{background:#4ade80;transform:translateY(-1px)}
+        #ctOrderAccept.danger{background:#e46a70;border-color:#e46a70;color:#20090b}
+        .ct-order-actions button:focus-visible{outline:3px solid #86efac;outline-offset:3px}
+        @keyframes ctOrderIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+        @media(max-width:480px){.ct-order-dialog{padding:24px 20px}.ct-order-actions{flex-direction:column-reverse}.ct-order-actions button{width:100%}}
+        @media(prefers-reduced-motion:reduce){.ct-order-dialog{animation:none}.ct-order-actions button{transition:none}}
+
+    </style>
 </head>
 
 <body>
+
+
+    <!-- Confirmación de cambios de estado: reemplaza window.confirm -->
+    <div id="ctOrderConfirm" class="ct-order-overlay" role="dialog" aria-modal="true" aria-labelledby="ctOrderTitle" aria-describedby="ctOrderText" hidden>
+        <section class="ct-order-dialog" tabindex="-1">
+            <div class="ct-order-icon" id="ctOrderIcon" aria-hidden="true"><i id="ctOrderIconGlyph" class="fa-solid fa-money-bill-wave"></i></div>
+            <span class="ct-order-tag">Validación de pedido</span>
+            <h2 id="ctOrderTitle">Confirmar acción</h2>
+            <p id="ctOrderText"></p>
+            <div class="ct-order-summary"><span>Número de pedido</span><strong id="ctOrderNumber"></strong></div>
+            <div class="ct-order-actions">
+                <button id="ctOrderCancel" type="button">Volver sin cambios</button>
+                <button id="ctOrderAccept" type="button"><i class="fa-solid fa-check" aria-hidden="true"></i> Confirmar</button>
+            </div>
+        </section>
+    </div>
 
     <!-- ===================== HEADER ===================== -->
     <header id="adminHeader">
@@ -1982,6 +2026,54 @@
             renderAll();
         }
 
+
+        // Promise resuelta exclusivamente por una acción explícita del usuario.
+        // Cancelar o pulsar Escape no envía ninguna solicitud a la API.
+        let ctOrderPending = null;
+        function confirmarCambioPedido(order, newStatus) {
+            if (ctOrderPending) return Promise.resolve(false);
+            const config = {
+                paid: { title: '¿Pago presencial recibido?', text: 'Confirma solo cuando hayas recibido y verificado el pago de este pedido en tienda.', button: 'Sí, confirmar pago', glyph: 'fa-money-bill-wave', kind: '' },
+                delivered: { title: '¿Pedido entregado?', text: 'Verifica que los productos hayan sido entregados al cliente antes de confirmar.', button: 'Sí, confirmar entrega', glyph: 'fa-box-open', kind: 'delivery' },
+                cancelled: { title: '¿Cancelar esta reserva?', text: 'Esta acción cancelará la reserva y devolverá las unidades al inventario según las reglas del sistema.', button: 'Sí, cancelar reserva', glyph: 'fa-triangle-exclamation', kind: 'danger' }
+            }[newStatus];
+            if (!config) return Promise.resolve(true);
+            const modal = document.getElementById('ctOrderConfirm');
+            document.getElementById('ctOrderTitle').textContent = config.title;
+            document.getElementById('ctOrderText').textContent = config.text;
+            document.getElementById('ctOrderNumber').textContent = order.order_number || String(order.id);
+            document.getElementById('ctOrderIcon').className = 'ct-order-icon ' + config.kind;
+            document.getElementById('ctOrderIconGlyph').className = 'fa-solid ' + config.glyph;
+            const accept = document.getElementById('ctOrderAccept');
+            accept.className = config.kind === 'danger' ? 'danger' : '';
+            accept.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> ' + config.button;
+            const previousFocus = document.activeElement;
+            modal.hidden = false;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('ctOrderCancel').focus();
+            return new Promise(resolve => { ctOrderPending = { resolve, previousFocus }; });
+        }
+        function cerrarConfirmacionPedido(accepted) {
+            if (!ctOrderPending) return;
+            const { resolve, previousFocus } = ctOrderPending;
+            ctOrderPending = null;
+            document.getElementById('ctOrderConfirm').hidden = true;
+            document.body.style.overflow = '';
+            if (previousFocus && previousFocus.isConnected) previousFocus.focus();
+            resolve(accepted);
+        }
+        document.getElementById('ctOrderCancel').addEventListener('click', () => cerrarConfirmacionPedido(false));
+        document.getElementById('ctOrderAccept').addEventListener('click', () => cerrarConfirmacionPedido(true));
+        document.getElementById('ctOrderConfirm').addEventListener('keydown', e => {
+            if (e.key === 'Escape') { e.preventDefault(); cerrarConfirmacionPedido(false); }
+            if (e.key === 'Tab') {
+                const first = document.getElementById('ctOrderCancel');
+                const last = document.getElementById('ctOrderAccept');
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        });
+
         async function updateStatus(orderId, newStatus) {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -1991,17 +2083,7 @@
                 return;
             }
 
-            if (order.payment_method === 'efectivo') {
-                const mensajes = {
-                    paid: '¿Confirmas que recibiste el pago presencial de este pedido?',
-                    delivered: '¿Confirmas que el producto fue entregado al cliente?',
-                    cancelled: '¿Deseas cancelar esta reserva? El stock será devuelto.'
-                };
-
-                if (mensajes[newStatus] && !confirm(mensajes[newStatus])) {
-                    return;
-                }
-            }
+            if (order.payment_method === 'efectivo' && !await confirmarCambioPedido(order, newStatus)) return;
             try {
                 const response = await fetch(`/api/admin/orders/${orderId}/status`, {
                     method: 'PATCH',
